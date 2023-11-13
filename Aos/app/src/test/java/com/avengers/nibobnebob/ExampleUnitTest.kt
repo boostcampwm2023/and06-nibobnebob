@@ -1,4 +1,4 @@
-package com.example.nibobnebob
+package com.avengers.nibobnebob
 
 import org.junit.Test
 
