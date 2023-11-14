@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -77,16 +78,44 @@
                     android:layout_marginTop="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_nickname_label">
+                    app:layout_constraintTop_toBottomOf="@id/tv_nickname_label"
+                    app:placeholderText="닉네임을 입력하세요."
+                    app:textLayoutColor="@{vm.uiState.nickState}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_nick"
                         style="@style/TextSmallRegular"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="닉네임을 입력하세요." />
+                        android:text="@={vm.nick}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/tv_nick_helper_text"
+                    style="@style/TextSmallBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    app:helperMessage="@{vm.uiState.nickState}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/til_nick"
+                    tools:text="이미 사용중인 닉네임 입니다" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_nick_duplication_check"
+                    style="@style/TextSmallBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:minHeight="0dp"
+                    android:onClick="@{() -> vm.checkNickDuplication()}"
+                    android:text="닉네임 중복확인"
+                    android:textColor="@color/selector_nick_check_text"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_nick_helper_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_nick_helper_text" />
 
                 <TextView
                     android:id="@+id/tv_gender_label"
@@ -140,16 +169,29 @@
                     app:endIconMode="custom"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_birth_label">
+                    app:layout_constraintTop_toBottomOf="@id/tv_birth_label"
+                    app:placeholderText="YYYY/MM/DD"
+                    app:textLayoutColor="@{vm.uiState.birthState}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_birth"
                         style="@style/TextSmallRegular"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="YYYY/MM/DD" />
+                        android:layout_height="wrap_content" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/tv_birth_helper_text"
+                    style="@style/TextSmallBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    app:helperMessage="@{vm.uiState.birthState}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/til_birth"
+                    tools:text="올바른 날짜형식이 아닙니다" />
 
                 <TextView
                     android:id="@+id/tv_location_label"
