@@ -22,6 +22,16 @@ class DetailSignupFragment :
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+        setGenderRadioListener()
+    }
+
+    private fun setGenderRadioListener(){
+        binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
+            when(checkedId){
+                R.id.rb_gender_female -> viewModel.setGender(Gender.FEMALE)
+                R.id.rb_gender_male -> viewModel.setGender(Gender.MALE)
+            }
+        }
     }
 }
 

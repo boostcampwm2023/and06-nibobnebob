@@ -42,6 +42,7 @@ class DetailSignupViewModel @Inject constructor(): ViewModel() {
     val events: SharedFlow<DetailSignupEvents> = _events.asSharedFlow()
     
     val nick = MutableStateFlow("")
+    private val gender = MutableStateFlow("male")
 
     init{
         observerNick()
@@ -73,4 +74,13 @@ class DetailSignupViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    fun setGender(genderData: Gender){
+        gender.value = genderData.data
+    }
+
+}
+
+enum class Gender(val data: String){
+    MALE("male"),
+    FEMALE("female")
 }
