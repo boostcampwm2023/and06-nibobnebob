@@ -234,6 +234,7 @@
                     android:layout_marginTop="80dp"
                     android:background="@drawable/selector_next_btn"
                     android:text="회원가입"
+                    android:enabled="@{vm.isDataReady()}"
                     android:textColor="@color/selector_next_btn_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

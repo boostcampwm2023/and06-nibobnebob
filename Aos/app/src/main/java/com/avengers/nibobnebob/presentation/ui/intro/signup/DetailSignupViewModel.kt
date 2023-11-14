@@ -6,11 +6,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,9 +44,19 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     val events: SharedFlow<DetailSignupEvents> = _events.asSharedFlow()
 
     val nick = MutableStateFlow("")
+    private var nickValidation = false
     private val gender = MutableStateFlow("male")
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
+
+    val isDataReady = combine(nick, gender, birth, location){ nick, gender, birth, location ->
+        nick.isNotBlank() && gender.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
+        nickValidation
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        false
+    )
 
     init {
         observerNick()
@@ -61,15 +74,20 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
 
     fun checkNickDuplication() {
         viewModelScope.launch {
+
+            // todo 중복체크 성공일때
+            nickValidation = true
             _uiState.update { state ->
                 state.copy(
-                    nickState = InputState.Error("이미 사용중인 닉네임 입니다")
+                    nickState = InputState.Success("사용 가능한 닉네임 입니다")
                 )
             }
 
+            // todo 중복체크 실패일때
+//            nickValidation = false
 //            _uiState.update { state ->
 //                state.copy(
-//                    nickState = InputState.Success("사용 가능한 닉네임 입니다")
+//                    nickState = InputState.Error("이미 사용중인 닉네임 입니다")
 //                )
 //            }
         }
@@ -82,8 +100,6 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     fun setBirth(birthData: String) {
         birth.value = birthData
     }
-
-
 }
 
 enum class Gender(val data: String) {
