@@ -85,7 +85,7 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
             } else {
                 _uiState.update { state ->
                     state.copy(
-                        birthState = InputState.Error("올바른 이메일 형식이 아닙니다")
+                        birthState = InputState.Error("올바른 날짜 형식이 아닙니다")
                     )
                 }
             }
