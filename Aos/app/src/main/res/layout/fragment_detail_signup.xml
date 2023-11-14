@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:background="@android:color/transparent"
+                android:onClick="@{() -> vm.navigateToBack()}"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_back"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +67,7 @@
                     style="@style/TextMediumRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="10dp"
                     android:text="닉네임"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -152,6 +153,39 @@
                 </RadioGroup>
 
                 <TextView
+                    android:id="@+id/tv_location_label"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="활동 지역"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rg_gender" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_location"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:endIconMode="dropdown_menu"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_location_label">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/et_location"
+                        style="@style/TextSmallRegular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="false"
+                        android:hint="지역을 선택하세요."
+                        android:text="@={vm.location}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
                     android:id="@+id/tv_birth_label"
                     style="@style/TextMediumRegular"
                     android:layout_width="wrap_content"
@@ -159,7 +193,7 @@
                     android:layout_marginTop="40dp"
                     android:text="생년월일"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rg_gender" />
+                    app:layout_constraintTop_toBottomOf="@id/til_location" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_birth"
@@ -177,9 +211,9 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_birth"
                         style="@style/TextSmallRegular"
-                        android:text="@={vm.birth}"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="@={vm.birth}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -195,54 +229,26 @@
                     app:layout_constraintTop_toBottomOf="@id/til_birth"
                     tools:text="올바른 날짜형식이 아닙니다" />
 
-                <TextView
-                    android:id="@+id/tv_location_label"
-                    style="@style/TextMediumRegular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
-                    android:text="활동 지역"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/til_birth" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_location"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    app:endIconMode="dropdown_menu"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_location_label">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/et_location"
-                        style="@style/TextSmallRegular"
-                        android:layout_width="match_parent"
-                        android:text="@={vm.location}"
-                        android:layout_height="wrap_content"
-                        android:hint="지역을 선택하세요." />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_signup"
-                    style="@style/TextSmallBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="80dp"
-                    android:background="@drawable/selector_next_btn"
-                    android:text="회원가입"
-                    android:enabled="@{vm.isDataReady()}"
-                    android:textColor="@color/selector_next_btn_text"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/til_location" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_signup"
+            style="@style/TextSmallBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/selector_next_btn"
+            android:enabled="@{vm.isDataReady()}"
+            android:onClick="@{() -> vm.navigateToMainActivity()}"
+            android:text="회원가입"
+            android:textColor="@color/selector_next_btn_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

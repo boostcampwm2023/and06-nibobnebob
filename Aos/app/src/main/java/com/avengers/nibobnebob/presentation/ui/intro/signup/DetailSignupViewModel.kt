@@ -120,6 +120,18 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     fun setBirth(birthData: String) {
         birth.value = birthData
     }
+
+    fun navigateToBack(){
+        viewModelScope.launch {
+            _events.emit(DetailSignupEvents.NavigateToBack)
+        }
+    }
+
+    fun navigateToMainActivity(){
+        viewModelScope.launch {
+            _events.emit(DetailSignupEvents.NavigateToMainActivity)
+        }
+    }
 }
 
 enum class Gender(val data: String) {

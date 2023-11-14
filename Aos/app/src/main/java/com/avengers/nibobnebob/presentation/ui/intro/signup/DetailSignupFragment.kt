@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -24,9 +25,23 @@ class DetailSignupFragment :
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+        initEventsObserver()
         setGenderRadioListener()
         setDateBtnListener()
         setLocationInputListener()
+    }
+
+    private fun initEventsObserver(){
+        repeatOnStarted {
+            viewModel.events.collect{
+                when(it){
+                    is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
+                    is DetailSignupEvents.NavigateToMainActivity -> {
+                        // todo
+                    }
+                }
+            }
+        }
     }
 
     private fun setGenderRadioListener() {
@@ -46,11 +61,12 @@ class DetailSignupFragment :
         }
     }
 
-    private fun setLocationInputListener(){
-
-        (binding.etLocation as MaterialAutoCompleteTextView).setSimpleItems(
-            resources.getStringArray(R.array.location_list)
-        )
+    private fun setLocationInputListener() {
+        (binding.etLocation as MaterialAutoCompleteTextView).apply {
+            simpleItemSelectedColor = ContextCompat.getColor(this.context, R.color.nn_primary1)
+            setDropDownBackgroundTint(ContextCompat.getColor(this.context, R.color.nn_primary0))
+            setSimpleItems(resources.getStringArray(R.array.location_list))
+        }
     }
 }
 
