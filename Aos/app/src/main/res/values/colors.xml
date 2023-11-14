@@ -7,6 +7,7 @@
 
     <color name="nn_text_black">#FF1D1F24</color>
 
+    <color name="nn_primary0">#FFFFEEEE</color>
     <color name="nn_primary1">#FFE1D6CC</color>
     <color name="nn_primary2">#FFBAB9AA</color>
     <color name="nn_primary3">#FF909D8F</color>
