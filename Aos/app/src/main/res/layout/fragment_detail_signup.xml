@@ -177,6 +177,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_birth"
                         style="@style/TextSmallRegular"
+                        android:text="@={vm.birth}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

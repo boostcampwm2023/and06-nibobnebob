@@ -20,35 +20,35 @@ data class DetailSignupUiState(
     val birthState: InputState = InputState.Empty,
 )
 
-sealed class InputState{
-    data object Empty: InputState()
-    data class Success(val msg: String): InputState()
-    data class Error(val msg: String): InputState()
+sealed class InputState {
+    data object Empty : InputState()
+    data class Success(val msg: String) : InputState()
+    data class Error(val msg: String) : InputState()
 }
 
-sealed class DetailSignupEvents{
+sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
-    data object NavigateToMainActivity: DetailSignupEvents()
-    data object ShowDatePicker: DetailSignupEvents()
+    data object NavigateToMainActivity : DetailSignupEvents()
 }
 
 @HiltViewModel
-class DetailSignupViewModel @Inject constructor(): ViewModel() {
+class DetailSignupViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailSignupUiState())
     val uiState: StateFlow<DetailSignupUiState> = _uiState.asStateFlow()
 
     private val _events = MutableSharedFlow<DetailSignupEvents>()
     val events: SharedFlow<DetailSignupEvents> = _events.asSharedFlow()
-    
+
     val nick = MutableStateFlow("")
     private val gender = MutableStateFlow("male")
+    val birth = MutableStateFlow("")
 
-    init{
+    init {
         observerNick()
     }
 
-    private fun observerNick(){
+    private fun observerNick() {
         nick.onEach {
             _uiState.update { state ->
                 state.copy(
@@ -57,9 +57,9 @@ class DetailSignupViewModel @Inject constructor(): ViewModel() {
             }
         }.launchIn(viewModelScope)
     }
-    
-    fun checkNickDuplication(){
-        viewModelScope.launch { 
+
+    fun checkNickDuplication() {
+        viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(
                     nickState = InputState.Error("이미 사용중인 닉네임 입니다")
@@ -74,13 +74,18 @@ class DetailSignupViewModel @Inject constructor(): ViewModel() {
         }
     }
 
-    fun setGender(genderData: Gender){
+    fun setGender(genderData: Gender) {
         gender.value = genderData.data
     }
 
+    fun setBirth(birthData: String) {
+        birth.value = birthData
+    }
+
+
 }
 
-enum class Gender(val data: String){
+enum class Gender(val data: String) {
     MALE("male"),
     FEMALE("female")
 }

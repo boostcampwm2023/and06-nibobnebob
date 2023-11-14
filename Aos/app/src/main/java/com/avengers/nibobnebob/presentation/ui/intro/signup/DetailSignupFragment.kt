@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.util.showCalendarDatePicker
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,15 +24,25 @@ class DetailSignupFragment :
 
         binding.vm = viewModel
         setGenderRadioListener()
+        setDateBtnListener()
     }
 
-    private fun setGenderRadioListener(){
+    private fun setGenderRadioListener() {
         binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
-            when(checkedId){
+            when (checkedId) {
                 R.id.rb_gender_female -> viewModel.setGender(Gender.FEMALE)
                 R.id.rb_gender_male -> viewModel.setGender(Gender.MALE)
             }
         }
+    }
+
+    private fun setDateBtnListener() {
+        binding.tilBirth.setEndIconOnClickListener {
+            showCalendarDatePicker(parentFragmentManager) {
+                viewModel.setBirth(it)
+            }
+        }
+
     }
 }
 
@@ -57,8 +68,12 @@ fun bindHelpMessage(view: TextView, inputState: InputState) {
 @BindingAdapter("textLayoutColor")
 fun bindTextLayoutColor(view: TextInputLayout, inputState: InputState) {
     when (inputState) {
-        is InputState.Success -> view.boxStrokeColor = ContextCompat.getColor(view.context, R.color.nn_primary6)
-        is InputState.Error -> view.boxStrokeColor = ContextCompat.getColor(view.context, R.color.nn_rainbow_red)
+        is InputState.Success -> view.boxStrokeColor =
+            ContextCompat.getColor(view.context, R.color.nn_primary6)
+
+        is InputState.Error -> view.boxStrokeColor =
+            ContextCompat.getColor(view.context, R.color.nn_rainbow_red)
+
         else -> view.boxStrokeColor = ContextCompat.getColor(view.context, R.color.nn_primary6)
     }
 }
