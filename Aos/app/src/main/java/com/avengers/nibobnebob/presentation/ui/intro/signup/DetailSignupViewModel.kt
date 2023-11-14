@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class DetailSignupUiState(
+    val isNickNotEmpty: Boolean = false,
     val nickState: InputState = InputState.Empty,
     val birthState: InputState = InputState.Empty,
 )
@@ -68,6 +69,7 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
         nick.onEach {
             _uiState.update { state ->
                 state.copy(
+                    isNickNotEmpty = it.isNotBlank(),
                     nickState = InputState.Empty
                 )
             }

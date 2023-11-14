@@ -110,6 +110,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
+                    android:enabled="@{vm.uiState.isNickNotEmpty}"
                     android:minHeight="0dp"
                     android:onClick="@{() -> vm.checkNickDuplication()}"
                     android:text="닉네임 중복확인"
