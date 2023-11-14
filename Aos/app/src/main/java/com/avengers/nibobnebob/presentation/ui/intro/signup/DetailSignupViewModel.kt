@@ -2,6 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.presentation.util.Validation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,9 +50,9 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
 
-    val isDataReady = combine(nick, gender, birth, location){ nick, gender, birth, location ->
+    val isDataReady = combine(nick, gender, birth, location) { nick, gender, birth, location ->
         nick.isNotBlank() && gender.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
-        nickValidation
+                nickValidation
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
@@ -59,15 +60,34 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     )
 
     init {
-        observerNick()
+        observeNick()
+        observeBirth()
     }
 
-    private fun observerNick() {
+    private fun observeNick() {
         nick.onEach {
             _uiState.update { state ->
                 state.copy(
                     nickState = InputState.Empty
                 )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun observeBirth() {
+        birth.onEach {
+            if (Validation.checkBirth(it) || it.isBlank()) {
+                _uiState.update { state ->
+                    state.copy(
+                        birthState = InputState.Empty
+                    )
+                }
+            } else {
+                _uiState.update { state ->
+                    state.copy(
+                        birthState = InputState.Error("올바른 이메일 형식이 아닙니다")
+                    )
+                }
             }
         }.launchIn(viewModelScope)
     }
