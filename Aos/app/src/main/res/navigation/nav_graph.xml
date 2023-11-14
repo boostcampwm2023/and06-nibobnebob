@@ -19,5 +19,27 @@
         android:id="@+id/myPageFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.MyPageFragment"
         android:label="fragment_my_page"
-        tools:layout="@layout/fragment_my_page" />
+        tools:layout="@layout/fragment_my_page" >
+        <action
+            android:id="@+id/action_myPageFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_myPageFragment_to_myRestaurantListFragment"
+            app:destination="@id/myRestaurantListFragment" />
+        <action
+            android:id="@+id/action_myPageFragment_to_wishRestaurantListFragment"
+            app:destination="@id/wishRestaurantListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.EditProfileFragment"
+        android:label="EditProfileFragment" />
+    <fragment
+        android:id="@+id/myRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.MyRestaurantListFragment"
+        android:label="MyRestaurantListFragment" />
+    <fragment
+        android:id="@+id/wishRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.WishRestaurantListFragment"
+        android:label="WishRestaurantListFragment" />
 </navigation>
