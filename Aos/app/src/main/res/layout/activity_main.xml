@@ -14,29 +14,29 @@
 
 
         <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/bnv_nav_bar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:defaultNavHost="true"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            app:navGraph="@navigation/nav_graph"
-            android:id="@+id/nav_host_fragment"/>
+            app:layout_constraintBottom_toTopOf="@id/bnv_nav_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navGraph="@navigation/nav_graph" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bnv_nav_bar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/nn_dark7"
-            app:menu="@menu/nav_bar"
             app:itemIconTint="@drawable/menu_selector_style"
             app:itemTextColor="@drawable/menu_selector_style"
-            app:layout_constraintTop_toBottomOf="@id/nav_host_fragment"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/nav_host_fragment"
+            app:menu="@menu/nav_bar" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
