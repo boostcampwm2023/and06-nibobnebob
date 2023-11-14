@@ -10,6 +10,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.util.showCalendarDatePicker
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,6 +26,7 @@ class DetailSignupFragment :
         binding.vm = viewModel
         setGenderRadioListener()
         setDateBtnListener()
+        setLocationInputListener()
     }
 
     private fun setGenderRadioListener() {
@@ -42,7 +44,13 @@ class DetailSignupFragment :
                 viewModel.setBirth(it)
             }
         }
+    }
 
+    private fun setLocationInputListener(){
+
+        (binding.etLocation as MaterialAutoCompleteTextView).setSimpleItems(
+            resources.getStringArray(R.array.location_list)
+        )
     }
 }
 

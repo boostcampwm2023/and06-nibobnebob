@@ -220,6 +220,7 @@
                         android:id="@+id/et_location"
                         style="@style/TextSmallRegular"
                         android:layout_width="match_parent"
+                        android:text="@={vm.location}"
                         android:layout_height="wrap_content"
                         android:hint="지역을 선택하세요." />
 

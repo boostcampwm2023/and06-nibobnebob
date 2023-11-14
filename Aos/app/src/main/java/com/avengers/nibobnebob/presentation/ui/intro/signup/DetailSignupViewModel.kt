@@ -43,6 +43,7 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     val nick = MutableStateFlow("")
     private val gender = MutableStateFlow("male")
     val birth = MutableStateFlow("")
+    val location = MutableStateFlow("")
 
     init {
         observerNick()
