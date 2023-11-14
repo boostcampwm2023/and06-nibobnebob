@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">nibobnebob</string>
+
+    <string-array name="location_list">
+        <item>용산구</item>
+        <item>은평구</item>
+        <item>강서구</item>
+        <item>강남구</item>
+        <item>서초구</item>
+        <item>동작구</item>
+        <item>관악구</item>
+        <item>금천구</item>
+        <item>영등포구</item>
+        <item>양천구</item>
+        <item>구로구</item>
+        <item>송파구</item>
+        <item>광진구</item>
+        <item>강동구</item>
+        <item>성동구</item>
+        <item>중구</item>
+        <item>종로구</item>
+        <item>서대문구</item>
+        <item>마포구</item>
+        <item>은평구</item>
+        <item>도봉구</item>
+        <item>노원구</item>
+        <item>중랑구</item>
+    </string-array>
 </resources>
