@@ -13,6 +13,12 @@ assignees: ''
 
 ### Task
 
+#### AOS
+- [ ]  task1
+- [ ]  task2
+- [ ]  task3
+
+#### BE
 - [ ]  task1
 - [ ]  task2
 - [ ]  task3
