@@ -3,11 +3,16 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.viewModels
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
@@ -30,10 +35,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+
     private val locationPermissionList = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,15 +85,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     private fun requestLocationPermission() {
+        var permissionFlag = false
         locationPermissionList.forEach { permission ->
-            requestPermissionLauncher.launch(permission)
+            permissionFlag = ContextCompat.checkSelfPermission(requireContext(),permission) == PackageManager.PERMISSION_GRANTED
+        }
+
+        if(permissionFlag){
+            checkLocationIsOn()
+        }else {
+            requestPermissionLauncher.launch(locationPermissionList)
+            Toast.makeText(requireContext(), "위치권한을 허용해주세요", Toast.LENGTH_SHORT).show()
         }
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) checkLocationIsOn()
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { resultMap ->
+        val isAllGranted = locationPermissionList.all { resultMap[it] == true}
+        if (isAllGranted) checkLocationIsOn()
         else viewModel.trackingOff()
     }
 
@@ -98,6 +114,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             viewModel.trackingOff()
         }
+    }
+}
+
+@BindingAdapter("trackingBtnDrawable")
+fun bindTrackingBtnDrawable(btn: ImageButton, state: TrackingState){
+    when(state){
+        is TrackingState.On -> btn.setImageResource(R.drawable.ic_location_on)
+        is TrackingState.Off -> btn.setImageResource(R.drawable.ic_location_off)
+        else -> {}
     }
 }
 
