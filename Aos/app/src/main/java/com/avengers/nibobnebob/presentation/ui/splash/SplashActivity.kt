@@ -4,17 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.lifecycleScope
+import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.app.NetWorkManager
 import com.avengers.nibobnebob.databinding.ActivitySplashBinding
 import com.avengers.nibobnebob.presentation.base.BaseActivity
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -23,27 +25,40 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val viewModel: SplashViewModel by viewModels()
 
+    @Inject
+    lateinit var netWorkManager: NetWorkManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.vm = viewModel
 
-        lifecycleScope.launch {
+        repeatOnStarted {
             delay(2000)
             viewModel.getAutoLogin()
         }
-
-        lifecycleScope.launch {
-            viewModel.eventFlow.collect{
-                when(it){
+        repeatOnStarted {
+            viewModel.eventFlow.collect {
+                when (it) {
                     is SplashViewModel.NavigationEvent.NavigateToIntro -> moveToIntroActivity()
                     is SplashViewModel.NavigationEvent.NavigateToMain -> moveToMainActivity()
                 }
             }
         }
+
+        repeatOnStarted {
+            netWorkManager.isNetworkConnected.collect { connected ->
+                if (connected.not()) {
+                    noNetworkSnackBar()
+                }
+            }
+        }
+        netWorkManager.startNetwork()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         coroutineScope.cancel()
+        netWorkManager.endNetwork()
     }
 
     private fun moveToMainActivity() {
@@ -56,5 +71,15 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         val intent = Intent(this, IntroActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    fun noNetworkSnackBar() {
+        Snackbar.make(
+            binding.root,
+            R.string.no_network_text,
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction(R.string.retry) {
+            //네트워크 통신 관련 데이터통신 진행
+        }.show()
     }
 }
