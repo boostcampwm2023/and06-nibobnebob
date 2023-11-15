@@ -96,7 +96,11 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
 
-    //navigation
+    // navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.1")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.1")
+
+    // naverMap
+    implementation("com.naver.maps:map-sdk:3.17.0")
+    implementation("com.google.android.gms:play-services-location:16.0.0")
 }
