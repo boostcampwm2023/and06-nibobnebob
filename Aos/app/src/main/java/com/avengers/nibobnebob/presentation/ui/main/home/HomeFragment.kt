@@ -112,6 +112,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             viewModel.trackingOn()
         } else {
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            Toast.makeText(requireContext(), "휴대폰 GPS를 켜주세요", Toast.LENGTH_SHORT).show()
             viewModel.trackingOff()
         }
     }
