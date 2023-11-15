@@ -21,6 +21,7 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +41,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,7 +69,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
 
         naverMap.locationSource = locationSource
+        setMapListener()
         initStateObserver()
+    }
+
+    private fun setMapListener(){
+
+        // todo 화면 이동시 리스너
+        naverMap.addOnCameraChangeListener { reason, animated ->
+
+        }
+
+        // todo 화면이동 끝났을때 리스너
+        naverMap.addOnCameraIdleListener {
+
+        }
+
+        // todo GPS 기반 위치변화 리스너
+        naverMap.addOnLocationChangeListener {
+
+        }
     }
 
     private fun initStateObserver() {
@@ -116,6 +135,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             viewModel.trackingOff()
         }
     }
+    
+    // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
+    private fun setMarker(){
+        val marker = Marker()
+
+        // todo 마커의 포지션을 정함
+        // marker.position = LatLng(data.latitude,data.longitude)
+
+        // todo 마커의 icon을 정함
+        // marker.icon = OverlayImage.fromResource(R.drawable.ic_marker)
+
+        // todo 마커 클릭 이벤트를 등록함
+        // marker.setOnClickListener{}
+
+        // todo 마커를 map에 찍음
+        // marker.map = naverMap
+    }
+
 }
 
 @BindingAdapter("trackingBtnDrawable")
