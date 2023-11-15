@@ -1,3 +1,4 @@
+
 <?xml
     version="1.0" encoding="utf-8"?>
 <resources>
@@ -7,6 +8,7 @@
 
     <color name="nn_text_black">#FF1D1F24</color>
 
+    <color name="nn_primary0">#FFFFEEEE</color>
     <color name="nn_primary1">#FFE1D6CC</color>
     <color name="nn_primary2">#FFBAB9AA</color>
     <color name="nn_primary3">#FF909D8F</color>
@@ -38,5 +40,6 @@
     <color name="nn_rainbow_purple">#FF6437E1</color>
 
     <color name="naver_green">#FF03C75A</color>
+    <color name="wish_list_color">#4D909D8F</color>
 
 </resources>
