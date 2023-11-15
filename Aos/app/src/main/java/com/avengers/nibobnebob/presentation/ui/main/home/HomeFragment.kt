@@ -1,19 +1,9 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.databinding.FragmentHomeBinding
+import com.avengers.nibobnebob.presentation.base.BaseFragment
 
-class HomeFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
+class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
 }
