@@ -141,5 +141,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_do_signup" />
+
+        <CheckBox
+            android:id="@+id/cb_autoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/auto_login"
+            style="@style/TextSmallBold"
+            app:layout_constraintBottom_toTopOf="@id/btn_login"
+            app:layout_constraintEnd_toEndOf="@id/btn_login"
+            android:checked="@={vm.autoLogin}"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -27,6 +27,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
     val token = MutableStateFlow("")
+    val autoLogin = MutableStateFlow(false)
 
     init {
         observeEmail()
@@ -49,8 +50,13 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         }.launchIn(viewModelScope)
     }
 
+    fun setAutoLogin(newState: Boolean) {
+        autoLogin.value = newState
+    }
+
     fun postCommonLogin(){
         Log.d(TAG,_uiState.value.toString())
+        Log.d(TAG,autoLogin.value.toString())
         viewModelScope.launch {
             //TODO : flow
             //repository -> 통신 -> flow로

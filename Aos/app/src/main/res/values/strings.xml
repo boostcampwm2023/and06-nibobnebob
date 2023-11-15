@@ -8,4 +8,5 @@
     <string name="do_signup_text">회원가입 하기</string>
     <string name="password">비밀번호</string>
     <string name="start_naver_text">네이버로 시작하기</string>
+    <string name="auto_login">자동 로그인</string>
 </resources>
