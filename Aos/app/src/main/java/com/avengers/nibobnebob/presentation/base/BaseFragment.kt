@@ -36,6 +36,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
         viewLifecycleOwner.lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
         }
+
     }
 
     override fun onDestroyView() {

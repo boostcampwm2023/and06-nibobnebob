@@ -1,3 +1,4 @@
+
 <?xml
     version="1.0" encoding="utf-8"?>
 <resources>
@@ -39,5 +40,6 @@
     <color name="nn_rainbow_purple">#FF6437E1</color>
 
     <color name="naver_green">#FF03C75A</color>
+    <color name="wish_list_color">#4D909D8F</color>
 
 </resources>

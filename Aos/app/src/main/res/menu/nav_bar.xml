@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_home"
+        android:enabled="true"
+        android:title="홈"/>
+
+    <item
+        android:id="@+id/followFragment"
+        android:icon="@drawable/ic_following"
+        android:enabled="true"
+        android:title="팔로우/팔로잉"/>
+
+    <item
+        android:id="@+id/myPageFragment"
+        android:icon="@drawable/ic_mypage"
+        android:enabled="true"
+        android:title="마이페이지"/>
+</menu>
