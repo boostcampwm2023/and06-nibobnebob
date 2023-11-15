@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.main.mypage
+package com.avengers.nibobnebob.presentation.ui.main.mypage.share
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,20 +9,20 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class MyPageSharedViewModel : ViewModel() {
-    private val _uiEvent = MutableSharedFlow<MyPageUiEvent>(
+    private val _uiEvent = MutableSharedFlow<MyPageSharedUiEvent>(
         replay = 0,
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val uiEvent: SharedFlow<MyPageUiEvent> = _uiEvent.asSharedFlow()
+    val uiEvent: SharedFlow<MyPageSharedUiEvent> = _uiEvent.asSharedFlow()
 
     fun navigateToMenu(menu: Int) {
         viewModelScope.launch {
             when (menu) {
-                0 -> _uiEvent.emit(MyPageUiEvent.NavigateToEditProfile)
-                1 -> _uiEvent.emit(MyPageUiEvent.NavigateToMyList)
-                2 -> _uiEvent.emit(MyPageUiEvent.NavigateToWishList)
-                3 -> _uiEvent.emit(MyPageUiEvent.NavigateToBack)
+                0 -> _uiEvent.emit(MyPageSharedUiEvent.NavigateToEditProfile)
+                1 -> _uiEvent.emit(MyPageSharedUiEvent.NavigateToMyList)
+                2 -> _uiEvent.emit(MyPageSharedUiEvent.NavigateToWishList)
+                3 -> _uiEvent.emit(MyPageSharedUiEvent.NavigateToBack)
             }
 
         }

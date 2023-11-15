@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.main.mypage
+package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
 
 import android.os.Bundle
 import android.view.View
@@ -6,12 +6,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.avengers.nibobnebob.R
-import com.avengers.nibobnebob.databinding.FragmentWishRestaurantListBinding
+import com.avengers.nibobnebob.databinding.FragmentEditProfileBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
+import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 
-class WishRestaurantListFragment :
-    BaseFragment<FragmentWishRestaurantListBinding>(R.layout.fragment_wish_restaurant_list) {
-
+class EditProfileFragment :
+    BaseFragment<FragmentEditProfileBinding>(R.layout.fragment_edit_profile) {
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
     private lateinit var navController: NavController
 
@@ -30,10 +31,12 @@ class WishRestaurantListFragment :
         viewLifecycleOwner.repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
-                    is MyPageUiEvent.NavigateToBack ->
+                    is MyPageSharedUiEvent.NavigateToBack ->
                         navController.navigateUp()
 
-                    else -> Unit
+                    else -> {
+                        Unit
+                    }
                 }
 
             }

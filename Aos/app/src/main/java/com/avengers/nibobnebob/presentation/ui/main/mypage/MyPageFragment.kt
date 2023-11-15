@@ -8,6 +8,8 @@ import androidx.navigation.Navigation
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyPageBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
+import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -30,11 +32,11 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
         viewLifecycleOwner.repeatOnStarted {
             sharedViewModel.uiEvent.collect{ event ->
                 when(event){
-                    is MyPageUiEvent.NavigateToEditProfile ->
+                    is MyPageSharedUiEvent.NavigateToEditProfile ->
                         navController.navigate(MyPageFragmentDirections.globalToEditProfileFragment())
-                    is MyPageUiEvent.NavigateToMyList ->
+                    is MyPageSharedUiEvent.NavigateToMyList ->
                         navController.navigate(MyPageFragmentDirections.globalToMyRestaurantListFragment())
-                    is MyPageUiEvent.NavigateToWishList ->
+                    is MyPageSharedUiEvent.NavigateToWishList ->
                         navController.navigate(MyPageFragmentDirections.globalToWishRestaurantListFragment())
                     else -> Unit
                 }

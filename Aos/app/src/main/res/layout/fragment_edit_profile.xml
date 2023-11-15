@@ -6,13 +6,13 @@
     <data>
         <variable
             name="vm"
-            type="com.avengers.nibobnebob.presentation.ui.main.mypage.MyPageSharedViewModel" />
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ui.main.mypage.EditProfileFragment">
+        tools:context=".presentation.ui.main.mypage.edit_profile.EditProfileFragment">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_start"
