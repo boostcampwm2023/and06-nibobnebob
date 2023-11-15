@@ -1,8 +1,11 @@
 <?xml
- version="1.0" encoding="utf-8"?>
+    version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="nn_text_black">#FF1D1F24</color>
 
     <color name="nn_primary1">#FFE1D6CC</color>
     <color name="nn_primary2">#FFBAB9AA</color>
@@ -33,5 +36,7 @@
     <color name="nn_rainbow_blue">#FF0D1986</color>
     <color name="nn_rainbow_indigo">#FF222152</color>
     <color name="nn_rainbow_purple">#FF6437E1</color>
+
+    <color name="naver_green">#FF03C75A</color>
 
 </resources>

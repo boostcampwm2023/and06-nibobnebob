@@ -23,7 +23,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
     ): View? {
         _binding = DataBindingUtil.inflate(inflater, layoutRes, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return binding.root
     }
 
     override fun onDestroyView() {
