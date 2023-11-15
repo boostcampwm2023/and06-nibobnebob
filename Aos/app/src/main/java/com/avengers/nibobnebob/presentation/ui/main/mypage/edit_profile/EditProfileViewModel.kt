@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
@@ -13,7 +12,7 @@ import kotlinx.coroutines.flow.update
 
 class EditProfileViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
-    val uiState : StateFlow<EditProfileUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
 
     val nick = MutableStateFlow("")
     val birth = MutableStateFlow("")
@@ -21,16 +20,17 @@ class EditProfileViewModel : ViewModel() {
 
     init {
         observeNickName()
-        observeLocatoin()
+        observeLocation()
         observeBirth()
     }
 
-    private fun observeNickName(){
-        nick.onEach { nick ->
+    private fun observeNickName() {
+        nick.onEach {
             _uiState.update { state ->
-                state.copy(nickName =
+                state.copy(
+                    nickName =
                     InputState(
-                        helperText = Validation.EMPTY,
+                        helperText = Validation.NONE,
                         isValid = false
                     )
                 )
@@ -39,7 +39,7 @@ class EditProfileViewModel : ViewModel() {
 
     }
 
-    fun checkNickValidation(){
+    fun checkNickValidation() {
         // check(nickName) 서버에서 검증
         _uiState.value = uiState.value.copy(
             nickName = InputState(
@@ -49,9 +49,9 @@ class EditProfileViewModel : ViewModel() {
         )
     }
 
-    private fun observeLocatoin(){
+    private fun observeLocation() {
         location.onEach { location ->
-            _uiState.update {  state ->
+            _uiState.update { state ->
                 state.copy(
                     location = InputState(
                         isValid = location.isNotEmpty(),
@@ -63,26 +63,24 @@ class EditProfileViewModel : ViewModel() {
 
     }
 
-    fun setBirth(birthData : String){
+    fun setBirth(birthData: String) {
         birth.value = birthData
     }
 
 
-    private fun observeBirth(){
+    private fun observeBirth() {
         birth.onEach { birth ->
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
                 state.copy(
                     birth = InputState(
-                        helperText = if(!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
+                        helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData
                     )
                 )
             }
         }.launchIn(viewModelScope)
     }
-
-
 
 
     companion object {

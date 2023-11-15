@@ -2,7 +2,6 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage
 
 enum class Validation {
     NONE,
-    EMPTY,
     INVALID_NICK,
     VALID_NICK,
     INVALID_DATE,

@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 class EditProfileFragment :
     BaseFragment<FragmentEditProfileBinding>(R.layout.fragment_edit_profile) {
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
-    private val viewModel :EditProfileViewModel by viewModels()
+    private val viewModel: EditProfileViewModel by viewModels()
     private lateinit var navController: NavController
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
