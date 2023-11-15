@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 data class HomeUiState(
-    val locationTrackingState: TrackingState = TrackingState.On
+    val locationTrackingState: TrackingState = TrackingState.TryOn
 )
 
 sealed class TrackingState {
@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     fun locationBtnClicked() {
         _uiState.update { state ->
             state.copy(
-                locationTrackingState = if (_uiState.value.locationTrackingState == TrackingState.On) TrackingState.TryOn
+                locationTrackingState = if (_uiState.value.locationTrackingState == TrackingState.Off) TrackingState.TryOn
                 else TrackingState.Off
             )
         }
