@@ -96,5 +96,5 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.5.1")
 
     //naver Login
-    implementation ("com.navercorp.nid:oauth:5.6.0")
+    implementation ("com.navercorp.nid:oauth:5.8.0")
 }
