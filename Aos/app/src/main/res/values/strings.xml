@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">nibobnebob</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_network_text">네트워크 연결이 되어있지 않습니다.</string>
+    <string name="retry">재시도</string>
 
     <string-array name="location_list">
         <item>용산구</item>
