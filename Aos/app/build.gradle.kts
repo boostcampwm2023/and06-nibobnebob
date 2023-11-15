@@ -28,7 +28,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "NAVER_LOGIN_CLIENT_ID", getProperty("naverLoginClientId"))
         buildConfigField("String", "NAVER_LOGIN_CLIENT_SECRET", getProperty("naverLoginClientSecret"))
-        buildConfigField("String", "NAVER_MAP_CLIENT_ID", getProperty("naverMapClientId"))
         buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", getProperty("naverMapClientSecret"))
         manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = getProperty("naverMapClientId")
     }
@@ -102,5 +101,4 @@ dependencies {
 
     // naverMap
     implementation("com.naver.maps:map-sdk:3.17.0")
-    implementation("com.google.android.gms:play-services-location:16.0.0")
 }
