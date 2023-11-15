@@ -1,12 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { UserInfoDto } from "./dto/userInfo.dto";
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { UserRepository } from "./user.repository";
+
 @Injectable()
 export class UserService {
-  signup(userInfoDto: UserInfoDto) {
-    const { email, password, provider, nickName, age, gender } = userInfoDto;
-
-    // DB에 저장
-
-    return userInfoDto;
-  }
+    constructor(
+        @InjectRepository(UserRepository)
+        private usersRepository: UserRepository,
+      ) {}
+    signup(userInfoDto: UserInfoDto) {
+        this.usersRepository.createUser(userInfoDto);
+        return;
+    }
 }
