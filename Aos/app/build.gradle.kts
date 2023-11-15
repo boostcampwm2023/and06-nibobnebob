@@ -26,10 +26,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "NAVER_LOGIN_CLIENT_ID", gradleLocalProperties(rootDir).getProperty("naverLoginClientId"))
-        buildConfigField("String", "NAVER_LOGIN_CLIENT_SECRET", gradleLocalProperties(rootDir).getProperty("naverLoginClientSecret"))
-        buildConfigField("String", "NAVER_MAP_CLIENT_ID", gradleLocalProperties(rootDir).getProperty("naverMapClientId"))
-        buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", gradleLocalProperties(rootDir).getProperty("naverMapClientSecret"))
+        buildConfigField("String", "NAVER_LOGIN_CLIENT_ID", getProperty("naverLoginClientId"))
+        buildConfigField("String", "NAVER_LOGIN_CLIENT_SECRET", getProperty("naverLoginClientSecret"))
+        buildConfigField("String", "NAVER_MAP_CLIENT_ID", getProperty("naverMapClientId"))
+        buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", getProperty("naverMapClientSecret"))
+        manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = getProperty("naverMapClientId")
     }
 
     buildTypes {
@@ -53,6 +54,10 @@ android {
         dataBinding = true
         buildConfig = true
     }
+}
+
+fun getProperty(propertyKey: String): String {
+    return gradleLocalProperties(rootDir).getProperty(propertyKey)
 }
 
 dependencies {
