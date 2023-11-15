@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.MyPageSharedViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -49,7 +51,8 @@
                 android:background="@drawable/ic_back"
                 app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
+                app:layout_constraintTop_toTopOf="@id/cl_edit_topbar"
+                android:onClick="@{()->vm.navigateToMenu(3)}"/>
 
 
             <TextView
