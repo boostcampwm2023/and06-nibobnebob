@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <style name="TextLargeRegular">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+    </style>
+
+    <style name="TextLargeBold">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextMediumRegular">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+    </style>
+
+    <style name="TextMediumBold">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextSmallRegular">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+    </style>
+
+    <style name="TextSmallBold">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CaptionRegular">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+    </style>
+
+    <style name="CaptionBold">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextHeader">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+    </style>
+
+    <style name="TextHeaderBold">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/nn_text_black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+</resources>
