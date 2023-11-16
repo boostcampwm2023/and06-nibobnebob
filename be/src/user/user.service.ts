@@ -9,7 +9,10 @@ export class UserService {
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository
   ) { }
-  signup(userInfoDto: UserInfoDto) {
-    return this.usersRepository.createUser(userInfoDto);
+  async signup(userInfoDto: UserInfoDto) {
+    return await this.usersRepository.createUser(userInfoDto);
+  }
+  async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
+    return await this.usersRepository.getNickNameAvailability(nickName);
   }
 }
