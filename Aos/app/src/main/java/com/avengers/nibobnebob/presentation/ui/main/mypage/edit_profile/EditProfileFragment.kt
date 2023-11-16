@@ -27,8 +27,8 @@ class EditProfileFragment :
         super.onViewCreated(view, savedInstanceState)
 
         initView(view)
+        initEventObserver()
         setDateBtnListener()
-        setLocationInputListener()
     }
 
     private fun initView(view: View) {
@@ -38,26 +38,36 @@ class EditProfileFragment :
         navController = Navigation.findNavController(view)
 
 
-        viewLifecycleOwner.repeatOnStarted {
-            sharedViewModel.uiEvent.collect { event ->
-                when (event) {
-                    is MyPageSharedUiEvent.NavigateToBack ->
-                        navController.navigateUp()
-
-                    else -> {
-                        Unit
-                    }
-                }
-
-            }
-        }
-
-        viewLifecycleOwner.repeatOnStarted {
+        repeatOnStarted {
             viewModel.uiState.collectLatest { state ->
                 binding.uiState = state
             }
         }
 
+
+    }
+
+    private fun initEventObserver() {
+        repeatOnStarted {
+            viewModel.event.collect { event ->
+                when (event) {
+                    is EditProfileUiEvent.EditProfileDone -> showToastMessage("수정 완료")
+                }
+            }
+        }
+
+        repeatOnStarted {
+            sharedViewModel.uiEvent.collect { event ->
+                when (event) {
+                    is MyPageSharedUiEvent.NavigateToBack ->
+                        navController.navigateUp()
+
+                    else -> Unit
+
+                }
+
+            }
+        }
     }
 
     private fun setDateBtnListener() {
@@ -65,14 +75,6 @@ class EditProfileFragment :
             showCalendarDatePicker(parentFragmentManager) {
                 viewModel.setBirth(it)
             }
-        }
-    }
-
-    private fun setLocationInputListener() {
-        (binding.etLocation as MaterialAutoCompleteTextView).apply {
-            simpleItemSelectedColor = resources.getColor(R.color.nn_primary1, null)
-            setDropDownBackgroundTint(resources.getColor(R.color.nn_primary0, null))
-            setSimpleItems(resources.getStringArray(R.array.location_list))
         }
     }
 
