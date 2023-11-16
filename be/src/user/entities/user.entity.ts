@@ -22,7 +22,7 @@ export class User {
   age: string;
 
   @Column({ type: "boolean" })
-  gender: boolean;
+  isMale: boolean;
 
   @Column({ type: "varchar", length: 50, nullable: true })
   password: string | null;

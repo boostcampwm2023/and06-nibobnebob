@@ -37,7 +37,7 @@ export class UserInfoDto {
   @MaxLength(20)
   nickName: string;
 
-  @ApiProperty({ example: 20, description: "The age of the user" })
+  @ApiProperty({ example: "1234/56/78", description: "The birth of the user" })
   @IsString()
   @MaxLength(11)
   @IsNotEmpty()
@@ -49,5 +49,5 @@ export class UserInfoDto {
   })
   @IsBoolean()
   @IsNotEmpty()
-  gender: boolean;
+  isMale: boolean;
 }
