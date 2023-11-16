@@ -1,7 +1,7 @@
-import { DataSource, Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { UserInfoDto } from './dto/userInfo.dto';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { DataSource, Repository } from "typeorm";
+import { User } from "./entities/user.entity";
+import { UserInfoDto } from "./dto/userInfo.dto";
+import { ConflictException, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -12,8 +12,7 @@ export class UserRepository extends Repository<User> {
     const newUser = this.create(userinfoDto);
     try {
       await this.save(newUser);
-    }
-    catch (err) {
+    } catch (err) {
       if (err.code === "23505") {
         throw new ConflictException("Duplicated Value");
       }
