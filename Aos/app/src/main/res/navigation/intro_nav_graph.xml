@@ -7,11 +7,14 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.intro.login.LoginFragment"
-        android:label="LoginFragment" />
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_detailSignupFragment"
+            app:destination="@id/detailSignupFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/detailSignupFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.intro.signup.DetailSignupFragment"
         android:label="DetailSignupFragment"/>
-
 </navigation>

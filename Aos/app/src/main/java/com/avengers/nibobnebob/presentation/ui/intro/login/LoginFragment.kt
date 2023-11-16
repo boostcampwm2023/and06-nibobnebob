@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentLoginBinding
@@ -44,19 +46,19 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
     private fun initEventObserver(){
         repeatOnStarted {
-            viewModel.eventFlow.collect{
+            viewModel.events.collect{
                 when(it){
-                    LoginViewModel.LoginEvent.LoginSuccess -> {
+                    is LoginEvent.LoginSuccess -> {
                         //회원가입으로 이동
                     }
-                    LoginViewModel.LoginEvent.LoginFailure -> {
+                    is LoginEvent.LoginFailure -> {
                         //다이얼로그 띄우기
                     }
+                    is LoginEvent.NavigateToDetailSignup -> findNavController().toDetailSignup()
                 }
             }
         }
     }
-
 
     private fun naverLogin(){
         val oAuthLoginCallback = object : OAuthLoginCallback{
@@ -81,5 +83,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
     private fun naverLogout(){
         NaverIdLoginSDK.logout()
+    }
+
+    private fun NavController.toDetailSignup(){
+        val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment()
+        this.navigate(action)
     }
 }

@@ -14,12 +14,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed class LoginEvent {
+    data object LoginSuccess : LoginEvent()
+    data object LoginFailure : LoginEvent()
+    data object NavigateToDetailSignup : LoginEvent()
+}
+
+
 @HiltViewModel
 class LoginViewModel @Inject constructor() : ViewModel() {
     private val TAG = "LoginViewModelDebug"
 
-    private val _eventFlow = MutableSharedFlow<LoginEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    private val _events = MutableSharedFlow<LoginEvent>()
+    val events = _events.asSharedFlow()
 
     private val _uiState = MutableStateFlow(CommonRequest())
     val uiState = _uiState.asStateFlow()
@@ -70,11 +77,11 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    sealed class LoginEvent {
-        data object LoginSuccess : LoginEvent()
-        data object LoginFailure : LoginEvent()
+    fun navigateToDetailSignup(){
+        viewModelScope.launch {
+            _events.emit(LoginEvent.NavigateToDetailSignup)
+        }
     }
-
 
 }
 
