@@ -2,12 +2,14 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.my_list
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 
@@ -16,6 +18,7 @@ class MyRestaurantListFragment :
 
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
     private lateinit var navController: NavController
+    override val parentViewModel: MainViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

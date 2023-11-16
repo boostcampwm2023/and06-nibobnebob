@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -12,12 +13,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.avengers.nibobnebob.R
-import com.avengers.nibobnebob.app.NetWorkManager
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 abstract class BaseFragment<B : ViewDataBinding>(
     @LayoutRes private val layoutRes: Int
@@ -25,10 +22,8 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     private var _binding: B? = null
     protected val binding get() = _binding!!
-
-    @Inject
-    lateinit var netWorkManager: NetWorkManager
-
+    protected abstract val parentViewModel : BaseActivityViewModel
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,38 +31,33 @@ abstract class BaseFragment<B : ViewDataBinding>(
     ): View? {
         _binding = DataBindingUtil.inflate(inflater, layoutRes, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
-        //initViewData()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         repeatOnStarted {
-            netWorkManager.isNetworkConnected.collect { connected ->
-                if (connected.not()) {
-                    noNetworkSnackBar()
+            parentViewModel.networkState.collect{
+                when(it){
+                    NetWorkState.NETWORK_DISCONNECTED -> {}
+                    NetWorkState.NETWORK_CONNECTED -> {
+                        // todo initNetworkView 실행
+                    }
+                    else -> {}
                 }
             }
         }
     }
-
-    //protected abstract fun initViewData()
-
+    
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
         }
-
     }
 
-    override fun onResume() {
-        super.onResume()
-        netWorkManager.startNetwork()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        netWorkManager.endNetwork()
+    fun showToastMessage(message: String){
+        Toast.makeText(context,message, Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {
@@ -75,13 +65,4 @@ abstract class BaseFragment<B : ViewDataBinding>(
         _binding = null
     }
 
-    private fun noNetworkSnackBar() {
-        Snackbar.make(
-            binding.root,
-            R.string.no_network_text,
-            Snackbar.LENGTH_INDEFINITE
-        ).setAction(R.string.retry) {
-            //initViewData()
-        }.show()
-    }
 }

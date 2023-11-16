@@ -5,9 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.avengers.nibobnebob.R
-import com.avengers.nibobnebob.app.NetWorkManager
+import com.avengers.nibobnebob.app.NetworkManager
 import com.avengers.nibobnebob.databinding.ActivitySplashBinding
 import com.avengers.nibobnebob.presentation.base.BaseActivity
+import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
@@ -25,8 +26,11 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val viewModel: SplashViewModel by viewModels()
 
+    override val activityViewModel: BaseActivityViewModel
+        get() = viewModel 
+
     @Inject
-    lateinit var netWorkManager: NetWorkManager
+    lateinit var netWorkManager: NetworkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
