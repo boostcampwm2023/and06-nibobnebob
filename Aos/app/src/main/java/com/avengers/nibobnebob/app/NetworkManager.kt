@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-class NetWorkManager @Inject constructor(private val connectivityManager: ConnectivityManager) {
+class NetworkManager @Inject constructor(private val connectivityManager: ConnectivityManager) {
 
     private val _isNetworkConnected = MutableStateFlow(isInternetOn())
     val isNetworkConnected: StateFlow<Boolean> = _isNetworkConnected
