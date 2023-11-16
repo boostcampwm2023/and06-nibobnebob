@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+#config
+typeorm.config.ts
+
 # Logs
 logs
 *.log
