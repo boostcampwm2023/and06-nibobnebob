@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 export class AuthController {
     constructor(private authService: AuthService){}
 
-    @Post()
+    @Post('social-login')
     signin(@Body(ValidationPipe) socialLoginDto: SocialLoginDto){
         return this.authService.signin(socialLoginDto);
     }
