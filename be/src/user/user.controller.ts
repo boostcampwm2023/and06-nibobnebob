@@ -7,7 +7,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { UserService } from "./user.service";
 
@@ -16,6 +16,7 @@ export class UserController {
   constructor(private userService: UserService) { }
 
   @Get("nickname/:nickname/exists")
+  @ApiParam({ name: 'nickname', required: true, description: '확인하고자 하는 닉네임', type: String })
   @ApiOperation({ summary: "닉네임 중복확인" })
   @ApiResponse({ status: 200, description: "닉네임 중복확인 요청 성공" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
