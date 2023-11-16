@@ -1,11 +1,14 @@
 package com.avengers.nibobnebob.app.di
 
+import android.content.Context
+import android.net.ConnectivityManager
 import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.config.AccessTokenInterceptor
 import com.avengers.nibobnebob.config.BearerInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -51,4 +54,8 @@ object NetworkModule {
             .build()
     }
 
+    @Provides
+    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
+        return context.getSystemService(ConnectivityManager::class.java)
+    }
 }
