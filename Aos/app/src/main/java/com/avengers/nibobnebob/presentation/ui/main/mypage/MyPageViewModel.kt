@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class MyPageViewModel @Inject constructor() : ViewModel() {
+class MyPageViewModel @Inject constructor(
+) : ViewModel() {
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
 
     init {
         getUserInfo()
     }
-
 
     data class User(
         val nickName: String,

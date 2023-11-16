@@ -3,23 +3,25 @@ package com.avengers.nibobnebob.presentation.ui.intro.login
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentLoginBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
 class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login) {
 
+
     private val TAG = "LoginFragmentDebug"
     private val viewModel : LoginViewModel by viewModels()
+    override val parentViewModel: IntroViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
