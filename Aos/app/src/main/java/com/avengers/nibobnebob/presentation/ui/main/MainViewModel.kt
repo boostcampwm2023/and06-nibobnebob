@@ -1,5 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.intro
-
+package com.avengers.nibobnebob.presentation.ui.main
 
 import com.avengers.nibobnebob.app.NetworkManager
 import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
@@ -7,8 +6,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class IntroViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val networkManager: NetworkManager
 ) : BaseActivityViewModel(networkManager) {
 
+    init{
+        checkNetworkState()
+    }
 }

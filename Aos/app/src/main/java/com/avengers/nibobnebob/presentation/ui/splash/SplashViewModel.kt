@@ -1,7 +1,8 @@
 package com.avengers.nibobnebob.presentation.ui.splash
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.app.NetworkManager
+import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor() : ViewModel() {
+class SplashViewModel @Inject constructor(
+    private val networkManager: NetworkManager
+) : BaseActivityViewModel(networkManager) {
 
     sealed class NavigationEvent {
         data object NavigateToMain : NavigationEvent()
