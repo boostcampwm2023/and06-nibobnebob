@@ -19,7 +19,7 @@ abstract class BaseActivity<B : ViewDataBinding>(
 ) : AppCompatActivity() {
 
     protected lateinit var binding: B
-    protected abstract val activityViewModel : BaseActivityViewModel
+    protected abstract val viewModel: BaseActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,30 +32,6 @@ abstract class BaseActivity<B : ViewDataBinding>(
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
         }
-    }
-
-    protected fun initNetworkStateObserver(){
-        repeatOnStarted {
-            activityViewModel.networkState.collect{
-                when(it){
-                    NetWorkState.NETWORK_DISCONNECTED -> noNetworkSnackBar()
-                    NetWorkState.NETWORK_CONNECTED -> {
-                        // todo 네트워크 연결 감지시 fra
-                    }
-                    else -> {}
-                }
-            }
-        }
-    }
-
-    private fun noNetworkSnackBar() {
-        Snackbar.make(
-            binding.root,
-            R.string.no_network_text,
-            Snackbar.LENGTH_INDEFINITE
-        ).setAction(R.string.retry) {
-            //initViewData()
-        }.show()
     }
 
     fun showToastMessage(message: String){
