@@ -10,6 +10,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
+data class EditProfileUiState(
+    val nickName: InputState = InputState(),
+    val birth: InputState = InputState(),
+    val location: InputState = InputState()
+)
+
+
+data class InputState(
+    val helperText: Validation = Validation.NONE,
+    val isValid: Boolean = false,
+)
+
+
 class EditProfileViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()

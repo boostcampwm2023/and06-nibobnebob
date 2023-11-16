@@ -8,9 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyPageBinding
-import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
 import com.avengers.nibobnebob.presentation.base.BaseFragment
-import com.avengers.nibobnebob.presentation.base.NetWorkState
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
