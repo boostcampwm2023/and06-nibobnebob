@@ -12,12 +12,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.avengers.nibobnebob.R
-import com.avengers.nibobnebob.app.NetWorkManager
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 abstract class BaseFragment<B : ViewDataBinding>(
     @LayoutRes private val layoutRes: Int
@@ -25,9 +21,8 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     private var _binding: B? = null
     protected val binding get() = _binding!!
+    protected abstract val parentViewModel : BaseActivityViewModel
 
-    @Inject
-    lateinit var netWorkManager: NetWorkManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,22 +31,25 @@ abstract class BaseFragment<B : ViewDataBinding>(
     ): View? {
         _binding = DataBindingUtil.inflate(inflater, layoutRes, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
-        //initViewData()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         repeatOnStarted {
-            netWorkManager.isNetworkConnected.collect { connected ->
-                if (connected.not()) {
-                    noNetworkSnackBar()
+            parentViewModel.networkState.collect{
+                when(it){
+                    NetWorkState.NETWORK_DISCONNECTED -> {}
+                    NetWorkState.NETWORK_CONNECTED -> {
+                        // todo initNetworkView 실행
+                    }
+                    else -> {}
                 }
             }
         }
     }
-
-    //protected abstract fun initViewData()
+    
 
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -60,28 +58,9 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        netWorkManager.startNetwork()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        netWorkManager.endNetwork()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    private fun noNetworkSnackBar() {
-        Snackbar.make(
-            binding.root,
-            R.string.no_network_text,
-            Snackbar.LENGTH_INDEFINITE
-        ).setAction(R.string.retry) {
-            //initViewData()
-        }.show()
-    }
 }
