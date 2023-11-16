@@ -244,7 +244,7 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/selector_next_btn"
             android:enabled="@{vm.isDataReady()}"
-            android:onClick="@{() -> vm.navigateToMainActivity()}"
+            android:onClick="@{() -> vm.signup()}"
             android:text="회원가입"
             android:textColor="@color/selector_next_btn_text"
             app:layout_constraintBottom_toBottomOf="parent"

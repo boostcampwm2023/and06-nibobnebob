@@ -2,6 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
+import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.presentation.util.Validation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -37,7 +40,9 @@ sealed class DetailSignupEvents {
 }
 
 @HiltViewModel
-class DetailSignupViewModel @Inject constructor() : ViewModel() {
+class DetailSignupViewModel @Inject constructor(
+    private val introRepository: IntroRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailSignupUiState())
     val uiState: StateFlow<DetailSignupUiState> = _uiState.asStateFlow()
@@ -45,14 +50,18 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     private val _events = MutableSharedFlow<DetailSignupEvents>()
     val events: SharedFlow<DetailSignupEvents> = _events.asSharedFlow()
 
+    private val email = MutableStateFlow("")
+    private val password = MutableStateFlow("")
+    private val provider = MutableStateFlow("")
+
     val nick = MutableStateFlow("")
     private var nickValidation = false
-    private val gender = MutableStateFlow("male")
+    private val isMale = MutableStateFlow(true)
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
 
-    val isDataReady = combine(nick, gender, birth, location) { nick, gender, birth, location ->
-        nick.isNotBlank() && gender.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
+    val isDataReady = combine(nick, birth, location) { nick, birth, location ->
+        nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
                 nickValidation
     }.stateIn(
         viewModelScope,
@@ -95,6 +104,7 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     }
 
     fun checkNickDuplication() {
+
         viewModelScope.launch {
 
             // todo 중복체크 성공일때
@@ -115,12 +125,36 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun setGender(genderData: Gender) {
-        gender.value = genderData.data
+    fun signup(){
+        introRepository.signup(DetailSignupRequest(
+            email = email.value,
+            provider = provider.value,
+            nickName = nick.value,
+            age = birth.value,
+            isMale = isMale.value
+        )).onEach { result ->
+
+        }.catch {
+
+        }.launchIn(viewModelScope)
+    }
+
+    fun setIsMale(data: Boolean) {
+        isMale.value = data
     }
 
     fun setBirth(birthData: String) {
         birth.value = birthData
+    }
+
+    fun setDefaultData(
+        emailData: String,
+        passwordData: String,
+        providerData: String)
+    {
+        email.value = emailData
+        password.value = passwordData
+        provider.value = providerData
     }
 
     fun navigateToBack(){
@@ -134,9 +168,4 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
             _events.emit(DetailSignupEvents.NavigateToMainActivity)
         }
     }
-}
-
-enum class Gender(val data: String) {
-    MALE("male"),
-    FEMALE("female")
 }
