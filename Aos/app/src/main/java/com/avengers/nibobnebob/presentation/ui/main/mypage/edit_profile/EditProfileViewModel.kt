@@ -6,6 +6,7 @@ import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -19,15 +20,24 @@ data class EditProfileUiState(
 
 data class InputState(
     val helperText: Validation = Validation.NONE,
-    val isValid: Boolean = false,
+    val isValid: Boolean = true,
+    val isChanged: Boolean = false,
+)
+
+data class OriginalState(
+    val originalNickName: String,
+    val originalBirth: String,
+    val originalLocation: String
 )
 
 
 class EditProfileViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
-    
-    
+
+    var originalNickName: String = ""
+    var originalBirth: String = ""
+    var originalLocation: String = ""
 
     val nick = MutableStateFlow("")
     val birth = MutableStateFlow("")
@@ -37,16 +47,37 @@ class EditProfileViewModel : ViewModel() {
         observeNickName()
         observeLocation()
         observeBirth()
+        getOriginalData()
+    }
+
+    private fun getOriginalData() {
+        flow {
+            emit(
+                OriginalState(
+                    originalNickName = "tester",
+                    originalBirth = "2000/03/13",
+                    originalLocation = "용산구"
+                )
+            )
+        }.onEach {
+            originalNickName = it.originalNickName
+            nick.emit(it.originalNickName)
+            originalBirth = it.originalBirth
+            birth.emit(it.originalBirth)
+            originalLocation = it.originalLocation
+            location.emit(it.originalLocation)
+        }.launchIn(viewModelScope)
     }
 
     private fun observeNickName() {
-        nick.onEach {
+        nick.onEach { nick ->
             _uiState.update { state ->
                 state.copy(
                     nickName =
                     InputState(
                         helperText = Validation.NONE,
-                        isValid = false
+                        isValid = originalNickName == nick,
+                        isChanged = originalNickName != nick
                     )
                 )
             }
@@ -59,7 +90,8 @@ class EditProfileViewModel : ViewModel() {
         _uiState.value = uiState.value.copy(
             nickName = InputState(
                 helperText = Validation.VALID_NICK,
-                isValid = true
+                isValid = true,
+                isChanged = originalNickName != nick.value
             )
         )
     }
@@ -70,6 +102,7 @@ class EditProfileViewModel : ViewModel() {
                 state.copy(
                     location = InputState(
                         isValid = location.isNotEmpty(),
+                        isChanged = originalLocation != location
                     )
                 )
             }
@@ -90,7 +123,8 @@ class EditProfileViewModel : ViewModel() {
                 state.copy(
                     birth = InputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
-                        isValid = validData
+                        isValid = validData,
+                        isChanged = originalBirth != birth
                     )
                 )
             }
