@@ -94,4 +94,11 @@ dependencies {
     //navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.1")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.1")
+
+    //naver Login
+    implementation ("com.navercorp.nid:oauth:5.8.0")
+
+    //datastore preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-core:1.0.0")
 }
