@@ -10,7 +10,5 @@ class MainViewModel @Inject constructor(
     private val networkManager: NetworkManager
 ) : BaseActivityViewModel(networkManager) {
 
-    init{
-        checkNetworkState()
-    }
+
 }

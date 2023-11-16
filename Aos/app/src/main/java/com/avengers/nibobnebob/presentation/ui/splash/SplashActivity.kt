@@ -8,7 +8,6 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.app.NetworkManager
 import com.avengers.nibobnebob.databinding.ActivitySplashBinding
 import com.avengers.nibobnebob.presentation.base.BaseActivity
-import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
@@ -24,10 +23,7 @@ import javax.inject.Inject
 class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate) {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
-    private val viewModel: SplashViewModel by viewModels()
-
-    override val activityViewModel: BaseActivityViewModel
-        get() = viewModel 
+    override val viewModel: SplashViewModel by viewModels()
 
     @Inject
     lateinit var netWorkManager: NetworkManager
