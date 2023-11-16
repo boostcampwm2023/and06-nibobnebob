@@ -9,13 +9,9 @@ export class AuthService {
         private userRepository: UserRepository,
         private jwtService: JwtService
     ){}
-    async signin(socialLoginDto: SocialLoginDto){
-        const {accessToken} = socialLoginDto;
+    async signin(loginRequestUser: any){
 
-        //access token을 통해 유저 정보 가져오기
-        const loginRequestUser = {nickName: 'abc'};
-
-        const user = await this.userRepository.findOneBy({ nickName: loginRequestUser.nickName })
+        const user = await this.userRepository.findOneBy({ nickName: loginRequestUser.email })
 
         if(user){
             const payload = {nickName:user.nickName};
