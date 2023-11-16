@@ -18,8 +18,8 @@ import kotlinx.coroutines.flow.collectLatest
 @AndroidEntryPoint
 class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_page) {
     private lateinit var navController: NavController
-    private val viewModel : MyPageViewModel by viewModels()
-    private val sharedViewModel : MyPageSharedViewModel by viewModels ()
+    private val viewModel: MyPageViewModel by viewModels()
+    private val sharedViewModel: MyPageSharedViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -28,20 +28,17 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
         initView(view)
     }
 
-    private fun initView(view : View){
+    private fun initView(view: View) {
         binding.vm = sharedViewModel
         navController = Navigation.findNavController(view)
 
 
         viewLifecycleOwner.repeatOnStarted {
-            sharedViewModel.uiEvent.collect{ event ->
-                when(event){
-                    is MyPageSharedUiEvent.NavigateToEditProfile ->
-                        navController.navigate(MyPageFragmentDirections.globalToEditProfileFragment())
-                    is MyPageSharedUiEvent.NavigateToMyList ->
-                        navController.navigate(MyPageFragmentDirections.globalToMyRestaurantListFragment())
-                    is MyPageSharedUiEvent.NavigateToWishList ->
-                        navController.navigate(MyPageFragmentDirections.globalToWishRestaurantListFragment())
+            sharedViewModel.uiEvent.collect { event ->
+                when (event) {
+                    is MyPageSharedUiEvent.NavigateToEditProfile -> navController.toEditProfile()
+                    is MyPageSharedUiEvent.NavigateToMyList -> navController.toMyList()
+                    is MyPageSharedUiEvent.NavigateToWishList -> navController.toWishList()
                     else -> Unit
                 }
 
@@ -55,7 +52,22 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
         }
     }
 
-    private fun initNetworkView(){
+    private fun initNetworkView() {
         // todo 데이터 통신으로 그려지는 View 생성 로직
+    }
+
+    private fun NavController.toEditProfile() {
+        val action = MyPageFragmentDirections.globalToEditProfileFragment()
+        this.navigate(action)
+    }
+
+    private fun NavController.toMyList() {
+        val action = MyPageFragmentDirections.globalToMyRestaurantListFragment()
+        this.navigate(action)
+    }
+
+    private fun NavController.toWishList() {
+        val action = MyPageFragmentDirections.globalToWishRestaurantListFragment()
+        this.navigate(action)
     }
 }
