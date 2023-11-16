@@ -13,7 +13,7 @@ import { UserService } from "./user.service";
 
 @Controller("user")
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get("nickname/:nickname/exists")
   @ApiParam({ name: 'nickname', required: true, description: '확인하고자 하는 닉네임', type: String })
