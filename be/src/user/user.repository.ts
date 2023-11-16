@@ -19,4 +19,8 @@ export class UserRepository extends Repository<User> {
     }
     return;
   }
+  async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
+    const user = await this.findOne({ select: ['nickName'], where: { nickName: nickName } });
+    return { isexist: user !== null };
+  }
 }
