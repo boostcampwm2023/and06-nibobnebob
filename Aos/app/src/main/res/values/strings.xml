@@ -2,6 +2,10 @@
     <string name="app_name">nibobnebob</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="helper_invalid_nick">사용할 수 없는 닉네임입니다.</string>
+    <string name="helper_valid_nick">사용 가능한 닉네임입니다.</string>
+    <string name="helper_invalid_date">날짜 형식이 바르지 않습니다.</string>
+
     <string-array name="location_list">
         <item>용산구</item>
         <item>은평구</item>

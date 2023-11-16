@@ -3,7 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel" />
+        <variable
+            name="ui_state"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.MyPageUiState" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="닉네임"
+            android:text="@{ui_state.nickName}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_profile" />
@@ -80,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
             android:layout_marginTop="40dp"
-            android:text="24 ~ 26 세"
+            android:text="@{ui_state.age}"
             app:layout_constraintStart_toEndOf="@id/tv_area_title"
             app:layout_constraintTop_toBottomOf="@id/tv_nickname" />
 
@@ -102,7 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
             android:layout_marginTop="16dp"
-            android:text="용산구"
+            android:text="@{ui_state.area}"
             app:layout_constraintStart_toEndOf="@id/tv_area_title"
             app:layout_constraintTop_toBottomOf="@id/tv_age_title" />
 
@@ -113,7 +118,8 @@
             android:layout_marginTop="42dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_area_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_area_title"
+            android:onClickListener="@{()->vm.navigateToMenu(0)}" />
 
         <TextView
             android:id="@+id/tv_edit_profile"
@@ -148,7 +154,8 @@
             android:layout_height="56dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/md_edit_my_list" />
+            app:layout_constraintTop_toBottomOf="@id/md_edit_my_list"
+            android:onClick="@{()->vm.navigateToMenu(1)}"/>
 
         <TextView
             android:id="@+id/tv_my_list"
@@ -183,7 +190,8 @@
             android:layout_height="56dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/md_my_list_wish_list" />
+            app:layout_constraintTop_toBottomOf="@id/md_my_list_wish_list"
+            android:onClick="@{()->vm.navigateToMenu(2)}"/>
 
         <TextView
             android:id="@+id/tv_wish_list"
