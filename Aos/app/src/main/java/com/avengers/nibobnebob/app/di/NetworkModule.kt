@@ -54,8 +54,5 @@ object NetworkModule {
             .build()
     }
 
-    @Provides
-    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
-        return context.getSystemService(ConnectivityManager::class.java)
-    }
+    
 }
