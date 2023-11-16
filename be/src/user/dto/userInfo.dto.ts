@@ -34,7 +34,7 @@ export class UserInfoDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(20)
-  nickName: string;
+  nickname: string;
 
   @ApiProperty({ example: 20, description: "The age of the user" })
   @IsInt()
