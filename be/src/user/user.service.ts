@@ -8,7 +8,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository
-  ) { }
+  ) {}
   signup(userInfoDto: UserInfoDto) {
     return this.usersRepository.createUser(userInfoDto);
   }
