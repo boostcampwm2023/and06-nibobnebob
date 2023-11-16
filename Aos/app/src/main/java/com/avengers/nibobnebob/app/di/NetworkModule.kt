@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.config.AccessTokenInterceptor
 import com.avengers.nibobnebob.config.BearerInterceptor
+import com.avengers.nibobnebob.presentation.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,7 +49,7 @@ object NetworkModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
 
         return Retrofit.Builder()
-            .baseUrl("test")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
