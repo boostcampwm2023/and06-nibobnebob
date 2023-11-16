@@ -18,8 +18,8 @@ export class User {
   @Column({ type: "varchar", length: 50, unique: true })
   email: string;
 
-  @Column({ type: "int" })
-  age: number;
+  @Column({ type: "varchar", length: 11 })
+  age: string;
 
   @Column({ type: "boolean" })
   gender: boolean;

@@ -6,6 +6,7 @@ import {
   IsEmail,
   IsInt,
   MaxLength,
+  IsOptional,
 } from "class-validator";
 
 export class UserInfoDto {
@@ -20,7 +21,7 @@ export class UserInfoDto {
 
   @ApiProperty({ example: "1234", description: "The password of the user" })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(50)
   password: string;
 
@@ -37,9 +38,10 @@ export class UserInfoDto {
   nickName: string;
 
   @ApiProperty({ example: 20, description: "The age of the user" })
-  @IsInt()
+  @IsString()
+  @MaxLength(11)
   @IsNotEmpty()
-  age: number;
+  age: string;
 
   @ApiProperty({
     example: true,
