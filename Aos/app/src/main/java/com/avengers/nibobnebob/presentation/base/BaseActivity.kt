@@ -2,6 +2,7 @@ package com.avengers.nibobnebob.presentation.base
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 abstract class BaseActivity<B : ViewDataBinding>(
     private val inflate: (LayoutInflater) -> B,
 ) : AppCompatActivity() {
-    
+
     protected lateinit var binding: B
     protected abstract val activityViewModel : BaseActivityViewModel
 
@@ -32,7 +33,7 @@ abstract class BaseActivity<B : ViewDataBinding>(
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
         }
     }
-    
+
     protected fun initNetworkStateObserver(){
         repeatOnStarted {
             activityViewModel.networkState.collect{
@@ -40,7 +41,7 @@ abstract class BaseActivity<B : ViewDataBinding>(
                     NetWorkState.NETWORK_DISCONNECTED -> noNetworkSnackBar()
                     NetWorkState.NETWORK_CONNECTED -> {
                         // todo 네트워크 연결 감지시 fra
-                    } 
+                    }
                     else -> {}
                 }
             }
@@ -55,6 +56,10 @@ abstract class BaseActivity<B : ViewDataBinding>(
         ).setAction(R.string.retry) {
             //initViewData()
         }.show()
+    }
+
+    fun showToastMessage(message: String){
+        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
     }
 
 }

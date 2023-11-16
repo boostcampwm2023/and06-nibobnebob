@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -22,8 +23,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
     private var _binding: B? = null
     protected val binding get() = _binding!!
     protected abstract val parentViewModel : BaseActivityViewModel
-
-
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,12 +50,14 @@ abstract class BaseFragment<B : ViewDataBinding>(
         }
     }
     
-
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
         }
+    }
 
+    fun showToastMessage(message: String){
+        Toast.makeText(context,message, Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {
