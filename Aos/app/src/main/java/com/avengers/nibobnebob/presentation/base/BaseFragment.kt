@@ -13,6 +13,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.avengers.nibobnebob.R
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -40,7 +42,9 @@ abstract class BaseFragment<B : ViewDataBinding>(
         repeatOnStarted {
             parentViewModel.networkState.collect{
                 when(it){
-                    NetWorkState.NETWORK_DISCONNECTED -> {}
+                    NetWorkState.NETWORK_DISCONNECTED -> {
+                        noNetworkSnackBar()
+                    }
                     NetWorkState.NETWORK_CONNECTED -> {
                         // todo initNetworkView 실행
                     }
@@ -58,6 +62,16 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     fun showToastMessage(message: String){
         Toast.makeText(context,message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun noNetworkSnackBar() {
+        Snackbar.make(
+            binding.root,
+            R.string.no_network_text,
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction(R.string.retry) {
+            //initViewData()
+        }.show()
     }
 
     override fun onDestroyView() {

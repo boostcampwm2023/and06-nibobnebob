@@ -18,9 +18,10 @@ abstract class BaseActivityViewModel (
 
     init{
         networkManager.startNetwork()
+        checkNetworkState()
     }
 
-    fun checkNetworkState(){
+    private fun checkNetworkState(){
         viewModelScope.launch {
 
             networkManager.isNetworkConnected.collectLatest{
