@@ -1,12 +1,10 @@
-import { UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import { UserRepository } from 'src/user/user.repository';
+import { UnauthorizedException } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { Strategy, ExtractJwt } from "passport-jwt";
+import { UserRepository } from "src/user/user.repository";
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private userRepository: UserRepository
-  ) {
+  constructor(private userRepository: UserRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: "nibobnebob",
@@ -14,9 +12,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const {nickName} = payload
+    const { nickName } = payload;
 
-    return {nickName};
-
+    return { nickName };
   }
 }

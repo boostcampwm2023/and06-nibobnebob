@@ -32,12 +32,8 @@ export class AuthService {
       });
       return this.signin(response.data.response);
     } catch (err) {
-      throw new HttpException(
-        "Invalid access token",
-        HttpStatus.UNAUTHORIZED
-      );
+      throw new HttpException("Invalid access token", HttpStatus.UNAUTHORIZED);
     }
-    
   }
 
   async signin(loginRequestUser: any) {
