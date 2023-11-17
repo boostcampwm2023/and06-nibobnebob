@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
+import { TokenInfo } from "./user.decorator";
 
 @Injectable()
 export class UserService {
@@ -15,5 +16,8 @@ export class UserService {
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);
+  }
+  async getMypageUserInfo(tokenInfo: TokenInfo) {
+    return await this.usersRepository.getMypageUserInfo(tokenInfo.nickName);
   }
 }

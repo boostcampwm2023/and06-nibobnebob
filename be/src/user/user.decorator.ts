@@ -1,7 +1,7 @@
 import { ExecutionContext, createParamDecorator } from "@nestjs/common";
 
-interface TokenInfo {
-    nickname: string;
+export interface TokenInfo {
+    nickName: string;
 }
 
 export const GetUser = createParamDecorator((data, ctx: ExecutionContext): TokenInfo => {
