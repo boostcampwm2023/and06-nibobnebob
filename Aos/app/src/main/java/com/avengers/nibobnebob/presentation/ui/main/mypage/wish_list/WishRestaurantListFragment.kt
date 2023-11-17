@@ -10,8 +10,8 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentWishRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
-import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
+import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 
 class WishRestaurantListFragment :
     BaseFragment<FragmentWishRestaurantListBinding>(R.layout.fragment_wish_restaurant_list) {

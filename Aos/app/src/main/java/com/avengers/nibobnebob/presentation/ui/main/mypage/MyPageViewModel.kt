@@ -12,6 +12,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
+data class MyPageUiState(
+    val image: String = "",
+    val nickName: String = "",
+    val age: String = "",
+    val area: String = ""
+)
+
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
 ) : ViewModel() {

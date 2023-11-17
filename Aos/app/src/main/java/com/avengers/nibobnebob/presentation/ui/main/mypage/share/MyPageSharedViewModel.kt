@@ -8,6 +8,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
+
+sealed class MyPageSharedUiEvent {
+    data object NavigateToEditProfile : MyPageSharedUiEvent()
+    data object NavigateToMyList : MyPageSharedUiEvent()
+    data object NavigateToWishList : MyPageSharedUiEvent()
+    data object NavigateToBack : MyPageSharedUiEvent()
+
+}
+
 class MyPageSharedViewModel : ViewModel() {
     private val _uiEvent = MutableSharedFlow<MyPageSharedUiEvent>(
         replay = 0,
