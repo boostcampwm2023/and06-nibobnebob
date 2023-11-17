@@ -4,6 +4,8 @@ import {
   Get,
   Param,
   Post,
+  Put,
+  Delete,
   UsePipes,
   ValidationPipe,
   UseGuards,
@@ -21,7 +23,7 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Controller("user")
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @Get(":nickname/details")
   @UseGuards(AuthGuard("jwt"))
@@ -77,5 +79,17 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   async singup(@Body() userInfoDto: UserInfoDto) {
     return await this.userService.signup(userInfoDto);
+  }
+
+  @Delete()
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "유저 회원탈퇴" })
+  @ApiResponse({ status: 200, description: "회원탈퇴 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @UsePipes(new ValidationPipe())
+  async deleteUserAccount(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.deleteUserAccount(tokenInfo);
   }
 }

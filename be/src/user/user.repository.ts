@@ -47,4 +47,17 @@ export class UserRepository extends Repository<User> {
     });
     return { userInfo: userInfo };
   }
+  async deleteUserAccount(nickName: UserInfoDto["nickName"]) {
+    const userInfo = await this.findOne({
+      select: ["id"],
+      where: { nickName: nickName },
+    });
+    if (userInfo) {
+      await this.update(userInfo.id, { deleted_at: new Date() });
+    }
+    else {
+      throw new ConflictException("Already Deleted");
+    }
+    return {};
+  }
 }
