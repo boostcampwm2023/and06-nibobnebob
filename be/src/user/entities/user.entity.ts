@@ -31,7 +31,7 @@ export class User {
   password: string | null;
 
   @Column({ type: "varchar", length: 20, nullable: true })
-  social_provider: string | null;
+  provider: string | null;
 
   @CreateDateColumn({ type: "timestamp" })
   created_at: Date;

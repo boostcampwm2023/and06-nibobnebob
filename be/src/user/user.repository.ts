@@ -2,6 +2,7 @@ import { DataSource, Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { ConflictException, Injectable } from "@nestjs/common";
+import { userInfo } from "os";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -40,7 +41,7 @@ export class UserRepository extends Repository<User> {
         "birthdate",
         "isMale",
         "region",
-        "social_provider",
+        "provider",
         "email",
       ],
       where: { nickName: nickName },
@@ -54,6 +55,26 @@ export class UserRepository extends Repository<User> {
     });
     if (userInfo) {
       await this.update(userInfo.id, { deleted_at: new Date() });
+    } else {
+      throw new ConflictException("Already Deleted");
+    }
+    return {};
+  }
+  async updateMypageUserInfo(nickName: UserInfoDto["nickName"], userInfoDto: UserInfoDto) {
+    const userInfo = await this.findOne({
+      select: ["id"],
+      where: { nickName: nickName },
+    });
+    if (userInfo) {
+      await this.update(userInfo.id, {
+        nickName: userInfoDto["nickName"],
+        birthdate: userInfoDto["birthdate"],
+        isMale: userInfoDto["isMale"],
+        region: userInfoDto["region"],
+        provider: userInfoDto["provider"],
+        email: userInfoDto["email"],
+        password: userInfoDto["password"],
+      });
     } else {
       throw new ConflictException("Already Deleted");
     }

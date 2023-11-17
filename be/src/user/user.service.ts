@@ -9,7 +9,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository
-  ) {}
+  ) { }
   async signup(userInfoDto: UserInfoDto) {
     return await this.usersRepository.createUser(userInfoDto);
   }
@@ -26,5 +26,8 @@ export class UserService {
   }
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.nickName);
+  }
+  async updateMypageUserInfo(tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
+    return await this.usersRepository.updateMypageUserInfo(tokenInfo.nickName, userInfoDto);
   }
 }
