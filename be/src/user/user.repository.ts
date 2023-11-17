@@ -61,23 +61,30 @@ export class UserRepository extends Repository<User> {
     return {};
   }
   async updateMypageUserInfo(id: number, userInfoDto: UserInfoDto) {
-    const userInfo = await this.findOne({
-      select: ["id"],
-      where: { id: id },
-    });
-    if (userInfo) {
-      await this.update(userInfo.id, {
-        nickName: userInfoDto["nickName"],
-        birthdate: userInfoDto["birthdate"],
-        isMale: userInfoDto["isMale"],
-        region: userInfoDto["region"],
-        provider: userInfoDto["provider"],
-        email: userInfoDto["email"],
-        password: userInfoDto["password"],
-      });
-    } else {
-      throw new ConflictException("Already Deleted");
+    const user = await this.findOne({ select: ["id"], where: { id: id } });
+    const [emailUser, nickNameUser] = await Promise.all([
+      this.findOne({ select: ["id"], where: { email: userInfoDto["email"] } }),
+      this.findOne({ select: ["id"], where: { nickName: userInfoDto["nickName"] } })
+    ]);
+
+    const isEmailDuplicate = !!emailUser;
+    const isNickNameDuplicate = !!nickNameUser;
+
+    let updateObject = {
+      birthdate: userInfoDto["birthdate"],
+      isMale: userInfoDto["isMale"],
+      region: userInfoDto["region"],
+      provider: userInfoDto["provider"],
+      password: userInfoDto["password"],
+    };
+
+    if (!isEmailDuplicate) {
+      updateObject["email"] = userInfoDto["email"];
     }
-    return {};
+    if (!isNickNameDuplicate) {
+      updateObject["nickName"] = userInfoDto["nickName"];
+    }
+    await this.update(user.id, updateObject);
+    return { isEmailDuplicate: isEmailDuplicate, isNickNameDuplicate: isNickNameDuplicate };
   }
 }
