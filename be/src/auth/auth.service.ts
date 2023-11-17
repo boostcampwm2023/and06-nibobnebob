@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JwtService
-  ) { }
+  ) {}
   async NaverAuth(authorization: string) {
     if (!authorization) {
       throw new HttpException(

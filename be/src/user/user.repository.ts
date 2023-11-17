@@ -64,7 +64,9 @@ export class UserRepository extends Repository<User> {
     const user = await this.findOne({ select: ["id"], where: { id: id } });
     const [emailUser, nickNameUser] = await Promise.all([
       this.findOne({ select: ["id"], where: { email: userInfoDto["email"] } }),
-      this.findOne({ select: ["id"], where: { nickName: userInfoDto["nickName"] } })
+      this.findOne({
+        select: ["id"], where: { nickName: userInfoDto["nickName"] },
+      }),
     ]);
 
     const isEmailDuplicate = !!emailUser;
@@ -85,6 +87,9 @@ export class UserRepository extends Repository<User> {
       updateObject["nickName"] = userInfoDto["nickName"];
     }
     await this.update(user.id, updateObject);
-    return { isEmailDuplicate: isEmailDuplicate, isNickNameDuplicate: isNickNameDuplicate };
+    return {
+      isEmailDuplicate: isEmailDuplicate,
+      isNickNameDuplicate: isNickNameDuplicate,
+    };
   }
 }

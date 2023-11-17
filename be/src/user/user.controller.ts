@@ -23,7 +23,7 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Controller("user")
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get(":nickname/details")
   @UseGuards(AuthGuard("jwt"))
@@ -101,7 +101,10 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @UsePipes(new ValidationPipe())
-  async updateMypageUserInfo(@GetUser() tokenInfo: TokenInfo, @Body() userInfoDto: UserInfoDto) {
+  async updateMypageUserInfo(
+    @GetUser() tokenInfo: TokenInfo,
+    @Body() userInfoDto: UserInfoDto
+  ) {
     return await this.userService.updateMypageUserInfo(tokenInfo, userInfoDto);
   }
 }
