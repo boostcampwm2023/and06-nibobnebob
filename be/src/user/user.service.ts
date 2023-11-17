@@ -9,12 +9,15 @@ export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository
-  ) {}
+  ) { }
   async signup(userInfoDto: UserInfoDto) {
     return await this.usersRepository.createUser(userInfoDto);
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);
+  }
+  async getEmailAvailability(email: UserInfoDto["email"]) {
+    return await this.usersRepository.getEmailAvailability(email);
   }
   async getUserInfo(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getUserInfo(nickName);

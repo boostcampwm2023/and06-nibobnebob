@@ -2,7 +2,6 @@ import { DataSource, Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { ConflictException, Injectable } from "@nestjs/common";
-import { userInfo } from "os";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -24,6 +23,13 @@ export class UserRepository extends Repository<User> {
     const user = await this.findOne({
       select: ["nickName"],
       where: { nickName: nickName },
+    });
+    return { isexist: user !== null };
+  }
+  async getEmailAvailability(email: UserInfoDto["email"]) {
+    const user = await this.findOne({
+      select: ["email"],
+      where: { email: email },
     });
     return { isexist: user !== null };
   }

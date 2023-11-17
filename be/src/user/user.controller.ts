@@ -23,7 +23,7 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Controller("user")
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @Get(":nickname/details")
   @UseGuards(AuthGuard("jwt"))
@@ -70,6 +70,22 @@ export class UserController {
     @Param("nickname") nickname: UserInfoDto["nickName"]
   ) {
     return await this.userService.getNickNameAvailability(nickname);
+  }
+
+  @Get("email/:email/exists")
+  @ApiParam({
+    name: "email",
+    required: true,
+    description: "확인하고자 하는 이메일",
+    type: String,
+  })
+  @ApiOperation({ summary: "이메일 중복확인" })
+  @ApiResponse({ status: 200, description: "이메일 중복확인 요청 성공" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getEmailAvailability(
+    @Param("email") email: UserInfoDto["email"]
+  ) {
+    return await this.userService.getEmailAvailability(email);
   }
 
   @Post()
