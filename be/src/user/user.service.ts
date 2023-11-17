@@ -16,18 +16,18 @@ export class UserService {
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);
   }
-  async getUserInfo(tokenInfo: TokenInfo) {
-    return await this.usersRepository.getMypageUserInfo(tokenInfo.nickName);
+  async getUserInfo(nickName: UserInfoDto["nickName"]) {
+    return await this.usersRepository.getUserInfo(nickName);
   }
   async getMypageUserDetailInfo(tokenInfo: TokenInfo) {
     return await this.usersRepository.getMypageUserDetailInfo(
-      tokenInfo.nickName
+      tokenInfo.id
     );
   }
   async deleteUserAccount(tokenInfo: TokenInfo) {
-    return await this.usersRepository.deleteUserAccount(tokenInfo.nickName);
+    return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
   async updateMypageUserInfo(tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
-    return await this.usersRepository.updateMypageUserInfo(tokenInfo.nickName, userInfoDto);
+    return await this.usersRepository.updateMypageUserInfo(tokenInfo.id, userInfoDto);
   }
 }

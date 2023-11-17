@@ -38,8 +38,8 @@ export class UserController {
   @ApiResponse({ status: 200, description: "정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async getUserInfo(@GetUser() tokenInfo: TokenInfo) {
-    return await this.userService.getUserInfo(tokenInfo);
+  async getUserInfo(@Param("nickname") nickname: UserInfoDto["nickName"]) {
+    return await this.userService.getUserInfo(nickname);
   }
 
   @Get()

@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JwtService
-  ) {}
+  ) { }
   async NaverAuth(authorization: string) {
     if (!authorization) {
       throw new HttpException(
@@ -42,7 +42,7 @@ export class AuthService {
     });
 
     if (user) {
-      const payload = { nickName: user.nickName };
+      const payload = { id: user.id };
       const accessToken = this.jwtService.sign(payload);
 
       return accessToken;

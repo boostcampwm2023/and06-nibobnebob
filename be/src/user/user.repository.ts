@@ -27,14 +27,14 @@ export class UserRepository extends Repository<User> {
     });
     return { isexist: user !== null };
   }
-  async getMypageUserInfo(nickName: UserInfoDto["nickName"]) {
+  async getUserInfo(nickName: UserInfoDto["nickName"]) {
     const userInfo = await this.findOne({
       select: ["nickName", "birthdate", "isMale", "region"],
       where: { nickName: nickName },
     });
     return { userInfo: userInfo };
   }
-  async getMypageUserDetailInfo(nickName: UserInfoDto["nickName"]) {
+  async getMypageUserDetailInfo(id: number) {
     const userInfo = await this.findOne({
       select: [
         "nickName",
@@ -44,14 +44,14 @@ export class UserRepository extends Repository<User> {
         "provider",
         "email",
       ],
-      where: { nickName: nickName },
+      where: { id: id },
     });
     return { userInfo: userInfo };
   }
-  async deleteUserAccount(nickName: UserInfoDto["nickName"]) {
+  async deleteUserAccount(id: number) {
     const userInfo = await this.findOne({
       select: ["id"],
-      where: { nickName: nickName },
+      where: { id: id },
     });
     if (userInfo) {
       await this.update(userInfo.id, { deleted_at: new Date() });
@@ -60,10 +60,10 @@ export class UserRepository extends Repository<User> {
     }
     return {};
   }
-  async updateMypageUserInfo(nickName: UserInfoDto["nickName"], userInfoDto: UserInfoDto) {
+  async updateMypageUserInfo(id: number, userInfoDto: UserInfoDto) {
     const userInfo = await this.findOne({
       select: ["id"],
-      where: { nickName: nickName },
+      where: { id: id },
     });
     if (userInfo) {
       await this.update(userInfo.id, {
