@@ -19,7 +19,10 @@ export class User {
   email: string;
 
   @Column({ type: "varchar", length: 11 })
-  age: string;
+  birthdate: string;
+
+  @Column({ type: "varchar", length: 20 })
+  region: string;
 
   @Column({ type: "boolean" })
   isMale: boolean;
@@ -28,7 +31,7 @@ export class User {
   password: string | null;
 
   @Column({ type: "varchar", length: 20, nullable: true })
-  social_provider: string | null;
+  provider: string | null;
 
   @CreateDateColumn({ type: "timestamp" })
   created_at: Date;
