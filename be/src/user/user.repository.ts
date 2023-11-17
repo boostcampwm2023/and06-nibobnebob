@@ -54,8 +54,7 @@ export class UserRepository extends Repository<User> {
     });
     if (userInfo) {
       await this.update(userInfo.id, { deleted_at: new Date() });
-    }
-    else {
+    } else {
       throw new ConflictException("Already Deleted");
     }
     return {};
