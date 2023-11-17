@@ -37,11 +37,17 @@ export class UserInfoDto {
   @MaxLength(20)
   nickName: string;
 
+  @ApiProperty({ example: "강동구", description: "The region of the user" })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(20)
+  region: string;
+
   @ApiProperty({ example: "1234/56/78", description: "The birth of the user" })
   @IsString()
   @MaxLength(11)
   @IsNotEmpty()
-  age: string;
+  birthdate: string;
 
   @ApiProperty({
     example: true,
