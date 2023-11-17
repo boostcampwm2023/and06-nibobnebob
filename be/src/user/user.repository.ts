@@ -20,11 +20,31 @@ export class UserRepository extends Repository<User> {
     return;
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
-    const user = await this.findOne({ select: ['nickName'], where: { nickName: nickName } });
+    const user = await this.findOne({
+      select: ["nickName"],
+      where: { nickName: nickName },
+    });
     return { isexist: user !== null };
   }
   async getMypageUserInfo(nickName: UserInfoDto["nickName"]) {
-    const userInfo = await this.findOne({ select: ['nickName', 'birthdate', 'isMale', 'region'], where: { nickName: nickName } });
+    const userInfo = await this.findOne({
+      select: ["nickName", "birthdate", "isMale", "region"],
+      where: { nickName: nickName },
+    });
+    return { userInfo: userInfo };
+  }
+  async getMypageUserDetailInfo(nickName: UserInfoDto["nickName"]) {
+    const userInfo = await this.findOne({
+      select: [
+        "nickName",
+        "birthdate",
+        "isMale",
+        "region",
+        "social_provider",
+        "email",
+      ],
+      where: { nickName: nickName },
+    });
     return { userInfo: userInfo };
   }
 }
