@@ -38,7 +38,6 @@ fun TextInputLayout.setNickInputLayoutColor(state: InputState?) {
         else R.color.nn_dark1,
         null
     )
-
 }
 
 @BindingAdapter("set_date_input_style")
@@ -64,9 +63,10 @@ fun TextView.setDoneButtonEnable(state: EditProfileUiState?) {
     state ?: return
 
     val allValid = state.nickName.isValid && state.location.isValid && state.birth.isValid
+    val isChanged = state.nickName.isChanged || state.location.isChanged || state.birth.isChanged
 
     setTextColor(
-        if (allValid) resources.getColor(R.color.nn_dark1, null)
+        if (allValid && isChanged) resources.getColor(R.color.nn_dark1, null)
         else resources.getColor(R.color.nn_dark5, null)
     )
 }
