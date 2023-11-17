@@ -24,7 +24,7 @@ export class UserRepository extends Repository<User> {
     return { isexist: user !== null };
   }
   async getMypageUserInfo(nickName: UserInfoDto["nickName"]) {
-    const userInfo = await this.findOne({ select: ['nickName', 'age', 'email', 'isMale'], where: { nickName: nickName } });
+    const userInfo = await this.findOne({ select: ['nickName', 'birthdate', 'isMale', 'region'], where: { nickName: nickName } });
     return { userInfo: userInfo };
   }
 }

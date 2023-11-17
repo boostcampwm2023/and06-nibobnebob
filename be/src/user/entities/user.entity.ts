@@ -19,7 +19,10 @@ export class User {
   email: string;
 
   @Column({ type: "varchar", length: 11 })
-  age: string;
+  birthdate: string;
+
+  @Column({ type: "varchar", length: 20 })
+  region: string;
 
   @Column({ type: "boolean" })
   isMale: boolean;
