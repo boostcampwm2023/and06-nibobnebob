@@ -61,7 +61,7 @@
                     style="@style/TextHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="마이페이지"
+                    android:text="@string/my_main_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="성별"
+                    android:text="@string/my_main_gender"
                     android:textColor="@color/nn_dark4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_nickname" />
@@ -114,7 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="연령대"
+                    android:text="@string/my_main_age"
                     android:textColor="@color/nn_dark4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_gender_title" />
@@ -136,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="활동지역"
+                    android:text="@string/my_main_location"
                     android:textColor="@color/nn_dark4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_age_title" />
@@ -167,7 +167,7 @@
                     style="@style/TextMediumBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="프로필 수정"
+                    android:text="@string/my_main_edit_title"
                     app:layout_constraintBottom_toBottomOf="@id/v_edit_profile"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/v_edit_profile" />
@@ -203,7 +203,7 @@
                     style="@style/TextMediumBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="내 맛집리스트 보기"
+                    android:text="@string/my_main_mylist_title"
                     app:layout_constraintBottom_toBottomOf="@id/v_my_list"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/v_my_list" />
@@ -239,7 +239,7 @@
                     style="@style/TextMediumBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="내 위시리스트 보기"
+                    android:text="@string/my_main_wishlist_title"
                     app:layout_constraintBottom_toBottomOf="@id/v_wish_list"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/v_wish_list" />
@@ -267,7 +267,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
-                    android:text="로그아웃"
+                    android:text="@string/my_main_logout_title"
                     android:textColor="@color/nn_rainbow_red"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/md_wish" />
@@ -278,7 +278,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="회원탈퇴"
+                    android:text="@string/my_main_withdraw_title"
                     android:textColor="@color/nn_rainbow_red"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_logout" />

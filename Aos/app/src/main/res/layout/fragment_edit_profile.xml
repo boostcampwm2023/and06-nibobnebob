@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="프로필 수정"
+                android:text="@string/my_edit_title"
                 app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
                 app:layout_constraintStart_toEndOf="@id/iv_edit_back"
                 app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:onClick="@{() -> vm.doneEditProfile()}"
-                android:text="완료"
+                android:text="@string/my_edit_done"
                 app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
@@ -117,7 +117,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="닉네임"
+                    android:text="@string/my_edit_nick"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/iv_profile" />
 
@@ -130,7 +130,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_nickname_label"
-                    app:placeholderText="닉네임을 입력하세요.">
+                    app:placeholderText="@string/my_edit_nick_warn">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_nick"
@@ -162,7 +162,7 @@
                     android:enabled="@{(!vm.nick.empty &amp;&amp; ui_state.nickName.isChanged)? true : false}"
                     android:minHeight="0dp"
                     android:onClick="@{() -> vm.checkNickValidation()}"
-                    android:text="닉네임 중복확인"
+                    android:text="@string/my_edit_nick_check"
                     android:textColor="@color/selector_nick_check_text"
                     app:layout_constraintBottom_toBottomOf="@id/tv_nick_helper_text"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -174,7 +174,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="이메일"
+                    android:text="@string/my_edit_email"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_nick_helper_text" />
 
@@ -206,7 +206,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="활동 지역"
+                    android:text="@string/my_edit_location"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_naver_email" />
 
@@ -231,7 +231,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="생년월일"
+                    android:text="@string/my_edit_birth"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/s_location" />
 
@@ -246,7 +246,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_birth_label"
-                    app:placeholderText="YYYY/MM/DD">
+                    app:placeholderText="@string/my_edit_birth_ph">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_birth"
