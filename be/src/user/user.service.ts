@@ -19,6 +19,9 @@ export class UserService {
   async getEmailAvailability(email: UserInfoDto["email"]) {
     return await this.usersRepository.getEmailAvailability(email);
   }
+  async getMypageUserInfo(tokenInfo: TokenInfo) {
+    return await this.usersRepository.getMypageUserInfo(tokenInfo.id);
+  }
   async getUserInfo(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getUserInfo(nickName);
   }

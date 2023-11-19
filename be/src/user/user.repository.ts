@@ -1,7 +1,8 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, IsNull, Repository, Not } from "typeorm";
 import { User } from "./entities/user.entity";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { ConflictException, Injectable } from "@nestjs/common";
+
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -33,10 +34,17 @@ export class UserRepository extends Repository<User> {
     });
     return { isexist: user !== null };
   }
+  async getMypageUserInfo(id: number) {
+    const userInfo = await this.findOne({
+      select: ["nickName", "birthdate", "isMale", "region"],
+      where: { id: id },
+    });
+    return { userInfo: userInfo };
+  }
   async getUserInfo(nickName: UserInfoDto["nickName"]) {
     const userInfo = await this.findOne({
       select: ["nickName", "birthdate", "isMale", "region"],
-      where: { nickName: nickName },
+      where: { nickName: nickName, deleted_at: IsNull() },
     });
     return { userInfo: userInfo };
   }
