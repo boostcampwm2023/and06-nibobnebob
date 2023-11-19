@@ -25,6 +25,20 @@ import { AuthGuard } from "@nestjs/passport";
 export class UserController {
   constructor(private userService: UserService) { }
 
+  @Get()
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "마이페이지 유저 수정페이지 정보 가져오기" })
+  @ApiResponse({
+    status: 200,
+    description: "마이페이지 수정페이지 정보 요청 성공",
+  })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getMypageUserDetailInfo(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getMypageUserDetailInfo(tokenInfo);
+  }
+
   @Get(":nickname/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -42,18 +56,15 @@ export class UserController {
     return await this.userService.getUserInfo(nickname);
   }
 
-  @Get()
+  @Get("/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
-  @ApiOperation({ summary: "마이페이지 유저 수정페이지 정보 가져오기" })
-  @ApiResponse({
-    status: 200,
-    description: "마이페이지 수정페이지 정보 요청 성공",
-  })
+  @ApiOperation({ summary: "마이페이지 유저 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "마이페이지 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async getMypageUserDetailInfo(@GetUser() tokenInfo: TokenInfo) {
-    return await this.userService.getMypageUserDetailInfo(tokenInfo);
+  async getMypageUserInfo(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getMypageUserInfo(tokenInfo);
   }
 
   @Get("nickname/:nickname/exists")
