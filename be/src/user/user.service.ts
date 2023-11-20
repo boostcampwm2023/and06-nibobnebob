@@ -3,6 +3,7 @@ import { UserInfoDto } from "./dto/userInfo.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { TokenInfo } from "./user.decorator";
+import { hashPassword } from "src/utils/encryption.utils";
 
 @Injectable()
 export class UserService {
@@ -11,6 +12,7 @@ export class UserService {
     private usersRepository: UserRepository
   ) { }
   async signup(userInfoDto: UserInfoDto) {
+    userInfoDto.password = await hashPassword(userInfoDto.password);
     return await this.usersRepository.createUser(userInfoDto);
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
