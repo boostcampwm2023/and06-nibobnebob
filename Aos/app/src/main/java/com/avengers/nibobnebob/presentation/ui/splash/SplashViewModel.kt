@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.splash
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.app.NetworkManager
@@ -9,7 +8,6 @@ import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,17 +29,13 @@ class SplashViewModel @Inject constructor(
 
     fun getAutoLogin() {
         viewModelScope.launch {
-            val auto = dataStoreManager.getAutoLogin().first()
-            val access = dataStoreManager.getAccessToken().first()
-            val refresh = dataStoreManager.getRefreshToken().first()
-            Log.d(TAG ,"auto = $auto")
-            Log.d(TAG ,"access = $access")
-            Log.d(TAG ,"refresh = $refresh")
             dataStoreManager.getAutoLogin().collect { autoLogin ->
-                if (autoLogin == true) {
-                    _events.emit(NavigationEvent.NavigateToMain)
-                } else {
-                    _events.emit(NavigationEvent.NavigateToIntro)
+                dataStoreManager.getAccessToken().collect { accessToken ->
+                    if (autoLogin == true && accessToken != "") {
+                        _events.emit(NavigationEvent.NavigateToIntro)
+                    } else {
+                        _events.emit(NavigationEvent.NavigateToIntro)
+                    }
                 }
             }
         }
