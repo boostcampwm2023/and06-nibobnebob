@@ -9,4 +9,5 @@ object Constants {
     const val REFRESH_TOKEN = "REFRESHTOKEN"
     const val NAVER_TOKEN = "NAVERTOKEN"
     const val AUTHORIZATION = "authorization"
+    const val BEARER = "Bearer"
 }
