@@ -130,7 +130,8 @@ class DetailSignupViewModel @Inject constructor(
             email = email.value,
             provider = provider.value,
             nickName = nick.value,
-            age = birth.value,
+            birthdate = birth.value,
+            region = location.value,
             isMale = isMale.value
         )).onEach { result ->
 
