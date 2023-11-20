@@ -8,4 +8,7 @@ interface NibobNebobApi {
 
     @POST("api/auth/social-login")
     suspend fun postNaverLogin(): Response<NaverLoginResponse>
+
+    @POST("토큰 갱신 url")
+    suspend fun refreshToken(refreshToken : String) : Response<NaverLoginResponse>
 }
