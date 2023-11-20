@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
@@ -26,9 +27,9 @@ class DetailSignupFragment :
     override val parentViewModel: IntroViewModel by activityViewModels()
 
     private val args: DetailSignupFragmentArgs by navArgs()
-    private val email by lazy{args.email}
-    private val password by lazy{args.password}
-    private val provider by lazy{args.provider}
+    private val email by lazy { args.email }
+    private val password by lazy { args.password }
+    private val provider by lazy { args.provider }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,14 +42,12 @@ class DetailSignupFragment :
         setLocationInputListener()
     }
 
-    private fun initEventsObserver(){
+    private fun initEventsObserver() {
         repeatOnStarted {
-            viewModel.events.collect{
-                when(it){
+            viewModel.events.collect {
+                when (it) {
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
-                    is DetailSignupEvents.NavigateToMainActivity -> {
-                        // todo
-                    }
+                    is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
                     is DetailSignupEvents.ShowToastMessage -> showToastMessage(it.msg)
                 }
             }
@@ -78,6 +77,11 @@ class DetailSignupFragment :
             setDropDownBackgroundTint(ContextCompat.getColor(this.context, R.color.nn_primary0))
             setSimpleItems(resources.getStringArray(R.array.location_list))
         }
+    }
+
+    private fun NavController.toLoginFragment(){
+        val action = DetailSignupFragmentDirections.actionDetailSignupFragmentToLoginFragment()
+        this.navigate(action)
     }
 }
 

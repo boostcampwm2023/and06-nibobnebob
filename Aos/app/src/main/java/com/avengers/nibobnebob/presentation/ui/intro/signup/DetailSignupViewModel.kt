@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.ApiState
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,8 +37,8 @@ sealed class InputState {
 
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
-    data object NavigateToMainActivity : DetailSignupEvents()
-    data class ShowToastMessage(val msg: String): DetailSignupEvents()
+    data object NavigateToLoginFragment : DetailSignupEvents()
+    data class ShowToastMessage(val msg: String) : DetailSignupEvents()
 }
 
 @HiltViewModel
@@ -65,14 +63,15 @@ class DetailSignupViewModel @Inject constructor(
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
 
-    val isDataReady = combine(nick, birth, location, nickValidation) { nick, birth, location, nickValidation->
-        nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
-                nickValidation
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        false
-    )
+    val isDataReady =
+        combine(nick, birth, location, nickValidation) { nick, birth, location, nickValidation ->
+            nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
+                    nickValidation
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            false
+        )
 
     init {
         observeNick()
@@ -115,9 +114,9 @@ class DetailSignupViewModel @Inject constructor(
     fun checkNickDuplication() {
         validationRepository.nickValidation(nick.value).onEach {
 
-            when(it){
+            when (it) {
                 is ApiState.Success -> {
-                    if(it.data.isExist){
+                    if (it.data.isExist) {
                         nickValidation.value = false
                         _uiState.update { state ->
                             state.copy(
@@ -133,9 +132,11 @@ class DetailSignupViewModel @Inject constructor(
                         }
                     }
                 }
+
                 is ApiState.Error -> {
                     _events.emit(DetailSignupEvents.ShowToastMessage(it.message))
                 }
+
                 is ApiState.Exception -> {
                     _events.emit(DetailSignupEvents.ShowToastMessage(it.e.message.toString()))
                 }
@@ -143,23 +144,21 @@ class DetailSignupViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun signup(){
-        introRepository.signup(DetailSignupRequest(
-            "test",
-            provider = provider.value,
-            nickName = nick.value,
-            birthdate = birth.value,
-            region = location.value,
-            isMale = isMale.value
-        )).onEach {
-            when(it){
-                is ApiState.Success -> navigateToMainActivity()
-                is ApiState.Error -> {
-                    _events.emit(DetailSignupEvents.ShowToastMessage(it.message))
-                }
-                is ApiState.Exception -> {
-                    _events.emit(DetailSignupEvents.ShowToastMessage(it.e.message.toString()))
-                }
+    fun signup() {
+        introRepository.signup(
+            DetailSignupRequest(
+                email = email.value,
+                provider = provider.value,
+                nickName = nick.value,
+                birthdate = birth.value,
+                region = location.value,
+                isMale = isMale.value
+            )
+        ).onEach {
+            when (it) {
+                is ApiState.Success -> navigateToLoginFragment()
+                is ApiState.Error -> showToastMessage(it.message)
+                is ApiState.Exception -> showToastMessage(it.e.message.toString())
             }
         }.launchIn(viewModelScope)
     }
@@ -175,22 +174,28 @@ class DetailSignupViewModel @Inject constructor(
     fun setDefaultData(
         emailData: String,
         passwordData: String,
-        providerData: String)
-    {
+        providerData: String
+    ) {
         email.value = emailData
         password.value = passwordData
         provider.value = providerData
     }
 
-    fun navigateToBack(){
+    fun navigateToBack() {
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.NavigateToBack)
         }
     }
 
-    private fun navigateToMainActivity(){
+    private fun navigateToLoginFragment() {
         viewModelScope.launch {
-            _events.emit(DetailSignupEvents.NavigateToMainActivity)
+            _events.emit(DetailSignupEvents.NavigateToLoginFragment)
+        }
+    }
+
+    private fun showToastMessage(message: String) {
+        viewModelScope.launch {
+            _events.emit(DetailSignupEvents.ShowToastMessage(message))
         }
     }
 }
