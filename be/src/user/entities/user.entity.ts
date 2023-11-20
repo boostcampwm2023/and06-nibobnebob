@@ -15,23 +15,20 @@ export class User {
   @Column({ type: "varchar", length: 20, unique: true })
   nickName: string;
 
-  @Column({ type: "varchar", length: 50, unique: true })
+  @Column({ type: "varchar", length: 50 })
   email: string;
 
-  @Column({ type: "varchar", length: 11 })
-  birthdate: string;
-
-  @Column({ type: "varchar", length: 20 })
-  region: string;
+  @Column({ type: "int" })
+  age: number;
 
   @Column({ type: "boolean" })
-  isMale: boolean;
+  gender: boolean;
 
   @Column({ type: "varchar", length: 50, nullable: true })
   password: string | null;
 
   @Column({ type: "varchar", length: 20, nullable: true })
-  provider: string | null;
+  social_provider: string | null;
 
   @CreateDateColumn({ type: "timestamp" })
   created_at: Date;

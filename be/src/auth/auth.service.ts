@@ -44,14 +44,8 @@ export class AuthService {
     if (user) {
       const payload = { nickName: user.nickName };
       const accessToken = this.jwtService.sign(payload);
-      
-      const refreshToken = this.jwtService.sign(payload, {
-        secret: "nibobnebob", 
-        expiresIn: '7d', 
-      });
 
-      return { accessToken, refreshToken };
-
+      return accessToken;
     } else {
       throw new NotFoundException(
         "사용자가 등록되어 있지 않습니다. 회원가입을 진행해주세요"
