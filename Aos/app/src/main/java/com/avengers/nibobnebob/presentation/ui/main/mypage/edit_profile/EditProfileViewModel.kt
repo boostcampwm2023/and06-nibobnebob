@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.model.request.MyPageEditInfoRequest
 import com.avengers.nibobnebob.data.repository.MyPageEditRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
@@ -54,6 +55,7 @@ class EditProfileViewModel @Inject constructor(
     private var originalNickName: String = ""
     private var originalBirth: String = ""
     private var originalLocation: String = ""
+    private var originalIsMale: Boolean = true
 
     val locationList = LocationArray.LOCATION_ARRAY
 
@@ -86,9 +88,9 @@ class EditProfileViewModel @Inject constructor(
                         originalNickName = nickName
                         locationPositionState.emit(locationList.indexOf(location))
                         originalLocation = location
-//                        Log.d("TEST", "${locationPositionState.value}, ${originalLocation}")
                         birthState.emit(birth)
                         originalBirth = birth
+                        originalIsMale = gender
 
                     }
                 }
@@ -162,10 +164,23 @@ class EditProfileViewModel @Inject constructor(
 
 
     fun doneEditProfile() {
-        // 서버로 전송, 응답 200 이면 실행
-        viewModelScope.launch {
-            _events.emit(EditProfileUiEvent.EditProfileDone)
-        }
+
+        myPageEditRepository.putMyPageEditInfo(
+            MyPageEditInfoRequest(
+                nickName = nickState.value,
+                email = uiState.value.email,
+                provider = uiState.value.provider,
+                birthdate = birthState.value,
+                region = locationList[locationPositionState.value],
+                isMale = originalIsMale,
+                password = "1234"
+            )
+        ).onEach {
+            when(it){
+                is ApiState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
+                else -> Log.d("TEST", "수정 실패")
+            }
+        }.launchIn(viewModelScope)
     }
 
 

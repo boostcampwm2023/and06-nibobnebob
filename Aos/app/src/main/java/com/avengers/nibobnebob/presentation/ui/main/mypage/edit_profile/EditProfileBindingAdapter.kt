@@ -4,6 +4,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
+import com.avengers.nibobnebob.presentation.util.LoginType
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -69,5 +70,11 @@ fun TextView.setDoneButtonEnable(state: EditProfileUiState?) {
         if (allValid && isChanged) resources.getColor(R.color.nn_dark1, null)
         else resources.getColor(R.color.nn_dark5, null)
     )
+}
+
+@BindingAdapter("login_type")
+fun TextView.setLoginType(type : String?){
+    type ?: return
+    text = if(type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else ""
 }
 

@@ -19,4 +19,5 @@ data class UserEditInfo(
     val birthdate: String,
     val region: String,
     val isMale: Boolean,
+    val password : Int,
 )

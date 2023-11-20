@@ -184,7 +184,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:text="@{vm.uiState.provider}"
+                    login_type="@{vm.uiState.provider}"
                     android:textColor="@color/nn_dark5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_email_label" />

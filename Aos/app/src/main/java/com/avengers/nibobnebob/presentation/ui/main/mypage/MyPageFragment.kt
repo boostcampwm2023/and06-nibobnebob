@@ -29,7 +29,8 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
     }
 
     private fun initView(view: View) {
-        binding.vm = sharedViewModel
+        binding.svm = sharedViewModel
+        binding.vm = viewModel
         navController = Navigation.findNavController(view)
 
 
@@ -42,12 +43,6 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
                     else -> Unit
                 }
 
-            }
-        }
-
-        viewLifecycleOwner.repeatOnStarted {
-            viewModel.uiState.collectLatest { state ->
-                binding.uiState = state
             }
         }
     }

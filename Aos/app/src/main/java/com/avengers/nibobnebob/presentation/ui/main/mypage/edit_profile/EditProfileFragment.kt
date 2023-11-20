@@ -52,7 +52,10 @@ class EditProfileFragment :
         repeatOnStarted {
             viewModel.event.collect { event ->
                 when (event) {
-                    is EditProfileUiEvent.EditProfileDone -> showToastMessage("수정 완료")
+                    is EditProfileUiEvent.EditProfileDone -> {
+                        navController.navigateUp()
+                        showToastMessage("수정 완료")
+                    }
                 }
             }
         }

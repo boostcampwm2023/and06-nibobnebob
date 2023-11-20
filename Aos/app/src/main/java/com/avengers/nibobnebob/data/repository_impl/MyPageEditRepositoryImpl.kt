@@ -1,6 +1,8 @@
 package com.avengers.nibobnebob.data.repository_impl
 
 import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.model.request.MyPageEditInfoRequest
+import com.avengers.nibobnebob.data.model.response.BasicResponse
 import com.avengers.nibobnebob.data.model.response.MyPageEditInfoResponse
 import com.avengers.nibobnebob.data.remote.NnApi
 import com.avengers.nibobnebob.data.repository.MyPageEditRepository
@@ -23,6 +25,19 @@ class MyPageEditRepositoryImpl @Inject constructor(private val nnApi: NnApi) :
                 emit(ApiState.Error(response.code(), response.message()))
             }
         } catch (e: Exception) {
+            emit(ApiState.Exception(e))
+        }
+    }
+
+    override fun putMyPageEditInfo(data : MyPageEditInfoRequest): Flow<ApiState<BasicResponse>> = flow {
+        try {
+            val response = nnApi.putMyPageEditInfo(token, data)
+            if(response.isSuccessful){
+                emit(ApiState.Success(response.body()!!))
+            }else{
+                emit(ApiState.Error(response.code(), response.message()))
+            }
+        }catch (e : Exception){
             emit(ApiState.Exception(e))
         }
     }

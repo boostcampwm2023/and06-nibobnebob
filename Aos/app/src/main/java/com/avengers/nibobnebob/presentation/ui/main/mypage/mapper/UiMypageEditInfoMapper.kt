@@ -7,8 +7,8 @@ import com.avengers.nibobnebob.presentation.util.LoginType
 fun MyPageEditInfoResponse.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
     nickName = data.userInfo.nickName,
     email = data.userInfo.email,
-    provider = if(data.userInfo.provider == LoginType.NAVER_LOGIN) "네이버 소셜 로그인" else "",
+    provider = data.userInfo.provider,
     birth = data.userInfo.birthdate,
     location = data.userInfo.region,
-    gender = if(data.userInfo.isMale) "남" else "여"
+    gender = data.userInfo.isMale
 )

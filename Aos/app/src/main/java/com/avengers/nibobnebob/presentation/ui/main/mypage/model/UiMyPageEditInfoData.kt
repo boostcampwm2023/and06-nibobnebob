@@ -6,5 +6,5 @@ data class UiMyPageEditInfoData(
     val provider: String,
     val birth: String,
     val location: String,
-    val gender: String,
+    val gender: Boolean,
 )

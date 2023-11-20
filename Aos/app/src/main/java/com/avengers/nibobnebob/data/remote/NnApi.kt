@@ -1,10 +1,14 @@
 package com.avengers.nibobnebob.data.remote
 
+import com.avengers.nibobnebob.data.model.request.MyPageEditInfoRequest
+import com.avengers.nibobnebob.data.model.response.BasicResponse
 import com.avengers.nibobnebob.data.model.response.MyPageEditInfoResponse
 import com.avengers.nibobnebob.data.model.response.MyPageInfoResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PUT
 
 interface NnApi {
     @GET("api/user/details")
@@ -16,4 +20,10 @@ interface NnApi {
     suspend fun getMyPageEditInfo(
         @Header("Authorization") token : String,
     ) : Response<MyPageEditInfoResponse>
+
+    @PUT("api/user")
+    suspend fun putMyPageEditInfo(
+        @Header("Authorization") token : String,
+        @Body data : MyPageEditInfoRequest
+    ) : Response<BasicResponse>
 }
