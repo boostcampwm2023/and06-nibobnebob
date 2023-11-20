@@ -1,8 +1,10 @@
 package com.avengers.nibobnebob.presentation.ui.intro.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
+import com.avengers.nibobnebob.data.model.response.ApiState
 import com.avengers.nibobnebob.data.repository.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,7 +38,6 @@ class LoginViewModel @Inject constructor(
 
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
-    val token = MutableStateFlow("")
     val autoLogin = MutableStateFlow(false)
 
     init {
@@ -68,18 +69,26 @@ class LoginViewModel @Inject constructor(
         //TODO : 일반로그인
     }
 
-    fun naverLogin(){
+    fun naverLogin(token : String){
         viewModelScope.launch {
-            dataStoreManager.putAccessToken(token.value)
-            loginRepository.loginNaver().onEach {response ->
-                when(response.code) {
-                    200 -> {
-                        _events.emit(LoginEvent.NavigateToMain)}
-                    401 -> {
-                        //토큰 만료
+            dataStoreManager.putAccessToken(token)
+            loginRepository.loginNaver().onEach {
+                when(it){
+                    is ApiState.Success -> {
+                        _events.emit(LoginEvent.NavigateToMain)
                     }
-                    404 -> {
-                        _events.emit(LoginEvent.NavigateToDetailSignup)
+                    is ApiState.Error -> {
+                        when(it.statusCode){
+                            401 -> {
+                                Log.d(TAG,"401이 뜰일이 있나..?")
+                            }
+                            404 -> {
+                                _events.emit(LoginEvent.NavigateToDetailSignup)
+                            }
+                        }
+                    }
+                    is ApiState.Exception -> {
+                        Log.d(TAG,"예외처리?")
                     }
                 }
             }.launchIn(viewModelScope)

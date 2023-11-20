@@ -1,7 +1,7 @@
 package com.avengers.nibobnebob.data.repository
 
-import android.util.Log
 import com.avengers.nibobnebob.app.DataStoreManager
+import com.avengers.nibobnebob.data.model.response.ApiState
 import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
 import com.avengers.nibobnebob.data.remote.NibobNebobApi
 import kotlinx.coroutines.flow.Flow
@@ -15,23 +15,21 @@ class LoginRepositoryImpl @Inject constructor(
 
     private val TAG = "LoginRepositoryImplDebug"
 
-    override fun loginNaver(): Flow<NaverLoginResponse> = flow {
+    override fun loginNaver(): Flow<ApiState<NaverLoginResponse>> = flow {
         try {
             val response = nibobNebobApi.postNaverLogin()
             if (response.isSuccessful) {
-                dataStoreManager.putAutoLogin(true)
-                response.body()?.let { result ->
-                    dataStoreManager.putAccessToken(result.data.toString())
-                    emit(result)
-                    //TODO : 추후 refresh,access token 저장
+                response.body()?.let{
+                    dataStoreManager.putAutoLogin(true)
+                    dataStoreManager.putAccessToken(it.data.accessToken.toString())
+                    dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
                 }
+                emit(ApiState.Success(response.body()!!))
             } else {
-                emit(response.body() as NaverLoginResponse)
+                emit(ApiState.Error(response.code(), response.message()))
             }
         } catch (e: Exception) {
-            Log.d(TAG, "EXCEPTION 발생 ${e.message}")
+            emit(ApiState.Exception(e))
         }
     }
-
-
 }

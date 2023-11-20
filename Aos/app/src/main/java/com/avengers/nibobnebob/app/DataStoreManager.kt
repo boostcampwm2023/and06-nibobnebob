@@ -16,7 +16,6 @@ import javax.inject.Inject
 class DataStoreManager @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     companion object {
-        //private val NAVER_TOKEN_KEY = stringPreferencesKey(NAVER_TOKEN)
         private val ACCESS_TOKEN_KEY = stringPreferencesKey(ACCESS_TOKEN)
         private val REFRESH_TOKEN_KEY = stringPreferencesKey(REFRESH_TOKEN)
         private val AUTO_LOGIN_KEY = booleanPreferencesKey(AUTO_LOGIN)

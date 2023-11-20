@@ -74,8 +74,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
             }
 
             override fun onSuccess() {
-                viewModel.token.value = NaverIdLoginSDK.getAccessToken().toString()
-                viewModel.naverLogin()
+                val token = NaverIdLoginSDK.getAccessToken().toString()
+                viewModel.naverLogin(token)
             }
         }
         NaverIdLoginSDK.authenticate(requireContext(), oAuthLoginCallback)
