@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.data.model.response
+package com.avengers.nibobnebob.data.model
 
 sealed class ApiState<out T> {
     data class Success<out T>(val data: T) : ApiState<T>()
