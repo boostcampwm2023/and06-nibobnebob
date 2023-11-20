@@ -117,14 +117,25 @@ class EditProfileViewModel @Inject constructor(
     }
 
     fun checkNickValidation() {
-        // check(nickName) 서버에서 검증
-        _uiState.value = uiState.value.copy(
-            nickName = InputState(
-                helperText = Validation.VALID_NICK,
-                isValid = true,
-                isChanged = originalNickName != nickState.value
-            )
-        )
+        myPageEditRepository.getCheckNickname(nickState.value).onEach {
+            when(it){
+                is ApiState.Success -> {
+                    if (it.data.data.isExist){
+                        Log.d("TEST", "닉네임 중복")
+                    } else{
+                        _uiState.value = uiState.value.copy(
+                            nickName = InputState(
+                                helperText = Validation.VALID_NICK,
+                                isValid = true,
+                                isChanged = originalNickName != nickState.value
+                            )
+                        )
+                    }
+                }
+                else -> Log.d("TEST", "검증 실패")
+            }
+        }.launchIn(viewModelScope)
+
     }
 
     private fun observeLocation() {
