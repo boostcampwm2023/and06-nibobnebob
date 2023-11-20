@@ -7,22 +7,22 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
-import { Review } from 'src/review/entities/review.entity';
+import { RestaurantInfoEntity } from 'src/restaurant/entities/restaurant.entity';
+import { ReviewInfoEntity } from 'src/review/entities/review.entity';
 
 @Entity('user_restaurant_lists')
 export class UserRestaurantListEntity {
   @ManyToOne(() => User)
   @PrimaryColumn({ name: 'user_id' })
-  userId: User;
+  userId: number;
 
-  @ManyToOne(() => Restaurant)
+  @ManyToOne(() => RestaurantInfoEntity)
   @PrimaryColumn({ name: 'restaurant_id' })
-  restaurantId: Restaurant;
+  restaurantId: number;
 
-  @ManyToOne(() => Review)
+  @ManyToOne(() => ReviewInfoEntity)
   @JoinColumn({ name: 'review_id' })
-  reviewId: Review;
+  reviewId: ReviewInfoEntity;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

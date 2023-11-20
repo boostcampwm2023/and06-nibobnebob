@@ -14,7 +14,7 @@ export class RestaurantInfoEntity {
         srid: 4326,
         nullable: true
     })
-    location: string | null;
+    location: string;
 
     @Column({ type: 'text', nullable: true })
     address: string | null;
