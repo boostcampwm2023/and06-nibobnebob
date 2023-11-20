@@ -53,7 +53,7 @@ class EditProfileFragment :
             viewModel.event.collect { event ->
                 when (event) {
                     is EditProfileUiEvent.EditProfileDone -> {
-                        navController.navigateUp()
+                        navController.navigate(EditProfileFragmentDirections.globalToMyPageFragment())
                         showToastMessage("수정 완료")
                     }
                 }
@@ -64,7 +64,7 @@ class EditProfileFragment :
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
                     is MyPageSharedUiEvent.NavigateToBack ->
-                        navController.navigateUp()
+                        navController.navigate(EditProfileFragmentDirections.globalToMyPageFragment())
 
                     else -> Unit
 
