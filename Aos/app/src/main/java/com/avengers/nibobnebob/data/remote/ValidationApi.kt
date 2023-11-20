@@ -6,12 +6,12 @@ import retrofit2.http.Path
 interface ValidationApi {
 
     @GET("/api/user/nickname/{nickname}/exists")
-    fun nickValidation(
+    suspend fun nickValidation(
         @Path("nickname") nickname: String
     ): Unit
 
     @GET("/api/user/email/{email}/exists")
-    fun emailValidation(
+    suspend fun emailValidation(
         @Path("email") email: String
     ): Unit
 }
