@@ -1,64 +1,17 @@
 package com.avengers.nibobnebob.config
 
 
-import android.util.Log
-import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.remote.NibobNebobApi
-import com.avengers.nibobnebob.presentation.util.Constants.AUTHORIZATION
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
-import retrofit2.Retrofit
 import java.io.IOException
 import javax.inject.Inject
 
-class BearerInterceptor @Inject constructor(private val dataStoreManager: DataStoreManager,
-    private val retrofit: Retrofit) : Interceptor {
-
-    private val TAG = "InterceptDebug"
+class BearerInterceptor @Inject constructor() : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val response = chain.proceed(originalRequest)
-
-        // API 통신중 특정코드 에러 발생 (accessToken 만료)
-        if (response.code == 401) {
-
-            var isRefreshed = false
-            var accessToken = ""
-            var refreshToken = ""
-
-            runBlocking {
-                refreshToken = dataStoreManager.getRefreshToken().first().toString()
-                val result = retrofit.create(NibobNebobApi::class.java).refreshToken(refreshToken)
-                if(result.isSuccessful){
-                    result.body()?.let {
-                        dataStoreManager.putAccessToken(it.data.accessToken!!)
-                        dataStoreManager.putRefreshToken(it.data.refreshToken!!)
-                        isRefreshed = true
-                    }
-                } else{
-                    val errorBody = result.errorBody().toString()
-                    Log.d(TAG, errorBody)
-                }
-            }
-
-            if(isRefreshed){
-                // 기존 API 재호출
-                val newRequest = originalRequest.newBuilder()
-                    .addHeader(AUTHORIZATION, accessToken)
-                    .build()
-
-                return chain.proceed(newRequest)
-            }
-        }
-        // 해당 특정 에러코드가 그대로 내려간다면, 세션 만료 처리
-        return response
-    }
-}
-
 
 //            runBlocking {
 // 로컬에 refreshToken이 있다면
@@ -101,3 +54,9 @@ class BearerInterceptor @Inject constructor(private val dataStoreManager: DataSt
 //
 //                return chain.proceed(newRequest)
 //            }
+        // 해당 특정 에러코드가 그대로 내려간다면, 세션 만료 처리
+        return response
+    }
+}
+
+
