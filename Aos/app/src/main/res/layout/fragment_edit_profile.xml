@@ -137,7 +137,7 @@
                         style="@style/TextSmallRegular"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@={vm.nick}" />
+                        android:text="@={vm.nickState}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -159,7 +159,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:enabled="@{(!vm.nick.empty &amp;&amp; ui_state.nickName.isChanged)? true : false}"
+                    android:enabled="@{(!vm.nickState.empty &amp;&amp; ui_state.nickName.isChanged)? true : false}"
                     android:minHeight="0dp"
                     android:onClick="@{() -> vm.checkNickValidation()}"
                     android:text="@string/my_edit_nick_check"
@@ -184,7 +184,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:text="네이버 소셜 로그인"
+                    android:text="@{vm.uiState.provider}"
                     android:textColor="@color/nn_dark5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_email_label" />
@@ -195,7 +195,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="test@naver.com"
+                    android:text="@{vm.uiState.email}"
                     android:textColor="@color/nn_dark5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_naver_label" />
@@ -219,7 +219,7 @@
                     android:background="@drawable/selector_location_drop_down"
                     android:entries="@{vm.locationList}"
                     android:paddingStart="8dp"
-                    android:selectedItemPosition="@={vm.locationPosition}"
+                    android:selectedItemPosition="@={vm.locationPositionState}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_location_label" />
@@ -253,7 +253,7 @@
                         style="@style/TextSmallRegular"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@={vm.birth}" />
+                        android:text="@={vm.birthState}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

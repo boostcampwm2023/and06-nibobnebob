@@ -13,9 +13,10 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import com.avengers.nibobnebob.presentation.util.showCalendarDatePicker
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class EditProfileFragment :
     BaseFragment<FragmentEditProfileBinding>(R.layout.fragment_edit_profile) {
     private val sharedViewModel: MyPageSharedViewModel by viewModels()

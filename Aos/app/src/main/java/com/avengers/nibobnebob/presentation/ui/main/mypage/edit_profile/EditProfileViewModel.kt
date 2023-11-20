@@ -1,23 +1,30 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.repository.MyPageEditRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
+import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
 import com.avengers.nibobnebob.presentation.util.LocationArray
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class EditProfileUiState(
     val nickName: InputState = InputState(),
+    val email: String = "",
+    val provider: String = "",
     val birth: InputState = InputState(),
     val location: InputState = InputState()
 )
@@ -29,18 +36,15 @@ data class InputState(
     val isChanged: Boolean = false,
 )
 
-data class OriginalState(
-    val originalNickName: String,
-    val originalBirth: String,
-    val originalLocation: String
-)
-
 sealed class EditProfileUiEvent {
     data object EditProfileDone : EditProfileUiEvent()
 }
 
 
-class EditProfileViewModel : ViewModel() {
+@HiltViewModel
+class EditProfileViewModel @Inject constructor(
+    private val myPageEditRepository: MyPageEditRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
 
@@ -53,9 +57,9 @@ class EditProfileViewModel : ViewModel() {
 
     val locationList = LocationArray.LOCATION_ARRAY
 
-    val nick = MutableStateFlow("")
-    val birth = MutableStateFlow("")
-    val locationPosition = MutableStateFlow(0)
+    val nickState = MutableStateFlow("")
+    val birthState = MutableStateFlow("")
+    val locationPositionState = MutableStateFlow(0)
 
 
     init {
@@ -66,29 +70,37 @@ class EditProfileViewModel : ViewModel() {
     }
 
     private fun getOriginalData() {
-        flow {
-            emit(
-                OriginalState(
-                    originalNickName = "tester",
-                    originalBirth = "2000/03/13",
-                    originalLocation = "용산구"
-                )
-            )
-        }.onEach { state ->
+        myPageEditRepository.getMyPageEditInfo().onEach {
 
-            originalNickName = state.originalNickName
-            originalBirth = state.originalBirth
-            originalLocation = state.originalLocation
+            when (it) {
+                is ApiState.Success -> {
+                    it.data.toUiMyPageEditInfoData().apply {
+                        Log.d("TEST", "$this")
+                        _uiState.update { state ->
+                            state.copy(
+                                email = email,
+                                provider = provider
+                            )
+                        }
+                        nickState.emit(nickName)
+                        originalNickName = nickName
+                        locationPositionState.emit(locationList.indexOf(location))
+                        originalLocation = location
+//                        Log.d("TEST", "${locationPositionState.value}, ${originalLocation}")
+                        birthState.emit(birth)
+                        originalBirth = birth
 
-            nick.emit(state.originalNickName)
-            birth.emit(state.originalBirth)
-            locationPosition.emit(locationList.indexOf(state.originalLocation))
+                    }
+                }
 
+                is ApiState.Error -> Log.d("TEST", "${it.message}")
+                is ApiState.Exception -> Log.d("TEST", "${it.e}")
+            }
         }.launchIn(viewModelScope)
     }
 
     private fun observeNickName() {
-        nick.onEach { nick ->
+        nickState.onEach { nick ->
             _uiState.update { state ->
                 state.copy(
                     nickName = InputState(
@@ -108,13 +120,13 @@ class EditProfileViewModel : ViewModel() {
             nickName = InputState(
                 helperText = Validation.VALID_NICK,
                 isValid = true,
-                isChanged = originalNickName != nick.value
+                isChanged = originalNickName != nickState.value
             )
         )
     }
 
     private fun observeLocation() {
-        locationPosition.onEach { position ->
+        locationPositionState.onEach { position ->
             _uiState.update { state ->
                 state.copy(
                     location = InputState(
@@ -129,12 +141,12 @@ class EditProfileViewModel : ViewModel() {
     }
 
     fun setBirth(birthData: String) {
-        birth.value = birthData
+        birthState.value = birthData
     }
 
 
     private fun observeBirth() {
-        birth.onEach { birth ->
+        birthState.onEach { birth ->
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
                 state.copy(
