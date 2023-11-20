@@ -8,5 +8,5 @@ import retrofit2.http.POST
 interface NibobNebobApi {
 
     @POST("api/auth/social-login")
-    suspend fun postNaverLogin(): Response<BaseResponse<NaverLoginResponse>>
+    suspend fun postNaverLogin(): Response<NaverLoginResponse>
 }

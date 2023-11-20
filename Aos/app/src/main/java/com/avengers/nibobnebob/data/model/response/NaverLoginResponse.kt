@@ -1,5 +1,9 @@
 package com.avengers.nibobnebob.data.model.response
 
+import com.google.gson.annotations.SerializedName
+
 data class NaverLoginResponse(
-    val data : String
+    @SerializedName("data")val data : String?,
+    @SerializedName("message")val message : String ?,
+    @SerializedName("statusCode")val code : Int ?
 )
