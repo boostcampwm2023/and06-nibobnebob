@@ -223,7 +223,6 @@
                     android:background="@drawable/selector_location_drop_down"
                     android:entries="@{vm.locationList}"
                     android:paddingStart="8dp"
-                    android:selectedItemPosition="@={vm.locationPositionState}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_location_label" />

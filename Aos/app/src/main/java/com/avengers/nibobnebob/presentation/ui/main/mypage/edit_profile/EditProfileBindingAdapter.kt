@@ -86,4 +86,3 @@ fun TextView.setLoginType(type: String?) {
     type ?: return
     text = if (type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else ""
 }
-

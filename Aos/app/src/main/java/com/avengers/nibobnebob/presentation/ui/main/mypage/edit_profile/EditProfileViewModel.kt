@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -98,21 +96,22 @@ class EditProfileViewModel @Inject constructor(
                     }
                 }
 
-                is ApiState.Error -> Log.d("TEST", "${it.message}")
-                is ApiState.Exception -> Log.d("TEST", "${it.e}")
+                is ApiState.Error -> testLog(it.message)
+                is ApiState.Exception -> testLog("${it.e}")
             }
         }.launchIn(viewModelScope)
     }
 
     private fun observeNickName() {
         nickState.onEach { nick ->
+            if (originalNickName.isEmpty()) return@onEach
             _uiState.update { state ->
 
                 state.copy(
                     nickName = InputState(
                         helperText = Validation.NONE,
-                        isValid = ((originalNickName.isEmpty() || originalNickName == nick) && state.nickName.helperText == Validation.NONE),
-                        isChanged = if (originalNickName.isEmpty()) false else originalNickName != nick
+                        isValid = (originalNickName == nick && state.nickName.helperText == Validation.NONE),
+                        isChanged = originalNickName != nick
                     )
                 )
             }
@@ -144,7 +143,7 @@ class EditProfileViewModel @Inject constructor(
                     }
                 }
 
-                else -> Log.d("TEST", "검증 실패")
+                else -> testLog("검증 실패")
             }
         }.launchIn(viewModelScope)
 
@@ -174,14 +173,15 @@ class EditProfileViewModel @Inject constructor(
 
     private fun observeBirth() {
         birthState.onEach { birth ->
+            if (originalBirth.isEmpty()) return@onEach
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
-                Log.d("TEST", "${originalBirth}, $birth")
+                testLog("${originalBirth}, $birth")
                 state.copy(
                     birth = InputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = if (originalBirth.isEmpty()) false else originalBirth != birth
+                        isChanged = originalBirth != birth
                     )
                 )
             }
@@ -204,9 +204,13 @@ class EditProfileViewModel @Inject constructor(
         ).onEach {
             when (it) {
                 is ApiState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
-                else -> Log.d("TEST", "수정 실패")
+                else -> testLog("수정 실패")
             }
         }.launchIn(viewModelScope)
+    }
+
+    private fun testLog(msg: String) {
+        Log.d("TEST", msg)
     }
 
 
