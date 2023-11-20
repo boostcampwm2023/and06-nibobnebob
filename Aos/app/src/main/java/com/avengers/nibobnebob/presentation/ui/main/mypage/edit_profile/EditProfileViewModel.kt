@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -65,10 +67,10 @@ class EditProfileViewModel @Inject constructor(
 
 
     init {
+        getOriginalData()
         observeNickName()
         observeLocation()
         observeBirth()
-        getOriginalData()
     }
 
     private fun getOriginalData() {
@@ -76,22 +78,23 @@ class EditProfileViewModel @Inject constructor(
 
             when (it) {
                 is ApiState.Success -> {
+
                     it.data.toUiMyPageEditInfoData().apply {
-                        Log.d("TEST", "$this")
+                        nickState.emit(nickName)
+                        locationPositionState.emit(locationPosition)
+                        birthState.emit(birth)
+
+                        originalNickName = nickName
+                        originalLocation = locationList[locationPosition]
+                        originalBirth = birth
+                        originalIsMale = gender
+
                         _uiState.update { state ->
                             state.copy(
                                 email = email,
                                 provider = provider
                             )
                         }
-                        nickState.emit(nickName)
-                        originalNickName = nickName
-                        locationPositionState.emit(locationList.indexOf(location))
-                        originalLocation = location
-                        birthState.emit(birth)
-                        originalBirth = birth
-                        originalIsMale = gender
-
                     }
                 }
 
@@ -104,11 +107,12 @@ class EditProfileViewModel @Inject constructor(
     private fun observeNickName() {
         nickState.onEach { nick ->
             _uiState.update { state ->
+
                 state.copy(
                     nickName = InputState(
                         helperText = Validation.NONE,
-                        isValid = originalNickName == nick,
-                        isChanged = originalNickName != nick
+                        isValid = ((originalNickName.isEmpty() || originalNickName == nick) && state.nickName.helperText == Validation.NONE),
+                        isChanged = if (originalNickName.isEmpty()) false else originalNickName != nick
                     )
                 )
             }
@@ -118,11 +122,18 @@ class EditProfileViewModel @Inject constructor(
 
     fun checkNickValidation() {
         myPageEditRepository.getCheckNickname(nickState.value).onEach {
-            when(it){
+            when (it) {
                 is ApiState.Success -> {
-                    if (it.data.data.isExist){
-                        Log.d("TEST", "닉네임 중복")
-                    } else{
+                    if (it.data.data.isExist) {
+
+                        _uiState.value = uiState.value.copy(
+                            nickName = InputState(
+                                helperText = Validation.INVALID_NICK,
+                                isValid = false,
+                                isChanged = false
+                            )
+                        )
+                    } else {
                         _uiState.value = uiState.value.copy(
                             nickName = InputState(
                                 helperText = Validation.VALID_NICK,
@@ -132,6 +143,7 @@ class EditProfileViewModel @Inject constructor(
                         )
                     }
                 }
+
                 else -> Log.d("TEST", "검증 실패")
             }
         }.launchIn(viewModelScope)
@@ -154,7 +166,9 @@ class EditProfileViewModel @Inject constructor(
     }
 
     fun setBirth(birthData: String) {
-        birthState.value = birthData
+        viewModelScope.launch {
+            birthState.emit(birthData)
+        }
     }
 
 
@@ -162,11 +176,12 @@ class EditProfileViewModel @Inject constructor(
         birthState.onEach { birth ->
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
+                Log.d("TEST", "${originalBirth}, $birth")
                 state.copy(
                     birth = InputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = (originalBirth != birth)
+                        isChanged = if (originalBirth.isEmpty()) false else originalBirth != birth
                     )
                 )
             }
@@ -187,7 +202,7 @@ class EditProfileViewModel @Inject constructor(
                 password = "1234"
             )
         ).onEach {
-            when(it){
+            when (it) {
                 is ApiState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
                 else -> Log.d("TEST", "수정 실패")
             }

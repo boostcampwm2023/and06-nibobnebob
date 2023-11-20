@@ -2,6 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.mapper
 
 import com.avengers.nibobnebob.data.model.response.MyPageEditInfoResponse
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyPageEditInfoData
+import com.avengers.nibobnebob.presentation.util.LocationArray
 import com.avengers.nibobnebob.presentation.util.LoginType
 
 fun MyPageEditInfoResponse.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
@@ -9,6 +10,6 @@ fun MyPageEditInfoResponse.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
     email = data.userInfo.email,
     provider = data.userInfo.provider,
     birth = data.userInfo.birthdate,
-    location = data.userInfo.region,
+    locationPosition = LocationArray.LOCATION_ARRAY.indexOf(data.userInfo.region),
     gender = data.userInfo.isMale
 )

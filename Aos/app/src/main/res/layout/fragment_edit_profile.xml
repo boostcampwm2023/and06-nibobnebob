@@ -75,15 +75,19 @@
                 app:layout_constraintStart_toEndOf="@id/iv_edit_back"
                 app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tv_edit_done"
                 style="@style/TextMediumBold"
-                set_enabled="@{ui_state}"
+                set_enabled="@{vm.uiState}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
                 android:onClick="@{() -> vm.doneEditProfile()}"
+                android:paddingEnd="20dp"
                 android:text="@string/my_edit_done"
+                android:textColor="@color/selector_nick_check_text"
                 app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
@@ -181,10 +185,10 @@
                 <TextView
                     android:id="@+id/tv_naver_label"
                     style="@style/TextMediumRegular"
+                    login_type="@{vm.uiState.provider}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    login_type="@{vm.uiState.provider}"
                     android:textColor="@color/nn_dark5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_email_label" />

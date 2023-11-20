@@ -1,6 +1,8 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
 
+import android.util.Log
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.databinding.BindingAdapter
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
@@ -17,6 +19,7 @@ fun TextView.setNickHelperText(state: InputState?) {
 
     if (validNick) {
         text = resources.getString(R.string.helper_valid_nick)
+        setTextColor(resources.getColor(R.color.nn_dark1, null))
     } else if (invalidNick) {
         text = resources.getString(R.string.helper_invalid_nick)
         setTextColor(resources.getColor(R.color.nn_rainbow_red, null))
@@ -60,21 +63,27 @@ fun TextInputLayout.setDateHelperText(state: InputState?) {
 }
 
 @BindingAdapter("set_enabled")
-fun TextView.setDoneButtonEnable(state: EditProfileUiState?) {
+fun AppCompatButton.setDoneButtonEnable(state: EditProfileUiState?) {
     state ?: return
 
     val allValid = state.nickName.isValid && state.location.isValid && state.birth.isValid
     val isChanged = state.nickName.isChanged || state.location.isChanged || state.birth.isChanged
 
-    setTextColor(
-        if (allValid && isChanged) resources.getColor(R.color.nn_dark1, null)
-        else resources.getColor(R.color.nn_dark5, null)
+    Log.d(
+        "TEST",
+        "binding ${state.nickName.isValid},${state.location.isValid},${state.birth.isValid}"
     )
+    Log.d(
+        "TEST",
+        "binding ${state.nickName.isChanged},${state.location.isChanged},${state.birth.isChanged}"
+    )
+
+    isEnabled = allValid && isChanged
 }
 
 @BindingAdapter("login_type")
-fun TextView.setLoginType(type : String?){
+fun TextView.setLoginType(type: String?) {
     type ?: return
-    text = if(type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else ""
+    text = if (type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else ""
 }
 
