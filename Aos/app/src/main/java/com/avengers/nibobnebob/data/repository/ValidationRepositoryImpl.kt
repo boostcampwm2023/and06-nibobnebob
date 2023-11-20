@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.data.repository
 
+import com.avengers.nibobnebob.data.model.response.ValidationResponse
 import com.avengers.nibobnebob.data.remote.ValidationApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -9,12 +10,12 @@ class ValidationRepositoryImpl @Inject constructor(
     private val api: ValidationApi
 ): ValidationRepository {
 
-    override fun nickValidation(nickName: String): Flow<Unit> = flow{
+    override fun nickValidation(nickName: String): Flow<ValidationResponse> = flow{
         val response = api.nickValidation(nickName)
         emit(response)
     }
 
-    override fun emailValidation(email: String): Flow<Unit> = flow{
+    override fun emailValidation(email: String): Flow<ValidationResponse> = flow{
         val response = api.emailValidation(email)
         emit(response)
     }
