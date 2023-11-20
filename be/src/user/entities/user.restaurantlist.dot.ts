@@ -11,7 +11,7 @@ import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { Review } from 'src/review/entities/review.entity';
 
 @Entity('user_restaurant_lists')
-export class UserRestaurantList {
+export class UserRestaurantListEntity {
   @ManyToOne(() => User)
   @PrimaryColumn({ name: 'user_id' })
   userId: User;
