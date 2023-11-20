@@ -44,7 +44,7 @@ export class AuthService {
     if (user) {
       const payload = { nickName: user.nickName };
       const accessToken = this.jwtService.sign(payload);
-      
+
       const refreshToken = this.jwtService.sign(payload, {
         secret: "nibobnebob", 
         expiresIn: '7d', 
@@ -56,6 +56,17 @@ export class AuthService {
       throw new NotFoundException(
         "사용자가 등록되어 있지 않습니다. 회원가입을 진행해주세요"
       );
+    }
+  }
+
+  async checkRefreshToken(refreshToken: string){
+    try {
+      const decoded = this.jwtService.verify(refreshToken, { secret: 'nibobnebob' });
+      const payload = { id: decoded.id };
+      const accessToken = this.jwtService.sign(payload);
+      return { accessToken };
+    } catch (err) {
+      throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
     }
   }
 }
