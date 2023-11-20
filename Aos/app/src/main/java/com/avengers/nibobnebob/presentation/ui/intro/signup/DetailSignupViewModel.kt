@@ -60,12 +60,12 @@ class DetailSignupViewModel @Inject constructor(
     private val provider = MutableStateFlow("")
 
     val nick = MutableStateFlow("")
-    private var nickValidation = false
+    private val nickValidation = MutableStateFlow(false)
     private val isMale = MutableStateFlow(true)
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
 
-    val isDataReady = combine(nick, birth, location) { nick, birth, location ->
+    val isDataReady = combine(nick, birth, location, nickValidation) { nick, birth, location, nickValidation->
         nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
                 nickValidation
     }.stateIn(
@@ -118,14 +118,14 @@ class DetailSignupViewModel @Inject constructor(
             when(it){
                 is ApiState.Success -> {
                     if(it.data.isExist){
-                        nickValidation = false
+                        nickValidation.value = false
                         _uiState.update { state ->
                             state.copy(
                                 nickState = InputState.Error("이미 사용중인 닉네임 입니다")
                             )
                         }
                     } else {
-                        nickValidation = true
+                        nickValidation.value = true
                         _uiState.update { state ->
                             state.copy(
                                 nickState = InputState.Success("사용 가능한 닉네임 입니다")
@@ -140,14 +140,12 @@ class DetailSignupViewModel @Inject constructor(
                     _events.emit(DetailSignupEvents.ShowToastMessage(it.e.message.toString()))
                 }
             }
-        }.catch {
-            // Exception 이 일로오나 위로 잡히나 모르겠음
         }.launchIn(viewModelScope)
     }
 
     fun signup(){
         introRepository.signup(DetailSignupRequest(
-            email = email.value,
+            "test",
             provider = provider.value,
             nickName = nick.value,
             birthdate = birth.value,
@@ -163,8 +161,6 @@ class DetailSignupViewModel @Inject constructor(
                     _events.emit(DetailSignupEvents.ShowToastMessage(it.e.message.toString()))
                 }
             }
-        }.catch {
-            // Exception 이 일로오나 위로 잡히나 모르겠음
         }.launchIn(viewModelScope)
     }
 
