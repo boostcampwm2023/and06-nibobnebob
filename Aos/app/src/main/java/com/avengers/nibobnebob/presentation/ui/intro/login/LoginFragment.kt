@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,7 +12,9 @@ import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentLoginBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
+import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,11 +43,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
         repeatOnStarted {
             viewModel.events.collect{
                 when(it){
-                    is LoginEvent.NavigateToMain -> {
-                        //회원가입으로 이동
-                    }
+                    is LoginEvent.NavigateToMain -> findNavController().toMainActivity()
                     is LoginEvent.NavigateToDialog -> {
-                        //다이얼로그 띄우기
+                        // TODO : FINAL -> 다이얼로그
                     }
                     is LoginEvent.NavigateToDetailSignup -> findNavController().toDetailSignup()
                 }
@@ -74,8 +75,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
             override fun onSuccess() {
                 viewModel.token.value = NaverIdLoginSDK.getAccessToken().toString()
-                val token = NaverIdLoginSDK.getAccessToken().toString()
-                viewModel.naverLogin(token)
+                viewModel.naverLogin()
             }
         }
         NaverIdLoginSDK.authenticate(requireContext(), oAuthLoginCallback)
@@ -84,5 +84,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
     private fun NavController.toDetailSignup(){
         val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment()
         this.navigate(action)
+    }
+
+    private fun NavController.toMainActivity(){
+        val intent = Intent(context, MainActivity::class.java)
+        startActivity(intent)
+        (activity as IntroActivity).finish()
     }
 }
