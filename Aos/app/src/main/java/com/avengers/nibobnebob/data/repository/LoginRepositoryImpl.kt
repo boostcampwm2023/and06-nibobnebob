@@ -1,53 +1,37 @@
 package com.avengers.nibobnebob.data.repository
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import com.avengers.nibobnebob.data.model.BaseResponse
+import android.util.Log
+import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
 import com.avengers.nibobnebob.data.remote.NibobNebobApi
-import com.avengers.nibobnebob.presentation.util.Constants.AUTOLOGIN
-import com.avengers.nibobnebob.presentation.util.Constants.TRUE
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
     private val nibobNebobApi: NibobNebobApi,
-    private val dataStore: DataStore<Preferences>
+    private val dataStoreManager: DataStoreManager
 ) : LoginRepository {
 
     private val TAG = "LoginRepositoryImplDebug"
 
-    override fun loginNaver(): Flow<BaseResponse<NaverLoginResponse>> = flow {
+    override fun loginNaver(): Flow<NaverLoginResponse> = flow {
         try {
             val response = nibobNebobApi.postNaverLogin()
             if (response.isSuccessful) {
-                putData(AUTOLOGIN, TRUE)
+                dataStoreManager.putAutoLogin(true)
                 response.body()?.let { result ->
+                    dataStoreManager.putAccessToken(result.data.toString())
                     emit(result)
+                    //TODO : 추후 refresh,access token 저장
                 }
             } else {
-                emit(BaseResponse.Error(response.message(), statusCode = response.code()))
+                emit(response.body() as NaverLoginResponse)
             }
         } catch (e: Exception) {
-            emit(BaseResponse.Error(e.message ?: "오류 발생"))
+            Log.d(TAG, "EXCEPTION 발생 ${e.message}")
         }
     }
 
 
-    override suspend fun putData(key: String, value: String) {
-        val preferencesKey = stringPreferencesKey(key)
-        dataStore.edit {
-            it[preferencesKey] = value
-        }
-    }
-
-
-    override suspend fun getData(key: String): String {
-        val preferencesKey = stringPreferencesKey(key)
-        return dataStore.data.first()[preferencesKey] ?: ""
-    }
 }

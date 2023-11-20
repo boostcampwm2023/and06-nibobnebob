@@ -1,11 +1,9 @@
 package com.avengers.nibobnebob.presentation.ui.intro.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseResponse
+import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.repository.LoginRepository
-import com.avengers.nibobnebob.presentation.util.Constants.ACCESSTOKEN
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +23,8 @@ sealed class LoginEvent {
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val loginRepository: LoginRepository,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
     private val TAG = "LoginViewModelDebug"
 
@@ -66,38 +65,24 @@ class LoginViewModel @Inject constructor(
     }
 
     fun postCommonLogin(){
-        Log.d(TAG,_uiState.value.toString())
-        Log.d(TAG,autoLogin.value.toString())
-        viewModelScope.launch {
-            //TODO : 일반로그인
-        }
+        //TODO : 일반로그인
     }
 
-    fun naverLogin(token : String){
+    fun naverLogin(){
         viewModelScope.launch {
-            loginRepository.putData(ACCESSTOKEN,token)
+            dataStoreManager.putAccessToken(token.value)
             loginRepository.loginNaver().onEach {response ->
-                when(response) {
-                    is BaseResponse.Success ->{
-                        _events.emit(LoginEvent.NavigateToMain)
+                when(response.code) {
+                    200 -> {
+                        _events.emit(LoginEvent.NavigateToMain)}
+                    401 -> {
+                        //토큰 만료
                     }
-                    is BaseResponse.Error -> {
-                        if(response.statusCode == 404){
-                            _events.emit(LoginEvent.NavigateToDetailSignup)
-                        }
-                    }
-                    is BaseResponse.Loading -> {
-                        Log.d(TAG,"Loading")
+                    404 -> {
+                        _events.emit(LoginEvent.NavigateToDetailSignup)
                     }
                 }
             }.launchIn(viewModelScope)
         }
     }
-
-    fun navigateToDetailSignup(){
-        viewModelScope.launch {
-            _events.emit(LoginEvent.NavigateToDetailSignup)
-        }
-    }
-
 }
