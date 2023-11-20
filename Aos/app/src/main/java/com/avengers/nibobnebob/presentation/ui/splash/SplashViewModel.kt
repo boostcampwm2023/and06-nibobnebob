@@ -15,7 +15,6 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val networkManager: NetworkManager,
     private val dataStoreManager: DataStoreManager,
-    private val loginRepository: LoginRepository
 ) : BaseActivityViewModel(networkManager) {
 
     sealed class NavigationEvent {
@@ -32,7 +31,7 @@ class SplashViewModel @Inject constructor(
             dataStoreManager.getAutoLogin().collect { autoLogin ->
                 dataStoreManager.getAccessToken().collect { accessToken ->
                     if (autoLogin == true && accessToken != "") {
-                        _events.emit(NavigationEvent.NavigateToIntro)
+                        _events.emit(NavigationEvent.NavigateToMain)
                     } else {
                         _events.emit(NavigationEvent.NavigateToIntro)
                     }
