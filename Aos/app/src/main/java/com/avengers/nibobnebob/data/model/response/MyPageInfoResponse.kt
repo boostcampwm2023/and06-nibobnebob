@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.data.model.response
 
 
 data class MyPageInfoResponse(
-    val data: MyPageInfo?,
+    val data: MyPageInfo,
     val message: String,
     val statusCode: Int
 )

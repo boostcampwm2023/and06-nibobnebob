@@ -24,29 +24,4 @@ class MyPageRepositoryImpl @Inject constructor(private val nnApi: NnApi) : MyPag
 
     }
 
-
-
-//    override fun sendSignUp(data: SignUpRequest): Flow<MyPageResponse?> = flow {
-//        val response = nnApi.sendSignUp(data)
-//        if(response.isSuccessful){
-//            emit(nnApi.sendSignUp(data).body())
-//        }else{
-//            // val errorData = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
-//            // 여기서 앱 안죽고 처리되도록 고민하기
-//            response.errorBody()
-//        }
-//    }
-
-
-//    override suspend fun sendSignUp(data: SignUpRequest): Flow<Boolean> {
-//        runCatching {
-//            nnApi.sendSignUp(data)
-//        }.onSuccess{
-//            return flow { true }
-//        }.onFailure {
-//            return flow { false }
-//        }
-//        return flow { true }
-//    }
-
 }
