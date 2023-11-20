@@ -49,6 +49,7 @@ class DetailSignupFragment :
                     is DetailSignupEvents.NavigateToMainActivity -> {
                         // todo
                     }
+                    is DetailSignupEvents.ShowToastMessage -> showToastMessage(it.msg)
                 }
             }
         }

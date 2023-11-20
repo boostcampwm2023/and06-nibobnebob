@@ -1,9 +1,12 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.ApiState
 import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
+import com.avengers.nibobnebob.data.repository.ValidationRepository
 import com.avengers.nibobnebob.presentation.util.Validation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,11 +40,13 @@ sealed class InputState {
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
     data object NavigateToMainActivity : DetailSignupEvents()
+    data class ShowToastMessage(val msg: String): DetailSignupEvents()
 }
 
 @HiltViewModel
 class DetailSignupViewModel @Inject constructor(
-    private val introRepository: IntroRepository
+    private val introRepository: IntroRepository,
+    private val validationRepository: ValidationRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailSignupUiState())
@@ -75,6 +80,7 @@ class DetailSignupViewModel @Inject constructor(
     }
 
     private fun observeNick() {
+
         nick.onEach {
             _uiState.update { state ->
                 state.copy(
@@ -82,8 +88,11 @@ class DetailSignupViewModel @Inject constructor(
                     nickState = InputState.Empty
                 )
             }
+        }.onEach {
+
         }.launchIn(viewModelScope)
     }
+
 
     private fun observeBirth() {
         birth.onEach {
@@ -104,25 +113,36 @@ class DetailSignupViewModel @Inject constructor(
     }
 
     fun checkNickDuplication() {
+        validationRepository.nickValidation(nick.value).onEach {
 
-        viewModelScope.launch {
-
-            // todo 중복체크 성공일때
-            nickValidation = true
-            _uiState.update { state ->
-                state.copy(
-                    nickState = InputState.Success("사용 가능한 닉네임 입니다")
-                )
+            when(it){
+                is ApiState.Success -> {
+                    if(it.data.isExist){
+                        nickValidation = false
+                        _uiState.update { state ->
+                            state.copy(
+                                nickState = InputState.Error("이미 사용중인 닉네임 입니다")
+                            )
+                        }
+                    } else {
+                        nickValidation = true
+                        _uiState.update { state ->
+                            state.copy(
+                                nickState = InputState.Success("사용 가능한 닉네임 입니다")
+                            )
+                        }
+                    }
+                }
+                is ApiState.Error -> {
+                    _events.emit(DetailSignupEvents.ShowToastMessage(it.message))
+                }
+                is ApiState.Exception -> {
+                    _events.emit(DetailSignupEvents.ShowToastMessage(it.e.message.toString()))
+                }
             }
-
-            // todo 중복체크 실패일때
-//            nickValidation = false
-//            _uiState.update { state ->
-//                state.copy(
-//                    nickState = InputState.Error("이미 사용중인 닉네임 입니다")
-//                )
-//            }
-        }
+        }.catch {
+            // Exception 이 일로오나 위로 잡히나 모르겠음
+        }.launchIn(viewModelScope)
     }
 
     fun signup(){
@@ -133,10 +153,18 @@ class DetailSignupViewModel @Inject constructor(
             birthdate = birth.value,
             region = location.value,
             isMale = isMale.value
-        )).onEach { result ->
-
+        )).onEach {
+            when(it){
+                is ApiState.Success -> navigateToMainActivity()
+                is ApiState.Error -> {
+                    _events.emit(DetailSignupEvents.ShowToastMessage(it.message))
+                }
+                is ApiState.Exception -> {
+                    _events.emit(DetailSignupEvents.ShowToastMessage(it.e.message.toString()))
+                }
+            }
         }.catch {
-
+            // Exception 이 일로오나 위로 잡히나 모르겠음
         }.launchIn(viewModelScope)
     }
 
@@ -164,7 +192,7 @@ class DetailSignupViewModel @Inject constructor(
         }
     }
 
-    fun navigateToMainActivity(){
+    private fun navigateToMainActivity(){
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.NavigateToMainActivity)
         }
