@@ -61,7 +61,9 @@ class EditProfileViewModel @Inject constructor(
 
     val nickState = MutableStateFlow("")
     val birthState = MutableStateFlow("")
-    val locationPositionState = MutableStateFlow(0)
+    val locationState = MutableStateFlow(0)
+    val locationTextState = MutableStateFlow("")
+    val locationEditMode = MutableStateFlow(false)
 
 
     init {
@@ -79,11 +81,12 @@ class EditProfileViewModel @Inject constructor(
 
                     it.data.toUiMyPageEditInfoData().apply {
                         nickState.emit(nickName)
-                        locationPositionState.emit(locationPosition)
+                        locationState.emit(location.indexOf(location))
+                        locationTextState.emit(location)
                         birthState.emit(birth)
 
                         originalNickName = nickName
-                        originalLocation = locationList[locationPosition]
+                        originalLocation = location
                         originalBirth = birth
                         originalIsMale = gender
 
@@ -150,7 +153,7 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun observeLocation() {
-        locationPositionState.onEach { position ->
+        locationState.onEach { position ->
             _uiState.update { state ->
                 state.copy(
                     location = InputState(
@@ -160,8 +163,10 @@ class EditProfileViewModel @Inject constructor(
                 )
             }
         }.launchIn(viewModelScope)
+    }
 
-
+    fun setLocationEditMode() {
+        viewModelScope.launch { locationEditMode.emit(true) }
     }
 
     fun setBirth(birthData: String) {
@@ -197,7 +202,7 @@ class EditProfileViewModel @Inject constructor(
                 email = uiState.value.email,
                 provider = uiState.value.provider,
                 birthdate = birthState.value,
-                region = locationList[locationPositionState.value],
+                region = locationList[locationState.value],
                 isMale = originalIsMale,
                 password = "1234"
             )

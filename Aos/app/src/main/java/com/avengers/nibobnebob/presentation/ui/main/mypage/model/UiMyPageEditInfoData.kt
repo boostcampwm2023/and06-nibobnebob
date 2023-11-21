@@ -5,6 +5,6 @@ data class UiMyPageEditInfoData(
     val email: String,
     val provider: String,
     val birth: String,
-    val locationPosition: Int,
+    val location: String,
     val gender: Boolean,
 )

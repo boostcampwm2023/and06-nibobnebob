@@ -10,6 +10,6 @@ fun MyPageEditInfoResponse.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
     email = data.userInfo.email,
     provider = data.userInfo.provider,
     birth = data.userInfo.birthdate,
-    locationPosition = LocationArray.LOCATION_ARRAY.indexOf(data.userInfo.region),
+    location = data.userInfo.region,
     gender = data.userInfo.isMale
 )

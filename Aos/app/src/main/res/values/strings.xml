@@ -37,6 +37,7 @@
     <string name="my_edit_birth_ph">YYYY/MM/DD</string>
     <string name="my_my_title">내 맛집 리스트</string>
     <string name="my_wish_list">내 위시 맛집 리스트</string>
+    <string name="edit_change">변경하기</string>
 
     <string-array name="location_list">
         <item>용산구</item>

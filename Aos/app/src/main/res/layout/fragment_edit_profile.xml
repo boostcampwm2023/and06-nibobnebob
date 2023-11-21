@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="ui_state"
             type="com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile.EditProfileUiState" />
@@ -214,6 +216,32 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_naver_email" />
 
+                <TextView
+                    android:id="@+id/tv_location"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:paddingStart="8dp"
+                    android:text="@{vm.locationTextState}"
+                    android:textColor="@color/nn_dark4"
+                    android:visibility="@{vm.locationEditMode ? View.INVISIBLE : View.VISIBLE}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_location_label" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_edit_location"
+                    style="@style/CaptionRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> vm.setLocationEditMode()}"
+                    android:text="@string/edit_change"
+                    android:visibility="@{vm.locationEditMode ? View.INVISIBLE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_location"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_location" />
+
+
                 <Spinner
                     android:id="@+id/s_location"
                     style="?attr/textInputStyle"
@@ -223,6 +251,8 @@
                     android:background="@drawable/selector_location_drop_down"
                     android:entries="@{vm.locationList}"
                     android:paddingStart="8dp"
+                    android:selectedItemPosition="@={vm.locationState}"
+                    android:visibility="@{vm.locationEditMode ? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_location_label" />
