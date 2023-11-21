@@ -34,7 +34,7 @@ class MyPageViewModel @Inject constructor(
     }
 
     private fun getUserInfo() {
-        myPageRepository.getMyPageInfo().onEach {
+        myPageRepository.getMyInfo().onEach {
             when (it) {
                 is ApiState.Success -> {
                     it.data.toUiMyPageInfoData().apply {

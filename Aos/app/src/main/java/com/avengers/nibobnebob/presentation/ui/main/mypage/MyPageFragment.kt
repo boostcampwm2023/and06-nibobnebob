@@ -6,6 +6,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyPageBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_page) {
-    private lateinit var navController: NavController
     private val viewModel: MyPageViewModel by viewModels()
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
@@ -31,15 +31,13 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
     private fun initView(view: View) {
         binding.svm = sharedViewModel
         binding.vm = viewModel
-        navController = Navigation.findNavController(view)
-
 
         viewLifecycleOwner.repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
-                    is MyPageSharedUiEvent.NavigateToEditProfile -> navController.toEditProfile()
-                    is MyPageSharedUiEvent.NavigateToMyList -> navController.toMyList()
-                    is MyPageSharedUiEvent.NavigateToWishList -> navController.toWishList()
+                    is MyPageSharedUiEvent.NavigateToEditProfile -> findNavController().toEditProfile()
+                    is MyPageSharedUiEvent.NavigateToMyList -> findNavController().toMyList()
+                    is MyPageSharedUiEvent.NavigateToWishList -> findNavController().toWishList()
                     else -> Unit
                 }
 

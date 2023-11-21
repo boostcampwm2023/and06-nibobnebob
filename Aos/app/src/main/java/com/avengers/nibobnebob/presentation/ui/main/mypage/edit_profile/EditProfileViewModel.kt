@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.ApiState
-import com.avengers.nibobnebob.data.model.request.MyPageEditInfoRequest
-import com.avengers.nibobnebob.data.repository.MyPageEditRepository
+import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
+import com.avengers.nibobnebob.data.repository.MyPageRepository
+import com.avengers.nibobnebob.data.repository.ValidationRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
 import com.avengers.nibobnebob.presentation.util.LocationArray
@@ -44,7 +45,8 @@ sealed class EditProfileUiEvent {
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    private val myPageEditRepository: MyPageEditRepository
+    private val myPageRepository: MyPageRepository,
+    private val validationRepository: ValidationRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
@@ -74,7 +76,7 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun getOriginalData() {
-        myPageEditRepository.getMyPageEditInfo().onEach {
+        myPageRepository.getMyDefaultInfo().onEach {
 
             when (it) {
                 is ApiState.Success -> {
@@ -123,10 +125,10 @@ class EditProfileViewModel @Inject constructor(
     }
 
     fun checkNickValidation() {
-        myPageEditRepository.getCheckNickname(nickState.value).onEach {
+        validationRepository.nickValidation(nickState.value).onEach {
             when (it) {
                 is ApiState.Success -> {
-                    if (it.data.data.isExist) {
+                    if (it.data.isExist) {
 
                         _uiState.value = uiState.value.copy(
                             nickName = InputState(
@@ -196,8 +198,8 @@ class EditProfileViewModel @Inject constructor(
 
     fun doneEditProfile() {
 
-        myPageEditRepository.putMyPageEditInfo(
-            MyPageEditInfoRequest(
+        myPageRepository.editMyInfo(
+            EditMyInfoRequest(
                 nickName = nickState.value,
                 email = uiState.value.email,
                 provider = uiState.value.provider,
