@@ -23,6 +23,7 @@ internal fun restaurantSheet(
 
     binding.btnAddMyRestaurant.setOnClickListener {
         onClickAddMyRestaurant(restaurantId)
+        dialog.dismiss()
     }
 
     binding.btnAddWishRestaurant.setOnClickListener {
@@ -41,6 +42,7 @@ internal fun restaurantSheet(
 
     binding.btnGoReview.setOnClickListener {
         onClickGoReview(restaurantId)
+        dialog.dismiss()
     }
 
     return dialog

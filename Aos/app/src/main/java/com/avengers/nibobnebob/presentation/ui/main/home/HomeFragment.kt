@@ -16,6 +16,9 @@ import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
+import com.avengers.nibobnebob.NavGraphDirections
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -191,15 +194,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     private fun addRestaurantTest(test: Int) {
-
+        findNavController().toAddRestaurant()
     }
 
     private fun goReviewTest(test: Int) {
+        findNavController().toSearchRestaurant()
+    }
 
+    private fun NavController.toAddRestaurant(){
+        val action = NavGraphDirections.globalToAddMyRestaurantFragment()
+        navigate(action)
+    }
+
+    private fun NavController.toSearchRestaurant(){
+        val action = HomeFragmentDirections.actionHomeFragmentToRestaurantSearchFragment()
+        navigate(action)
     }
 
 
 }
+
 
 @BindingAdapter("trackingBtnDrawable")
 fun bindTrackingBtnDrawable(btn: ImageButton, state: TrackingState) {
