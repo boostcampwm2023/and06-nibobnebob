@@ -15,10 +15,12 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.util.restaurantSheet
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -54,7 +56,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         initMapView()
     }
 
-    private fun initMapView(){
+    private fun initMapView() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
                 childFragmentManager.beginTransaction().add(R.id.map_fragment, it).commit()
@@ -79,7 +81,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         setMarker()
     }
 
-    private fun setMapListener(){
+    private fun setMapListener() {
 
         // todo 화면 이동시 리스너
         naverMap.addOnCameraChangeListener { reason, animated ->
@@ -100,10 +102,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private fun initStateObserver() {
         repeatOnStarted {
             viewModel.uiState.collect {
-                when(it.locationTrackingState){
+                when (it.locationTrackingState) {
                     is TrackingState.TryOn -> requestLocationPermission()
-                    is TrackingState.On -> naverMap.locationTrackingMode = LocationTrackingMode.Follow
-                    is TrackingState.Off -> naverMap.locationTrackingMode = LocationTrackingMode.None
+                    is TrackingState.On -> naverMap.locationTrackingMode =
+                        LocationTrackingMode.Follow
+
+                    is TrackingState.Off -> naverMap.locationTrackingMode =
+                        LocationTrackingMode.None
                 }
             }
         }
@@ -112,12 +117,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private fun requestLocationPermission() {
         var permissionFlag = false
         locationPermissionList.forEach { permission ->
-            permissionFlag = ContextCompat.checkSelfPermission(requireContext(),permission) == PackageManager.PERMISSION_GRANTED
+            permissionFlag = ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
         }
 
-        if(permissionFlag){
+        if (permissionFlag) {
             checkLocationIsOn()
-        }else {
+        } else {
             requestPermissionLauncher.launch(locationPermissionList)
             Toast.makeText(requireContext(), "위치권한을 허용해주세요", Toast.LENGTH_SHORT).show()
         }
@@ -126,13 +134,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { resultMap ->
-        val isAllGranted = locationPermissionList.all { resultMap[it] == true}
+        val isAllGranted = locationPermissionList.all { resultMap[it] == true }
         if (isAllGranted) checkLocationIsOn()
         else viewModel.trackingOff()
     }
 
     private fun checkLocationIsOn() {
-        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             viewModel.trackingOn()
         } else {
@@ -141,15 +150,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             viewModel.trackingOff()
         }
     }
-    
+
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
-    private fun setMarker(){
+    private fun setMarker() {
         val marker = Marker()
 
         // example
-        marker.position = LatLng(37.555594049034,126.96707115682)
+        marker.position = LatLng(37.555594049034, 126.96707115682)
         marker.icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
         marker.map = naverMap
+
+        marker.setOnClickListener {
+            restaurantSheet(
+                context = requireContext(),
+                restaurantId = 0,
+                isWish = false,
+                onClickAddWishRestaurant = ::addWishTest,
+                onClickAddMyRestaurant = ::addRestaurantTest,
+                onClickGoReview = ::goReviewTest
+            ).show()
+
+            true
+        }
 
         // todo 마커의 포지션을 정함
         // marker.position = LatLng(data.latitude,data.longitude)
@@ -164,11 +186,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         // marker.map = naverMap
     }
 
+    private fun addWishTest(test: Int, test2: Boolean): Boolean {
+        return true
+    }
+
+    private fun addRestaurantTest(test: Int) {
+
+    }
+
+    private fun goReviewTest(test: Int) {
+
+    }
+
+
 }
 
 @BindingAdapter("trackingBtnDrawable")
-fun bindTrackingBtnDrawable(btn: ImageButton, state: TrackingState){
-    when(state){
+fun bindTrackingBtnDrawable(btn: ImageButton, state: TrackingState) {
+    when (state) {
         is TrackingState.On -> btn.setImageResource(R.drawable.ic_location_on)
         is TrackingState.Off -> btn.setImageResource(R.drawable.ic_location_off)
         else -> {}
