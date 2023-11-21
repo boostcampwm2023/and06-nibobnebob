@@ -19,11 +19,13 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -74,6 +76,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.locationSource = locationSource
         setMapListener()
         initStateObserver()
+        setMarker()
     }
 
     private fun setMapListener(){
@@ -142,6 +145,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
     private fun setMarker(){
         val marker = Marker()
+
+        // example
+        marker.position = LatLng(37.555594049034,126.96707115682)
+        marker.icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
+        marker.map = naverMap
 
         // todo 마커의 포지션을 정함
         // marker.position = LatLng(data.latitude,data.longitude)
