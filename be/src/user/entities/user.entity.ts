@@ -27,7 +27,7 @@ export class User {
   @Column({ type: "boolean" })
   isMale: boolean;
 
-  @Column({ type: "varchar", length: 50, nullable: true })
+  @Column({ type: "varchar", length: 62, nullable: true })
   password: string | null;
 
   @Column({ type: "varchar", length: 20, nullable: true })
