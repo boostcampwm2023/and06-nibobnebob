@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.ApiState
-import com.avengers.nibobnebob.data.repository.LoginRepository
+import com.avengers.nibobnebob.data.repository.IntroRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +25,7 @@ sealed class LoginEvent {
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository,
+    private val introRepository: IntroRepository,
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
     private val TAG = "LoginViewModelDebug"
@@ -65,16 +65,20 @@ class LoginViewModel @Inject constructor(
         autoLogin.value = newState
     }
 
-    fun postCommonLogin(){
+    fun loginCommon(){
         //TODO : 일반로그인
     }
 
-    fun naverLogin(token : String){
+    fun loginNaver(token : String){
         viewModelScope.launch {
             dataStoreManager.putAccessToken(token)
-            loginRepository.loginNaver().onEach {
+            introRepository.loginNaver().onEach {
                 when(it){
                     is ApiState.Success -> {
+                        dataStoreManager.putAutoLogin(true)
+                        dataStoreManager.putAccessToken(it.data.accessToken.toString())
+                        dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
+
                         _events.emit(LoginEvent.NavigateToMain)
                     }
                     is ApiState.Error -> {
@@ -94,4 +98,5 @@ class LoginViewModel @Inject constructor(
             }.launchIn(viewModelScope)
         }
     }
+
 }
