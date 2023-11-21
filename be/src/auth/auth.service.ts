@@ -4,7 +4,7 @@ import {
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
-import { UserRepository } from "src/user/user.repository";
+import { UserRepository } from "../user/user.repository";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 
@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JwtService
-  ) {}
+  ) { }
   async NaverAuth(authorization: string) {
     if (!authorization) {
       throw new HttpException(
