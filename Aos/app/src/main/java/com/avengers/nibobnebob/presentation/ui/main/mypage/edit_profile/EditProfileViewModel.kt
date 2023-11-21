@@ -1,23 +1,32 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
+import com.avengers.nibobnebob.data.repository.MyPageRepository
+import com.avengers.nibobnebob.data.repository.ValidationRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
+import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
 import com.avengers.nibobnebob.presentation.util.LocationArray
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class EditProfileUiState(
     val nickName: InputState = InputState(),
+    val email: String = "",
+    val provider: String = "",
     val birth: InputState = InputState(),
     val location: InputState = InputState()
 )
@@ -29,18 +38,16 @@ data class InputState(
     val isChanged: Boolean = false,
 )
 
-data class OriginalState(
-    val originalNickName: String,
-    val originalBirth: String,
-    val originalLocation: String
-)
-
 sealed class EditProfileUiEvent {
     data object EditProfileDone : EditProfileUiEvent()
 }
 
 
-class EditProfileViewModel : ViewModel() {
+@HiltViewModel
+class EditProfileViewModel @Inject constructor(
+    private val myPageRepository: MyPageRepository,
+    private val validationRepository: ValidationRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
 
@@ -50,50 +57,65 @@ class EditProfileViewModel : ViewModel() {
     private var originalNickName: String = ""
     private var originalBirth: String = ""
     private var originalLocation: String = ""
+    private var originalIsMale: Boolean = true
 
     val locationList = LocationArray.LOCATION_ARRAY
 
-    val nick = MutableStateFlow("")
-    val birth = MutableStateFlow("")
-    val locationPosition = MutableStateFlow(0)
+    val nickState = MutableStateFlow("")
+    val birthState = MutableStateFlow("")
+    val locationState = MutableStateFlow(0)
+    val locationTextState = MutableStateFlow("")
+    val locationEditMode = MutableStateFlow(false)
 
 
     init {
+        getOriginalData()
         observeNickName()
         observeLocation()
         observeBirth()
-        getOriginalData()
     }
 
     private fun getOriginalData() {
-        flow {
-            emit(
-                OriginalState(
-                    originalNickName = "tester",
-                    originalBirth = "2000/03/13",
-                    originalLocation = "용산구"
-                )
-            )
-        }.onEach { state ->
+        myPageRepository.getMyDefaultInfo().onEach {
 
-            originalNickName = state.originalNickName
-            originalBirth = state.originalBirth
-            originalLocation = state.originalLocation
+            when (it) {
+                is ApiState.Success -> {
 
-            nick.emit(state.originalNickName)
-            birth.emit(state.originalBirth)
-            locationPosition.emit(locationList.indexOf(state.originalLocation))
+                    it.data.toUiMyPageEditInfoData().apply {
+                        nickState.emit(nickName)
+                        locationState.emit(location.indexOf(location))
+                        locationTextState.emit(location)
+                        birthState.emit(birth)
 
+                        originalNickName = nickName
+                        originalLocation = location
+                        originalBirth = birth
+                        originalIsMale = gender
+
+                        _uiState.update { state ->
+                            state.copy(
+                                email = email,
+                                provider = provider
+                            )
+                        }
+                    }
+                }
+
+                is ApiState.Error -> testLog(it.message)
+                is ApiState.Exception -> testLog("${it.e}")
+            }
         }.launchIn(viewModelScope)
     }
 
     private fun observeNickName() {
-        nick.onEach { nick ->
+        nickState.onEach { nick ->
+            if (originalNickName.isEmpty()) return@onEach
             _uiState.update { state ->
+
                 state.copy(
                     nickName = InputState(
                         helperText = Validation.NONE,
-                        isValid = originalNickName == nick,
+                        isValid = (originalNickName == nick && state.nickName.helperText == Validation.NONE),
                         isChanged = originalNickName != nick
                     )
                 )
@@ -103,18 +125,37 @@ class EditProfileViewModel : ViewModel() {
     }
 
     fun checkNickValidation() {
-        // check(nickName) 서버에서 검증
-        _uiState.value = uiState.value.copy(
-            nickName = InputState(
-                helperText = Validation.VALID_NICK,
-                isValid = true,
-                isChanged = originalNickName != nick.value
-            )
-        )
+        validationRepository.nickValidation(nickState.value).onEach {
+            when (it) {
+                is ApiState.Success -> {
+                    if (it.data.isExist) {
+
+                        _uiState.value = uiState.value.copy(
+                            nickName = InputState(
+                                helperText = Validation.INVALID_NICK,
+                                isValid = false,
+                                isChanged = false
+                            )
+                        )
+                    } else {
+                        _uiState.value = uiState.value.copy(
+                            nickName = InputState(
+                                helperText = Validation.VALID_NICK,
+                                isValid = true,
+                                isChanged = originalNickName != nickState.value
+                            )
+                        )
+                    }
+                }
+
+                else -> testLog("검증 실패")
+            }
+        }.launchIn(viewModelScope)
+
     }
 
     private fun observeLocation() {
-        locationPosition.onEach { position ->
+        locationState.onEach { position ->
             _uiState.update { state ->
                 state.copy(
                     location = InputState(
@@ -124,24 +165,30 @@ class EditProfileViewModel : ViewModel() {
                 )
             }
         }.launchIn(viewModelScope)
+    }
 
-
+    fun setLocationEditMode() {
+        viewModelScope.launch { locationEditMode.emit(true) }
     }
 
     fun setBirth(birthData: String) {
-        birth.value = birthData
+        viewModelScope.launch {
+            birthState.emit(birthData)
+        }
     }
 
 
     private fun observeBirth() {
-        birth.onEach { birth ->
+        birthState.onEach { birth ->
+            if (originalBirth.isEmpty()) return@onEach
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
+                testLog("${originalBirth}, $birth")
                 state.copy(
                     birth = InputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = (originalBirth != birth)
+                        isChanged = originalBirth != birth
                     )
                 )
             }
@@ -150,10 +197,27 @@ class EditProfileViewModel : ViewModel() {
 
 
     fun doneEditProfile() {
-        // 서버로 전송, 응답 200 이면 실행
-        viewModelScope.launch {
-            _events.emit(EditProfileUiEvent.EditProfileDone)
-        }
+
+        myPageRepository.editMyInfo(
+            EditMyInfoRequest(
+                nickName = nickState.value,
+                email = uiState.value.email,
+                provider = uiState.value.provider,
+                birthdate = birthState.value,
+                region = locationList[locationState.value],
+                isMale = originalIsMale,
+                password = "1234"
+            )
+        ).onEach {
+            when (it) {
+                is ApiState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
+                else -> testLog("수정 실패")
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun testLog(msg: String) {
+        Log.d("TEST", msg)
     }
 
 

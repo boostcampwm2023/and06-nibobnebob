@@ -35,6 +35,11 @@
         app:destination="@id/wishRestaurantListFragment"
         app:popUpTo="@id/myPageFragment"
         app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_myPageFragment"
+        app:destination="@id/myPageFragment"
+        app:popUpTo="@id/myPageFragment"
+        app:popUpToInclusive="false"/>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile.EditProfileFragment"
