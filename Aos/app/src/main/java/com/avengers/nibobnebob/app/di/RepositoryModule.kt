@@ -1,10 +1,5 @@
 package com.avengers.nibobnebob.app.di
 
-import com.avengers.nibobnebob.data.repository.IntroRepository
-import com.avengers.nibobnebob.data.repository.IntroRepositoryImpl
-import com.avengers.nibobnebob.data.repository.ValidationRepository
-import com.avengers.nibobnebob.data.repository.ValidationRepositoryImpl
-import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -26,6 +21,12 @@ abstract class RepositoryModule {
     abstract fun bindValidationRepository(
         validationRepositoryImpl: ValidationRepositoryImpl
     ): ValidationRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindLoginRepository(
+        loginRepositoryImpl : LoginRepositoryImpl
+    ) : LoginRepository
 
 }
 

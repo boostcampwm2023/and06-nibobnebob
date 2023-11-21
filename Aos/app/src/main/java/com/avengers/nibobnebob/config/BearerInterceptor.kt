@@ -4,22 +4,17 @@ package com.avengers.nibobnebob.config
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
+import javax.inject.Inject
 
-class BearerInterceptor : Interceptor {
+class BearerInterceptor @Inject constructor() : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val response = chain.proceed(originalRequest)
 
-        // API 통신중 특정코드 에러 발생 (accessToken 만료)
-        if (response.code == 410) {
-
-            var isRefreshed = false
-            var accessToken = ""
-
 //            runBlocking {
-                // 로컬에 refreshToken이 있다면
+// 로컬에 refreshToken이 있다면
 //                sharedPreferences.getString(X_REFRESH_TOKEN, null)?.let { refresh ->
 //                    Log.d(TAG, refresh)
 //                    // refresh API 호출
@@ -59,9 +54,9 @@ class BearerInterceptor : Interceptor {
 //
 //                return chain.proceed(newRequest)
 //            }
-        }
-
         // 해당 특정 에러코드가 그대로 내려간다면, 세션 만료 처리
         return response
     }
 }
+
+
