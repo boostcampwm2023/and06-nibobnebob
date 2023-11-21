@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,7 +12,9 @@ import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentLoginBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
+import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,37 +30,35 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.vm = viewModel
-
-        NaverIdLoginSDK.initialize(
-            requireContext(),
-            BuildConfig.NAVER_LOGIN_CLIENT_ID,
-            BuildConfig.NAVER_LOGIN_CLIENT_SECRET, TAG)
-        NaverIdLoginSDK.showDevelopersLog(true)
-
-
+        naverInitialize()
         initEventObserver()
+
         binding.btnNaver.setOnClickListener {
             naverLogin()
         }
-
     }
 
     private fun initEventObserver(){
         repeatOnStarted {
             viewModel.events.collect{
                 when(it){
-                    is LoginEvent.LoginSuccess -> {
-                        //회원가입으로 이동
-                    }
-                    is LoginEvent.LoginFailure -> {
-                        //다이얼로그 띄우기
+                    is LoginEvent.NavigateToMain -> findNavController().toMainActivity()
+                    is LoginEvent.NavigateToDialog -> {
+                        // TODO : FINAL -> 다이얼로그
                     }
                     is LoginEvent.NavigateToDetailSignup -> findNavController().toDetailSignup()
                 }
             }
         }
+    }
+
+    private fun naverInitialize(){
+        NaverIdLoginSDK.initialize(
+            requireContext(),
+            BuildConfig.NAVER_LOGIN_CLIENT_ID,
+            BuildConfig.NAVER_LOGIN_CLIENT_SECRET, TAG)
+        NaverIdLoginSDK.showDevelopersLog(true)
     }
 
     private fun naverLogin(){
@@ -73,20 +74,21 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
             }
 
             override fun onSuccess() {
-                viewModel.token.value = NaverIdLoginSDK.getAccessToken().toString()
-                viewModel.postNaverLogin()
-                // TODO : datastore이든 sharedpref이든 서버와의 통신 진행 후 토큰을 저장 해야함 (repository에서, 추가한 preferencesdatastore에 진행)
+                val token = NaverIdLoginSDK.getAccessToken().toString()
+                viewModel.loginNaver(token)
             }
         }
         NaverIdLoginSDK.authenticate(requireContext(), oAuthLoginCallback)
     }
 
-    private fun naverLogout(){
-        NaverIdLoginSDK.logout()
-    }
-
     private fun NavController.toDetailSignup(){
         val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment()
         this.navigate(action)
+    }
+
+    private fun NavController.toMainActivity(){
+        val intent = Intent(context, MainActivity::class.java)
+        startActivity(intent)
+        (activity as IntroActivity).finish()
     }
 }
