@@ -16,7 +16,6 @@ import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.NavGraphDirections
 import com.avengers.nibobnebob.R
@@ -56,6 +55,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+        binding.ivTest.setOnClickListener {
+            findNavController().toSearchRestaurant()
+        }
         initMapView()
     }
 
@@ -198,16 +200,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     private fun goReviewTest(test: Int) {
-        findNavController().toSearchRestaurant()
+        findNavController().toRestaurantDetail()
     }
 
-    private fun NavController.toAddRestaurant(){
+    private fun NavController.toAddRestaurant() {
         val action = NavGraphDirections.globalToAddMyRestaurantFragment()
         navigate(action)
     }
 
-    private fun NavController.toSearchRestaurant(){
+    private fun NavController.toSearchRestaurant() {
         val action = HomeFragmentDirections.actionHomeFragmentToRestaurantSearchFragment()
+        navigate(action)
+    }
+
+    private fun NavController.toRestaurantDetail() {
+        val action = NavGraphDirections.globalToRestaurantDetailFragment()
         navigate(action)
     }
 
