@@ -3,7 +3,6 @@ package com.avengers.nibobnebob.presentation.ui.splash
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.app.NetworkManager
-import com.avengers.nibobnebob.data.repository.LoginRepository
 import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
