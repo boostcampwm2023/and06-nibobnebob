@@ -58,4 +58,15 @@ export class AuthService {
       );
     }
   }
+
+  async checkRefreshToken(refreshToken: string){
+    try {
+      const decoded = this.jwtService.verify(refreshToken, { secret: 'nibobnebob' });
+      const payload = { id: decoded.id };
+      const accessToken = this.jwtService.sign(payload);
+      return { accessToken };
+    } catch (err) {
+      throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
+    }
+  }
 }

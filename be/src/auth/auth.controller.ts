@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Headers,
   Post,
@@ -11,7 +12,9 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiBody,
 } from "@nestjs/swagger";
+import { RefreshTokenDto } from "./dto/refreshToken.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -28,5 +31,14 @@ export class AuthController {
   @ApiBearerAuth()
   signin(@Headers("authorization") authorization: string) {
     return this.authService.NaverAuth(authorization);
+  }
+
+  @Post("refresh-token")
+  @ApiOperation({ summary: "accessToken 재발급" })
+  @ApiResponse({ status: 200, description: "성공적으로 재발급됨." })
+  @ApiResponse({ status: 401, description: "잘못된 refresh token." })
+  @ApiBody({ type: RefreshTokenDto })
+  checkRefreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.checkRefreshToken(refreshTokenDto.refreshToken);
   }
 }
