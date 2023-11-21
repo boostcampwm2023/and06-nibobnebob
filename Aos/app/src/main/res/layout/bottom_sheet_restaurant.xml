@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rect_primary1_nostroke_top_radius20"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="20dp">
+
+    <ImageButton
+        android:id="@+id/btn_add_wish_restaurant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_star_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        style="@style/TextMediumBold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_add_wish_restaurant"
+        tools:text="포케집 안국역점" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <TextView
+        android:id="@+id/tv_address_label"
+        style="@style/TextSmallRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="주소"
+        android:textColor="@color/nn_primary6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_name" />
+
+    <TextView
+        android:id="@+id/tv_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guidline"
+        app:layout_constraintTop_toTopOf="@id/tv_address_label"
+        tools:text="서울시 중구 안국동 15-1" />
+
+    <TextView
+        android:id="@+id/tv_phone_number_label"
+        style="@style/TextSmallRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="전화번호"
+        android:textColor="@color/nn_primary6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_address_label" />
+
+    <TextView
+        android:id="@+id/tv_phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guidline"
+        app:layout_constraintTop_toTopOf="@id/tv_phone_number_label"
+        tools:text="01012345678" />
+
+    <TextView
+        android:id="@+id/tv_review_count_label"
+        style="@style/TextSmallRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="리뷰수"
+        android:textColor="@color/nn_primary6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_phone_number_label" />
+
+    <TextView
+        android:id="@+id/tv_review_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guidline"
+        app:layout_constraintTop_toTopOf="@id/tv_review_count_label"
+        tools:text="99 개" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_my_restaurant"
+        style="@style/TextSmallBold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/rect_primary3fill_nostroke_radius10"
+        android:minHeight="0dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="맛집리스트 추가"
+        app:layout_constraintEnd_toStartOf="@id/btn_go_review"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_review_count_label" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_go_review"
+        style="@style/TextSmallBold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rect_primary3fill_nostroke_radius10"
+        android:minHeight="0dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="리뷰 보기"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_add_my_restaurant"
+        app:layout_constraintTop_toTopOf="@id/btn_add_my_restaurant" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
