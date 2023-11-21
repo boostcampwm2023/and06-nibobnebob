@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="ui_state"
             type="com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile.EditProfileUiState" />
@@ -70,20 +72,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="프로필 수정"
+                android:text="@string/my_edit_title"
                 app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
                 app:layout_constraintStart_toEndOf="@id/iv_edit_back"
                 app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tv_edit_done"
                 style="@style/TextMediumBold"
-                set_enabled="@{ui_state}"
+                set_enabled="@{vm.uiState}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
                 android:onClick="@{() -> vm.doneEditProfile()}"
-                android:text="완료"
+                android:paddingEnd="20dp"
+                android:text="@string/my_edit_done"
+                android:textColor="@color/selector_nick_check_text"
                 app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
@@ -117,7 +123,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="닉네임"
+                    android:text="@string/my_edit_nick"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/iv_profile" />
 
@@ -130,14 +136,14 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_nickname_label"
-                    app:placeholderText="닉네임을 입력하세요.">
+                    app:placeholderText="@string/my_edit_nick_warn">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_nick"
                         style="@style/TextSmallRegular"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@={vm.nick}" />
+                        android:text="@={vm.nickState}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -159,10 +165,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:enabled="@{(!vm.nick.empty &amp;&amp; ui_state.nickName.isChanged)? true : false}"
+                    android:enabled="@{(!vm.nickState.empty &amp;&amp; ui_state.nickName.isChanged)? true : false}"
                     android:minHeight="0dp"
                     android:onClick="@{() -> vm.checkNickValidation()}"
-                    android:text="닉네임 중복확인"
+                    android:text="@string/my_edit_nick_check"
                     android:textColor="@color/selector_nick_check_text"
                     app:layout_constraintBottom_toBottomOf="@id/tv_nick_helper_text"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -174,17 +180,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="이메일"
+                    android:text="@string/my_edit_email"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_nick_helper_text" />
 
                 <TextView
                     android:id="@+id/tv_naver_label"
                     style="@style/TextMediumRegular"
+                    login_type="@{vm.uiState.provider}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:text="네이버 소셜 로그인"
                     android:textColor="@color/nn_dark5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_email_label" />
@@ -195,7 +201,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="test@naver.com"
+                    android:text="@{vm.uiState.email}"
                     android:textColor="@color/nn_dark5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_naver_label" />
@@ -206,9 +212,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="활동 지역"
+                    android:text="@string/my_edit_location"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_naver_email" />
+
+                <TextView
+                    android:id="@+id/tv_location"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:paddingStart="8dp"
+                    android:text="@{vm.locationTextState}"
+                    android:textColor="@color/nn_dark4"
+                    android:visibility="@{vm.locationEditMode ? View.INVISIBLE : View.VISIBLE}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_location_label" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_edit_location"
+                    style="@style/CaptionRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> vm.setLocationEditMode()}"
+                    android:text="@string/edit_change"
+                    android:visibility="@{vm.locationEditMode ? View.INVISIBLE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_location"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_location" />
+
 
                 <Spinner
                     android:id="@+id/s_location"
@@ -219,7 +251,8 @@
                     android:background="@drawable/selector_location_drop_down"
                     android:entries="@{vm.locationList}"
                     android:paddingStart="8dp"
-                    android:selectedItemPosition="@={vm.locationPosition}"
+                    android:selectedItemPosition="@={vm.locationState}"
+                    android:visibility="@{vm.locationEditMode ? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_location_label" />
@@ -231,7 +264,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="생년월일"
+                    android:text="@string/my_edit_birth"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/s_location" />
 
@@ -246,14 +279,14 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_birth_label"
-                    app:placeholderText="YYYY/MM/DD">
+                    app:placeholderText="@string/my_edit_birth_ph">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_birth"
                         style="@style/TextSmallRegular"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@={vm.birth}" />
+                        android:text="@={vm.birthState}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

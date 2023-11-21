@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="내 맛집 리스트"
+                android:text="@string/my_my_title"
                 app:layout_constraintBottom_toBottomOf="@id/cl_list_topbar"
                 app:layout_constraintStart_toEndOf="@id/iv_list_back"
                 app:layout_constraintTop_toTopOf="@id/cl_list_topbar" />

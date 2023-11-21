@@ -36,7 +36,7 @@ class WishRestaurantListFragment :
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
                     is MyPageSharedUiEvent.NavigateToBack ->
-                        navController.navigateUp()
+                        navController.navigate(WishRestaurantListFragmentDirections.globalToMyPageFragment())
 
                     else -> Unit
                 }

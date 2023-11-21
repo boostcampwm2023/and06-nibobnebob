@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="내 위시 맛집 리스트"
+                android:text="@string/my_wish_list"
                 app:layout_constraintBottom_toBottomOf="@id/cl_wish_topbar"
                 app:layout_constraintStart_toEndOf="@id/iv_wish_back"
                 app:layout_constraintTop_toTopOf="@id/cl_wish_topbar" />
