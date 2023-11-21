@@ -92,7 +92,7 @@
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:onClick="@{() -> vm.postCommonLogin()}"
+            android:onClick="@{() -> vm.loginCommon()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_password" />

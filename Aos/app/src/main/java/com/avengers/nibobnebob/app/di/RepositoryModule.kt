@@ -23,11 +23,18 @@ abstract class RepositoryModule {
     @Binds
     abstract fun bindMyPageEditRepository(myPageRepositoryImpl: MyPageEditRepositoryImpl): MyPageEditRepository
 
-//    @Singleton
-//    @Binds
-//    abstract fun bindImageRepository(
-//        imageRepositoryImpl: ImageRepositoryImpl
-//    ): ImageRepository
+    @Singleton
+    @Binds
+    abstract fun bindIntroRepository(
+        introRepositoryImpl: IntroRepositoryImpl
+    ): IntroRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindValidationRepository(
+        validationRepositoryImpl: ValidationRepositoryImpl
+    ): ValidationRepository
+
 
 }
 

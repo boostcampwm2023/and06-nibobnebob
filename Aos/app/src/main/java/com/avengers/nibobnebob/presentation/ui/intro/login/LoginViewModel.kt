@@ -3,6 +3,9 @@ package com.avengers.nibobnebob.presentation.ui.intro.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.app.DataStoreManager
+import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.repository.IntroRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,14 +18,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class LoginEvent {
-    data object LoginSuccess : LoginEvent()
-    data object LoginFailure : LoginEvent()
+    data object NavigateToMain : LoginEvent()
     data object NavigateToDetailSignup : LoginEvent()
+    data object NavigateToDialog : LoginEvent()
 }
 
-
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val introRepository: IntroRepository,
+    private val dataStoreManager: DataStoreManager
+) : ViewModel() {
     private val TAG = "LoginViewModelDebug"
 
     private val _events = MutableSharedFlow<LoginEvent>()
@@ -33,7 +38,6 @@ class LoginViewModel @Inject constructor() : ViewModel() {
 
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
-    val token = MutableStateFlow("")
     val autoLogin = MutableStateFlow(false)
 
     init {
@@ -61,53 +65,38 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         autoLogin.value = newState
     }
 
-    fun postCommonLogin(){
-        Log.d(TAG,_uiState.value.toString())
-        Log.d(TAG,autoLogin.value.toString())
-        viewModelScope.launch {
-            //TODO : flow
-            //repository -> 통신 -> flow로
-        }
+    fun loginCommon(){
+        //TODO : 일반로그인
     }
 
-    fun postNaverLogin(){
+    fun loginNaver(token : String){
         viewModelScope.launch {
-            //네이버 통신 받아온것을 이제 서버와 통신 로그인 이벤트를 성공시 -> 메인 이벤트를 eventflow로 진행?
-            //통신 -> 토큰 사용 -> 서버와의 네이버 로그인 진행 예정
-        }
-    }
+            dataStoreManager.putAccessToken(token)
+            introRepository.loginNaver().onEach {
+                when(it){
+                    is ApiState.Success -> {
+                        dataStoreManager.putAutoLogin(true)
+                        dataStoreManager.putAccessToken(it.data.accessToken.toString())
+                        dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
 
-    fun navigateToDetailSignup(){
-        viewModelScope.launch {
-            _events.emit(LoginEvent.NavigateToDetailSignup)
+                        _events.emit(LoginEvent.NavigateToMain)
+                    }
+                    is ApiState.Error -> {
+                        when(it.statusCode){
+                            401 -> {
+                                Log.d(TAG,"401이 뜰일이 있나..?")
+                            }
+                            404 -> {
+                                _events.emit(LoginEvent.NavigateToDetailSignup)
+                            }
+                        }
+                    }
+                    is ApiState.Exception -> {
+                        Log.d(TAG,"예외처리?")
+                    }
+                }
+            }.launchIn(viewModelScope)
         }
     }
 
 }
-
-/*
-interface ApiService {
-    @POST("login")
-    suspend fun postLogin(@Body info: Info): Flow<로그인정보>
-}
-
-    class 로그인repository(private val apiService: 인포 서비스) {
-        apiService.postLogin(info)
-        .map { response ->
-            // 여기서 음 그 뭐야 여기서 이제 eventflow처리?
-            response.body() ?: throw SomeException("Response body is null")
-        }
-        .onStart {
-            // 로딩 상태중에 로딩이란걸 보여주는 처리를 한다면?
-        }
-        .catch { e ->
-            // 에러 핼들링
-            throw when (e) {
-                is HttpException -> AnotherException("HTTP Error: ${e.code()}")
-                else -> e
-            }
-        }.flowOn(Dispatchers.IO)
-    }
-
-
- */
