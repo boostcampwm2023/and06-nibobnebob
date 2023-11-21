@@ -1,14 +1,12 @@
 package com.avengers.nibobnebob.app.di
 
-import android.content.Context
-import android.net.ConnectivityManager
 import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.config.AccessTokenInterceptor
 import com.avengers.nibobnebob.config.BearerInterceptor
+import com.avengers.nibobnebob.presentation.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,22 +18,22 @@ import java.util.concurrent.TimeUnit
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-//    @Singleton
     @Provides
     fun provideOkHttpClient(
-        httpLoggingInterceptor: HttpLoggingInterceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor,
+        accessTokenInterceptor: AccessTokenInterceptor,
+        bearerInterceptor: BearerInterceptor
     ) : OkHttpClient {
 
         return OkHttpClient.Builder()
             .readTimeout(3000, TimeUnit.MILLISECONDS)
             .connectTimeout(3000, TimeUnit.MILLISECONDS)
             .addInterceptor(httpLoggingInterceptor)
-            .addNetworkInterceptor(AccessTokenInterceptor())
-            .addInterceptor(BearerInterceptor())
+            .addNetworkInterceptor(accessTokenInterceptor)
+            .addInterceptor(bearerInterceptor)
             .build()
     }
 
-//    @Singleton
     @Provides
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
@@ -43,12 +41,11 @@ object NetworkModule {
         }
     }
 
-//    @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
 
         return Retrofit.Builder()
-            .baseUrl("test")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
