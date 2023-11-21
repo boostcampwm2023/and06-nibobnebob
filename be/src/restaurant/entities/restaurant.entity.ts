@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Point } from 'geojson'
 
 @Entity('restaurant')
 export class RestaurantInfoEntity {
@@ -14,12 +15,12 @@ export class RestaurantInfoEntity {
         srid: 4326,
         nullable: true
     })
-    location: string;
+    location: Point;
 
     @Column({ type: 'text', nullable: true })
     address: string | null;
 
-    @Column({ type: 'varchar', length: 20, nullable: true })
+    @Column({ type: 'varchar', length: 50, nullable: true })
     category: string | null;
 
     @Column({ type: 'int', default: 0 })
