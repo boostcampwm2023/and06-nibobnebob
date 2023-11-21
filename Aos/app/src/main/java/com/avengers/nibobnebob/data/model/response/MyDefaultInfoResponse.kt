@@ -1,14 +1,8 @@
 package com.avengers.nibobnebob.data.model.response
 
 
-data class MyPageEditInfoResponse(
-    val data: MyPageEditInfo,
-    val message: String,
-    val statusCode: Int
-)
 
-
-data class MyPageEditInfo(
+data class MyDefaultInfoResponse(
     val userInfo: UserEditInfo
 )
 

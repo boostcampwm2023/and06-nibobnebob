@@ -1,6 +1,6 @@
 package com.avengers.nibobnebob.data.model.request
 
-data class MyPageEditInfoRequest(
+data class EditMyInfoRequest(
     val nickName: String,
     val email: String,
     val provider: String,
