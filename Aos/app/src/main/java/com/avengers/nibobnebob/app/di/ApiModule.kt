@@ -1,13 +1,12 @@
 package com.avengers.nibobnebob.app.di
 
-import com.avengers.nibobnebob.data.remote.NibobNebobApi
 import com.avengers.nibobnebob.data.remote.IntroAPI
+import com.avengers.nibobnebob.data.remote.RefreshApi
 import com.avengers.nibobnebob.data.remote.ValidationApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -28,9 +27,11 @@ object ApiModule {
     fun provideValidationService(retrofit: Retrofit): ValidationApi {
         return retrofit.create(ValidationApi::class.java)
     }
+
+    @Singleton
     @Provides
-    fun provideNibobNebobService(retrofit: Retrofit) : NibobNebobApi {
-        return retrofit.create(NibobNebobApi::class.java)
+    fun provideRefreshService(retrofit: Retrofit): RefreshApi {
+        return retrofit.create(RefreshApi::class.java)
     }
 
 }
