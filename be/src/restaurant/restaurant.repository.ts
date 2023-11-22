@@ -18,7 +18,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
     });
   }
 
-  async updateRestaurantsFromKakao(data: RestaurantInfoEntity[]) {
+  async updateRestaurantsFromSeoulData(data: RestaurantInfoEntity[]) {
     await this.save(data);
     return {};
   }

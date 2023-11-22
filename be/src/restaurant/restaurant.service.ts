@@ -1,11 +1,18 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import { RestaurantRepository } from "./restaurant.repository";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
 const { Worker } = require('worker_threads');
 
 
 @Injectable()
-export class RestaurantService {
+export class RestaurantService implements OnModuleInit {
+  onModuleInit() {
+    this.updateRestaurantsFromSeoulData()
+    setInterval(() => {
+      this.updateRestaurantsFromSeoulData();
+    }, 1000 * 60 * 60 * 24 * 3);
+  }
+
   constructor(private restaurantRepository: RestaurantRepository) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto) {
@@ -13,8 +20,8 @@ export class RestaurantService {
     return this.restaurantRepository.searchRestarant(searchInfoDto);
   }
 
-  async updateRestaurantsFromKakao() {
-    const numThreads = 4;
+  async updateRestaurantsFromSeoulData() {
+    const numThreads = 6;
     let pageElementNum = 1;
     let lastPageReached = false;
 
@@ -37,7 +44,7 @@ export class RestaurantService {
         if (result.lastPage) {
           lastPageReached = true;
         }
-        return this.restaurantRepository.updateRestaurantsFromKakao(result.data);
+        return this.restaurantRepository.updateRestaurantsFromSeoulData(result.data);
       });
 
       await Promise.all(dbUpdates);

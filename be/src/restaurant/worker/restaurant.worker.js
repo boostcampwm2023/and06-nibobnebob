@@ -16,7 +16,6 @@ async function workerTask() {
     const response = await axios.get(apiUrl)
 
     const result = { data: [], lastPage: false };
-    console.log(response.data);
     if (response.data.RESULT && response.data.RESULT.CODE === "INFO-200") {
         result.lastPage = true;
     } else {
