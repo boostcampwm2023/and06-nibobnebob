@@ -1,9 +1,9 @@
-package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
+package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
 import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
@@ -79,9 +79,9 @@ class EditProfileViewModel @Inject constructor(
         myPageRepository.getMyDefaultInfo().onEach {
 
             when (it) {
-                is ApiState.Success -> {
+                is BaseState.Success -> {
 
-                    it.data.toUiMyPageEditInfoData().apply {
+                    it.data.body.toUiMyPageEditInfoData().apply {
                         nickState.emit(nickName)
                         locationState.emit(location.indexOf(location))
                         locationTextState.emit(location)
@@ -101,8 +101,7 @@ class EditProfileViewModel @Inject constructor(
                     }
                 }
 
-                is ApiState.Error -> testLog(it.message)
-                is ApiState.Exception -> testLog("${it.e}")
+                is BaseState.Error -> testLog(it.message)
             }
         }.launchIn(viewModelScope)
     }
@@ -127,8 +126,8 @@ class EditProfileViewModel @Inject constructor(
     fun checkNickValidation() {
         validationRepository.nickValidation(nickState.value).onEach {
             when (it) {
-                is ApiState.Success -> {
-                    if (it.data.isExist) {
+                is BaseState.Success -> {
+                    if (it.data.body.isExist) {
 
                         _uiState.value = uiState.value.copy(
                             nickName = InputState(
@@ -210,7 +209,7 @@ class EditProfileViewModel @Inject constructor(
             )
         ).onEach {
             when (it) {
-                is ApiState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
+                is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
                 else -> testLog("수정 실패")
             }
         }.launchIn(viewModelScope)

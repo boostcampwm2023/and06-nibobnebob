@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ui.main.mypage.my_list.MyRestaurantListFragment">
+        tools:context=".presentation.ui.main.mypage.mylist.MyRestaurantListFragment">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_start"

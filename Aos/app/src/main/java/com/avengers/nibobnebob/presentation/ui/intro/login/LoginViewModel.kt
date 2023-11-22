@@ -1,10 +1,9 @@
 package com.avengers.nibobnebob.presentation.ui.intro.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -74,25 +73,23 @@ class LoginViewModel @Inject constructor(
             dataStoreManager.putAccessToken(token)
             introRepository.loginNaver().onEach {
                 when(it){
-                    is ApiState.Success -> {
+                    is BaseState.Success -> {
                         dataStoreManager.putAutoLogin(true)
-                        dataStoreManager.putAccessToken(it.data.accessToken.toString())
-                        dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
+                        dataStoreManager.putAccessToken(it.data.body.accessToken.toString())
+                        dataStoreManager.putRefreshToken(it.data.body.refreshToken.toString())
 
                         _events.emit(LoginEvent.NavigateToMain)
                     }
-                    is ApiState.Error -> {
-                        when(it.statusCode){
-                            401 -> {
-                                Log.d(TAG,"401이 뜰일이 있나..?")
-                            }
-                            404 -> {
-                                _events.emit(LoginEvent.NavigateToDetailSignup)
-                            }
-                        }
-                    }
-                    is ApiState.Exception -> {
-                        Log.d(TAG,"예외처리?")
+                    is BaseState.Error -> {
+                        _events.emit(LoginEvent.NavigateToDetailSignup)
+//                        when(it.statusCode){
+//                            401 -> {
+//                                Log.d(TAG,"401이 뜰일이 있나..?")
+//                            }
+//                            404 -> {
+//                                _events.emit(LoginEvent.NavigateToDetailSignup)
+//                            }
+//                        }
                     }
                 }
             }.launchIn(viewModelScope)

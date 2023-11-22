@@ -5,7 +5,7 @@ import com.avengers.nibobnebob.data.repository.IntroRepositoryImpl
 import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepositoryImpl
-import com.avengers.nibobnebob.data.repository_impl.MyPageRepositoryImpl
+import com.avengers.nibobnebob.data.repository.MyPageRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

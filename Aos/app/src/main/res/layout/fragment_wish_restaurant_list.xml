@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ui.main.mypage.wish_list.WishRestaurantListFragment">
+        tools:context=".presentation.ui.main.mypage.wishlist.WishRestaurantListFragment">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_start"
