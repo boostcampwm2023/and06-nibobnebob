@@ -40,14 +40,12 @@ export class RestaurantService implements OnModuleInit {
       }
 
       const results = await Promise.all(workers);
-      const dbUpdates = results.map(result => {
-        if (result.lastPage) {
-          lastPageReached = true;
-        }
-        return this.restaurantRepository.updateRestaurantsFromSeoulData(result.data);
-      });
+      const allData = results.flatMap(result => result.data);
+      if (allData.length > 0) {
+        await this.restaurantRepository.updateRestaurantsFromSeoulData(allData);
+      }
 
-      await Promise.all(dbUpdates);
+      lastPageReached = results.some(result => result.lastPage);
     }
   }
 }

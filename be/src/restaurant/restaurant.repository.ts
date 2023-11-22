@@ -19,8 +19,13 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
   }
 
   async updateRestaurantsFromSeoulData(data: RestaurantInfoEntity[]) {
-    const uniqueData = Array.from(new Map(data.map(item => [item['name'] + item['location'], item])).values());
-    await this.upsert(uniqueData, ['name', 'location']);
-    return {};
+    const uniqueData = Array.from(new Map(data.map(item => [item['name'] + JSON.stringify(item['location']), item])).values());
+
+    return await this.manager.transaction(async transactionalEntityManager => {
+      for (const item of uniqueData) {
+        await transactionalEntityManager.upsert(RestaurantInfoEntity, item, ['name', 'location']);
+      }
+    });
   }
+
 }
