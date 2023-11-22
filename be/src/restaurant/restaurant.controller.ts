@@ -22,7 +22,7 @@ export class RestaurantController {
   searchRestaurant(
     @Param("partialRestaurantName") partialName: string,
     @Query("location") location: string,
-    @Query("radius") radius: number
+    @Query("radius") radius: string
   ) {
     const searchInfoDto = new SearchInfoDto(partialName, location, radius);
     return this.restaurantService.searchRestaurant(searchInfoDto);
