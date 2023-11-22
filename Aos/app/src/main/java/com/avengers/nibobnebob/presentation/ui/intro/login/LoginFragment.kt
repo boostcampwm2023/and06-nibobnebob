@@ -31,7 +31,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        naverInitialize()
         initEventObserver()
 
         binding.btnNaver.setOnClickListener {
@@ -51,14 +50,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
                 }
             }
         }
-    }
-
-    private fun naverInitialize(){
-        NaverIdLoginSDK.initialize(
-            requireContext(),
-            BuildConfig.NAVER_LOGIN_CLIENT_ID,
-            BuildConfig.NAVER_LOGIN_CLIENT_SECRET, TAG)
-        NaverIdLoginSDK.showDevelopersLog(true)
     }
 
     private fun naverLogin(){
@@ -88,7 +79,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
     private fun NavController.toMainActivity(){
         val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        (activity as IntroActivity).finish()
     }
 }
