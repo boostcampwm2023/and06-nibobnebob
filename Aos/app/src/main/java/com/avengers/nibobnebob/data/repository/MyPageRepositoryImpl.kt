@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.data.repository_impl
+package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest

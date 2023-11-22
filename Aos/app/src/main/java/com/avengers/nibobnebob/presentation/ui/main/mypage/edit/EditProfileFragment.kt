@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
+package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
 import android.os.Bundle
 import android.view.View

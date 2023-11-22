@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile
+package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.main.home.restaurant_search
+package com.avengers.nibobnebob.presentation.ui.main.home.search
 
 import android.os.Bundle
 import android.view.View
