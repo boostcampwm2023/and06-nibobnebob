@@ -56,7 +56,6 @@ export class RestaurantService implements OnModuleInit {
   async updateRestaurantsFromSeoulData() {
     let pageElementNum = 1;
     const promises = [];
-    const allData = [];
     let lastPageReached = false;
     while (!lastPageReached) {
       const promise = this.getRestaurantsListFromSeoulData(pageElementNum);
@@ -74,9 +73,6 @@ export class RestaurantService implements OnModuleInit {
         promises.length = 0;
       }
     }
-    const finalResults = await Promise.all(promises);
-    finalResults.forEach(result => allData.push(...result.data));
-    await this.restaurantRepository.updateRestaurantsFromSeoulData(allData);
   }
 }
 
