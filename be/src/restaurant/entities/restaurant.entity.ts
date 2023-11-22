@@ -13,7 +13,7 @@ export class RestaurantInfoEntity {
         type: 'geometry',
         spatialFeatureType: 'Point',
         srid: 4326,
-        nullable: true
+        nullable: true,
     })
     location: Point;
 
