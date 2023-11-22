@@ -6,9 +6,7 @@ import { SearchInfoDto } from "./dto/seachInfo.dto";
 
 @Controller("restaurant")
 export class RestaurantController {
-  constructor(
-    private restaurantService: RestaurantService
-  ) { }
+  constructor(private restaurantService: RestaurantService) {}
   @Get("autocomplete/:partialRestaurantName")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
