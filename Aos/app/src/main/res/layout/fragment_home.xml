@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
+            android:onClick="@{() -> vm.navigateToSearchRestaurant()}"
             android:text="지역을 검색하세요"
             app:layout_constraintBottom_toBottomOf="@id/btn_recommend_menu"
             app:layout_constraintEnd_toStartOf="@id/btn_recommend_menu"

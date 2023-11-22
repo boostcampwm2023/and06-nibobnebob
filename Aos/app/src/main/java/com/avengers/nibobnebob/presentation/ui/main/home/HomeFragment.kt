@@ -55,10 +55,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
-        binding.ivTest.setOnClickListener {
-            findNavController().toSearchRestaurant()
-        }
         initMapView()
+        initEventObserver()
     }
 
     private fun initMapView() {
@@ -101,6 +99,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         // todo GPS 기반 위치변화 리스너
         naverMap.addOnLocationChangeListener {
 
+        }
+    }
+
+    private fun initEventObserver(){
+        repeatOnStarted {
+            viewModel.events.collect{
+                when(it){
+                    is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
+                }
+            }
         }
     }
 
@@ -217,7 +225,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         val action = NavGraphDirections.globalToRestaurantDetailFragment()
         navigate(action)
     }
-
 
 }
 
