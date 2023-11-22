@@ -22,6 +22,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantSimpleData
 import com.avengers.nibobnebob.presentation.util.restaurantSheet
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
@@ -81,7 +82,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.locationSource = locationSource
         setMapListener()
         initStateObserver()
-        setMarker()
     }
 
     private fun setMapListener() {
@@ -107,6 +107,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             viewModel.events.collect{
                 when(it){
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
+                    else -> {}
                 }
             }
         }
@@ -165,19 +166,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
-    private fun setMarker() {
+    private fun setMarker(data: UiRestaurantSimpleData) {
         val marker = Marker()
 
-        // example
-        marker.position = LatLng(37.555594049034, 126.96707115682)
+        marker.position = LatLng(data.latitude, data.longitude)
         marker.icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
         marker.map = naverMap
 
         marker.setOnClickListener {
             restaurantSheet(
                 context = requireContext(),
-                restaurantId = 0,
-                isWish = false,
+                data = data,
                 onClickAddWishRestaurant = ::addWishTest,
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
@@ -185,31 +184,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
             true
         }
-
-        // todo 마커의 포지션을 정함
-        // marker.position = LatLng(data.latitude,data.longitude)
-
-        // todo 마커의 icon을 정함
-        // marker.icon = OverlayImage.fromResource(R.drawable.ic_marker)
-
-        // todo 마커 클릭 이벤트를 등록함
-        // marker.setOnClickListener{}
-
-        // todo 마커를 map에 찍음
-        // marker.map = naverMap
     }
 
-    private fun addWishTest(test: Int, test2: Boolean): Boolean {
+    private fun addWishTest(id: Int, curState: Boolean): Boolean {
+        // todo wish 맛집 리스트 에 추가 or 삭제 API 통신
         return true
     }
 
-    private fun addRestaurantTest(test: Int) {
+    private fun addRestaurantTest(id: Int) {
         findNavController().toAddRestaurant()
     }
 
-    private fun goReviewTest(test: Int) {
+    private fun goReviewTest(id: Int) {
         findNavController().toRestaurantDetail()
     }
+
 
     private fun NavController.toAddRestaurant() {
         val action = NavGraphDirections.globalToAddMyRestaurantFragment()
@@ -225,7 +214,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         val action = NavGraphDirections.globalToRestaurantDetailFragment()
         navigate(action)
     }
-
 }
 
 
