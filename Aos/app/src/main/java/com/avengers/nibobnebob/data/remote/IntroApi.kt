@@ -4,6 +4,7 @@ import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface IntroApi {
@@ -14,5 +15,7 @@ interface IntroApi {
     ): Response<Unit>
 
     @POST("api/auth/social-login")
-    suspend fun loginNaver(): Response<NaverLoginResponse>
+    suspend fun loginNaver(
+        @Header("Authorization")token : String
+    ): Response<NaverLoginResponse>
 }

@@ -73,14 +73,12 @@ class LoginViewModel @Inject constructor(
 
     fun loginNaver(token : String){
         viewModelScope.launch {
-            dataStoreManager.putAccessToken(token)
-            introRepository.loginNaver().onEach {
+            introRepository.loginNaver(token).onEach {
                 when(it){
                     is ApiState.Success -> {
                         dataStoreManager.putAutoLogin(true)
                         dataStoreManager.putAccessToken(it.data.accessToken.toString())
                         dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
-
                         _events.emit(LoginEvent.NavigateToMain)
                     }
                     is ApiState.Error -> {
