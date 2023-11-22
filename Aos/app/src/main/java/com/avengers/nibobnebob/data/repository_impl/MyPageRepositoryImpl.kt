@@ -13,22 +13,20 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class MyPageRepositoryImpl @Inject constructor(private val api: MyPageApi) : MyPageRepository {
-    private val token =
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWQiOjIsImlhdCI6MjAxNjIzOTAyMn0.VMvtPcawKVzNyOV08lrArxUvM-XxowWIknsPFkjRTws"
 
     override fun getMyInfo(): Flow<BaseState<BaseResponse<MyInfoResponse>>> = flow {
-        val result = runRemote { api.getMyInfo(token) }
+        val result = runRemote { api.getMyInfo() }
         emit(result)
 
     }
 
     override fun getMyDefaultInfo(): Flow<BaseState<BaseResponse<MyDefaultInfoResponse>>> = flow {
-        val result = runRemote { api.getMyDefaultInfo(token) }
+        val result = runRemote { api.getMyDefaultInfo() }
         emit(result)
     }
 
     override fun editMyInfo(data: EditMyInfoRequest): Flow<BaseState<Unit>> = flow {
-        val result = runRemote { api.editMyInfo(token, data) }
+        val result = runRemote { api.editMyInfo( data) }
         emit(result)
     }
 
