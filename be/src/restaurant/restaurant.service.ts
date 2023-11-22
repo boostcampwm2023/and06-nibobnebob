@@ -28,8 +28,8 @@ export class RestaurantService implements OnModuleInit {
     while (!lastPageReached) {
       const workers = [];
       for (let i = 0; i < numThreads; i++) {
-        pageElementNum += 1000;
         const workerData = { pageElementNum: pageElementNum };
+        pageElementNum += 1000;
         const worker = new Worker('./src/restaurant/worker/restaurant.worker.js', { workerData });
         workers.push(
           new Promise((resolve, reject) => {

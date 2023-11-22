@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Unique } from 'typeorm';
 import { Point } from 'geojson'
 
+@Unique("unique_name_location", ["name", "location"])
 @Entity('restaurant')
 export class RestaurantInfoEntity {
     @PrimaryGeneratedColumn('increment')

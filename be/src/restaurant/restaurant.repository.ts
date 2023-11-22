@@ -19,7 +19,8 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
   }
 
   async updateRestaurantsFromSeoulData(data: RestaurantInfoEntity[]) {
-    await this.save(data);
+    const uniqueData = Array.from(new Map(data.map(item => [item['name'] + item['location'], item])).values());
+    await this.upsert(uniqueData, ['name', 'location']);
     return {};
   }
 }
