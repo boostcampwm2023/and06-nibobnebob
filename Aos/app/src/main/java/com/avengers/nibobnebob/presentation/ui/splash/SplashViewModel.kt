@@ -32,7 +32,7 @@ class SplashViewModel @Inject constructor(
                     if (autoLogin == true && accessToken != "") {
                         _events.emit(NavigationEvent.NavigateToMain)
                     } else {
-                        _events.emit(NavigationEvent.NavigateToIntro)
+                        _events.emit(NavigationEvent.NavigateToMain)
                     }
                 }
             }

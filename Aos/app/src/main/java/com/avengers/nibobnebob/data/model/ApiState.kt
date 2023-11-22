@@ -1,27 +1,32 @@
 package com.avengers.nibobnebob.data.model
 
+import android.util.Log
 import com.google.gson.Gson
 import retrofit2.Response
 
-
-sealed class ApiState<out T> {
-    data class Success<out T>(val data: T) : ApiState<T>()
-    data class Error(val statusCode: Int, val message: String) : ApiState<Nothing>()
-    data class Exception(val e: Throwable) : ApiState<Nothing>()
+enum class StatusCode{
+    EMPTY,
+    ERROR,
+    EXCEPTION
 }
 
-suspend fun <T> runNNApi(block: suspend () -> Response<T>): ApiState<T> {
+sealed class BaseState<out T> {
+    data class Success<out T>(val data: T) : BaseState<T>()
+    data class Error(val statusCode: StatusCode, val message: String) : BaseState<Nothing>()
+}
+
+suspend fun <T> runRemote(block: suspend () -> Response<T>): BaseState<T> {
     return try {
         val response = block()
         if (response.isSuccessful) {
             response.body()?.let {
-                ApiState.Success(it)
-            } ?: ApiState.Error(0, "응답이 비어있습니다")
+                BaseState.Success(it)
+            } ?: BaseState.Error(StatusCode.EMPTY, "응답이 비어있습니다")
         } else {
-            val errorData = Gson().fromJson(response.errorBody()?.string(), ApiState.Error::class.java)
-            ApiState.Error(errorData.statusCode, errorData.message)
+            val errorData = Gson().fromJson(response.errorBody()?.string(), BaseState.Error::class.java)
+            BaseState.Error(StatusCode.ERROR, errorData.message)
         }
     } catch (e: Exception) {
-        ApiState.Exception(e)
+        BaseState.Error(StatusCode.EXCEPTION, e.message.toString())
     }
 }
