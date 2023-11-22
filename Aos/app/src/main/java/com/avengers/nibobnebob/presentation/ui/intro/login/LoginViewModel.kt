@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.ApiState
 import com.avengers.nibobnebob.data.repository.IntroRepository
+import com.avengers.nibobnebob.presentation.ui.intro.login.model.UiLoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,12 +34,13 @@ class LoginViewModel @Inject constructor(
     private val _events = MutableSharedFlow<LoginEvent>()
     val events = _events.asSharedFlow()
 
-    private val _uiState = MutableStateFlow(CommonRequest())
+    private val _uiState = MutableStateFlow(UiLoginData())
     val uiState = _uiState.asStateFlow()
 
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
     val autoLogin = MutableStateFlow(false)
+    val naverEmail = MutableStateFlow("")
 
     init {
         observeEmail()
@@ -84,7 +86,7 @@ class LoginViewModel @Inject constructor(
                     is ApiState.Error -> {
                         when(it.statusCode){
                             401 -> {
-                                Log.d(TAG,"401이 뜰일이 있나..?")
+                                Log.d(TAG,"401 에러")
                             }
                             404 -> {
                                 _events.emit(LoginEvent.NavigateToDetailSignup)
@@ -92,7 +94,7 @@ class LoginViewModel @Inject constructor(
                         }
                     }
                     is ApiState.Exception -> {
-                        Log.d(TAG,"예외처리?")
+                        Log.d(TAG,"예외처리")
                     }
                 }
             }.launchIn(viewModelScope)

@@ -16,7 +16,10 @@ import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
+import com.navercorp.nid.profile.NidProfileCallback
+import com.navercorp.nid.profile.data.NidProfileResponse
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -66,6 +69,20 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
             override fun onSuccess() {
                 val token = NaverIdLoginSDK.getAccessToken().toString()
+                NidOAuthLogin().callProfileApi(object  : NidProfileCallback<NidProfileResponse>{
+                    override fun onError(errorCode: Int, message: String) {
+                        onFailure(errorCode, message)
+                    }
+                    override fun onFailure(httpStatus: Int, message: String) {
+                        val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                        val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                        Log.d(TAG,"errorCode:$errorCode, errorDesc:$errorDescription")
+                    }
+
+                    override fun onSuccess(result: NidProfileResponse) {
+                        viewModel.naverEmail.value = result.profile?.email.toString()
+                    }
+                })
                 viewModel.loginNaver(token)
             }
         }
@@ -73,7 +90,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
     }
 
     private fun NavController.toDetailSignup(){
-        val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment()
+        val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment(
+            email = viewModel.naverEmail.value
+        )
         this.navigate(action)
     }
 

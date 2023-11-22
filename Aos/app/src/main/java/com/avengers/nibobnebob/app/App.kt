@@ -27,7 +27,7 @@ class App : Application(){
             applicationContext,
             BuildConfig.NAVER_LOGIN_CLIENT_ID,
             BuildConfig.NAVER_LOGIN_CLIENT_SECRET,
-            "Naver")
+            APP_NAME)
         NaverIdLoginSDK.showDevelopersLog(true)
     }
 }
