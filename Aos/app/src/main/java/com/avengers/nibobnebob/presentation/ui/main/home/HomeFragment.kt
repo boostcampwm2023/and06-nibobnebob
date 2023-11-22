@@ -58,6 +58,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         binding.vm = viewModel
         initMapView()
         initEventObserver()
+        viewModel.getFilterList()
     }
 
     private fun initMapView() {
