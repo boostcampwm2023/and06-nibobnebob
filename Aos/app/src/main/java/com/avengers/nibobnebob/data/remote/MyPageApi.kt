@@ -1,8 +1,7 @@
 package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
-import com.avengers.nibobnebob.data.model.response.Base
-import com.avengers.nibobnebob.data.model.response.BaseEdit
+import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse
 import com.avengers.nibobnebob.data.model.response.MyInfoResponse
 import retrofit2.Response
@@ -14,18 +13,18 @@ import retrofit2.http.PUT
 interface MyPageApi {
     @GET("api/user/details")
     suspend fun getMyInfo(
-        @Header("Authorization") token : String,
-    ) : Response<Base>
+        @Header("Authorization") token: String,
+    ): Response<BaseResponse<MyInfoResponse>>
 
     @GET("api/user")
     suspend fun getMyDefaultInfo(
-        @Header("Authorization") token : String,
-    ) : Response<BaseEdit>
+        @Header("Authorization") token: String,
+    ): Response<BaseResponse<MyDefaultInfoResponse>>
 
     @PUT("api/user")
     suspend fun editMyInfo(
-        @Header("Authorization") token : String,
-        @Body data : EditMyInfoRequest
-    ) : Response<Unit>
+        @Header("Authorization") token: String,
+        @Body data: EditMyInfoRequest
+    ): Response<Unit>
 
 }

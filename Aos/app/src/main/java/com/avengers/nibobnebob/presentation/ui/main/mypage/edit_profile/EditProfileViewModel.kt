@@ -81,7 +81,7 @@ class EditProfileViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
 
-                    it.data.toUiMyPageEditInfoData().apply {
+                    it.data.data.toUiMyPageEditInfoData().apply {
                         nickState.emit(nickName)
                         locationState.emit(location.indexOf(location))
                         locationTextState.emit(location)
