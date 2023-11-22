@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.data.model
 
-import android.util.Log
 import com.google.gson.Gson
 import retrofit2.Response
 

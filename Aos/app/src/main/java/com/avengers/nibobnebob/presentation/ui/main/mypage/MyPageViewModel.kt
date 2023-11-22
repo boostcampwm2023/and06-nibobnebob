@@ -37,7 +37,7 @@ class MyPageViewModel @Inject constructor(
         myPageRepository.getMyInfo().onEach {
             when (it) {
                 is BaseState.Success -> {
-                    it.data.data.toUiMyPageInfoData().apply {
+                    it.data.body.toUiMyPageInfoData().apply {
                         _uiState.update { state ->
                             state.copy(
                                 nickName = nickName,

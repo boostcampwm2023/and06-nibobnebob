@@ -75,8 +75,8 @@ class LoginViewModel @Inject constructor(
                 when(it){
                     is BaseState.Success -> {
                         dataStoreManager.putAutoLogin(true)
-                        dataStoreManager.putAccessToken(it.data.accessToken.toString())
-                        dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
+                        dataStoreManager.putAccessToken(it.data.body.accessToken.toString())
+                        dataStoreManager.putRefreshToken(it.data.body.refreshToken.toString())
 
                         _events.emit(LoginEvent.NavigateToMain)
                     }

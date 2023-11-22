@@ -2,6 +2,7 @@ package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
+import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.IntroApi
@@ -18,7 +19,7 @@ class IntroRepositoryImpl @Inject constructor(
         emit(result)
     }
 
-    override fun loginNaver(): Flow<BaseState<NaverLoginResponse>> = flow {
+    override fun loginNaver(): Flow<BaseState<BaseResponse<NaverLoginResponse>>> = flow {
         val result = runRemote { api.loginNaver() }
         emit(result)
     }

@@ -29,8 +29,8 @@ object NetworkModule {
             .readTimeout(3000, TimeUnit.MILLISECONDS)
             .connectTimeout(3000, TimeUnit.MILLISECONDS)
             .addInterceptor(httpLoggingInterceptor)
-            //.addNetworkInterceptor(accessTokenInterceptor)
-            //.addInterceptor(bearerInterceptor)
+            .addNetworkInterceptor(accessTokenInterceptor)
+            .addInterceptor(bearerInterceptor)
             .build()
     }
 

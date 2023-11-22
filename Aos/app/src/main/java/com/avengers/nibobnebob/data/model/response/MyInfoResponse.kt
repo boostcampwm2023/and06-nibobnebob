@@ -1,11 +1,5 @@
 package com.avengers.nibobnebob.data.model.response
 
-data class Base(
-    val data: MyInfoResponse,
-    val message: String,
-    val statusCode: Int
-)
-
 
 data class MyInfoResponse(
     val userInfo: UserInfo

@@ -116,7 +116,7 @@ class DetailSignupViewModel @Inject constructor(
 
             when (it) {
                 is BaseState.Success -> {
-                    if (it.data.isExist) {
+                    if (it.data.body.isExist) {
                         nickValidation.value = false
                         _uiState.update { state ->
                             state.copy(

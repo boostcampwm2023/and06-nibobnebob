@@ -81,7 +81,7 @@ class EditProfileViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
 
-                    it.data.data.toUiMyPageEditInfoData().apply {
+                    it.data.body.toUiMyPageEditInfoData().apply {
                         nickState.emit(nickName)
                         locationState.emit(location.indexOf(location))
                         locationTextState.emit(location)
@@ -127,7 +127,7 @@ class EditProfileViewModel @Inject constructor(
         validationRepository.nickValidation(nickState.value).onEach {
             when (it) {
                 is BaseState.Success -> {
-                    if (it.data.isExist) {
+                    if (it.data.body.isExist) {
 
                         _uiState.value = uiState.value.copy(
                             nickName = InputState(
