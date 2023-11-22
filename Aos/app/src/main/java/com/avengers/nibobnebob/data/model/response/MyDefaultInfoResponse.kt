@@ -1,6 +1,10 @@
 package com.avengers.nibobnebob.data.model.response
 
-
+data class BaseEdit(
+    val data: MyDefaultInfoResponse,
+    val message: String,
+    val statusCode: Int
+)
 
 data class MyDefaultInfoResponse(
     val userInfo: UserEditInfo
