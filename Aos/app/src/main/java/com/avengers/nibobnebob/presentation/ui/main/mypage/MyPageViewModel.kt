@@ -7,6 +7,7 @@ import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageInfoData
+import com.avengers.nibobnebob.presentation.util.dialogManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow

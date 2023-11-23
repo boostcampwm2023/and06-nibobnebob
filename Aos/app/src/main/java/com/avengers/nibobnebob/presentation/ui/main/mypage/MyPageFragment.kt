@@ -16,6 +16,7 @@ import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
+import com.avengers.nibobnebob.presentation.util.dialogManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -48,16 +49,35 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
             }
         }
 
+        binding.tvWithdraw.setOnClickListener {
+            dialogManager(
+                requireContext(),
+                "정말 탈퇴하시겠습니까?",
+                "모든 정보가 삭제됩니다.",
+                withDrawConfirm(),
+                withDrawDismiss()
+            )
+        }
+
+
+    }
+
+    private fun withDrawConfirm() {
+        viewModel.withdraw()
         repeatOnStarted {
             viewModel.events.collect{ event ->
                 when(event){
                     is MyEditPageEvent.NavigateToIntro -> {
-                        val intent = Intent(context, IntroActivity::class.java)
-                        startActivity(intent)
+            val intent = Intent(context, IntroActivity::class.java)
+            startActivity(intent)
                     }
                 }
             }
         }
+
+    }
+
+    private fun withDrawDismiss() {
 
     }
 
