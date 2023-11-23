@@ -6,7 +6,9 @@ import retrofit2.Response
 enum class StatusCode{
     EMPTY,
     ERROR,
-    EXCEPTION
+    EXCEPTION,
+    ERROR_AUTH,
+    ERROR_NONE
 }
 
 sealed class BaseState<out T> {
@@ -23,7 +25,11 @@ suspend fun <T> runRemote(block: suspend () -> Response<T>): BaseState<T> {
             } ?: BaseState.Error(StatusCode.EMPTY, "응답이 비어있습니다")
         } else {
             val errorData = Gson().fromJson(response.errorBody()?.string(), BaseState.Error::class.java)
-            BaseState.Error(StatusCode.ERROR, errorData.message)
+            when(response.code()){
+                401 -> BaseState.Error(StatusCode.ERROR_AUTH, errorData.message)
+                404 -> BaseState.Error(StatusCode.ERROR_NONE, errorData.message)
+                else -> BaseState.Error(StatusCode.ERROR, errorData.message)
+            }
         }
     } catch (e: Exception) {
         BaseState.Error(StatusCode.EXCEPTION, e.message.toString())
