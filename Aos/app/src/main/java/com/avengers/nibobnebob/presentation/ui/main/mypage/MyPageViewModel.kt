@@ -3,7 +3,6 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageInfoData
@@ -34,8 +33,7 @@ sealed class MyEditPageEvent{
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
-    private val myPageRepository: MyPageRepository,
-    private val dataStoreManager: DataStoreManager
+    private val myPageRepository: MyPageRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
@@ -74,22 +72,14 @@ class MyPageViewModel @Inject constructor(
 
         // api 연결 예정
         viewModelScope.launch {
-            dataStoreManager.deleteAccessToken()
-            dataStoreManager.deleteRefreshToken()
+            myPageRepository.logout()
             _events.emit(MyEditPageEvent.NavigateToIntro)
         }
     }
 
     fun withdraw(){
         myPageRepository.withdraw().onEach {
-            when(it){
-                is BaseState.Success -> {
-                    dataStoreManager.deleteAccessToken()
-                    dataStoreManager.deleteRefreshToken()
-                    _events.emit(MyEditPageEvent.NavigateToIntro)
-                }
-                else -> Log.d("TEST", "탈퇴 실패")
-            }
+            _events.emit(MyEditPageEvent.NavigateToIntro)
         }.launchIn(viewModelScope)
     }
 }

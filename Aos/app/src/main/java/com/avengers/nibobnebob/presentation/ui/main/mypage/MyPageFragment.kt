@@ -77,7 +77,7 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
 
     private fun withDrawConfirm() {
         Log.d("TEST", "탈퇴 완료")
-        //viewModel.withdraw()
+        viewModel.withdraw()
     }
 
     private fun withDrawDismiss() {

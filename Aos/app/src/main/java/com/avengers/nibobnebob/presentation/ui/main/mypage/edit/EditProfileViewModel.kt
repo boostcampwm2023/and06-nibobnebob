@@ -114,7 +114,7 @@ class EditProfileViewModel @Inject constructor(
                 state.copy(
                     nickName = InputState(
                         helperText = Validation.NONE,
-                        isValid = (originalNickName == nick || state.nickName.helperText == Validation.NONE),
+                        isValid = (originalNickName == nick && state.nickName.helperText == Validation.NONE),
                         isChanged = originalNickName != nick
                     )
                 )
