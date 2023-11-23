@@ -12,6 +12,7 @@ interface IntroRepository {
         body: DetailSignupRequest
     ): Flow<BaseState<Unit>>
 
-    fun loginNaver(token : String): Flow<ApiState<NaverLoginResponse>>
-    fun loginNaver(): Flow<BaseState<BaseResponse<NaverLoginResponse>>>
+    fun loginNaver(
+        token: String
+    ): Flow<BaseState<BaseResponse<NaverLoginResponse>>>
 }

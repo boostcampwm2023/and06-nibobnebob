@@ -20,8 +20,8 @@ class IntroRepositoryImpl @Inject constructor(
         emit(result)
     }
 
-    override fun loginNaver(token : String): Flow<ApiState<NaverLoginResponse>> = flow {
-        val result = runNNApi { api.loginNaver("$ACCESS $token") }
+    override fun loginNaver(token : String): Flow<BaseState<BaseResponse<NaverLoginResponse>>> = flow {
+        val result = runRemote { api.loginNaver("$ACCESS $token") }
         emit(result)
     }
 }

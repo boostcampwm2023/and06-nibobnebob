@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.StatusCode
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.presentation.ui.intro.login.model.UiLoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -73,26 +74,22 @@ class LoginViewModel @Inject constructor(
 
     fun loginNaver(token : String){
         viewModelScope.launch {
-            introRepository.loginNaver(token).onEach {
-                when(it){
+            introRepository.loginNaver(token).onEach { state ->
+                when(state){
                     is BaseState.Success -> {
                         dataStoreManager.putAutoLogin(true)
-                        dataStoreManager.putAccessToken(it.data.accessToken.toString())
-                        dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
+                        dataStoreManager.putAccessToken(state.data.body.accessToken.toString())
+                        dataStoreManager.putRefreshToken(state.data.body.refreshToken.toString())
                         _events.emit(LoginEvent.NavigateToMain)
                     }
                     is BaseState.Error -> {
-                        when(it.statusCode){
-                            401 -> {
-                                Log.d(TAG,"401 에러")
-                            }
-                            404 -> {
-                                _events.emit(LoginEvent.NavigateToDetailSignup)
+                        when(state.statusCode){
+                            StatusCode.ERROR_AUTH-> {Log.d(TAG,"토큰 오류")}
+                            StatusCode.ERROR_NONE ->{ _events.emit(LoginEvent.NavigateToDetailSignup)}
+                            else ->{
+                                Log.d(TAG,"오류 Exception")
                             }
                         }
-                    }
-                    is ApiState.Exception -> {
-                        Log.d(TAG,"예외처리")
                     }
                 }
             }.launchIn(viewModelScope)
