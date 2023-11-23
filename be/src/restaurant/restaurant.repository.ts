@@ -10,12 +10,17 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
   }
 
   async searchRestarant(searchInfoDto: SearchInfoDto) {
-    return this.find({
-      select: ["id", "name", "location"],
-      where: {
-        name: Like(`%${searchInfoDto.partitalName}%`),
-      },
-    });
+    const rawQuery = `
+    SELECT *, 
+    ST_DistanceSphere(
+        location, 
+        ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
+    ) AS distance
+    FROM restaurant
+    WHERE name LIKE '%${searchInfoDto.partialName}%'
+    ORDER BY location <-> ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
+    `
+    return this.query(rawQuery)
   }
 
   async updateRestaurantsFromSeoulData(data: RestaurantInfoEntity[]) {
