@@ -116,6 +116,17 @@ export class UserController {
     return await this.userService.getMyRestaurantListInfo(searchInfoDto, tokenInfo);
   }
 
+  @Get("follow-list")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 팔로우 리스트 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "내 팔로우 리스트 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getMyFollowListInfo(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getMyFollowListInfo(tokenInfo);
+  }
+
   @Post()
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
