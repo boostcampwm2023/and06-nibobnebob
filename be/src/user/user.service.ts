@@ -34,13 +34,27 @@ export class UserService {
     return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
   }
   async getMyRestaurantListInfo(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    return await this.userRestaurantListRepository
+    const results = await this.userRestaurantListRepository
       .createQueryBuilder('user_restaurant_lists')
       .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
-      .select(['user_restaurant_lists.restaurantId', 'restaurant.name', 'restaurant.location', 'restaurant.address', 'restaurant.category', "restaurant.phoneNumber", "restaurant.reviewCnt"])
+      .select([
+        'user_restaurant_lists.restaurantId',
+        'restaurant.name',
+        'restaurant.location',
+        'restaurant.address',
+        'restaurant.category',
+        "restaurant.phoneNumber",
+        "restaurant.reviewCnt"
+      ])
       .where('user_restaurant_lists.user_id = :userId', { userId: tokenInfo.id })
       .getMany();
+
+    return results.map(result => ({
+      ...result,
+      isMy: true
+    }));
   }
+
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
