@@ -61,7 +61,7 @@ export class UserService {
         .createQueryBuilder('user_restaurant_lists')
         .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
         .select([
-          'user_restaurant_lists.restaurantId',
+          'user_restaurant_lists.restaurantId AS restaurant_id',
           'restaurant.name',
           'restaurant.location',
           'restaurant.address',
@@ -70,7 +70,7 @@ export class UserService {
           "restaurant.reviewCnt"
         ])
         .where('user_restaurant_lists.user_id = :userId', { userId: tokenInfo.id })
-        .getMany();
+        .getRawMany();
     }
     return results.map(result => ({
       ...result,
