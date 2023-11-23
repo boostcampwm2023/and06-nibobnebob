@@ -11,7 +11,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
 
   async searchRestarant(searchInfoDto: SearchInfoDto) {
     const rawQuery = `
-    SELECT * FROM (
+    SELECT id, name, location, address, "phoneNumber", "reviewCnt", category, distance FROM (
       SELECT *, 
       ST_DistanceSphere(
           location, 
@@ -24,6 +24,13 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
   
     `
     return this.query(rawQuery)
+  }
+
+  async detailInfo(restaurantId: number){
+    return this.findOne({
+      select: ['id', 'name', 'location', 'address', 'phoneNumber', 'reviewCnt', 'category'],
+      where: {id: restaurantId}
+    })
   }
 
   async updateRestaurantsFromSeoulData(data: RestaurantInfoEntity[]) {

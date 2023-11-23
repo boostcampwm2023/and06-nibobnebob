@@ -24,6 +24,10 @@ export class RestaurantService implements OnModuleInit {
     return this.restaurantRepository.searchRestarant(searchInfoDto);
   }
 
+  async detailInfo(restaurantId: number){
+    return this.restaurantRepository.detailInfo(restaurantId);
+  }
+
   async getRestaurantsListFromSeoulData(startPage) {
     const tm2097 =
       "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43";
