@@ -9,17 +9,20 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
+  Query,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
 } from "@nestjs/swagger";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { UserService } from "./user.service";
 import { GetUser, TokenInfo } from "./user.decorator";
 import { AuthGuard } from "@nestjs/passport";
+import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 
 @Controller("user")
 export class UserController {
@@ -93,10 +96,35 @@ export class UserController {
   @ApiOperation({ summary: "이메일 중복확인" })
   @ApiResponse({ status: 200, description: "이메일 중복확인 요청 성공" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async getEmailAvailability(
-    @Param("email") email: UserInfoDto["email"]
-  ) {
+  async getEmailAvailability(@Param("email") email: UserInfoDto["email"]) {
     return await this.userService.getEmailAvailability(email);
+  }
+
+  @Get("/restaurant")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 맛집 리스트 정보 가져오기" })
+  @ApiQuery({ name: 'location', required: false, type: String, description: '위도 경도' })
+  @ApiQuery({ name: 'radius', required: false, type: String, description: '반경(미터 단위)' })
+  @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getMyRestaurantListInfo(
+    @Query('location') location: string,
+    @Query('radius') radius: string, @GetUser() tokenInfo: TokenInfo) {
+    const searchInfoDto = new SearchInfoDto('', location, radius);
+    return await this.userService.getMyRestaurantListInfo(searchInfoDto, tokenInfo);
+  }
+
+  @Get("follow-list")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 팔로우 리스트 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "내 팔로우 리스트 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getMyFollowListInfo(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getMyFollowListInfo(tokenInfo);
   }
 
   @Post()
@@ -134,4 +162,5 @@ export class UserController {
   ) {
     return await this.userService.updateMypageUserInfo(tokenInfo, userInfoDto);
   }
+
 }

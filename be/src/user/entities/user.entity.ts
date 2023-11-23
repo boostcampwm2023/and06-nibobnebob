@@ -5,7 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from "typeorm";
+import { FollowEntity } from "./user.followList.entity";
+import { UserRestaurantListEntity } from "./user.restaurantlist.entity";
+import { ReviewInfoEntity } from "src/review/entities/review.entity";
 
 @Entity()
 export class User {
@@ -41,4 +45,16 @@ export class User {
 
   @UpdateDateColumn({ type: "timestamp" })
   updated_at: Date;
+
+  @OneToMany(() => FollowEntity, follow => follow.followingUserId)
+  following: FollowEntity[]
+
+  @OneToMany(() => FollowEntity, follow => follow.followedUserId)
+  follower: FollowEntity[]
+
+  @OneToMany(() => UserRestaurantListEntity, list => list.userId)
+  restaurant: UserRestaurantListEntity[]
+
+  @OneToMany(() => ReviewInfoEntity, review => review.user)
+  review: UserRestaurantListEntity[]
 }

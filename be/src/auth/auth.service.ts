@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JwtService
-  ) { }
+  ) {}
   async NaverAuth(authorization: string) {
     if (!authorization) {
       throw new HttpException(
@@ -46,12 +46,11 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload);
 
       const refreshToken = this.jwtService.sign(payload, {
-        secret: "nibobnebob", 
-        expiresIn: '7d', 
+        secret: "nibobnebob",
+        expiresIn: "7d",
       });
 
       return { accessToken, refreshToken };
-
     } else {
       throw new NotFoundException(
         "사용자가 등록되어 있지 않습니다. 회원가입을 진행해주세요"
@@ -59,14 +58,16 @@ export class AuthService {
     }
   }
 
-  async checkRefreshToken(refreshToken: string){
+  async checkRefreshToken(refreshToken: string) {
     try {
-      const decoded = this.jwtService.verify(refreshToken, { secret: 'nibobnebob' });
+      const decoded = this.jwtService.verify(refreshToken, {
+        secret: "nibobnebob",
+      });
       const payload = { id: decoded.id };
       const accessToken = this.jwtService.sign(payload);
       return { accessToken };
     } catch (err) {
-      throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
+      throw new HttpException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
     }
   }
 }

@@ -3,7 +3,6 @@ import { User } from "./entities/user.entity";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { ConflictException, Injectable } from "@nestjs/common";
 
-
 @Injectable()
 export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
@@ -79,7 +78,8 @@ export class UserRepository extends Repository<User> {
     const [emailUser, nickNameUser] = await Promise.all([
       this.findOne({ select: ["id"], where: { email: userInfoDto["email"] } }),
       this.findOne({
-        select: ["id"], where: { nickName: userInfoDto["nickName"] },
+        select: ["id"],
+        where: { nickName: userInfoDto["nickName"] },
       }),
     ]);
 
