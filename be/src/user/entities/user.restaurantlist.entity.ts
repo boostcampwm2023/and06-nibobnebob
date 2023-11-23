@@ -13,10 +13,16 @@ import { ReviewInfoEntity } from "src/review/entities/review.entity";
 @Entity("user_restaurant_lists")
 export class UserRestaurantListEntity {
   @ManyToOne(() => User)
+  @JoinColumn({ name: "user_id" })
+  user: User;
+
   @PrimaryColumn({ name: "user_id" })
   userId: number;
 
   @ManyToOne(() => RestaurantInfoEntity)
+  @JoinColumn({ name: "restaurant_id" })
+  restaurant: RestaurantInfoEntity;
+
   @PrimaryColumn({ name: "restaurant_id" })
   restaurantId: number;
 
