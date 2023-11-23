@@ -4,6 +4,7 @@ import android.util.Log
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.presentation.util.Constants.ACCESS
 import com.avengers.nibobnebob.presentation.util.Constants.AUTHORIZATION
+import com.avengers.nibobnebob.presentation.util.Constants.BEARER
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -24,7 +25,7 @@ class AccessTokenInterceptor @Inject constructor(private val dataStoreManager: D
         Log.d("토큰 테스트",accessToken.toString())
         val builder: Request.Builder = chain.request().newBuilder()
         accessToken.let {
-            builder.addHeader(AUTHORIZATION,"$ACCESS $accessToken")
+            builder.addHeader(AUTHORIZATION,"$BEARER $accessToken")
         }
         return chain.proceed(builder.build())
     }
