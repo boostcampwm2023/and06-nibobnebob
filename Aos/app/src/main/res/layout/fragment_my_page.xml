@@ -268,6 +268,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
                     android:text="@string/my_main_logout_title"
+                    android:onClick="@{() -> vm.logout()}"
                     android:textColor="@color/nn_rainbow_red"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/md_wish" />

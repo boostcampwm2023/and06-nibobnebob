@@ -14,4 +14,8 @@ interface MyPageRepository {
 
     fun editMyInfo(data: EditMyInfoRequest): Flow<BaseState<Unit>>
 
+    suspend fun logout()
+
+    fun withdraw(): Flow<BaseState<Unit>>
+
 }

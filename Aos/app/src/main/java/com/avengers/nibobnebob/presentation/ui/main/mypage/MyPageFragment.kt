@@ -1,20 +1,23 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyPageBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
+import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_page) {
@@ -25,14 +28,15 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initView(view)
+        initView()
     }
 
-    private fun initView(view: View) {
+    private fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
+        viewModel.getUserInfo()
 
-        viewLifecycleOwner.repeatOnStarted {
+        repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
                     is MyPageSharedUiEvent.NavigateToEditProfile -> findNavController().toEditProfile()
@@ -43,6 +47,41 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
 
             }
         }
+
+        repeatOnStarted {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is MyEditPageEvent.NavigateToIntro -> {
+                        (activity as MainActivity).finish()
+                        val intent = Intent(context, IntroActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
+
+        binding.tvWithdraw.setOnClickListener {
+            AlertDialog.Builder(context)
+                .setTitle("정말 탈퇴하시겠습니까?")
+                .setMessage("모든 정보가 삭제됩니다.")
+                .setPositiveButton("확인"
+                ) { _, _ -> withDrawConfirm() }
+                .setNegativeButton("취소"
+                ) { _, _ -> withDrawDismiss() }
+                .create()
+                .show()
+        }
+
+
+    }
+
+    private fun withDrawConfirm() {
+        Log.d("TEST", "탈퇴 완료")
+        viewModel.withdraw()
+    }
+
+    private fun withDrawDismiss() {
+
     }
 
     private fun initNetworkView() {
