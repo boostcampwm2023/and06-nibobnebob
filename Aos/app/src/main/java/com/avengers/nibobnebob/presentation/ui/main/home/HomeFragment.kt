@@ -22,7 +22,8 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantSimpleData
+import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
 import com.avengers.nibobnebob.presentation.util.restaurantSheet
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
@@ -58,6 +59,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         binding.vm = viewModel
         initMapView()
         initEventObserver()
+        binding.rvHomeFilter.adapter = HomeFilterAdapter()
         viewModel.getFilterList()
     }
 
@@ -167,7 +169,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
-    private fun setMarker(data: UiRestaurantSimpleData) {
+    private fun setMarker(data: UiMarkerData) {
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)

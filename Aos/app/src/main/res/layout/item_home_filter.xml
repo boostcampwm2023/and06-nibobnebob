@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="12dp"
-    android:background="@drawable/rect_primary3_nostroke_30radius"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="4dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/tv_filter"
-        style="@style/TextMediumBold"
+    <data>
+
+        <variable
+            name="item"
+            type="com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="나의 리스트"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginEnd="12dp">
 
+        <TextView
+            android:id="@+id/tv_filter"
+            style="@style/TextMediumBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rect_primary3fill_nostroke_30radius"
+            android:paddingHorizontal="12dp"
+            android:onClick="@{() -> item.onItemClicked.invoke(item.name)}"
+            android:paddingVertical="4dp"
+            android:textColor="@color/white"
+            app:filterBackground="@{item.isSelected}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
