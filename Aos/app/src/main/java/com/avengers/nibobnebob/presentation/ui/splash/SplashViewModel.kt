@@ -7,32 +7,31 @@ import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class SplashUiEvent {
+    data object NavigateToMain : SplashUiEvent()
+    data object NavigateToIntro : SplashUiEvent()
+}
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val networkManager: NetworkManager,
     private val dataStoreManager: DataStoreManager,
 ) : BaseActivityViewModel(networkManager) {
-
-    sealed class NavigationEvent {
-        data object NavigateToMain : NavigationEvent()
-        data object NavigateToIntro : NavigationEvent()
-    }
-
-    private val TAG = "SplashViewModelDebug"
-    private val _events = MutableSharedFlow<NavigationEvent>()
-    val events: SharedFlow<NavigationEvent> get() = _events
+    private val _events = MutableSharedFlow<SplashUiEvent>()
+    val events: SharedFlow<SplashUiEvent> = _events.asSharedFlow()
 
     fun getAutoLogin() {
         viewModelScope.launch {
             dataStoreManager.getAutoLogin().collect { autoLogin ->
                 dataStoreManager.getAccessToken().collect { accessToken ->
                     if (autoLogin == true && accessToken != "") {
-                        _events.emit(NavigationEvent.NavigateToMain)
+                        _events.emit(SplashUiEvent.NavigateToMain)
                     } else {
-                        _events.emit(NavigationEvent.NavigateToIntro)
+                        _events.emit(SplashUiEvent.NavigateToIntro)
                     }
                 }
             }

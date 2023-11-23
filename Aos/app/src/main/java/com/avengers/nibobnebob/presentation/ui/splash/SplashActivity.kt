@@ -29,20 +29,20 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {
-                    is SplashViewModel.NavigationEvent.NavigateToIntro -> moveToIntroActivity()
-                    is SplashViewModel.NavigationEvent.NavigateToMain -> moveToMainActivity()
+                    is SplashUiEvent.NavigateToIntro -> toIntroActivity()
+                    is SplashUiEvent.NavigateToMain -> toMainActivity()
                 }
             }
         }
     }
 
-    private fun moveToMainActivity() {
+    private fun toMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
 
-    private fun moveToIntroActivity() {
+    private fun toIntroActivity() {
         val intent = Intent(this, IntroActivity::class.java)
         startActivity(intent)
         finish()
