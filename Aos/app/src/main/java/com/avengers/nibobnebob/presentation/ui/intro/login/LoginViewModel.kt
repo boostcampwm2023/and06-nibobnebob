@@ -1,10 +1,13 @@
 package com.avengers.nibobnebob.presentation.ui.intro.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.StatusCode
 import com.avengers.nibobnebob.data.repository.IntroRepository
+import com.avengers.nibobnebob.presentation.ui.intro.login.model.UiLoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,12 +35,13 @@ class LoginViewModel @Inject constructor(
     private val _events = MutableSharedFlow<LoginEvent>()
     val events = _events.asSharedFlow()
 
-    private val _uiState = MutableStateFlow(CommonRequest())
+    private val _uiState = MutableStateFlow(UiLoginData())
     val uiState = _uiState.asStateFlow()
 
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
     val autoLogin = MutableStateFlow(false)
+    val naverEmail = MutableStateFlow("")
 
     init {
         observeEmail()
@@ -70,26 +74,22 @@ class LoginViewModel @Inject constructor(
 
     fun loginNaver(token : String){
         viewModelScope.launch {
-            dataStoreManager.putAccessToken(token)
-            introRepository.loginNaver().onEach {
-                when(it){
+            introRepository.loginNaver(token).onEach { state ->
+                when(state){
                     is BaseState.Success -> {
                         dataStoreManager.putAutoLogin(true)
-                        dataStoreManager.putAccessToken(it.data.body.accessToken.toString())
-                        dataStoreManager.putRefreshToken(it.data.body.refreshToken.toString())
-
+                        dataStoreManager.putAccessToken(state.data.body.accessToken.toString())
+                        dataStoreManager.putRefreshToken(state.data.body.refreshToken.toString())
                         _events.emit(LoginEvent.NavigateToMain)
                     }
                     is BaseState.Error -> {
-                        _events.emit(LoginEvent.NavigateToDetailSignup)
-//                        when(it.statusCode){
-//                            401 -> {
-//                                Log.d(TAG,"401이 뜰일이 있나..?")
-//                            }
-//                            404 -> {
-//                                _events.emit(LoginEvent.NavigateToDetailSignup)
-//                            }
-//                        }
+                        when(state.statusCode){
+                            StatusCode.ERROR_AUTH-> {Log.d(TAG,"토큰 오류")}
+                            StatusCode.ERROR_NONE ->{ _events.emit(LoginEvent.NavigateToDetailSignup)}
+                            else ->{
+                                Log.d(TAG,"오류 Exception")
+                            }
+                        }
                     }
                 }
             }.launchIn(viewModelScope)
