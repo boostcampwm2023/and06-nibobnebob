@@ -24,8 +24,8 @@ class AccessTokenInterceptor @Inject constructor(private val dataStoreManager: D
         }
         Log.d("토큰 테스트",accessToken.toString())
         val builder: Request.Builder = chain.request().newBuilder()
-        accessToken.let {
-            builder.addHeader(AUTHORIZATION,"$BEARER $accessToken")
+        accessToken?.takeIf { it.isNotEmpty() }?.let {
+            builder.addHeader(AUTHORIZATION, "$BEARER $it")
         }
         return chain.proceed(builder.build())
     }

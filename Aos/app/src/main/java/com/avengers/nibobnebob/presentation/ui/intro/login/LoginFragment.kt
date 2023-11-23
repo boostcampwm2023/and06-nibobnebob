@@ -16,7 +16,10 @@ import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
+import com.navercorp.nid.profile.NidProfileCallback
+import com.navercorp.nid.profile.data.NidProfileResponse
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -31,7 +34,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        naverInitialize()
         initEventObserver()
 
         binding.btnNaver.setOnClickListener {
@@ -53,14 +55,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
         }
     }
 
-    private fun naverInitialize(){
-        NaverIdLoginSDK.initialize(
-            requireContext(),
-            BuildConfig.NAVER_LOGIN_CLIENT_ID,
-            BuildConfig.NAVER_LOGIN_CLIENT_SECRET, TAG)
-        NaverIdLoginSDK.showDevelopersLog(true)
-    }
-
     private fun naverLogin(){
         val oAuthLoginCallback = object : OAuthLoginCallback{
             override fun onError(errorCode: Int, message: String) {
@@ -75,20 +69,36 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
             override fun onSuccess() {
                 val token = NaverIdLoginSDK.getAccessToken().toString()
-                viewModel.loginNaver(token)
+                NidOAuthLogin().callProfileApi(object  : NidProfileCallback<NidProfileResponse>{
+                    override fun onError(errorCode: Int, message: String) {
+                        onFailure(errorCode, message)
+                    }
+                    override fun onFailure(httpStatus: Int, message: String) {
+                        val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                        val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                        Log.d(TAG,"errorCode:$errorCode, errorDesc:$errorDescription")
+                    }
+
+                    override fun onSuccess(result: NidProfileResponse) {
+                        viewModel.naverEmail.value = result.profile?.email.toString()
+                        viewModel.loginNaver(token)
+                    }
+                })
             }
         }
         NaverIdLoginSDK.authenticate(requireContext(), oAuthLoginCallback)
     }
 
     private fun NavController.toDetailSignup(){
-        val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment()
+        val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment(
+            email = viewModel.naverEmail.value
+        )
         this.navigate(action)
     }
 
     private fun NavController.toMainActivity(){
         val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        (activity as IntroActivity).finish()
     }
 }
