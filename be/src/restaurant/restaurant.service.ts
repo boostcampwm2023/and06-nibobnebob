@@ -3,6 +3,11 @@ import { RestaurantRepository } from "./restaurant.repository";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
 import * as proj4 from "proj4";
 import axios from "axios";
+import { FilterInfoDto } from "./dto/filterInfo.dto";
+import { TokenInfo } from "src/user/user.decorator";
+import { UserRestaurantListRepository } from "src/user/user.restaurantList.repository";
+import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
+import { UserRepository } from "src/user/user.repository";
 
 const key = "api키 입력하세요";
 
@@ -18,14 +23,56 @@ export class RestaurantService implements OnModuleInit {
     );
   }
 
-  constructor(private restaurantRepository: RestaurantRepository) {}
+  constructor(
+    private restaurantRepository: RestaurantRepository,
+    private userRepository: UserRepository,
+    private userRestaurantListRepository: UserRestaurantListRepository
+  ) {}
 
   async searchRestaurant(searchInfoDto: SearchInfoDto) {
     return this.restaurantRepository.searchRestarant(searchInfoDto);
   }
 
-  async detailInfo(restaurantId: number){
+  async detailInfo(restaurantId: number) {
     return this.restaurantRepository.detailInfo(restaurantId);
+  }
+
+  async filteredRestaurantList(
+    filterInfoDto: FilterInfoDto,
+    tokenInfo: TokenInfo
+  ) {
+    const target = await this.userRepository.findOne({
+      select: ["id"],
+      where: { nickName: filterInfoDto.filter },
+    });
+
+    const results = await this.userRestaurantListRepository
+      .createQueryBuilder("user_restaurant_lists")
+      .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
+      .leftJoin(
+        "user_restaurant_lists",
+        "current_url",
+        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
+        { currentUserId: tokenInfo.id }
+      )
+      .select([
+        "user_restaurant_lists.restaurantId AS restaurant_id",
+        "restaurant.name",
+        "restaurant.location",
+        "restaurant.address",
+        "restaurant.category",
+        "restaurant.phoneNumber",
+        "CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS isMy",
+      ])
+      .where(
+        `ST_DistanceSphere(
+          location, 
+          ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius} and user_restaurant_lists.user_id = :targetId`,
+        { targetId: target.id }
+      )
+      .getRawMany();
+
+    return results;
   }
 
   async getRestaurantsListFromSeoulData(startPage) {
