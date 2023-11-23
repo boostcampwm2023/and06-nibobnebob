@@ -6,14 +6,16 @@ export class SearchInfoDto {
 
     constructor(
         partialName: string,
-        location: string,
-        radius: string,
-    ){
+        location: string = null,
+        radius: string = null,
+    ) {
         this.partialName = partialName;
-        this.radius = parseInt(radius, 10);
+        if (radius) this.radius = parseInt(radius, 10);
 
-        const [latitude, longitude] = location.split(' ').map(Number);
-        this.latitude = latitude;
-        this.longitude = longitude; 
+        if (location) {
+            const [latitude, longitude] = location.split(' ').map(Number);
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
     }
 }

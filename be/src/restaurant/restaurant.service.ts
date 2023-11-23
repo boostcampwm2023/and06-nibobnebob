@@ -29,6 +29,7 @@ export class RestaurantService implements OnModuleInit {
     private userRestaurantListRepository: UserRestaurantListRepository
   ) {}
 
+
   async searchRestaurant(searchInfoDto: SearchInfoDto) {
     return this.restaurantRepository.searchRestarant(searchInfoDto);
   }
@@ -80,9 +81,8 @@ export class RestaurantService implements OnModuleInit {
       "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43";
     const wgs84 = "EPSG:4326";
 
-    const apiUrl = `http://openapi.seoul.go.kr:8088/${key}/json/LOCALDATA_072404/${startPage}/${
-      startPage + 999
-    }/`;
+    const apiUrl = `http://openapi.seoul.go.kr:8088/${key}/json/LOCALDATA_072404/${startPage}/${startPage + 999
+      }/`;
 
     const response = axios.get(apiUrl);
 
