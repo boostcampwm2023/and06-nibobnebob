@@ -6,6 +6,7 @@ import { TokenInfo } from "./user.decorator";
 import { hashPassword } from "../utils/encryption.utils";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
+import { UserFollowListRepository } from "./user.followList.repository";
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,7 @@ export class UserService {
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository,
     private userRestaurantListRepository: UserRestaurantListRepository,
+    private userFollowListRepositoy: UserFollowListRepository
   ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
@@ -74,6 +76,9 @@ export class UserService {
       ...result,
       isMy: true
     }));
+  }
+  async getMyFollowListInfo(tokenInfo: TokenInfo) {
+    return await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
   }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
