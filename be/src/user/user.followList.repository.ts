@@ -10,7 +10,6 @@ export class UserFollowListRepository extends Repository<FollowEntity> {
         super(FollowEntity, dataSource.createEntityManager());
     }
     async getMyFollowListInfo(id: TokenInfo['id']) {
-        const result = await this.find({ select: ["followingUserId"], where: { 'followedUserId': id } });
-        return { followingList: result.map(item => item.followingUserId) };
+        return await this.find({ select: ["followingUserId"], where: { 'followedUserId': id } });
     }
 }

@@ -7,6 +7,7 @@ import { hashPassword } from "../utils/encryption.utils";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
+import { In } from "typeorm";
 
 @Injectable()
 export class UserService {
@@ -78,7 +79,10 @@ export class UserService {
     }));
   }
   async getMyFollowListInfo(tokenInfo: TokenInfo) {
-    return await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
+    const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
+    const userIdValues = userIds.map(user => user.followingUserId);
+    const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
+    return result.map(result => result.nickName);
   }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
