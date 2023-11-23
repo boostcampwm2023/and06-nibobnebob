@@ -30,8 +30,10 @@ sealed class TrackingState {
     data object Off : TrackingState()
 }
 
-sealed class HomeEvents{
-    data object NavigateToSearchRestaurant: HomeEvents()
+sealed class HomeEvents {
+    data object NavigateToSearchRestaurant : HomeEvents()
+    data object SetNewMarkers: HomeEvents()
+    data object RemoveMarkers: HomeEvents()
 }
 
 @HiltViewModel
@@ -68,7 +70,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun getFilterList(){
+    fun getFilterList() {
         _uiState.update { state ->
             // todo test 데이터 삽입
             state.copy(
@@ -82,22 +84,114 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun getMarkerList(){
+    fun getMarkerList() {
         // todo 현재 필터를 서버에 보내서, 데이터 가져오기
-        
+
         // todo 데이터 성공적 수신시, setMarker 하기
+        viewModelScope.launch {
+
+            _events.emit(HomeEvents.RemoveMarkers)
+
+            when (_uiState.value.curFilter) {
+                MY_LIST -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            markerList = listOf(
+                                UiMarkerData(
+                                    id = -1,
+                                    latitude = 37.355594049034,
+                                    longitude = 126.36707115682,
+                                    name = "너무 맛있는 집",
+                                    address = "서울시 중구 만리동",
+                                    phoneNumber = "010-1234-5254",
+                                    reviewCount = "99개",
+                                    isInWishList = false,
+                                    isInMyList = false
+                                ),
+                                UiMarkerData(
+                                    id = -1,
+                                    latitude = 37.555594049034,
+                                    longitude = 126.96707115682,
+                                    name = "그닥 맛없는 집",
+                                    address = "서울시 중구 용현동",
+                                    phoneNumber = "010-1234-5254",
+                                    reviewCount = "90개",
+                                    isInWishList = false,
+                                    isInMyList = false
+                                ),
+                                UiMarkerData(
+                                    id = -1,
+                                    latitude = 37.255594049034,
+                                    longitude = 126.16707115682,
+                                    name = "그럭저럭?",
+                                    address = "서울시 중구 만리동",
+                                    phoneNumber = "010-1234-5254",
+                                    reviewCount = "99개",
+                                    isInWishList = false,
+                                    isInMyList = false
+                                ),
+                            )
+                        )
+                    }
+                }
+
+                "K011 노균욱" -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            markerList = listOf(
+                                UiMarkerData(
+                                    id = -1,
+                                    latitude = 36.555594049034,
+                                    longitude = 125.96707115682,
+                                    name = "세영국밥",
+                                    address = "서울시 영등포구",
+                                    phoneNumber = "010-1234-5111",
+                                    reviewCount = "0개",
+                                    isInWishList = false,
+                                    isInMyList = false
+                                ),
+                                UiMarkerData(
+                                    id = -1,
+                                    latitude = 37.355594049034,
+                                    longitude = 125.96707115682,
+                                    name = "균욱불뼈찜",
+                                    address = "서울시 중구 만리동",
+                                    phoneNumber = "010-1234-2254",
+                                    reviewCount = "90개",
+                                    isInWishList = true,
+                                    isInMyList = false
+                                ),
+                                UiMarkerData(
+                                    id = -1,
+                                    latitude = 37.255594049034,
+                                    longitude = 126.76707115682,
+                                    name = "진성아구찜",
+                                    address = "서울시 중구 만리동",
+                                    phoneNumber = "010-1234-5254",
+                                    reviewCount = "99개",
+                                    isInWishList = false,
+                                    isInMyList = true
+                                ),
+                            )
+                        )
+                    }
+                }
+            }
+
+            _events.emit(HomeEvents.SetNewMarkers)
+        }
     }
 
-    private fun onFilterItemClicked(name: String){
+    private fun onFilterItemClicked(name: String) {
         _uiState.update { state ->
             state.copy(
                 curFilter = name,
                 filterList = state.filterList.map {
-                    if(it.name == name){
+                    if (it.name == name) {
                         it.copy(
                             isSelected = true
                         )
-                    } else if(it.isSelected){
+                    } else if (it.isSelected) {
                         it.copy(
                             isSelected = false
                         )
@@ -112,7 +206,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         getMarkerList()
     }
 
-    fun navigateToSearchRestaurant(){
+    fun navigateToSearchRestaurant() {
         viewModelScope.launch {
             _events.emit(HomeEvents.NavigateToSearchRestaurant)
         }

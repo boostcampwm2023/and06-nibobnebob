@@ -47,6 +47,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+    private val markerList = mutableListOf<Marker>()
 
     private val locationPermissionList = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -85,6 +86,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.locationSource = locationSource
         setMapListener()
         initStateObserver()
+        viewModel.getMarkerList()
     }
 
     private fun setMapListener() {
@@ -110,6 +112,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             viewModel.events.collect{
                 when(it){
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
+                    is HomeEvents.SetNewMarkers -> {
+                        viewModel.uiState.value.markerList.forEach {  data ->
+                            setMarker(data)
+                        }
+                    }
+                    is HomeEvents.RemoveMarkers -> removeAllMarker()
                     else -> {}
                 }
             }
@@ -187,7 +195,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
             true
         }
+        markerList.add(marker)
     }
+
+    // todo 모든 marker 데이터 markerList 에 저장해 놨다가, remove 다음 방식으로 진행
+    private fun removeAllMarker(){
+        markerList.forEach {
+            it.map = null
+        }
+        markerList.clear()
+    }
+
 
     private fun addWishTest(id: Int, curState: Boolean): Boolean {
         // todo wish 맛집 리스트 에 추가 or 삭제 API 통신
