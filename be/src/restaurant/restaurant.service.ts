@@ -1,52 +1,83 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import { RestaurantRepository } from "./restaurant.repository";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
+import * as proj4 from "proj4";
 import axios from "axios";
-import * as proj4 from 'proj4';
+
+const key = "api키 입력하세요";
 
 @Injectable()
-export class RestaurantService {
-  constructor(private restaurantRepository: RestaurantRepository) { }
+export class RestaurantService implements OnModuleInit {
+  onModuleInit() {
+    this.updateRestaurantsFromSeoulData();
+    setInterval(
+      () => {
+        this.updateRestaurantsFromSeoulData();
+      },
+      1000 * 60 * 60 * 24 * 3
+    );
+  }
+
+  constructor(private restaurantRepository: RestaurantRepository) {}
 
   async searchRestaurant(searchInfoDto: SearchInfoDto) {
-    console.log(searchInfoDto);
     return this.restaurantRepository.searchRestarant(searchInfoDto);
   }
 
-  async updateRestaurantsFromKakao() {
-    const data = [];
-
-    const tm2097 = "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43";
+  async getRestaurantsListFromSeoulData(startPage) {
+    const tm2097 =
+      "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43";
     const wgs84 = "EPSG:4326";
 
-    const response = await axios.get(`http://openapi.seoul.go.kr:8088/인증키/json/LOCALDATA_072404/1/1000/`, {
-    });
-    response.data.LOCALDATA_072404.row.forEach(element => {
-      const tmX = parseFloat(element.X);
-      const tmY = parseFloat(element.Y);
+    const apiUrl = `http://openapi.seoul.go.kr:8088/${key}/json/LOCALDATA_072404/${startPage}/${
+      startPage + 999
+    }/`;
 
+    const response = axios.get(apiUrl);
 
-      if (!isNaN(tmX) && !isNaN(tmY)) {
-        const [lon, lat] = proj4(tm2097, wgs84, [tmX, tmY]);
-        if (element.DTLSTATENM === "영업")
-          data.push({
-            name: element.BPLCNM,
-            location: { type: 'Point', coordinates: [lon, lat] },
-            address: element.SITEWHLADDR,
-            category: element.UPTAENM,
-            phoneNumber: element.SITETEL,
-          });
+    return response.then((response) => {
+      const result = { data: [], lastPage: false };
+      if (response.data.RESULT && response.data.RESULT.CODE === "INFO-200") {
+        result.lastPage = true;
       } else {
-        console.error(`유효하지 않은 좌표: x=${element.x}, y=${element.y}`);
+        response.data.LOCALDATA_072404.row.forEach((element) => {
+          const tmX = parseFloat(element.X);
+          const tmY = parseFloat(element.Y);
+          if (!isNaN(tmX) && !isNaN(tmY) && element.DTLSTATENM === "영업") {
+            const [lon, lat] = proj4(tm2097, wgs84, [tmX, tmY]);
+            result.data.push({
+              name: element.BPLCNM,
+              location: { type: "Point", coordinates: [lon, lat] },
+              address: element.SITEWHLADDR,
+              category: element.UPTAENM,
+              phoneNumber: element.SITETEL,
+            });
+          }
+        });
       }
-
+      return result;
     });
+  }
 
-    return await this.restaurantRepository.updateRestaurantsFromKakao(data);
+  async updateRestaurantsFromSeoulData() {
+    let pageElementNum = 1;
+    const promises = [];
+    let lastPageReached = false;
+    while (!lastPageReached) {
+      const promise = this.getRestaurantsListFromSeoulData(pageElementNum);
+      promises.push(promise);
+      pageElementNum += 1000;
 
+      if (promises.length >= 15) {
+        const data = [];
+        const results = await Promise.all(promises);
+        results.forEach((result) => {
+          if (result.lastPage) lastPageReached = true;
+          data.push(...result.data);
+        });
+        await this.restaurantRepository.updateRestaurantsFromSeoulData(data);
+        promises.length = 0;
+      }
+    }
   }
 }
-
-
-
-

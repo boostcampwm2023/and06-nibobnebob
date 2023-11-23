@@ -10,7 +10,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository
-  ) { }
+  ) {}
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
     return await this.usersRepository.createUser(userInfoDto);
