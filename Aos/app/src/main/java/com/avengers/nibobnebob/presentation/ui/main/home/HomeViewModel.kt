@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantSimpleData
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,7 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
-    val filterList: List<String> = emptyList(),
+    val filterList: List<UiFilterData> = emptyList(),
     val markerList: List<UiRestaurantSimpleData> = emptyList(),
     val curFilter: String = MY_LIST
 )
@@ -70,7 +71,12 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     fun getFilterList(){
         _uiState.update { state ->
             state.copy(
-                filterList = listOf(MY_LIST, "K011 노균욱", "K015 박진성", "K024 오세영")
+                filterList = listOf(
+                    UiFilterData(MY_LIST, true),
+                    UiFilterData("K011 노균욱", false),
+                    UiFilterData("K015 박진성", false),
+                    UiFilterData("K024 오세영", false),
+                )
             )
         }
     }
@@ -79,6 +85,18 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         // todo 현재 필터를 서버에 보내서, 데이터 가져오기
         
         // todo 데이터 성공적 수신시, setMarker 하기
+    }
+
+    private fun onFilterItemClicked(name: String){
+        _uiState.update { state ->
+            state.copy(
+                curFilter = name,
+                filterList = state.filterList.map {
+                    it.isSelected = it.name == name
+                    it
+                }
+            )
+        }
     }
 
     fun navigateToSearchRestaurant(){
