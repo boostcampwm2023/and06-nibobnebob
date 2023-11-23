@@ -79,7 +79,8 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                     UiFilterData("K011 노균욱", false, ::onFilterItemClicked),
                     UiFilterData("K015 박진성", false, ::onFilterItemClicked),
                     UiFilterData("K024 오세영", false, ::onFilterItemClicked),
-                )
+                ),
+                curFilter = MY_LIST
             )
         }
     }
