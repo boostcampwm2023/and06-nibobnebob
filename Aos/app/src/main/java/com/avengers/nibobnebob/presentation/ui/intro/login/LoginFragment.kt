@@ -81,9 +81,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
                     override fun onSuccess(result: NidProfileResponse) {
                         viewModel.naverEmail.value = result.profile?.email.toString()
+                        viewModel.loginNaver(token)
                     }
                 })
-                viewModel.loginNaver(token)
             }
         }
         NaverIdLoginSDK.authenticate(requireContext(), oAuthLoginCallback)
