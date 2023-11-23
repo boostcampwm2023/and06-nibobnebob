@@ -16,4 +16,6 @@ interface MyPageRepository {
 
     fun logout(): Flow<BaseState<Unit>>
 
+    fun withdraw(): Flow<BaseState<Unit>>
+
 }

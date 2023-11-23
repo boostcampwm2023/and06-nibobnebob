@@ -35,4 +35,9 @@ class MyPageRepositoryImpl @Inject constructor(private val api: MyPageApi) : MyP
         emit(result)
     }
 
+    override fun withdraw(): Flow<BaseState<Unit>> = flow {
+        val result = runRemote { api.withdraw() }
+        emit(result)
+    }
+
 }

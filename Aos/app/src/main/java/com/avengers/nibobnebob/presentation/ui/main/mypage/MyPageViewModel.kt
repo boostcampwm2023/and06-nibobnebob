@@ -93,4 +93,17 @@ class MyPageViewModel @Inject constructor(
 //            }
 //        }.launchIn(viewModelScope)
     }
+
+    fun withdraw(){
+        myPageRepository.withdraw().onEach {
+            when(it){
+                is BaseState.Success -> {
+                    dataStoreManager.deleteAccessToken()
+                    dataStoreManager.deleteRefreshToken()
+                    _events.emit(MyEditPageEvent.NavigateToIntro)
+                }
+                else -> Log.d("TEST", "탈퇴 실패")
+            }
+        }.launchIn(viewModelScope)
+    }
 }
