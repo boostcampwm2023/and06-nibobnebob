@@ -4,13 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.BottomSheetRestaurantBinding
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 internal fun restaurantSheet(
     context: Context,
-    restaurantId: Int,
-    isWish: Boolean,
+    data: UiMarkerData,
     onClickAddWishRestaurant: (Int, Boolean) -> Boolean,
     onClickAddMyRestaurant: (Int) -> Unit,
     onClickGoReview: (Int) -> Unit
@@ -18,16 +18,17 @@ internal fun restaurantSheet(
     val dialog = BottomSheetDialog(context)
     val binding = BottomSheetRestaurantBinding.inflate(LayoutInflater.from(context))
     dialog.setContentView(binding.root)
+    binding.item = data
 
-    var isWishState = isWish
+    var isWishState = data.isInWishList
 
     binding.btnAddMyRestaurant.setOnClickListener {
-        onClickAddMyRestaurant(restaurantId)
+        onClickAddMyRestaurant(data.id)
         dialog.dismiss()
     }
 
     binding.btnAddWishRestaurant.setOnClickListener {
-        val result = onClickAddWishRestaurant(restaurantId, isWish)
+        val result = onClickAddWishRestaurant(data.id, data.isInWishList)
 
         if (result) {
             isWishState = !isWishState
@@ -41,7 +42,7 @@ internal fun restaurantSheet(
     }
 
     binding.btnGoReview.setOnClickListener {
-        onClickGoReview(restaurantId)
+        onClickGoReview(data.id)
         dialog.dismiss()
     }
 

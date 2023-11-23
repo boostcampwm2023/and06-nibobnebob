@@ -10,29 +10,29 @@ import javax.inject.Inject
 
 class NetworkManager @Inject constructor(private val connectivityManager: ConnectivityManager) {
 
-    private val _isNetworkConnected = MutableStateFlow(isInternetOn())
+    private val _isNetworkConnected = MutableStateFlow(true)
     val isNetworkConnected: StateFlow<Boolean> = _isNetworkConnected
 
     private val networkRequest = NetworkRequest.Builder()
         .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         .build()
 
-    private fun isInternetOn() : Boolean{
-        val network = connectivityManager.activeNetwork
-        val connection = connectivityManager.getNetworkCapabilities(network)
-
-        return connection != null &&(
-                connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
-    }
+//    private fun isInternetOn() : Boolean{
+//        val network = connectivityManager.activeNetwork
+//        val connection = connectivityManager.getNetworkCapabilities(network)
+//
+//        return connection != null &&(
+//                connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+//                        connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
+//    }
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            _isNetworkConnected.value = isInternetOn()
+            _isNetworkConnected.value = true
         }
 
         override fun onLost(network: Network) {
-            _isNetworkConnected.value = isInternetOn()
+            _isNetworkConnected.value = false
         }
     }
 

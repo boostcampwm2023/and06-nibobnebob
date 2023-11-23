@@ -10,4 +10,5 @@ object Constants {
     const val NAVER_TOKEN = "NAVERTOKEN"
     const val AUTHORIZATION = "authorization"
     const val BEARER = "Bearer"
+    const val MY_LIST = "마이 리스트"
 }

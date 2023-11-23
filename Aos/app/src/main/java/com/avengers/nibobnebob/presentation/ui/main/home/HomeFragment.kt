@@ -22,6 +22,8 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
 import com.avengers.nibobnebob.presentation.util.restaurantSheet
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
@@ -45,6 +47,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+    private val markerList = mutableListOf<Marker>()
 
     private val locationPermissionList = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -55,10 +58,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
-        binding.ivTest.setOnClickListener {
-            findNavController().toSearchRestaurant()
-        }
         initMapView()
+        initEventObserver()
+        binding.rvHomeFilter.adapter = HomeFilterAdapter()
+        viewModel.getFilterList()
     }
 
     private fun initMapView() {
@@ -83,7 +86,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.locationSource = locationSource
         setMapListener()
         initStateObserver()
-        setMarker()
+        viewModel.getMarkerList()
     }
 
     private fun setMapListener() {
@@ -101,6 +104,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         // todo GPS 기반 위치변화 리스너
         naverMap.addOnLocationChangeListener {
 
+        }
+    }
+
+    private fun initEventObserver(){
+        repeatOnStarted {
+            viewModel.events.collect{
+                when(it){
+                    is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
+                    is HomeEvents.SetNewMarkers -> {
+                        viewModel.uiState.value.markerList.forEach {  data ->
+                            setMarker(data)
+                        }
+                    }
+                    is HomeEvents.RemoveMarkers -> removeAllMarker()
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -157,19 +177,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
-    private fun setMarker() {
+    private fun setMarker(data: UiMarkerData) {
         val marker = Marker()
 
-        // example
-        marker.position = LatLng(37.555594049034, 126.96707115682)
+        marker.position = LatLng(data.latitude, data.longitude)
         marker.icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
         marker.map = naverMap
 
         marker.setOnClickListener {
             restaurantSheet(
                 context = requireContext(),
-                restaurantId = 0,
-                isWish = false,
+                data = data,
                 onClickAddWishRestaurant = ::addWishTest,
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
@@ -177,31 +195,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
             true
         }
-
-        // todo 마커의 포지션을 정함
-        // marker.position = LatLng(data.latitude,data.longitude)
-
-        // todo 마커의 icon을 정함
-        // marker.icon = OverlayImage.fromResource(R.drawable.ic_marker)
-
-        // todo 마커 클릭 이벤트를 등록함
-        // marker.setOnClickListener{}
-
-        // todo 마커를 map에 찍음
-        // marker.map = naverMap
+        markerList.add(marker)
     }
 
-    private fun addWishTest(test: Int, test2: Boolean): Boolean {
+    // todo 모든 marker 데이터 markerList 에 저장해 놨다가, remove 다음 방식으로 진행
+    private fun removeAllMarker(){
+        markerList.forEach {
+            it.map = null
+        }
+        markerList.clear()
+    }
+
+
+    private fun addWishTest(id: Int, curState: Boolean): Boolean {
+        // todo wish 맛집 리스트 에 추가 or 삭제 API 통신
         return true
     }
 
-    private fun addRestaurantTest(test: Int) {
+    private fun addRestaurantTest(id: Int) {
         findNavController().toAddRestaurant()
     }
 
-    private fun goReviewTest(test: Int) {
+    private fun goReviewTest(id: Int) {
         findNavController().toRestaurantDetail()
     }
+
 
     private fun NavController.toAddRestaurant() {
         val action = NavGraphDirections.globalToAddMyRestaurantFragment()
@@ -217,8 +235,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         val action = NavGraphDirections.globalToRestaurantDetailFragment()
         navigate(action)
     }
-
-
 }
 
 
