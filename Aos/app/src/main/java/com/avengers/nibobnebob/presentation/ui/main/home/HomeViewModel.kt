@@ -4,7 +4,7 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantSimpleData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +20,7 @@ import javax.inject.Inject
 data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
     val filterList: List<UiFilterData> = emptyList(),
-    val markerList: List<UiRestaurantSimpleData> = emptyList(),
+    val markerList: List<UiMarkerData> = emptyList(),
     val curFilter: String = MY_LIST
 )
 
@@ -70,18 +70,19 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 
     fun getFilterList(){
         _uiState.update { state ->
+            // todo test 데이터 삽입
             state.copy(
                 filterList = listOf(
-                    UiFilterData(MY_LIST, true),
-                    UiFilterData("K011 노균욱", false),
-                    UiFilterData("K015 박진성", false),
-                    UiFilterData("K024 오세영", false),
+                    UiFilterData(MY_LIST, true, ::onFilterItemClicked),
+                    UiFilterData("K011 노균욱", false, ::onFilterItemClicked),
+                    UiFilterData("K015 박진성", false, ::onFilterItemClicked),
+                    UiFilterData("K024 오세영", false, ::onFilterItemClicked),
                 )
             )
         }
     }
 
-    fun getMarkerList(){
+    private fun getMarkerList(){
         // todo 현재 필터를 서버에 보내서, 데이터 가져오기
         
         // todo 데이터 성공적 수신시, setMarker 하기
@@ -92,11 +93,23 @@ class HomeViewModel @Inject constructor() : ViewModel() {
             state.copy(
                 curFilter = name,
                 filterList = state.filterList.map {
-                    it.isSelected = it.name == name
-                    it
-                }
+                    if(it.name == name){
+                        it.copy(
+                            isSelected = true
+                        )
+                    } else if(it.isSelected){
+                        it.copy(
+                            isSelected = false
+                        )
+                    } else {
+                        it
+                    }
+                },
+                locationTrackingState = TrackingState.Off
             )
         }
+
+        getMarkerList()
     }
 
     fun navigateToSearchRestaurant(){
