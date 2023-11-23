@@ -6,9 +6,9 @@ data class MyInfoResponse(
 )
 
 data class UserInfo(
-    val nickName : String,
-    val birthdate : String,
-    val region : String,
-    val isMale : Boolean
+    val nickName: String,
+    val birthdate: String,
+    val region: String,
+    val isMale: Boolean
 )
 

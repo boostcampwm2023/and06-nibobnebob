@@ -57,19 +57,19 @@
 
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile.EditProfileFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditProfileFragment"
         android:label="EditProfileFragment" />
     <fragment
         android:id="@+id/myRestaurantListFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.my_list.MyRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.mylist.MyRestaurantListFragment"
         android:label="MyRestaurantListFragment" />
     <fragment
         android:id="@+id/wishRestaurantListFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.wish_list.WishRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist.WishRestaurantListFragment"
         android:label="WishRestaurantListFragment" />
     <fragment
         android:id="@+id/restaurantSearchFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.home.restaurant_search.RestaurantSearchFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchFragment"
         android:label="RestaurantSearchFragment" />
     <fragment
         android:id="@+id/addMyRestaurantFragment"

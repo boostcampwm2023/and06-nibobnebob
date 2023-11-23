@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.presentation.ui.intro.login.model.UiLoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,13 +75,13 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             introRepository.loginNaver(token).onEach {
                 when(it){
-                    is ApiState.Success -> {
+                    is BaseState.Success -> {
                         dataStoreManager.putAutoLogin(true)
                         dataStoreManager.putAccessToken(it.data.accessToken.toString())
                         dataStoreManager.putRefreshToken(it.data.refreshToken.toString())
                         _events.emit(LoginEvent.NavigateToMain)
                     }
-                    is ApiState.Error -> {
+                    is BaseState.Error -> {
                         when(it.statusCode){
                             401 -> {
                                 Log.d(TAG,"401 에러")

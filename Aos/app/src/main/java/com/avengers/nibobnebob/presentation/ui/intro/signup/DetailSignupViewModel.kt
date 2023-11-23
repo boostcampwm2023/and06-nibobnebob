@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.ApiState
+import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
@@ -115,8 +115,8 @@ class DetailSignupViewModel @Inject constructor(
         validationRepository.nickValidation(nick.value).onEach {
 
             when (it) {
-                is ApiState.Success -> {
-                    if (it.data.isExist) {
+                is BaseState.Success -> {
+                    if (it.data.body.isExist) {
                         nickValidation.value = false
                         _uiState.update { state ->
                             state.copy(
@@ -133,12 +133,8 @@ class DetailSignupViewModel @Inject constructor(
                     }
                 }
 
-                is ApiState.Error -> {
+                is BaseState.Error -> {
                     _events.emit(DetailSignupEvents.ShowToastMessage(it.message))
-                }
-
-                is ApiState.Exception -> {
-                    _events.emit(DetailSignupEvents.ShowToastMessage(it.e.message.toString()))
                 }
             }
         }.launchIn(viewModelScope)
@@ -156,9 +152,8 @@ class DetailSignupViewModel @Inject constructor(
             )
         ).onEach {
             when (it) {
-                is ApiState.Success -> navigateToLoginFragment()
-                is ApiState.Error -> showToastMessage(it.message)
-                is ApiState.Exception -> showToastMessage(it.e.message.toString())
+                is BaseState.Success -> navigateToLoginFragment()
+                is BaseState.Error -> showToastMessage(it.message)
             }
         }.launchIn(viewModelScope)
     }

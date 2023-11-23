@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.mapper
 
 import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse
-import com.avengers.nibobnebob.data.model.response.MyInfoResponse
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyPageEditInfoData
 
 fun MyDefaultInfoResponse.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
