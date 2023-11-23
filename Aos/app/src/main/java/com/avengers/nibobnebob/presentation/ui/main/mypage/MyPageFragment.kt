@@ -34,6 +34,7 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
     private fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
+        viewModel.getUserInfo()
 
         repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
@@ -44,6 +45,18 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
                     else -> Unit
                 }
 
+            }
+        }
+
+        repeatOnStarted {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is MyEditPageEvent.NavigateToIntro -> {
+                        (activity as MainActivity).finish()
+                        val intent = Intent(context, IntroActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
             }
         }
 
@@ -64,19 +77,7 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
 
     private fun withDrawConfirm() {
         Log.d("TEST", "탈퇴 완료")
-        viewModel.withdraw()
-        repeatOnStarted {
-            viewModel.events.collect { event ->
-                when (event) {
-                    is MyEditPageEvent.NavigateToIntro -> {
-                        (activity as MainActivity).finish()
-                        val intent = Intent(context, IntroActivity::class.java)
-                        startActivity(intent)
-                    }
-                }
-            }
-        }
-
+        //viewModel.withdraw()
     }
 
     private fun withDrawDismiss() {

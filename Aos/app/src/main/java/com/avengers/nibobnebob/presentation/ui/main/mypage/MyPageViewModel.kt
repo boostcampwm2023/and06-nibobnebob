@@ -7,7 +7,6 @@ import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageInfoData
-import com.avengers.nibobnebob.presentation.util.dialogManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,11 +47,7 @@ class MyPageViewModel @Inject constructor(
     )
     val events : SharedFlow<MyEditPageEvent> = _events.asSharedFlow()
 
-    init {
-        getUserInfo()
-    }
-
-    private fun getUserInfo() {
+    fun getUserInfo() {
         myPageRepository.getMyInfo().onEach {
             when (it) {
                 is BaseState.Success -> {
@@ -77,22 +72,12 @@ class MyPageViewModel @Inject constructor(
 
     fun logout(){
 
+        // api 연결 예정
         viewModelScope.launch {
             dataStoreManager.deleteAccessToken()
             dataStoreManager.deleteRefreshToken()
             _events.emit(MyEditPageEvent.NavigateToIntro)
         }
-
-//        myPageRepository.logout().onEach {
-//            when(it){
-//                is BaseState.Success -> {
-//                    dataStoreManager.deleteAccessToken()
-//                    dataStoreManager.deleteRefreshToken()
-//                    _events.emit(MyEditPageEvent.NavigateToIntro)
-//                }
-//                else -> Log.d("TEST", "로그아웃 실패")
-//            }
-//        }.launchIn(viewModelScope)
     }
 
     fun withdraw(){
