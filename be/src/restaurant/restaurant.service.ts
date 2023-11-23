@@ -9,7 +9,7 @@ const key = "api키 입력하세요";
 @Injectable()
 export class RestaurantService implements OnModuleInit {
   onModuleInit() {
-    this.updateRestaurantsFromSeoulData();
+    //this.updateRestaurantsFromSeoulData();
     setInterval(
       () => {
         this.updateRestaurantsFromSeoulData();

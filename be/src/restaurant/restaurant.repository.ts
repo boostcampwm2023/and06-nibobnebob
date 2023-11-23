@@ -11,14 +11,17 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
 
   async searchRestarant(searchInfoDto: SearchInfoDto) {
     const rawQuery = `
-    SELECT *, 
-    ST_DistanceSphere(
-        location, 
-        ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
-    ) AS distance
-    FROM restaurant
-    WHERE name LIKE '%${searchInfoDto.partialName}%'
-    ORDER BY location <-> ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
+    SELECT * FROM (
+      SELECT *, 
+      ST_DistanceSphere(
+          location, 
+          ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
+      ) AS distance
+      FROM restaurant
+  ) AS subquery
+  WHERE name LIKE '%${searchInfoDto.partialName}%' AND distance < ${searchInfoDto.radius}
+  ORDER BY location <-> ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
+  
     `
     return this.query(rawQuery)
   }
