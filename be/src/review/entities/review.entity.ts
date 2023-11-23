@@ -5,22 +5,16 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from "typeorm";
 import { User } from "src/user/entities/user.entity";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
+import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
 
 @Entity("review")
 export class ReviewInfoEntity {
   @PrimaryGeneratedColumn("increment")
   id: number;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "user_id" })
-  user: User;
-
-  @ManyToOne(() => RestaurantInfoEntity)
-  @JoinColumn({ name: "restaurant_id" })
-  restaurant: RestaurantInfoEntity;
 
   @Column({ type: "boolean" })
   visitMethod: boolean;
@@ -45,4 +39,15 @@ export class ReviewInfoEntity {
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "user_id" })
+  user: User;
+
+  @ManyToOne(() => RestaurantInfoEntity)
+  @JoinColumn({ name: "restaurant_id" })
+  restaurant: RestaurantInfoEntity;
+
+  @OneToOne(() => UserRestaurantListEntity)
+  userRestaurant: UserRestaurantListEntity
 }
