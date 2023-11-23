@@ -6,9 +6,7 @@ import { SearchInfoDto } from "./dto/seachInfo.dto";
 
 @Controller("restaurant")
 export class RestaurantController {
-  constructor(
-    private restaurantService: RestaurantService
-  ) { }
+  constructor(private restaurantService: RestaurantService) {}
   @Get("autocomplete/:partialRestaurantName")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -26,14 +24,5 @@ export class RestaurantController {
   ) {
     const searchInfoDto = new SearchInfoDto(partialName, location, radius);
     return this.restaurantService.searchRestaurant(searchInfoDto);
-  }
-
-  @Get("update")
-  @ApiResponse({
-    status: 200,
-    description: "음식점 업데이트 성공",
-  })
-  updateMapData() {
-    return this.restaurantService.updateRestaurantsFromKakao();
   }
 }
