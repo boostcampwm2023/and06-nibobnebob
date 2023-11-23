@@ -9,7 +9,11 @@
         android:id="@+id/homeFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_restaurantSearchFragment"
+            app:destination="@id/restaurantSearchFragment" />
+    </fragment>
     <fragment
         android:id="@+id/followFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.follow.FollowFragment"
@@ -35,16 +39,44 @@
         app:destination="@id/wishRestaurantListFragment"
         app:popUpTo="@id/myPageFragment"
         app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_myPageFragment"
+        app:destination="@id/myPageFragment"
+        app:popUpTo="@id/myPageFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_restaurantDetailFragment"
+        app:destination="@id/restaurantDetailFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_addMyRestaurantFragment"
+        app:destination="@id/addMyRestaurantFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="false"/>
+
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.edit_profile.EditProfileFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditProfileFragment"
         android:label="EditProfileFragment" />
     <fragment
         android:id="@+id/myRestaurantListFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.my_list.MyRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.mylist.MyRestaurantListFragment"
         android:label="MyRestaurantListFragment" />
     <fragment
         android:id="@+id/wishRestaurantListFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.wish_list.WishRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist.WishRestaurantListFragment"
         android:label="WishRestaurantListFragment" />
+    <fragment
+        android:id="@+id/restaurantSearchFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchFragment"
+        android:label="RestaurantSearchFragment" />
+    <fragment
+        android:id="@+id/addMyRestaurantFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.global.restaurant_add.AddMyRestaurantFragment"
+        android:label="AddMyRestaurantFragment" />
+    <fragment
+        android:id="@+id/restaurantDetailFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.global.restaurant_detail.RestaurantDetailFragment"
+        android:label="RestaurantDetailFragment" />
 </navigation>

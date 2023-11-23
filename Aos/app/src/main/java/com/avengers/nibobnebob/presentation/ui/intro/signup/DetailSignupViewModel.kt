@@ -2,6 +2,10 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
+import com.avengers.nibobnebob.data.repository.IntroRepository
+import com.avengers.nibobnebob.data.repository.ValidationRepository
 import com.avengers.nibobnebob.presentation.util.Validation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,11 +37,15 @@ sealed class InputState {
 
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
-    data object NavigateToMainActivity : DetailSignupEvents()
+    data object NavigateToLoginFragment : DetailSignupEvents()
+    data class ShowToastMessage(val msg: String) : DetailSignupEvents()
 }
 
 @HiltViewModel
-class DetailSignupViewModel @Inject constructor() : ViewModel() {
+class DetailSignupViewModel @Inject constructor(
+    private val introRepository: IntroRepository,
+    private val validationRepository: ValidationRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailSignupUiState())
     val uiState: StateFlow<DetailSignupUiState> = _uiState.asStateFlow()
@@ -45,20 +53,25 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     private val _events = MutableSharedFlow<DetailSignupEvents>()
     val events: SharedFlow<DetailSignupEvents> = _events.asSharedFlow()
 
+    private val email = MutableStateFlow("")
+    private val password = MutableStateFlow("")
+    private val provider = MutableStateFlow("")
+
     val nick = MutableStateFlow("")
-    private var nickValidation = false
-    private val gender = MutableStateFlow("male")
+    private val nickValidation = MutableStateFlow(false)
+    private val isMale = MutableStateFlow(true)
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
 
-    val isDataReady = combine(nick, gender, birth, location) { nick, gender, birth, location ->
-        nick.isNotBlank() && gender.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
-                nickValidation
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        false
-    )
+    val isDataReady =
+        combine(nick, birth, location, nickValidation) { nick, birth, location, nickValidation ->
+            nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
+                    nickValidation
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            false
+        )
 
     init {
         observeNick()
@@ -66,6 +79,7 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun observeNick() {
+
         nick.onEach {
             _uiState.update { state ->
                 state.copy(
@@ -73,8 +87,11 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
                     nickState = InputState.Empty
                 )
             }
+        }.onEach {
+
         }.launchIn(viewModelScope)
     }
+
 
     private fun observeBirth() {
         birth.onEach {
@@ -95,48 +112,85 @@ class DetailSignupViewModel @Inject constructor() : ViewModel() {
     }
 
     fun checkNickDuplication() {
-        viewModelScope.launch {
+        validationRepository.nickValidation(nick.value).onEach {
 
-            // todo 중복체크 성공일때
-            nickValidation = true
-            _uiState.update { state ->
-                state.copy(
-                    nickState = InputState.Success("사용 가능한 닉네임 입니다")
-                )
+            when (it) {
+                is BaseState.Success -> {
+                    if (it.data.body.isExist) {
+                        nickValidation.value = false
+                        _uiState.update { state ->
+                            state.copy(
+                                nickState = InputState.Error("이미 사용중인 닉네임 입니다")
+                            )
+                        }
+                    } else {
+                        nickValidation.value = true
+                        _uiState.update { state ->
+                            state.copy(
+                                nickState = InputState.Success("사용 가능한 닉네임 입니다")
+                            )
+                        }
+                    }
+                }
+
+                is BaseState.Error -> {
+                    _events.emit(DetailSignupEvents.ShowToastMessage(it.message))
+                }
             }
-
-            // todo 중복체크 실패일때
-//            nickValidation = false
-//            _uiState.update { state ->
-//                state.copy(
-//                    nickState = InputState.Error("이미 사용중인 닉네임 입니다")
-//                )
-//            }
-        }
+        }.launchIn(viewModelScope)
     }
 
-    fun setGender(genderData: Gender) {
-        gender.value = genderData.data
+    fun signup() {
+        introRepository.signup(
+            DetailSignupRequest(
+                email = email.value,
+                provider = provider.value,
+                nickName = nick.value,
+                birthdate = birth.value,
+                region = location.value,
+                isMale = isMale.value
+            )
+        ).onEach {
+            when (it) {
+                is BaseState.Success -> navigateToLoginFragment()
+                is BaseState.Error -> showToastMessage(it.message)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun setIsMale(data: Boolean) {
+        isMale.value = data
     }
 
     fun setBirth(birthData: String) {
         birth.value = birthData
     }
 
-    fun navigateToBack(){
+    fun setDefaultData(
+        emailData: String,
+        passwordData: String,
+        providerData: String
+    ) {
+        email.value = emailData
+        password.value = passwordData
+        provider.value = providerData
+    }
+
+    fun navigateToBack() {
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.NavigateToBack)
         }
     }
 
-    fun navigateToMainActivity(){
+    private fun navigateToLoginFragment() {
         viewModelScope.launch {
-            _events.emit(DetailSignupEvents.NavigateToMainActivity)
+            _events.emit(DetailSignupEvents.NavigateToLoginFragment)
         }
     }
-}
 
-enum class Gender(val data: String) {
-    MALE("male"),
-    FEMALE("female")
+    private fun showToastMessage(message: String) {
+        viewModelScope.launch {
+            _events.emit(DetailSignupEvents.ShowToastMessage(message))
+        }
+    }
 }

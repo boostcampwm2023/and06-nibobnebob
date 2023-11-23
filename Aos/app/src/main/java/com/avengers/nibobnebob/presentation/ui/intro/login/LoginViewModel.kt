@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.ApiState
-import com.avengers.nibobnebob.data.repository.LoginRepository
+import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.StatusCode
+import com.avengers.nibobnebob.data.repository.IntroRepository
+import com.avengers.nibobnebob.presentation.ui.intro.login.model.UiLoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +27,7 @@ sealed class LoginEvent {
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository,
+    private val introRepository: IntroRepository,
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
     private val TAG = "LoginViewModelDebug"
@@ -33,12 +35,13 @@ class LoginViewModel @Inject constructor(
     private val _events = MutableSharedFlow<LoginEvent>()
     val events = _events.asSharedFlow()
 
-    private val _uiState = MutableStateFlow(CommonRequest())
+    private val _uiState = MutableStateFlow(UiLoginData())
     val uiState = _uiState.asStateFlow()
 
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
     val autoLogin = MutableStateFlow(false)
+    val naverEmail = MutableStateFlow("")
 
     init {
         observeEmail()
@@ -65,33 +68,32 @@ class LoginViewModel @Inject constructor(
         autoLogin.value = newState
     }
 
-    fun postCommonLogin(){
+    fun loginCommon(){
         //TODO : 일반로그인
     }
 
-    fun naverLogin(token : String){
+    fun loginNaver(token : String){
         viewModelScope.launch {
-            dataStoreManager.putAccessToken(token)
-            loginRepository.loginNaver().onEach {
-                when(it){
-                    is ApiState.Success -> {
+            introRepository.loginNaver(token).onEach { state ->
+                when(state){
+                    is BaseState.Success -> {
+                        dataStoreManager.putAutoLogin(true)
+                        dataStoreManager.putAccessToken(state.data.body.accessToken.toString())
+                        dataStoreManager.putRefreshToken(state.data.body.refreshToken.toString())
                         _events.emit(LoginEvent.NavigateToMain)
                     }
-                    is ApiState.Error -> {
-                        when(it.statusCode){
-                            401 -> {
-                                Log.d(TAG,"401이 뜰일이 있나..?")
-                            }
-                            404 -> {
-                                _events.emit(LoginEvent.NavigateToDetailSignup)
+                    is BaseState.Error -> {
+                        when(state.statusCode){
+                            StatusCode.ERROR_AUTH-> {Log.d(TAG,"토큰 오류")}
+                            StatusCode.ERROR_NONE ->{ _events.emit(LoginEvent.NavigateToDetailSignup)}
+                            else ->{
+                                Log.d(TAG,"오류 Exception")
                             }
                         }
-                    }
-                    is ApiState.Exception -> {
-                        Log.d(TAG,"예외처리?")
                     }
                 }
             }.launchIn(viewModelScope)
         }
     }
+
 }

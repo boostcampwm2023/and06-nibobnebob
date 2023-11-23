@@ -12,7 +12,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-
     @Provides
     fun provideDataStore(@ApplicationContext context: Context) = context.dataStore
 }

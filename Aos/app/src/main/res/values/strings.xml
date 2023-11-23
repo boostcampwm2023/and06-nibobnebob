@@ -17,6 +17,27 @@
     <string name="password">비밀번호</string>
     <string name="start_naver_text">네이버로 시작하기</string>
     <string name="auto_login">자동 로그인</string>
+    <string name="my_main_title">마이페이지</string>
+    <string name="my_main_gender">성별</string>
+    <string name="my_main_age">연령대</string>
+    <string name="my_main_location">활동지역</string>
+    <string name="my_main_edit_title">프로필 수정</string>
+    <string name="my_main_mylist_title">내 맛집리스트 보기</string>
+    <string name="my_main_wishlist_title">내 위시리스트 보기</string>
+    <string name="my_main_logout_title">로그아웃</string>
+    <string name="my_main_withdraw_title">회원탈퇴</string>
+    <string name="my_edit_title">프로필 수정</string>
+    <string name="my_edit_done">완료</string>
+    <string name="my_edit_nick">닉네임</string>
+    <string name="my_edit_nick_warn">닉네임을 입력하세요.</string>
+    <string name="my_edit_nick_check">닉네임 중복확인</string>
+    <string name="my_edit_email">이메일</string>
+    <string name="my_edit_location">활동 지역</string>
+    <string name="my_edit_birth">생년월일</string>
+    <string name="my_edit_birth_ph">YYYY/MM/DD</string>
+    <string name="my_my_title">내 맛집 리스트</string>
+    <string name="my_wish_list">내 위시 맛집 리스트</string>
+    <string name="edit_change">변경하기</string>
 
     <string-array name="location_list">
         <item>용산구</item>

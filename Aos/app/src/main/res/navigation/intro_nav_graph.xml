@@ -16,9 +16,26 @@
     <fragment
         android:id="@+id/detailSignupFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.intro.signup.DetailSignupFragment"
-        android:label="DetailSignupFragment"/>
-    <activity
-        android:id="@+id/mainActivity"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.MainActivity"
-        android:label="MainActivity" />
+        android:label="DetailSignupFragment">
+
+        <argument
+            android:name="provider"
+            android:defaultValue="naver"
+            app:argType="string" />
+
+        <argument
+            android:name="email"
+            android:defaultValue="qkrwlstjd2@naver.com"
+            app:argType="string" />
+
+        <argument
+            android:name="password"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_detailSignupFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph_intro"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

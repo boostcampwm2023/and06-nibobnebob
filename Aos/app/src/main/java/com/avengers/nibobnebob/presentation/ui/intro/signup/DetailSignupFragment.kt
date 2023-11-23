@@ -7,12 +7,13 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
-import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.util.showCalendarDatePicker
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
@@ -25,24 +26,29 @@ class DetailSignupFragment :
     private val viewModel: DetailSignupViewModel by viewModels()
     override val parentViewModel: IntroViewModel by activityViewModels()
 
+    private val args: DetailSignupFragmentArgs by navArgs()
+    private val email by lazy { args.email }
+    private val password by lazy { args.password }
+    private val provider by lazy { args.provider }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+        viewModel.setDefaultData(email, password, provider)
         initEventsObserver()
         setGenderRadioListener()
         setDateBtnListener()
         setLocationInputListener()
     }
 
-    private fun initEventsObserver(){
+    private fun initEventsObserver() {
         repeatOnStarted {
-            viewModel.events.collect{
-                when(it){
+            viewModel.events.collect {
+                when (it) {
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
-                    is DetailSignupEvents.NavigateToMainActivity -> {
-                        // todo
-                    }
+                    is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
+                    is DetailSignupEvents.ShowToastMessage -> showToastMessage(it.msg)
                 }
             }
         }
@@ -51,8 +57,8 @@ class DetailSignupFragment :
     private fun setGenderRadioListener() {
         binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rb_gender_female -> viewModel.setGender(Gender.FEMALE)
-                R.id.rb_gender_male -> viewModel.setGender(Gender.MALE)
+                R.id.rb_gender_female -> viewModel.setIsMale(false)
+                R.id.rb_gender_male -> viewModel.setIsMale(true)
             }
         }
     }
@@ -72,36 +78,10 @@ class DetailSignupFragment :
             setSimpleItems(resources.getStringArray(R.array.location_list))
         }
     }
-}
 
-@BindingAdapter("helperMessage")
-fun bindHelpMessage(view: TextView, inputState: InputState) {
-    when (inputState) {
-        is InputState.Success -> {
-            view.text = inputState.msg
-            view.setTextColor(ContextCompat.getColor(view.context, R.color.nn_primary6))
-        }
-
-        is InputState.Error -> {
-            view.text = inputState.msg
-            view.setTextColor(ContextCompat.getColor(view.context, R.color.nn_rainbow_red))
-        }
-
-        else -> {
-            view.text = ""
-        }
+    private fun NavController.toLoginFragment(){
+        val action = DetailSignupFragmentDirections.actionDetailSignupFragmentToLoginFragment()
+        this.navigate(action)
     }
 }
 
-@BindingAdapter("textLayoutColor")
-fun bindTextLayoutColor(view: TextInputLayout, inputState: InputState) {
-    when (inputState) {
-        is InputState.Success -> view.boxStrokeColor =
-            ContextCompat.getColor(view.context, R.color.nn_primary6)
-
-        is InputState.Error -> view.boxStrokeColor =
-            ContextCompat.getColor(view.context, R.color.nn_rainbow_red)
-
-        else -> view.boxStrokeColor = ContextCompat.getColor(view.context, R.color.nn_primary6)
-    }
-}
