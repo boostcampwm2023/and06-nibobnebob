@@ -8,6 +8,9 @@ import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
 import { In } from "typeorm";
+import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
+import { ReviewRepository } from "src/review/review.repository";
+import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
 
 @Injectable()
 export class UserService {
@@ -15,7 +18,8 @@ export class UserService {
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository,
     private userRestaurantListRepository: UserRestaurantListRepository,
-    private userFollowListRepositoy: UserFollowListRepository
+    private userFollowListRepositoy: UserFollowListRepository,
+    private reviewRepository: ReviewRepository
   ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
@@ -84,6 +88,21 @@ export class UserService {
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
   }
+  async addRestaurantToNebob(reviewInfoDto: ReviewInfoDto, tokenInfo: TokenInfo, restaurantId: number) {
+    const reviewEntity = this.reviewRepository.create(reviewInfoDto);
+
+    await this.reviewRepository.save(reviewEntity);
+
+    const userRestaurantList = new UserRestaurantListEntity();
+    userRestaurantList.userId = tokenInfo['id'];
+    userRestaurantList.restaurantId = restaurantId;
+    userRestaurantList.review = reviewEntity;
+
+    await this.userRestaurantListRepository.upsert(userRestaurantList, ["userId", "restaurantId"]);
+
+    return null;
+  }
+
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);

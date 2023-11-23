@@ -23,6 +23,7 @@ import { UserService } from "./user.service";
 import { GetUser, TokenInfo } from "./user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
+import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 
 @Controller("user")
 export class UserController {
@@ -134,6 +135,24 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   async singup(@Body() userInfoDto: UserInfoDto) {
     return await this.userService.signup(userInfoDto);
+  }
+
+  @Post("/restaurant/:restaurantid")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 맛집 리스트에 등록하기" })
+  @ApiParam({
+    name: "restaurantid",
+    required: true,
+    description: "음식점 id",
+    type: Number,
+  })
+  @ApiResponse({ status: 200, description: "맛집리스트 등록 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async addRestaurantToNebob(
+    @Body() reviewInfoDto: ReviewInfoDto, @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
+    return await this.userService.addRestaurantToNebob(reviewInfoDto, tokenInfo, restaurantid);
   }
 
   @Delete()
