@@ -7,12 +7,17 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageInfoData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MyPageUiState(
@@ -22,6 +27,10 @@ data class MyPageUiState(
     val gender: String = "",
 )
 
+sealed class MyEditPageEvent{
+    data object NavigateToIntro : MyEditPageEvent()
+}
+
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository
@@ -29,11 +38,14 @@ class MyPageViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
 
-    init {
-        getUserInfo()
-    }
+    private val _events = MutableSharedFlow<MyEditPageEvent>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val events : SharedFlow<MyEditPageEvent> = _events.asSharedFlow()
 
-    private fun getUserInfo() {
+    fun getUserInfo() {
         myPageRepository.getMyInfo().onEach {
             when (it) {
                 is BaseState.Success -> {
@@ -54,5 +66,20 @@ class MyPageViewModel @Inject constructor(
 
         }.launchIn(viewModelScope)
 
+    }
+
+    fun logout(){
+
+        // api 연결 예정
+        viewModelScope.launch {
+            myPageRepository.logout()
+            _events.emit(MyEditPageEvent.NavigateToIntro)
+        }
+    }
+
+    fun withdraw(){
+        myPageRepository.withdraw().onEach {
+            _events.emit(MyEditPageEvent.NavigateToIntro)
+        }.launchIn(viewModelScope)
     }
 }
