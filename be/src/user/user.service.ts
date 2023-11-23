@@ -34,21 +34,42 @@ export class UserService {
     return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
   }
   async getMyRestaurantListInfo(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    const results = await this.userRestaurantListRepository
-      .createQueryBuilder('user_restaurant_lists')
-      .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
-      .select([
-        'user_restaurant_lists.restaurantId',
-        'restaurant.name',
-        'restaurant.location',
-        'restaurant.address',
-        'restaurant.category',
-        "restaurant.phoneNumber",
-        "restaurant.reviewCnt"
-      ])
-      .where('user_restaurant_lists.user_id = :userId', { userId: tokenInfo.id })
-      .getMany();
-
+    let results;
+    if (searchInfoDto.radius) {
+      results = await this.userRestaurantListRepository
+        .createQueryBuilder('user_restaurant_lists')
+        .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
+        .select([
+          'user_restaurant_lists.restaurantId',
+          'restaurant.name',
+          'restaurant.location',
+          'restaurant.address',
+          'restaurant.category',
+          "restaurant.phoneNumber",
+          "restaurant.reviewCnt"
+        ])
+        .where(`user_restaurant_lists.user_id = :userId and ST_DistanceSphere(
+          location, 
+          ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
+      )<  ${searchInfoDto.radius}`, { userId: tokenInfo.id })
+        .getMany();
+    }
+    else {
+      results = await this.userRestaurantListRepository
+        .createQueryBuilder('user_restaurant_lists')
+        .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
+        .select([
+          'user_restaurant_lists.restaurantId',
+          'restaurant.name',
+          'restaurant.location',
+          'restaurant.address',
+          'restaurant.category',
+          "restaurant.phoneNumber",
+          "restaurant.reviewCnt"
+        ])
+        .where('user_restaurant_lists.user_id = :userId', { userId: tokenInfo.id })
+        .getMany();
+    }
     return results.map(result => ({
       ...result,
       isMy: true
