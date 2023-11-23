@@ -30,4 +30,9 @@ class MyPageRepositoryImpl @Inject constructor(private val api: MyPageApi) : MyP
         emit(result)
     }
 
+    override fun logout(): Flow<BaseState<Unit>> = flow {
+        val result = runRemote { api.logout() }
+        emit(result)
+    }
+
 }

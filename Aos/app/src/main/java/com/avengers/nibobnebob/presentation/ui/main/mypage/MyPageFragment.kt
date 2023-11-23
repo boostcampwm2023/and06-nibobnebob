@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -8,12 +9,15 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.data.remote.IntroApi
 import com.avengers.nibobnebob.databinding.FragmentMyPageBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
@@ -32,7 +36,7 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
         binding.svm = sharedViewModel
         binding.vm = viewModel
 
-        viewLifecycleOwner.repeatOnStarted {
+        repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
                     is MyPageSharedUiEvent.NavigateToEditProfile -> findNavController().toEditProfile()
@@ -43,6 +47,18 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
 
             }
         }
+
+        repeatOnStarted {
+            viewModel.events.collect{ event ->
+                when(event){
+                    is MyEditPageEvent.NavigateToIntro -> {
+                        val intent = Intent(context, IntroActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
+
     }
 
     private fun initNetworkView() {
