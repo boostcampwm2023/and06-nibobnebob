@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchViewModel" />
 
     </data>
 
@@ -17,25 +20,48 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:src="@drawable/ic_back"
+            android:background="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="@id/searchBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/searchBar" />
 
-        <com.google.android.material.search.SearchBar
+<!--        <com.google.android.material.search.SearchBar-->
+<!--            android:id="@+id/searchBar"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="음식점 이름을 검색하세요."-->
+<!--            android:onTextChanged="@{(word, a, b, c) -> vm.test(word)}"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@id/ib_back"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/searchBar"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ib_back"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiet_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="음식점"
+                android:onTextChanged="@{(word, a, b, c) -> vm.searchRestaurant(word)}"
+                style="@style/TextMediumRegular"  />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/searchBar"
