@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.data.remote
 
-import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import retrofit2.Response

@@ -8,7 +8,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
-import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeSearchAdapter
+import com.avengers.nibobnebob.presentation.ui.main.home.adapter.RestaurantSearchAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,11 +20,22 @@ class RestaurantSearchFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        collectEvent()
 
     }
 
     private fun initView() {
         binding.vm = viewModel
-        binding.rvSearch.adapter = HomeSearchAdapter()
+        binding.rvSearch.adapter = RestaurantSearchAdapter{
+            viewModel.onClickSearchItem(it.id)
+        }
+    }
+
+    private fun collectEvent(){
+        repeatOnStarted {
+            viewModel.events.collect{
+                showToastMessage("${(it as RestaurantSearchEvent.OnClickResultItem).id} clicked")
+            }
+        }
     }
 }

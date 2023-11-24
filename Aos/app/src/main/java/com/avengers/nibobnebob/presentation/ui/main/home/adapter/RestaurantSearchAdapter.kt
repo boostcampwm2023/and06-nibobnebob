@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.databinding.ItemHomeSearchBinding
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiSearchResultData
 
-class HomeSearchAdapter :
+class RestaurantSearchAdapter(private val onClickSearchItem: (UiSearchResultData) -> Unit) :
     ListAdapter<UiSearchResultData, HomeSearchViewHolder>(HomeSearchDiffUtil()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeSearchViewHolder {
         return HomeSearchViewHolder(
@@ -21,17 +21,20 @@ class HomeSearchAdapter :
     }
 
     override fun onBindViewHolder(holder: HomeSearchViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onClickSearchItem)
     }
 
 }
 
 class HomeSearchViewHolder(private val binding: ItemHomeSearchBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiSearchResultData) {
+    fun bind(item: UiSearchResultData, onClickSearchItem: (UiSearchResultData) -> Unit) {
         with(binding) {
             tvResultOne.text = item.name
             tvAddress.text = item.address
+            root.setOnClickListener {
+                onClickSearchItem(item)
+            }
         }
     }
 }
