@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchViewModel" />
@@ -62,8 +64,22 @@
             app:layout_constraintStart_toStartOf="@id/v_search"
             app:layout_constraintTop_toTopOf="@id/v_search" />
 
+        <TextView
+            android:id="@+id/tv_empty"
+            style="@style/TextMediumRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="검색 결과가 없습니다."
+            android:textColor="@color/nn_dark5"
+            android:visibility="@{vm.uiState.resultEmpty? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search"
+            list="@{vm.uiState.searchList}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"

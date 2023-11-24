@@ -1,10 +1,8 @@
 package com.avengers.nibobnebob.presentation.ui.main.home.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import com.avengers.nibobnebob.data.repository.HomeRepository
 import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiSearchResultData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiSearchResultData
@@ -18,7 +16,8 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 data class RestaurantSearchUiState(
-    val searchList : List<UiSearchResultData> = emptyList()
+    val searchList: List<UiSearchResultData> = emptyList(),
+    val isResultEmpty: Boolean = false,
 )
 
 @HiltViewModel
@@ -27,26 +26,32 @@ class RestaurantSearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantSearchUiState())
-    val uiState : StateFlow<RestaurantSearchUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<RestaurantSearchUiState> = _uiState.asStateFlow()
 
     private val tempLocation = "37.508796 126.891074"
     private val tempRadius = "5000"
 
 
     fun searchRestaurant(keyword: CharSequence) {
+        if (keyword.isBlank()) {
+            _uiState.update { ui -> ui.copy(searchList = emptyList(), isResultEmpty = true) }
+            return
+        }
         homeRepository.searchRestaurant(keyword.toString(), tempLocation, tempRadius)
             .onEach { state ->
                 when (state) {
                     is BaseState.Success -> {
                         _uiState.update { ui ->
                             ui.copy(
-                                searchList = state.data.body.map { it.toUiSearchResultData() }
+                                searchList = state.data.body.map { it.toUiSearchResultData() },
+                                isResultEmpty = false
                             )
                         }
-                        Log.d("TEST", "${state.data.body}")
                     }
 
-                    else -> Log.d("TEST", "failed")
+                    else -> {
+                        _uiState.update { ui -> ui.copy(isResultEmpty = true) }
+                    }
                 }
             }.launchIn(viewModelScope)
     }
