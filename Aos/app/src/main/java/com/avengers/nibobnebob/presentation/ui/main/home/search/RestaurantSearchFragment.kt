@@ -1,6 +1,7 @@
 package com.avengers.nibobnebob.presentation.ui.main.home.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -26,15 +27,19 @@ class RestaurantSearchFragment :
 
     private fun initView() {
         binding.vm = viewModel
-        binding.rvSearch.adapter = RestaurantSearchAdapter{
-            viewModel.onClickSearchItem(it.id)
+        binding.rvSearch.adapter = RestaurantSearchAdapter {
+            viewModel.onClickSearchItem(it)
         }
     }
 
-    private fun collectEvent(){
+    private fun collectEvent() {
         repeatOnStarted {
-            viewModel.events.collect{
-                showToastMessage("${(it as RestaurantSearchEvent.OnClickResultItem).id} clicked")
+            viewModel.events.collect {
+                // 이 정보 그대로 bottom sheet 보여주고 마커 찍으면 됨
+                Log.d(
+                    "TEST",
+                    "${viewModel.uiState.value.searchList[(it as RestaurantSearchEvent.OnClickResultItem).index]}"
+                )
             }
         }
     }

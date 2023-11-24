@@ -1,12 +1,11 @@
 package com.avengers.nibobnebob.presentation.ui.main.home.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.HomeRepository
-import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiSearchResultData
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiSearchResultData
+import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,13 +21,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class RestaurantSearchUiState(
-    val searchList: List<UiSearchResultData> = emptyList(),
+    val searchList: List<UiRestaurantData> = emptyList(),
     val isResultEmpty: Boolean = false,
 )
 
 sealed class RestaurantSearchEvent {
     data class OnClickResultItem(
-        val id: Long
+        val index: Int
     ) : RestaurantSearchEvent()
 }
 
@@ -62,7 +61,7 @@ class RestaurantSearchViewModel @Inject constructor(
                     is BaseState.Success -> {
                         _uiState.update { ui ->
                             ui.copy(
-                                searchList = state.data.body.map { it.toUiSearchResultData() },
+                                searchList = state.data.body.map { it.toUiRestaurantData() },
                                 isResultEmpty = false
                             )
                         }
@@ -75,10 +74,9 @@ class RestaurantSearchViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    fun onClickSearchItem(id: Long) {
+    fun onClickSearchItem(index: Int) {
         viewModelScope.launch {
-            // response 자체를 넘겨줘야 함
-            _events.emit(RestaurantSearchEvent.OnClickResultItem(id))
+            _events.emit(RestaurantSearchEvent.OnClickResultItem(index))
         }
     }
 }
