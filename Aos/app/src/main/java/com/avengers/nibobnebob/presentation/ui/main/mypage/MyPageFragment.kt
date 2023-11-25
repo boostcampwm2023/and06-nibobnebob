@@ -52,8 +52,8 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
             viewModel.events.collect { event ->
                 when (event) {
                     is MyEditPageEvent.NavigateToIntro -> {
-                        (activity as MainActivity).finish()
                         val intent = Intent(context, IntroActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                     }
                 }
