@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="vm"
-            type="com.avengers.nibobnebob.presentation.ui.global.restaurant_detail.RestaurantDetailViewModel" />
+            type="com.avengers.nibobnebob.presentation.ui.global.restaurantdetail.RestaurantDetailViewModel" />
 
     </data>
 
@@ -31,6 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_back"
+                android:onClick="@{() -> vm.navigateToBack()}"
                 app:layout_constraintBottom_toBottomOf="@id/tv_title"
                 app:layout_constraintStart_toStartOf="@id/cl_toolbar"
                 app:layout_constraintTop_toTopOf="@id/tv_title" />
@@ -125,9 +125,9 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{vm.uiState.phoneNumber}"
                     app:layout_constraintStart_toStartOf="@id/guidline"
-                    app:layout_constraintTop_toTopOf="@id/tv_phone_number_label"
-                    tools:text="@{vm.uiState.phoneNumber}" />
+                    app:layout_constraintTop_toTopOf="@id/tv_phone_number_label" />
 
                 <TextView
                     android:id="@+id/tv_review_count_label"
@@ -144,9 +144,9 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(vm.uiState.reviewCnt)}"
                     app:layout_constraintStart_toStartOf="@id/guidline"
-                    app:layout_constraintTop_toTopOf="@id/tv_review_count_label"
-                    tools:text="@{vm.uiState.reviewCnt}" />
+                    app:layout_constraintTop_toTopOf="@id/tv_review_count_label" />
 
                 <TextView
                     android:id="@+id/tv_review_label"
@@ -238,7 +238,8 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="@id/cl_content"
                     app:layout_constraintStart_toStartOf="@id/cl_content"
-                    app:layout_constraintTop_toBottomOf="@id/tv_review_label" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_review_label"
+                    tools:listitem="@layout/item_review_list"/>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -262,17 +263,3 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
-
-    <!--                <androidx.appcompat.widget.AppCompatButton-->
-    <!--                    android:id="@+id/btn_add_my_restaurant"-->
-    <!--                    style="@style/TextSmallBold"-->
-    <!--                    android:layout_width="wrap_content"-->
-    <!--                    android:layout_height="wrap_content"-->
-    <!--                    android:background="@drawable/rect_primary3fill_nostroke_radius10"-->
-    <!--                    android:minHeight="0dp"-->
-    <!--                    android:paddingHorizontal="4dp"-->
-    <!--                    android:paddingVertical="8dp"-->
-    <!--                    android:text="@string/add_my_list"-->
-    <!--                    app:layout_constraintBottom_toBottomOf="@+id/tv_review_count"-->
-    <!--                    app:layout_constraintEnd_toEndOf="@id/cl_content"-->
-    <!--                    app:layout_constraintTop_toTopOf="@+id/tv_phone_number" />-->
