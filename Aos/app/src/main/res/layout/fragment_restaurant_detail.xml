@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.global.restaurantdetail.RestaurantDetailViewModel" />
@@ -29,8 +30,8 @@
                 android:id="@+id/btn_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_back"
                 android:onClick="@{() -> vm.navigateToBack()}"
+                android:src="@drawable/ic_back"
                 app:layout_constraintBottom_toBottomOf="@id/tv_title"
                 app:layout_constraintStart_toStartOf="@id/cl_toolbar"
                 app:layout_constraintTop_toTopOf="@id/tv_title" />
@@ -68,6 +69,8 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@drawable/ic_star_border"
+                    android:onClick="@{() -> vm.updateWish()}"
+                    app:wishStatus="@{vm.uiState.isWish}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_restaurant_name"
                     app:layout_constraintStart_toStartOf="@id/cl_content"
                     app:layout_constraintTop_toTopOf="@id/tv_restaurant_name" />
@@ -239,7 +242,8 @@
                     app:layout_constraintEnd_toEndOf="@id/cl_content"
                     app:layout_constraintStart_toStartOf="@id/cl_content"
                     app:layout_constraintTop_toBottomOf="@id/tv_review_label"
-                    tools:listitem="@layout/item_review_list"/>
+                    app:list="@{vm.uiState.reviewList}"
+                    tools:listitem="@layout/item_review_list" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

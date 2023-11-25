@@ -8,4 +8,5 @@ data class RestaurantDetailResponse(
     val name: String,
     val phoneNumber: String,
     val reviewCnt: Int
+    //TODO : isWish받아와야함
 )
