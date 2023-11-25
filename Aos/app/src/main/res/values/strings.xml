@@ -52,6 +52,7 @@
     <string name="service">서비스</string>
     <string name="cleanliness">청결도</string>
     <string name="test_review">어떻게 맛도 좋고 서비스도 좋을수가 있는거..\n대박대박 왕대박 너무 맛있어요~</string>
+    <string name="when_visited">방문날짜 :</string>
 
     <string-array name="location_list">
         <item>용산구</item>
