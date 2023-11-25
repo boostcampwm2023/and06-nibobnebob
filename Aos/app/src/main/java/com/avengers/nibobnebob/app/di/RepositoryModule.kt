@@ -1,5 +1,7 @@
 package com.avengers.nibobnebob.app.di
 
+import com.avengers.nibobnebob.data.repository.GlobalRepository
+import com.avengers.nibobnebob.data.repository.GlobalRepositoryImpl
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.data.repository.IntroRepositoryImpl
 import com.avengers.nibobnebob.data.repository.MyPageRepository
@@ -33,6 +35,11 @@ abstract class RepositoryModule {
         validationRepositoryImpl: ValidationRepositoryImpl
     ): ValidationRepository
 
+    @Singleton
+    @Binds
+    abstract fun bindGlobalRepository(
+        globalRepositoryImpl: GlobalRepositoryImpl
+    ): GlobalRepository
 
 }
 
