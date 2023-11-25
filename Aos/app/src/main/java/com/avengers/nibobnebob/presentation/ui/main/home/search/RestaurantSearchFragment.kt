@@ -30,6 +30,7 @@ class RestaurantSearchFragment :
         binding.rvSearch.adapter = RestaurantSearchAdapter {
             viewModel.onClickSearchItem(it)
         }
+
     }
 
     private fun collectEvent() {

@@ -50,6 +50,7 @@
             app:layout_constraintTop_toTopOf="@id/v_search" />
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_input_search"
             style="@style/TextMediumRegular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

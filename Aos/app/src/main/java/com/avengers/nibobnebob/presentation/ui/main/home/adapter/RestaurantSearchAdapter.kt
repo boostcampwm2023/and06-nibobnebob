@@ -28,7 +28,7 @@ class RestaurantSearchAdapter(private val onClickSearchItem: (Int) -> Unit) :
 
 class HomeSearchViewHolder(private val binding: ItemHomeSearchBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiRestaurantData, position : Int, onClickSearchItem: (Int) -> Unit) {
+    fun bind(item: UiRestaurantData, position: Int, onClickSearchItem: (Int) -> Unit) {
         with(binding) {
             tvResultOne.text = item.name
             tvAddress.text = item.address
