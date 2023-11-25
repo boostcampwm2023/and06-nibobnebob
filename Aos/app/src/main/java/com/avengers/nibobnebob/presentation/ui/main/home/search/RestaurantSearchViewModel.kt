@@ -59,10 +59,11 @@ class RestaurantSearchViewModel @Inject constructor(
             .onEach { state ->
                 when (state) {
                     is BaseState.Success -> {
+                        val item = state.data.body
                         _uiState.update { ui ->
                             ui.copy(
-                                searchList = state.data.body.map { it.toUiRestaurantData() },
-                                isResultEmpty = false
+                                searchList = item.map { it.toUiRestaurantData() },
+                                isResultEmpty = item.isEmpty()
                             )
                         }
                     }
