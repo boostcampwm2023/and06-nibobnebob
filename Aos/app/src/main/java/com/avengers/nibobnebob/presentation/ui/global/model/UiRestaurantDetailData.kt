@@ -5,5 +5,6 @@ data class UiRestaurantDetailData(
     val address : String,
     val category : String,
     val reviewCnt : Int,
-    val phoneNumber : String
+    val phoneNumber : String,
+    val isWish : Boolean
 )

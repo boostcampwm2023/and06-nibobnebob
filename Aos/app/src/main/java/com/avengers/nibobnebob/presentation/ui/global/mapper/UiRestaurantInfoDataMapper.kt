@@ -8,5 +8,6 @@ internal fun RestaurantDetailResponse.toUiRestaurantDetailInfo() = UiRestaurantD
     address = address,
     category = category,
     reviewCnt = reviewCnt,
-    phoneNumber = phoneNumber
+    phoneNumber = phoneNumber,
+    isWish = false //TODO : 나중에 레스토랑 세부정보 response 수정 요청 후 받아오기
 )
