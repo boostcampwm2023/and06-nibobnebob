@@ -362,14 +362,14 @@
                     tools:text="(55/20)" />
 
                 <TextView
-                    android:id="@+id/tv_text_length_announce"
+                    android:id="@+id/tv_comment_helper_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="20자 이상 작성"
-                    android:textColor="@color/nn_dark1"
+                    app:commentHelperMessage="@{vm.uiState.commentState}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_text_length"
-                    app:layout_constraintEnd_toStartOf="@id/tv_text_length" />
+                    app:layout_constraintEnd_toStartOf="@id/tv_text_length"
+                    tools:text="20자 이상 작성하셔야 합니다!" />
 
                 <EditText
                     android:id="@+id/et_comment"
@@ -379,7 +379,7 @@
                     android:layout_marginTop="12dp"
                     android:background="@drawable/rect_dark7fill_nostroke_10radius"
                     android:gravity="top"
-                    android:hint="리뷰를 남겨주세요"
+                    android:hint="20자 이상 작성해주세요"
                     android:lineSpacingExtra="12dp"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="20dp"

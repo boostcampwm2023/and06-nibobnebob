@@ -22,8 +22,16 @@ data class AddMyRestaurantUiState(
     val traffic: Int = 0,
     val taste: Int = 0,
     val service: Int = 0,
-    val toilet: Int = 0
+    val toilet: Int = 0,
+    val commentState: CommentState = CommentState.Empty
 )
+
+sealed class CommentState{
+    data class Over(val msg: String): CommentState()
+    data class Lack(val msg: String): CommentState()
+    data class Success(val msg: String): CommentState()
+    data object Empty: CommentState()
+}
 
 sealed class AddMyRestaurantEvents {
     data object NavigateToBack : AddMyRestaurantEvents()
@@ -49,7 +57,26 @@ class AddMyRestaurantViewModel @Inject constructor() : ViewModel() {
 
     private fun observeComment() {
         comment.onEach {
-            isDataReady.value = it.length >= 20
+            when(it.length){
+                in 0..19 -> {
+                    _uiState.update { state ->
+                        state.copy(commentState = CommentState.Lack("20자 이상 작성하셔야 합니다!"))
+                    }
+                    isDataReady.value = false
+                }
+                in 20..200 -> {
+                    _uiState.update { state ->
+                        state.copy(commentState = CommentState.Success("적절한 길이의 리뷰 입니다!"))
+                    }
+                    isDataReady.value = true
+                }
+                else -> {
+                    _uiState.update { state ->
+                        state.copy(commentState = CommentState.Over("200자 이하로 작성하셔야 합니다!"))
+                    }
+                    isDataReady.value = false
+                }
+            }
         }.launchIn(viewModelScope)
     }
 
