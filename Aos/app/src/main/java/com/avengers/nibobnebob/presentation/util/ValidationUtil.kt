@@ -1,6 +1,6 @@
 package com.avengers.nibobnebob.presentation.util
 
-object Validation {
+object ValidationUtil {
 
     private val birthRegex = Regex("""^\d{4}/\d{2}/\d{2}${'$'}""")
 

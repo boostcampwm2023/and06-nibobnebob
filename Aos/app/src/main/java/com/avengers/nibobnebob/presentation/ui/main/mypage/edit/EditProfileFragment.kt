@@ -12,7 +12,7 @@ import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
-import com.avengers.nibobnebob.presentation.util.showCalendarDatePicker
+import com.avengers.nibobnebob.presentation.customview.showCalendarDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 

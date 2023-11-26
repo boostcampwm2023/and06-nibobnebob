@@ -2,9 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -14,9 +12,8 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
-import com.avengers.nibobnebob.presentation.util.showCalendarDatePicker
+import com.avengers.nibobnebob.presentation.customview.showCalendarDatePicker
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
-import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
