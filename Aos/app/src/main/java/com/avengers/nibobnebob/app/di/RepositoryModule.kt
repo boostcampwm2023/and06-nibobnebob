@@ -1,5 +1,7 @@
 package com.avengers.nibobnebob.app.di
 
+import com.avengers.nibobnebob.data.repository.HomeRepository
+import com.avengers.nibobnebob.data.repository.HomeRepositoryImpl
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.data.repository.IntroRepositoryImpl
 import com.avengers.nibobnebob.data.repository.MyPageRepository
@@ -32,6 +34,12 @@ abstract class RepositoryModule {
     abstract fun bindValidationRepository(
         validationRepositoryImpl: ValidationRepositoryImpl
     ): ValidationRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindHomeRepository(
+        homeRepositoryImpl: HomeRepositoryImpl
+    ): HomeRepository
 
 
 }
