@@ -11,8 +11,8 @@ import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
-import com.avengers.nibobnebob.presentation.customview.showCalendarDatePicker
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -62,9 +62,9 @@ class DetailSignupFragment :
 
     private fun setDateBtnListener() {
         binding.tilBirth.setEndIconOnClickListener {
-            showCalendarDatePicker(parentFragmentManager) {
+            CalendarDatePicker{
                 viewModel.setBirth(it)
-            }
+            }.show(parentFragmentManager)
         }
     }
 
