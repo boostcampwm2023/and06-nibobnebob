@@ -3,7 +3,6 @@ package com.avengers.nibobnebob.presentation.ui.global.restaurant_add
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentAddMyRestaurantBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -15,5 +14,6 @@ class AddMyRestaurantFragment : BaseFragment<FragmentAddMyRestaurantBinding>(R.l
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
     }
 }
