@@ -107,7 +107,8 @@
                     android:layout_marginTop="20dp"
                     android:text="주차공간"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rg_visit_method" />
+                    app:layout_constraintTop_toBottomOf="@id/rg_visit_method"
+                    app:parkingSpaceState="@{vm.uiState.visitWithCar}" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/sd_parking_space"
@@ -120,6 +121,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_parking_space_label"
+                    app:parkingSpaceState="@{vm.uiState.visitWithCar}"
                     app:thumbColor="@color/nn_primary6"
                     app:trackColorActive="@color/nn_primary6" />
 
@@ -131,7 +133,8 @@
                     android:text="부족하다"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space" />
+                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space"
+                    app:parkingSpaceState="@{vm.uiState.visitWithCar}" />
 
                 <TextView
                     android:id="@+id/tv_parking_space_enough"
@@ -141,7 +144,8 @@
                     android:text="충분하다"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space" />
+                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space"
+                    app:parkingSpaceState="@{vm.uiState.visitWithCar}" />
 
                 <TextView
                     android:id="@+id/tv_taste_label"
