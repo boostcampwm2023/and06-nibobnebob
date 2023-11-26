@@ -38,6 +38,21 @@
     <string name="my_my_title">내 맛집 리스트</string>
     <string name="my_wish_list">내 위시 맛집 리스트</string>
     <string name="edit_change">변경하기</string>
+    <string name="restaurant_detail_title">맛집 상세화면</string>
+    <string name="address">주소</string>
+    <string name="phone_number">전화번호</string>
+    <string name="review_count">리뷰수</string>
+    <string name="review">리뷰</string>
+    <string name="best">최상</string>
+    <string name="worst">최악</string>
+    <string name="add_my_list_review">맛집 추가하기 / 리뷰하기</string>
+    <string name="nickname">닉네임</string>
+    <string name="parking_convenience">주차공간</string>
+    <string name="taste">맛</string>
+    <string name="service">서비스</string>
+    <string name="cleanliness">청결도</string>
+    <string name="test_review">어떻게 맛도 좋고 서비스도 좋을수가 있는거..\n대박대박 왕대박 너무 맛있어요~</string>
+    <string name="when_visited">방문날짜 :</string>
 
     <string-array name="location_list">
         <item>용산구</item>
