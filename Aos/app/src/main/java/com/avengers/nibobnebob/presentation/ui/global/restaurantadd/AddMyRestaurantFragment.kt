@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentAddMyRestaurantBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -20,8 +21,20 @@ class AddMyRestaurantFragment : BaseFragment<FragmentAddMyRestaurantBinding>(R.l
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+        initEventObserver()
         setSliderListener()
         setVisitMethodRadioListener()
+    }
+
+    private fun initEventObserver(){
+        repeatOnStarted {
+            viewModel.events.collect{
+                when(it){
+                    is AddMyRestaurantEvents.NavigateToBack -> findNavController().navigateUp()
+                    else -> {}
+                }
+            }
+        }
     }
 
     private fun setSliderListener(){

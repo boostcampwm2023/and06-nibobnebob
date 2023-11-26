@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AddMyRestaurantUiState(
@@ -79,6 +80,23 @@ class AddMyRestaurantViewModel @Inject constructor(): ViewModel() {
                     state.copy(toilet = value)
                 }
             }
+        }
+    }
+
+    fun addRestaurant(){
+        viewModelScope.launch {
+
+            // todo 통신로직
+
+
+            // todo 등록 성공시 뒤로가기
+            navigateToBack()
+        }
+    }
+
+    fun navigateToBack(){
+        viewModelScope.launch {
+            _events.emit(AddMyRestaurantEvents.NavigateToBack)
         }
     }
 }

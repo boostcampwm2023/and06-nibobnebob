@@ -32,6 +32,7 @@
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_back"
+                android:onClick="@{() -> vm.navigateToBack()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -338,6 +339,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="20dp"
+            android:onClick="@{() -> vm.addRestaurant()}"
             android:background="@drawable/selector_next_btn"
             android:enabled="@{vm.isDataReady()}"
             android:text="리뷰 남기기"
