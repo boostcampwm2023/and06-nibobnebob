@@ -8,12 +8,12 @@ import retrofit2.http.Path
 
 interface ValidationApi {
 
-    @GET("/api/user/nickname/{nickname}/exists")
+    @GET("api/user/nickname/{nickname}/exists")
     suspend fun nickValidation(
         @Path("nickname") nickname: String
     ): Response<BaseResponse<ValidateResponse>>
 
-    @GET("/api/user/email/{email}/exists")
+    @GET("api/user/email/{email}/exists")
     suspend fun emailValidation(
         @Path("email") email: String
     ): Response<BaseResponse<ValidateResponse>>
