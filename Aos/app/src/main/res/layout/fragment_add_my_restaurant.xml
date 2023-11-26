@@ -44,9 +44,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:text="맛집 추가하기"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_restaurant_name"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toEndOf="@id/btn_back"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_restaurant_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{vm.uiState.restaurantName}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tv_header"
+                app:layout_constraintTop_toBottomOf="@id/tv_header"
+                tools:text="진성아구찜" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

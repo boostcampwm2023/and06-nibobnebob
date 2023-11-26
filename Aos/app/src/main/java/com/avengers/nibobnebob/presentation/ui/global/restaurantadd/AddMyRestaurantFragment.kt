@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentAddMyRestaurantBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -17,10 +18,15 @@ class AddMyRestaurantFragment : BaseFragment<FragmentAddMyRestaurantBinding>(R.l
     override val parentViewModel: MainViewModel by activityViewModels()
     private val viewModel: AddMyRestaurantViewModel by viewModels()
 
+    private val args: AddMyRestaurantFragmentArgs by navArgs()
+    private val restaurantName by lazy { args.restaurantName }
+    private val restaurantId by lazy { args.restaurantId }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+        viewModel.setDefaultValue(restaurantName, restaurantId)
         initEventObserver()
         setSliderListener()
         setVisitMethodRadioListener()

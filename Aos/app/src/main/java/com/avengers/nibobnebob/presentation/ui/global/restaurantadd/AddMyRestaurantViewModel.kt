@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AddMyRestaurantUiState(
+    val restaurantName: String = "",
     val visitWithCar: Boolean = false,
     val parkingSpace: Int = 0,
     val traffic: Int = 0,
@@ -39,6 +40,8 @@ class AddMyRestaurantViewModel @Inject constructor() : ViewModel() {
 
     val comment = MutableStateFlow("")
     val isDataReady = MutableStateFlow(false)
+
+    private var restaurantId = -1
 
     init {
         observeComment()
@@ -102,6 +105,16 @@ class AddMyRestaurantViewModel @Inject constructor() : ViewModel() {
             // todo 등록 성공시 뒤로가기
             navigateToBack()
         }
+    }
+
+    fun setDefaultValue(
+        name: String,
+        id: Int
+    ){
+        _uiState.update { state ->
+            state.copy(restaurantName = name)
+        }
+        restaurantId = id
     }
 
     fun navigateToBack() {
