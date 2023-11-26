@@ -43,6 +43,10 @@ class AddMyRestaurantFragment : BaseFragment<FragmentAddMyRestaurantBinding>(R.l
                 viewModel.sliderStateChange(EstimateItem.PARKING, value.toInt())
             }
 
+            sdTraffic.addOnChangeListener { _, value, _ ->
+                viewModel.sliderStateChange(EstimateItem.TRAFFIC, value.toInt())
+            }
+
             sdService.addOnChangeListener { _, value, _ ->
                 viewModel.sliderStateChange(EstimateItem.SERVICE, value.toInt())
             }

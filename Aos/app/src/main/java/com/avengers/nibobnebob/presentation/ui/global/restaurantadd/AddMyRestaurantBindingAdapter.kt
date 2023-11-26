@@ -11,11 +11,20 @@ fun bindTextLength(view: TextView, text: String, limit: Int) {
     view.text = "(${text.length}/$limit)"
 }
 
-@BindingAdapter("parkingSpaceState")
-fun bindParkingSpaceState(view: View, state: Boolean){
+@BindingAdapter("parkingSpaceViewState")
+fun bindParkingSpaceViewState(view: View, state: Boolean){
     if(state){
         view.visibility = View.VISIBLE
     } else {
-        view.visibility = View.GONE
+        view.visibility = View.INVISIBLE
+    }
+}
+
+@BindingAdapter("trafficViewState")
+fun bindTrafficViewState(view: View, state: Boolean){
+    if(state){
+        view.visibility = View.INVISIBLE
+    } else {
+        view.visibility = View.VISIBLE
     }
 }
