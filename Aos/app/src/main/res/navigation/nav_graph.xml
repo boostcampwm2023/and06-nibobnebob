@@ -74,7 +74,17 @@
     <fragment
         android:id="@+id/addMyRestaurantFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.global.restaurantadd.AddMyRestaurantFragment"
-        android:label="AddMyRestaurantFragment" />
+        android:label="AddMyRestaurantFragment" >
+        <argument
+            android:name="restaurantName"
+            android:defaultValue="matzip"
+            app:argType="string" />
+        <argument
+            android:name="restaurantId"
+            android:defaultValue="1"
+            app:argType="integer" />
+    </fragment>
+
     <fragment
         android:id="@+id/restaurantDetailFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.global.restaurantdetail.RestaurantDetailFragment"
