@@ -10,19 +10,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="34dp"
+        android:layout_marginHorizontal="20dp"
         android:background="@drawable/rect_primary2fill_nostroke_28radius"
-        android:paddingHorizontal="10dp">
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="30dp">
 
         <TextView
             android:id="@+id/tv_title"
+            style="@style/TextMediumBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp"
             android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="리뷰를 등록하시겠습니까?" />
@@ -34,10 +32,9 @@
             android:layout_marginTop="20dp"
             android:textColor="@color/black"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
-            tools:text="한번 등록된 리뷰는 수정/삭제가 불가능합니다!" />
+            tools:text="리뷰는 수정/삭제가 불가능합니다!" />
 
         <TextView
             android:id="@+id/tv_confirm"
@@ -45,7 +42,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="30dp"
-            android:paddingBottom="30dp"
             android:text="확인"
             android:textColor="@color/black"
             android:textSize="14sp"
@@ -59,7 +55,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="40dp"
-            android:paddingBottom="30dp"
             android:text="취소"
             android:textColor="@color/black"
             android:textSize="14sp"

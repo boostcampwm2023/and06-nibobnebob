@@ -13,7 +13,8 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddMyRestaurantFragment : BaseFragment<FragmentAddMyRestaurantBinding>(R.layout.fragment_add_my_restaurant) {
+class AddMyRestaurantFragment :
+    BaseFragment<FragmentAddMyRestaurantBinding>(R.layout.fragment_add_my_restaurant) {
 
     override val parentViewModel: MainViewModel by activityViewModels()
     private val viewModel: AddMyRestaurantViewModel by viewModels()
@@ -32,19 +33,29 @@ class AddMyRestaurantFragment : BaseFragment<FragmentAddMyRestaurantBinding>(R.l
         setVisitMethodRadioListener()
     }
 
-    private fun initEventObserver(){
+    private fun initEventObserver() {
         repeatOnStarted {
-            viewModel.events.collect{
-                when(it){
+            viewModel.events.collect {
+                when (it) {
                     is AddMyRestaurantEvents.NavigateToBack -> findNavController().navigateUp()
+                    is AddMyRestaurantEvents.ShowConfirmDialog -> {
+                        showTwoButtonDialog(
+                            "리뷰를 등록하시겠습니까?",
+                            "리뷰는 수정/삭제가 불가능합니다!",
+                        ) {
+                            viewModel.addReview()
+                        }
+                    }
+
                     else -> {}
                 }
             }
         }
     }
 
-    private fun setSliderListener(){
-        with(binding){
+
+    private fun setSliderListener() {
+        with(binding) {
             sdParkingSpace.addOnChangeListener { _, value, _ ->
                 viewModel.sliderStateChange(EstimateItem.PARKING, value.toInt())
             }
@@ -67,7 +78,7 @@ class AddMyRestaurantFragment : BaseFragment<FragmentAddMyRestaurantBinding>(R.l
         }
     }
 
-    private fun setVisitMethodRadioListener(){
+    private fun setVisitMethodRadioListener() {
         binding.rgVisitMethod.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_visit_not_car -> viewModel.setIsVisitWithCar(false)

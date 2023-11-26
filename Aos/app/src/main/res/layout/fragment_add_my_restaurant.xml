@@ -400,7 +400,7 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/selector_next_btn"
             android:enabled="@{vm.isDataReady()}"
-            android:onClick="@{() -> vm.addRestaurant()}"
+            android:onClick="@{() -> vm.showConfirmDialog()}"
             android:text="리뷰 남기기"
             android:textColor="@color/selector_next_btn_text"
             app:layout_constraintBottom_toBottomOf="parent"
