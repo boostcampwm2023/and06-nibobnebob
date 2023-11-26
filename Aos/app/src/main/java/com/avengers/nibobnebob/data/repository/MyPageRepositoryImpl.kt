@@ -8,6 +8,8 @@ import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse
 import com.avengers.nibobnebob.data.model.response.MyInfoResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.MyPageApi
+import com.navercorp.nid.oauth.NidOAuthLogin
+import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -43,6 +45,15 @@ class MyPageRepositoryImpl @Inject constructor(
             is BaseState.Success -> {
                 dataStoreManager.deleteAccessToken()
                 dataStoreManager.deleteRefreshToken()
+
+                NidOAuthLogin().callDeleteTokenApi(object : OAuthLoginCallback{
+                    override fun onError(errorCode: Int, message: String) {}
+
+                    override fun onFailure(httpStatus: Int, message: String) {}
+
+                    override fun onSuccess() {}
+                })
+
                 emit(result)
             }
 
