@@ -9,10 +9,10 @@ import androidx.navigation.Navigation
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentEditProfileBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
-import com.avengers.nibobnebob.presentation.util.showCalendarDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -76,9 +76,9 @@ class EditProfileFragment :
 
     private fun setDateBtnListener() {
         binding.tilBirth.setEndIconOnClickListener {
-            showCalendarDatePicker(parentFragmentManager) {
+            CalendarDatePicker{
                 viewModel.setBirth(it)
-            }
+            }.show(parentFragmentManager)
         }
     }
 

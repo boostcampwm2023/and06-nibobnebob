@@ -1,17 +1,10 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -21,10 +14,12 @@ import com.avengers.nibobnebob.NavGraphDirections
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
+import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
-import com.avengers.nibobnebob.presentation.util.restaurantSheet
+import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -107,16 +102,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
-    private fun initEventObserver(){
+    private fun initEventObserver() {
         repeatOnStarted {
-            viewModel.events.collect{
-                when(it){
+            viewModel.events.collect {
+                when (it) {
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
                     is HomeEvents.SetNewMarkers -> {
-                        viewModel.uiState.value.markerList.forEach {  data ->
+                        viewModel.uiState.value.markerList.forEach { data ->
                             setMarker(data)
                         }
                     }
+
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
                     else -> {}
                 }
@@ -128,7 +124,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         repeatOnStarted {
             viewModel.uiState.collect {
                 when (it.locationTrackingState) {
-                    is TrackingState.TryOn -> requestLocationPermission()
+                    is TrackingState.TryOn -> {
+                        requireContext().requestLocationPermission(
+                            locationPermissionList,
+                            ::startPermissionLauncher,
+                            ::onTrackingChangeListener
+                        )
+                    }
+
                     is TrackingState.On -> naverMap.locationTrackingMode =
                         LocationTrackingMode.Follow
 
@@ -139,41 +142,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
-    private fun requestLocationPermission() {
-        var permissionFlag = false
-        locationPermissionList.forEach { permission ->
-            permissionFlag = ContextCompat.checkSelfPermission(
-                requireContext(),
-                permission
-            ) == PackageManager.PERMISSION_GRANTED
-        }
-
-        if (permissionFlag) {
-            checkLocationIsOn()
-        } else {
-            requestPermissionLauncher.launch(locationPermissionList)
-            Toast.makeText(requireContext(), "위치권한을 허용해주세요", Toast.LENGTH_SHORT).show()
-        }
+    private fun startPermissionLauncher() {
+        requestPermissionLauncher.launch(locationPermissionList)
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { resultMap ->
         val isAllGranted = locationPermissionList.all { resultMap[it] == true }
-        if (isAllGranted) checkLocationIsOn()
+        if (isAllGranted) requireContext().checkLocationIsOn(::onTrackingChangeListener)
         else viewModel.trackingOff()
     }
 
-    private fun checkLocationIsOn() {
-        val locationManager =
-            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            viewModel.trackingOn()
-        } else {
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            Toast.makeText(requireContext(), "휴대폰 GPS를 켜주세요", Toast.LENGTH_SHORT).show()
-            viewModel.trackingOff()
-        }
+    private fun onTrackingChangeListener(state: Boolean) {
+        if (state) viewModel.trackingOn()
+        else viewModel.trackingOff()
     }
 
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
@@ -185,13 +168,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         marker.map = naverMap
 
         marker.setOnClickListener {
-            restaurantSheet(
+            val bottomSheet = RestaurantBottomSheet(
                 context = requireContext(),
                 data = data,
                 onClickAddWishRestaurant = ::addWishTest,
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
-            ).show()
+            )
+            bottomSheet.show()
 
             true
         }
@@ -199,7 +183,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     // todo 모든 marker 데이터 markerList 에 저장해 놨다가, remove 다음 방식으로 진행
-    private fun removeAllMarker(){
+    private fun removeAllMarker() {
         markerList.forEach {
             it.map = null
         }
