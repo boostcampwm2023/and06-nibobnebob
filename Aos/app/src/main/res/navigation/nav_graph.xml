@@ -73,7 +73,7 @@
         android:label="RestaurantSearchFragment" />
     <fragment
         android:id="@+id/addMyRestaurantFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.global.restaurant_add.AddMyRestaurantFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.global.restaurantadd.AddMyRestaurantFragment"
         android:label="AddMyRestaurantFragment" />
     <fragment
         android:id="@+id/restaurantDetailFragment"
