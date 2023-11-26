@@ -10,7 +10,7 @@ import retrofit2.http.POST
 
 interface IntroApi {
 
-    @POST("/api/user")
+    @POST("api/user")
     suspend fun signup(
         @Body params: DetailSignupRequest
     ): Response<Unit>

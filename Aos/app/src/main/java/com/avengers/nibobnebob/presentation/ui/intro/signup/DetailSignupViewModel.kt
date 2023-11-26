@@ -6,7 +6,7 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
-import com.avengers.nibobnebob.presentation.util.Validation
+import com.avengers.nibobnebob.presentation.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,7 +95,7 @@ class DetailSignupViewModel @Inject constructor(
 
     private fun observeBirth() {
         birth.onEach {
-            if (Validation.checkBirth(it) || it.isBlank()) {
+            if (ValidationUtil.checkBirth(it) || it.isBlank()) {
                 _uiState.update { state ->
                     state.copy(
                         birthState = InputState.Empty
