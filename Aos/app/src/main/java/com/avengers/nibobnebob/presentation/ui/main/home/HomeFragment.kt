@@ -21,10 +21,10 @@ import com.avengers.nibobnebob.NavGraphDirections
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
-import com.avengers.nibobnebob.presentation.util.restaurantSheet
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -185,13 +185,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         marker.map = naverMap
 
         marker.setOnClickListener {
-            restaurantSheet(
+            val bottomSheet = RestaurantBottomSheet(
                 context = requireContext(),
                 data = data,
                 onClickAddWishRestaurant = ::addWishTest,
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
-            ).show()
+            )
+            bottomSheet.show()
 
             true
         }
