@@ -39,11 +39,17 @@ class AddMyRestaurantFragment :
                 when (it) {
                     is AddMyRestaurantEvents.NavigateToBack -> findNavController().navigateUp()
                     is AddMyRestaurantEvents.ShowConfirmDialog -> {
-                        showTwoButtonDialog(
+                        showTwoButtonTitleDialog(
                             "리뷰를 등록하시겠습니까?",
                             "리뷰는 수정/삭제가 불가능합니다!",
                         ) {
                             viewModel.addReview()
+                        }
+                    }
+
+                    is AddMyRestaurantEvents.ShowSuccessDialog -> {
+                        showOneButtonTitleDialog("리뷰 등록을 완료했습니다!") {
+                            findNavController().navigateUp()
                         }
                     }
 

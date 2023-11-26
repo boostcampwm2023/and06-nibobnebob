@@ -36,6 +36,7 @@ sealed class CommentState {
 sealed class AddMyRestaurantEvents {
     data object NavigateToBack : AddMyRestaurantEvents()
     data object ShowConfirmDialog : AddMyRestaurantEvents()
+    data object ShowSuccessDialog : AddMyRestaurantEvents()
 }
 
 @HiltViewModel
@@ -132,8 +133,12 @@ class AddMyRestaurantViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun addReview(){
+    fun addReview() {
+        viewModelScope.launch {
 
+            // todo 성공시 성공 다이어로그 띄우기
+            _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
+        }
     }
 
 

@@ -5,20 +5,19 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import com.avengers.nibobnebob.databinding.DialogTwoButtonBinding
+import com.avengers.nibobnebob.databinding.DialogOneButtonTitleBinding
 
-class TwoButtonDialog(
+class OneButtonTitleDialog(
     context: Context,
     private val title: String,
-    private val description: String,
     private val confirmBtnClickListener: () -> Unit
 ) : Dialog(context) {
 
-    private lateinit var binding: DialogTwoButtonBinding
+    private lateinit var binding: DialogOneButtonTitleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DialogTwoButtonBinding.inflate(layoutInflater)
+        binding = DialogOneButtonTitleBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
     }
@@ -26,10 +25,6 @@ class TwoButtonDialog(
     private fun initView() = with(binding) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         tvTitle.text = title
-        tvDescription.text = description
-        tvCancel.setOnClickListener {
-            dismiss()
-        }
         tvConfirm.setOnClickListener {
             confirmBtnClickListener()
             dismiss()
