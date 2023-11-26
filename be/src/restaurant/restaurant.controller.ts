@@ -1,10 +1,11 @@
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { ApiBearerAuth, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { RestaurantService } from "./restaurant.service";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { GetUser, TokenInfo } from "src/user/user.decorator";
+import { SearchInfo } from "./searchInfo.decorator";
 
 @Controller("restaurant")
 export class RestaurantController {
@@ -13,6 +14,10 @@ export class RestaurantController {
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "음식점 검색 자동완성" })
+  @ApiParam({ name: 'partialRestaurantName', required: true, type: String, description: '부분 음식점 이름' })
+  @ApiQuery({ name: 'latitude', required: false, type: String, description: '위도' })
+  @ApiQuery({ name: 'longitude', required: false, type: String, description: '경도' })
+  @ApiQuery({ name: 'radius', required: false, type: String, description: '검색 반경' })
   @ApiResponse({
     status: 200,
     description: "음식점 검색 성공",
@@ -20,11 +25,8 @@ export class RestaurantController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 404, description: "존재하지 않는 음식점" })
   searchRestaurant(
-    @Param("partialRestaurantName") partialName: string,
-    @Query("location") location: string,
-    @Query("radius") radius: string
+    @SearchInfo() searchInfoDto: SearchInfoDto 
   ) {
-    const searchInfoDto = new SearchInfoDto(partialName, location, radius);
     return this.restaurantService.searchRestaurant(searchInfoDto);
   }
 

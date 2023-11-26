@@ -1,21 +1,30 @@
+import { IsString, IsNumberString, IsOptional } from 'class-validator';
+
 export class SearchInfoDto {
+    @IsString()
     partialName: string;
+
+    @IsNumberString({}, { message: 'Latitude must be a valid number.' })
+    @IsOptional()
     latitude: number;
+
+    @IsNumberString({}, { message: 'Longitude must be a valid number.' })
+    @IsOptional()
     longitude: number;
+
+    @IsNumberString({}, { message: 'Radius must be a valid number.' })
+    @IsOptional()
     radius: number;
 
     constructor(
         partialName: string,
-        location: string = null,
-        radius: string = null,
+        latitude: string = null,
+        longitude: string = null,
+        radius: string = null
     ) {
         this.partialName = partialName;
-        if (radius) this.radius = parseInt(radius, 10);
-
-        if (location) {
-            const [latitude, longitude] = location.split(' ').map(Number);
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
+        this.latitude = latitude ? parseFloat(latitude) : null;
+        this.longitude = longitude ? parseFloat(longitude) : null;
+        this.radius = radius ? parseInt(radius) : null;
     }
 }
