@@ -13,13 +13,19 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class App : Application(){
 
+    init {
+        instance = this
+    }
+
     override fun onCreate() {
         super.onCreate()
         initializeNaverSDK()
     }
 
     companion object{
+        lateinit var instance : App
         val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = APP_NAME)
+        fun getContext(): Context = instance.applicationContext
     }
 
     private fun initializeNaverSDK(){

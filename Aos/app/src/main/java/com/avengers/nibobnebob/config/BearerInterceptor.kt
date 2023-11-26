@@ -1,6 +1,8 @@
 package com.avengers.nibobnebob.config
 
 
+import android.content.Intent
+import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.RefreshTokenRequest
@@ -8,6 +10,7 @@ import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RefreshApi
+import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.util.Constants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -48,11 +51,15 @@ class BearerInterceptor @Inject constructor(
                         else -> {
                             dataStoreManager.deleteAccessToken()
                             dataStoreManager.deleteRefreshToken()
+
+                            val intent = Intent(App.getContext(), IntroActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            App.getContext().startActivity(intent)
                         }
                     }
                 }
             }
-            (newAccessToken)?.let {
+            newAccessToken?.let {
                 val newRequest = originalRequest.newBuilder()
                     .addHeader(AUTHORIZATION, "$BEARER $newAccessToken")
                     .build()
