@@ -84,7 +84,9 @@ export class UserService {
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
   }
-
+  async logout(tokenInfo: TokenInfo) {
+    return await this.usersRepository.logout(tokenInfo.id);
+  }
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
