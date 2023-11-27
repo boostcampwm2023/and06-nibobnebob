@@ -88,6 +88,7 @@ export class UserService {
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
   }
+
   async addRestaurantToNebob(reviewInfoDto: ReviewInfoDto, tokenInfo: TokenInfo, restaurantId: number) {
     const reviewEntity = this.reviewRepository.create(reviewInfoDto);
 
@@ -103,6 +104,9 @@ export class UserService {
     return null;
   }
 
+  async logout(tokenInfo: TokenInfo) {
+    return await this.usersRepository.logout(tokenInfo.id);
+  }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);

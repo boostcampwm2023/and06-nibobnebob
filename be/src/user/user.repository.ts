@@ -61,6 +61,9 @@ export class UserRepository extends Repository<User> {
     });
     return { userInfo: userInfo };
   }
+  async logout(id: number) {
+    return {};
+  }
   async deleteUserAccount(id: number) {
     const userInfo = await this.findOne({
       select: ["id"],

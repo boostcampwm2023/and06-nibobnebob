@@ -137,6 +137,7 @@ export class UserController {
     return await this.userService.signup(userInfoDto);
   }
 
+
   @Post("/restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -153,6 +154,16 @@ export class UserController {
   async addRestaurantToNebob(
     @Body() reviewInfoDto: ReviewInfoDto, @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
     return await this.userService.addRestaurantToNebob(reviewInfoDto, tokenInfo, restaurantid);
+    }
+
+  @Post("logout")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "유저 로그아웃" })
+  @ApiResponse({ status: 200, description: "로그아웃 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async logout(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.logout(tokenInfo);
   }
 
   @Delete()
