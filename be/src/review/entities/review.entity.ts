@@ -17,7 +17,7 @@ export class ReviewInfoEntity {
   id: number;
 
   @Column({ type: "boolean" })
-  visitMethod: boolean;
+  isCarVisit: boolean;
 
   @Column({ type: "smallint", nullable: true })
   transportationAccessibility: number | null;
