@@ -1,21 +1,21 @@
+import { LocationDto } from "./location.dto";
+
 export class SearchInfoDto {
     partialName: string;
+
     latitude: number;
+
     longitude: number;
+
     radius: number;
 
     constructor(
         partialName: string,
-        location: string = null,
-        radius: string = null,
+        location: LocationDto
     ) {
         this.partialName = partialName;
-        if (radius) this.radius = parseInt(radius, 10);
-
-        if (location) {
-            const [latitude, longitude] = location.split(' ').map(Number);
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
+        this.latitude = location.latitude ? parseFloat(location.latitude) : null;
+        this.longitude = location.longitude ? parseFloat(location.longitude) : null;
+        this.radius = location.radius ? parseInt(location.radius) : 500000;
     }
 }

@@ -23,6 +23,7 @@ import { UserService } from "./user.service";
 import { GetUser, TokenInfo } from "./user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
+import { LocationDto } from "src/restaurant/dto/location.dto";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 
 @Controller("user")
@@ -110,15 +111,16 @@ export class UserController {
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 맛집 리스트 정보 가져오기" })
-  @ApiQuery({ name: 'location', required: false, type: String, description: '위도 경도' })
-  @ApiQuery({ name: 'radius', required: false, type: String, description: '반경(미터 단위)' })
+  @ApiQuery({ name: 'latitude', required: false, type: String, description: '위도' })
+  @ApiQuery({ name: 'longitude', required: false, type: String, description: '경도' })
+  @ApiQuery({ name: 'radius', required: false, type: String, description: '검색 반경' })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMyRestaurantListInfo(
-    @Query('location') location: string,
-    @Query('radius') radius: string, @GetUser() tokenInfo: TokenInfo) {
-    const searchInfoDto = new SearchInfoDto('', location, radius);
+    @Query() locationDto: LocationDto, 
+    @GetUser() tokenInfo: TokenInfo) {
+    const searchInfoDto = new SearchInfoDto('', locationDto);
     return await this.userService.getMyRestaurantListInfo(searchInfoDto, tokenInfo);
   }
 
