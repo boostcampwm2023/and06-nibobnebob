@@ -153,6 +153,8 @@ export class UserService {
     userRestaurantList.userId = tokenInfo['id'];
     userRestaurantList.restaurantId = restaurantId;
     userRestaurantList.review = reviewEntity;
+    userRestaurantList.deletedAt = null;
+    userRestaurantList.createdAt = new Date();
 
     await this.userRestaurantListRepository.upsert(userRestaurantList, ["userId", "restaurantId"]);
 
