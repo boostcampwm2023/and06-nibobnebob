@@ -27,7 +27,7 @@ export class RestaurantController {
   @UsePipes(new ValidationPipe())
   searchRestaurant(
     @Query() locationDto: LocationDto,
-    @Query('partialRestaurantName') partialName: string
+    @Param('partialRestaurantName') partialName: string
   ) {
     const searchInfoDto = new SearchInfoDto(partialName, locationDto);
     return this.restaurantService.searchRestaurant(searchInfoDto);
@@ -71,7 +71,6 @@ export class RestaurantController {
     @Query('filter') filter: string
   ) {
     const filterInfoDto = new FilterInfoDto(filter, locationDto);
-    console.log(filterInfoDto)
     return this.restaurantService.filteredRestaurantList(filterInfoDto, tokenInfo);
   }
 }
