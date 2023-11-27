@@ -4,7 +4,6 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.FollowingResponse
-import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -18,7 +17,7 @@ interface HomeRepository {
 
     fun followList(): Flow<BaseState<BaseResponse<List<FollowingResponse>>>>
 
-    fun myRestaurantList() : Flow<BaseState<BaseResponse<List<MyRestaurantResponse>>>>
+    fun myRestaurantList() : Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
 
     fun filterRestaurantList(
         filter : String,

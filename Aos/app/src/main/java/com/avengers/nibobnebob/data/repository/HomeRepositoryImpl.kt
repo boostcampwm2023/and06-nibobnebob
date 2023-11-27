@@ -4,7 +4,6 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.FollowingResponse
-import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.HomeApi
@@ -27,7 +26,7 @@ class HomeRepositoryImpl @Inject constructor(private val api : HomeApi) : HomeRe
         emit(result)
     }
 
-    override fun myRestaurantList(): Flow<BaseState<BaseResponse<List<MyRestaurantResponse>>>> = flow{
+    override fun myRestaurantList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> = flow{
         val result = runRemote { api.myRestaurantList() }
         emit(result)
     }

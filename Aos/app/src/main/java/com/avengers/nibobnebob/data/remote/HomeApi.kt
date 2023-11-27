@@ -3,7 +3,6 @@ package com.avengers.nibobnebob.data.remote
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.FollowingResponse
-import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -23,7 +22,7 @@ interface HomeApi {
 
     //내 맛집 리스트
     @GET("api/user/restaurant")
-    suspend fun myRestaurantList() : Response<BaseResponse<List<MyRestaurantResponse>>>
+    suspend fun myRestaurantList() : Response<BaseResponse<List<FilterRestaurantResponse>>>
 
     //filter 맛집 리스트
     @GET("api/restaurant")
