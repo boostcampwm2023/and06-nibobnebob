@@ -191,7 +191,19 @@ export class UserController {
   async addRestaurantToNebob(
     @Body() reviewInfoDto: ReviewInfoDto, @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
     return await this.userService.addRestaurantToNebob(reviewInfoDto, tokenInfo, restaurantid);
-    }
+  }
+
+  @Delete("/restaurant/:restaurantid")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 맛집 리스트에서 삭제하기" })
+  @ApiResponse({ status: 200, description: "맛집리스트 삭제 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async deleteRestaurantFromNebob(
+    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
+    return await this.userService.deleteRestaurantFromNebob(tokenInfo, restaurantid);
+  }
 
   @Post("logout")
   @UseGuards(AuthGuard("jwt"))

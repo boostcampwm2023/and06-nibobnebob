@@ -67,7 +67,7 @@ export class UserService {
         .where(`user_restaurant_lists.user_id = :userId and ST_DistanceSphere(
           location, 
           ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
-      )<  ${searchInfoDto.radius}`, { userId: tokenInfo.id })
+      )<  ${searchInfoDto.radius} and user_restaurant_lists.deleted_at IS NULL`, { userId: tokenInfo.id })
         .getMany();
     }
     else {
@@ -83,7 +83,7 @@ export class UserService {
           "restaurant.phoneNumber",
           "restaurant.reviewCnt"
         ])
-        .where('user_restaurant_lists.user_id = :userId', { userId: tokenInfo.id })
+        .where('user_restaurant_lists.user_id = :userId  and user_restaurant_lists.deleted_at IS NULL', { userId: tokenInfo.id })
         .getRawMany();
     }
     return results.map(result => ({
@@ -156,6 +156,11 @@ export class UserService {
 
     await this.userRestaurantListRepository.upsert(userRestaurantList, ["userId", "restaurantId"]);
 
+    return null;
+  }
+
+  async deleteRestaurantFromNebob(tokenInfo: TokenInfo, restaurantId: number) {
+    await this.userRestaurantListRepository.deleteRestaurantFromNebob(tokenInfo.id, restaurantId);
     return null;
   }
 
