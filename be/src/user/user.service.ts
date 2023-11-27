@@ -111,18 +111,12 @@ export class UserService {
 
   async addRestaurantToNebob(reviewInfoDto: ReviewInfoDto, tokenInfo: TokenInfo, restaurantId: number) {
     const reviewEntity = this.reviewRepository.create(reviewInfoDto);
-
-    await this.reviewRepository.save(reviewEntity);
-
-    const userRestaurantList = new UserRestaurantListEntity();
-    userRestaurantList.userId = tokenInfo['id'];
-    userRestaurantList.restaurantId = restaurantId;
-    userRestaurantList.review = reviewEntity;
-    userRestaurantList.deletedAt = null;
-    userRestaurantList.createdAt = new Date();
-
-    await this.userRestaurantListRepository.upsert(userRestaurantList, ["userId", "restaurantId"]);
-
+    try {
+      await this.reviewRepository.save(reviewEntity);
+      await this.userRestaurantListRepository.addRestaurantToNebob(tokenInfo.id, restaurantId, reviewEntity);
+    } catch (err) {
+      throw new BadRequestException();
+    }
     return null;
   }
 

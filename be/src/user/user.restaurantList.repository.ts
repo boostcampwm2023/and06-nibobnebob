@@ -3,11 +3,22 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
 import { TokenInfo } from "./user.decorator";
 import { SearchInfoDto } from "src/restaurant/dto/seachInfo.dto";
+import { ReviewInfoEntity } from "src/review/entities/review.entity";
 
 @Injectable()
 export class UserRestaurantListRepository extends Repository<UserRestaurantListEntity> {
     constructor(private dataSource: DataSource) {
         super(UserRestaurantListEntity, dataSource.createEntityManager());
+    }
+    async addRestaurantToNebob(id: TokenInfo["id"], restaurantId: number, reviewEntity: ReviewInfoEntity) {
+        const userRestaurantList = new UserRestaurantListEntity();
+        userRestaurantList.userId = id;
+        userRestaurantList.restaurantId = restaurantId;
+        userRestaurantList.review = reviewEntity;
+        userRestaurantList.deletedAt = null;
+        userRestaurantList.createdAt = new Date();
+        await this.upsert(userRestaurantList, ["userId", "restaurantId"]);
+        return null;
     }
     async deleteRestaurantFromNebob(id: TokenInfo["id"], restaurantId: number) {
         await this.update({ userId: id, restaurantId: restaurantId }, { deletedAt: new Date() });
