@@ -100,7 +100,7 @@
             android:id="@+id/tv_review_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.reviewCount}"
+            android:text="@{String.valueOf(item.reviewCount)}"
             app:layout_constraintStart_toEndOf="@id/guidline"
             app:layout_constraintTop_toTopOf="@id/tv_review_count_label"
             tools:text="99 개" />

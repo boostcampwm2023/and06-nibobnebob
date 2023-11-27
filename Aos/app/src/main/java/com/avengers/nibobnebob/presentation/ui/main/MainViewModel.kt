@@ -17,9 +17,9 @@ class MainViewModel @Inject constructor(
     private val networkManager: NetworkManager
 ) : BaseActivityViewModel(networkManager) {
     private val _uiState = MutableStateFlow(UiRestaurantData())
-    val uiState : StateFlow<UiRestaurantData> = _uiState.asStateFlow()
+    val uiState: StateFlow<UiRestaurantData> = _uiState.asStateFlow()
 
-    fun markSearchRestaurant(item : UiRestaurantData){
+    fun markSearchRestaurant(item: UiRestaurantData) {
         viewModelScope.launch { _uiState.emit(item) }
     }
 

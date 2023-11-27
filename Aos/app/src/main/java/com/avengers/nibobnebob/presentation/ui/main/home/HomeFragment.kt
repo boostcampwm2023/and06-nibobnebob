@@ -2,7 +2,6 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +22,7 @@ import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -145,7 +145,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
 
         repeatOnStarted {
-            parentViewModel.uiState.collectLatest { Log.d("TEST", "$it") }
+            parentViewModel.uiState.collectLatest {
+                if (it.id < 0) return@collectLatest
+
+                setSearchResultMarker(it)
+
+                RestaurantBottomSheet(
+                    context = requireContext(),
+                    data = it,
+                    onClickAddWishRestaurant = ::addWishTest,
+                    onClickAddMyRestaurant = ::addRestaurantTest,
+                    onClickGoReview = ::goReviewTest
+                ).show()
+
+            }
         }
     }
 
@@ -195,6 +208,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             it.map = null
         }
         markerList.clear()
+    }
+
+    private fun setSearchResultMarker(data: UiRestaurantData) {
+        Marker().apply {
+            position = LatLng(data.latitude, data.longitude)
+            icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
+            map = naverMap
+        }
+
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng(data.latitude, data.longitude))
+        naverMap.moveCamera(cameraUpdate)
     }
 
 
