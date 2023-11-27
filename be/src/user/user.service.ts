@@ -101,6 +101,16 @@ export class UserService {
       throw new BadRequestException();
     }
   }
+  async unfollowUser(tokenInfo: TokenInfo, nickName: string) {
+    const targetId = await this.usersRepository.findOne({ select: ["id"], where: { "nickName": nickName } })
+    try {
+      await this.userFollowListRepositoy.unfollowUser(tokenInfo.id, targetId["id"]);
+      return null;
+    }
+    catch (err) {
+      throw new BadRequestException();
+    }
+  }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);

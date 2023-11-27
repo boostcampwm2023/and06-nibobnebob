@@ -20,6 +20,14 @@ export class UserFollowListRepository extends Repository<FollowEntity> {
         followEntity.followedUserId = id;
         followEntity.followingUserId = targetId;
         followEntity.createdAt = new Date();
+        followEntity.deletedAt = null;
+        return await this.upsert(followEntity, ["followedUserId", "followingUserId"]);
+    }
+    async unfollowUser(id: TokenInfo['id'], targetId: number) {
+        const followEntity = new FollowEntity();
+        followEntity.followedUserId = id;
+        followEntity.followingUserId = targetId;
+        followEntity.deletedAt = new Date();
         return await this.upsert(followEntity, ["followedUserId", "followingUserId"]);
     }
 }

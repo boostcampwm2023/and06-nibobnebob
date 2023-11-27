@@ -178,6 +178,24 @@ export class UserController {
     return await this.userService.deleteUserAccount(tokenInfo);
   }
 
+  @Delete("follow-list/:nickName")
+  @ApiParam({
+    name: "nickName",
+    required: true,
+    description: "언팔로우 할 유저의 닉네임",
+    type: String,
+  })
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "유저 언팔로우 하기" })
+  @ApiResponse({ status: 200, description: "유저 언팔로우 성공" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @UsePipes(new ValidationPipe())
+  async unfollowUser(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+    return await this.userService.unfollowUser(tokenInfo, nickName);
+  }
+
   @Put()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
