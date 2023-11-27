@@ -22,6 +22,7 @@ import javax.inject.Inject
 
 data class RestaurantSearchUiState(
     val searchList: List<UiRestaurantData> = emptyList(),
+    val searchKeyword: String = "",
     val isResultEmpty: Boolean = false,
 )
 
@@ -52,7 +53,7 @@ class RestaurantSearchViewModel @Inject constructor(
 
     fun searchRestaurant(keyword: CharSequence) {
         if (keyword.isBlank()) {
-            _uiState.update { ui -> ui.copy(searchList = emptyList(), isResultEmpty = true) }
+            _uiState.update { ui -> ui.copy(searchList = emptyList(), searchKeyword = "", isResultEmpty = true) }
             return
         }
         homeRepository.searchRestaurant(keyword.toString(), tempLocation, tempRadius)
@@ -63,13 +64,18 @@ class RestaurantSearchViewModel @Inject constructor(
                         _uiState.update { ui ->
                             ui.copy(
                                 searchList = item.map { it.toUiRestaurantData() },
+                                searchKeyword = keyword.toString(),
                                 isResultEmpty = item.isEmpty()
                             )
                         }
                     }
 
                     else -> {
-                        _uiState.update { ui -> ui.copy(isResultEmpty = true) }
+                        _uiState.update { ui -> ui.copy(
+                            searchList = emptyList(),
+                            searchKeyword = "",
+                            isResultEmpty = true
+                        ) }
                     }
                 }
             }.launchIn(viewModelScope)
