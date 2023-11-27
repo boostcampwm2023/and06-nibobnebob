@@ -63,7 +63,8 @@ export class RestaurantService implements OnModuleInit {
         "restaurant.address",
         "restaurant.category",
         "restaurant.phoneNumber",
-        "CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS isMy",
+        'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
+        "restaurant.reviewCnt"
       ])
       .where(
         `ST_DistanceSphere(
