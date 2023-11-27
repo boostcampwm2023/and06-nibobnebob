@@ -50,7 +50,6 @@ class RestaurantDetailViewModel @Inject constructor(
 
     private val restaurantId = MutableStateFlow<Int>(1)
 
-
     fun restaurantDetail(){
         globalRepository.restaurantDetail(restaurantId = restaurantId.value).onEach {
             when(it){

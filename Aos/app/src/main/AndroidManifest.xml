@@ -25,7 +25,8 @@
 
         <activity
             android:name=".presentation.ui.main.MainActivity"
-            android:exported="false">
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
             android:name=".presentation.ui.intro.IntroActivity"

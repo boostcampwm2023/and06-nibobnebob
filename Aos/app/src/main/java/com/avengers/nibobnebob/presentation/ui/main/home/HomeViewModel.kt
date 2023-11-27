@@ -99,7 +99,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                         state.copy(
                             markerList = listOf(
                                 UiMarkerData(
-                                    id = -1,
+                                    id = 1,
                                     latitude = 37.355594049034,
                                     longitude = 126.36707115682,
                                     name = "너무 맛있는 집",
@@ -110,7 +110,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                                     isInMyList = false
                                 ),
                                 UiMarkerData(
-                                    id = -1,
+                                    id = 1,
                                     latitude = 37.555594049034,
                                     longitude = 126.96707115682,
                                     name = "그닥 맛없는 집",
@@ -121,7 +121,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                                     isInMyList = false
                                 ),
                                 UiMarkerData(
-                                    id = -1,
+                                    id = 1,
                                     latitude = 37.255594049034,
                                     longitude = 126.16707115682,
                                     name = "그럭저럭?",
@@ -141,7 +141,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                         state.copy(
                             markerList = listOf(
                                 UiMarkerData(
-                                    id = -1,
+                                    id = 1,
                                     latitude = 36.555594049034,
                                     longitude = 125.96707115682,
                                     name = "세영국밥",
@@ -152,7 +152,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                                     isInMyList = false
                                 ),
                                 UiMarkerData(
-                                    id = -1,
+                                    id = 1,
                                     latitude = 37.355594049034,
                                     longitude = 125.96707115682,
                                     name = "균욱불뼈찜",
@@ -163,7 +163,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                                     isInMyList = false
                                 ),
                                 UiMarkerData(
-                                    id = -1,
+                                    id = 1,
                                     latitude = 37.255594049034,
                                     longitude = 126.76707115682,
                                     name = "진성아구찜",
