@@ -1,30 +1,21 @@
-import { IsString, IsNumberString, IsOptional } from 'class-validator';
+import { LocationDto } from "./location.dto";
 
 export class FilterInfoDto {
-    @IsString()
     filter: string;
 
-    @IsNumberString({}, { message: 'Latitude must be a valid number.' })
-    @IsOptional()
     latitude: number;
 
-    @IsNumberString({}, { message: 'Longitude must be a valid number.' })
-    @IsOptional()
     longitude: number;
 
-    @IsNumberString({}, { message: 'Radius must be a valid number.' })
-    @IsOptional()
     radius: number;
 
     constructor(
         filter: string,
-        latitude: string = null,
-        longitude: string = null,
-        radius: string = null
+        location: LocationDto
     ) {
         this.filter = filter;
-        this.latitude = latitude ? parseFloat(latitude) : null;
-        this.longitude = longitude ? parseFloat(longitude) : null;
-        this.radius = radius ? parseInt(radius) : null;
+        this.latitude = location.latitude ? parseFloat(location.latitude) : null;
+        this.longitude = location.longitude ? parseFloat(location.longitude) : null;
+        this.radius = location.radius ? parseInt(location.radius) : 500000;
     }
 }

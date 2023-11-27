@@ -6,7 +6,7 @@ import { SearchInfoDto } from "./dto/seachInfo.dto";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { GetUser, TokenInfo } from "src/user/user.decorator";
 import { SearchInfo } from "./searchInfo.decorator";
-import { filterInfo } from "./filterInfo.decorator";
+import { LocationDto } from "./dto/location.dto";
 
 @Controller("restaurant")
 export class RestaurantController {
@@ -66,8 +66,11 @@ export class RestaurantController {
   @UsePipes(new ValidationPipe())
   filteredRestaurantList(
     @GetUser() tokenInfo: TokenInfo,
-    @filterInfo() filterInfoDto: FilterInfoDto
+    @Query() locationDto: LocationDto,
+    @Query('filter') filter: string
   ) {
+    const filterInfoDto = new FilterInfoDto(filter, locationDto);
+    console.log(filterInfoDto)
     return this.restaurantService.filteredRestaurantList(filterInfoDto, tokenInfo);
   }
 }
