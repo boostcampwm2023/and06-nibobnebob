@@ -90,7 +90,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         setMapListener()
         initStateObserver()
         viewModel.getMarkerList()
-        findLocation()
+        setLocation()
     }
 
     private fun setMapListener() {
@@ -150,7 +150,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
-    private fun findLocation(){
+    private fun setLocation(){
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity as MainActivity)
         if(ActivityCompat.checkSelfPermission(App.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED &&
@@ -159,10 +159,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         ) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity as MainActivity)
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                viewModel.updateLocation(
-                    location.latitude,
-                    location.longitude
-                )
+                if(location!= null){
+                    viewModel.updateLocation(
+                        location.latitude,
+                        location.longitude
+                    )
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
+import com.avengers.nibobnebob.data.model.response.FollowingResponse
 import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import retrofit2.Response
@@ -18,7 +19,7 @@ interface HomeApi {
     ): Response<BaseResponse<List<SearchRestaurantResponse>>>
 
     @GET("api/user/follow-list")
-    suspend fun followList() : Response<BaseResponse<List<String>>>
+    suspend fun followList() : Response<BaseResponse<List<FollowingResponse>>>
 
     //내 맛집 리스트
     @GET("api/user/restaurant")

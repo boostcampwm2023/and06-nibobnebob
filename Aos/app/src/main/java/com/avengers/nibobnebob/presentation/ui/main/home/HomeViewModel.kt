@@ -94,8 +94,8 @@ class HomeViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
                     val initialFilterData = UiFilterData(MY_LIST, true, ::onFilterItemClicked)
-                    val filterList = listOf(initialFilterData) + it.data.body.map { name ->
-                        UiFilterData(name, false, ::onFilterItemClicked)
+                    val filterList = listOf(initialFilterData) + it.data.body.map {
+                        UiFilterData(it.nickName, false, ::onFilterItemClicked)
                     }
                     _uiState.update { state ->
                         state.copy(
