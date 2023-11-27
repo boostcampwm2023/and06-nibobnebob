@@ -1,10 +1,17 @@
 package com.avengers.nibobnebob.presentation.ui.main.home.search
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
+import android.provider.Settings
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -13,8 +20,10 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.adjustKeyboard
+import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeSearchAdapter
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -33,6 +42,7 @@ class RestaurantSearchFragment :
         collectEvent()
         setFocus()
         clearFocus(view)
+        fetchCurrentLocation()
 
     }
 
@@ -60,6 +70,42 @@ class RestaurantSearchFragment :
                     is RestaurantSearchEvent.NavigateToHome -> findNavController().toHome()
                 }
 
+            }
+        }
+    }
+
+    private fun fetchCurrentLocation() {
+        val locationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        } else {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                LocationServices.getFusedLocationProviderClient(activity as MainActivity).apply {
+                    lastLocation.addOnSuccessListener { location: Location? ->
+                        viewModel.setCurrentLocation(location?.latitude, location?.longitude)
+                    }
+                }
+            } else {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ),
+                    1000
+                )
             }
         }
     }

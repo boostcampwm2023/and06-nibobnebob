@@ -49,8 +49,20 @@ class RestaurantSearchViewModel @Inject constructor(
     )
     val events: SharedFlow<RestaurantSearchEvent> = _events.asSharedFlow()
 
-    private val tempLocation = "37.508796 126.891074"
     private val tempRadius = "5000"
+
+    private val curLongitude = MutableStateFlow("")
+    private val curLatitude = MutableStateFlow("")
+
+
+    fun setCurrentLocation(latitude: Double?, longitude: Double?) {
+        if (latitude == null || longitude == null) return
+
+        viewModelScope.launch {
+            curLatitude.emit(latitude.toString())
+            curLongitude.emit(longitude.toString())
+        }
+    }
 
 
     fun searchRestaurant(keyword: CharSequence) {
@@ -64,7 +76,8 @@ class RestaurantSearchViewModel @Inject constructor(
             }
             return
         }
-        homeRepository.searchRestaurant(keyword.toString(), tempLocation, tempRadius)
+        val location = "${curLatitude.value} ${curLongitude.value}"
+        homeRepository.searchRestaurant(keyword.toString(), location, tempRadius)
             .onEach { state ->
                 when (state) {
                     is BaseState.Success -> {
