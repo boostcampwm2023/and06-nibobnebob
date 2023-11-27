@@ -16,7 +16,7 @@ export class ReviewInfoDto {
   })
   @IsBoolean()
   @IsNotEmpty()
-  visitMethod: boolean;
+  isCarVisit: boolean;
 
   @ApiProperty({
     example: "0",
@@ -55,7 +55,7 @@ export class ReviewInfoDto {
   @IsInt()
   @IsNotEmpty()
   @MaxLength(1)
-  restroomtCleanliness: number;
+  restroomCleanliness: number;
 
   @ApiProperty({
     example: "좋았음",

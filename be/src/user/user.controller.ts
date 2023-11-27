@@ -24,6 +24,7 @@ import { GetUser, TokenInfo } from "./user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { LocationDto } from "src/restaurant/dto/location.dto";
+import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 
 @Controller("user")
 export class UserController {
@@ -43,23 +44,6 @@ export class UserController {
     return await this.userService.getMypageUserDetailInfo(tokenInfo);
   }
 
-  @Get(":nickname/details")
-  @UseGuards(AuthGuard("jwt"))
-  @ApiBearerAuth()
-  @ApiParam({
-    name: "nickname",
-    required: true,
-    description: "요청하고자 하는 유저의 닉네임",
-    type: String,
-  })
-  @ApiOperation({ summary: "유저 정보 가져오기" })
-  @ApiResponse({ status: 200, description: "정보 요청 성공" })
-  @ApiResponse({ status: 401, description: "인증 실패" })
-  @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async getUserInfo(@Param("nickname") nickname: UserInfoDto["nickName"]) {
-    return await this.userService.getUserInfo(nickname);
-  }
-
   @Get("/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -69,6 +53,28 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMypageUserInfo(@GetUser() tokenInfo: TokenInfo) {
     return await this.userService.getMypageUserInfo(tokenInfo);
+  }
+
+  @Get(":nickName/details")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "다른 유저 메인 마이페이지 유저 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "다른 유저 메인 마이페이지 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getMypageTargetUserInfo(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+    return await this.userService.getMypageTargetUserInfo(tokenInfo, nickName);
+  }
+
+  @Get("/autocomplete/:partialUsername")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "다른 유저 검색 자동완성" })
+  @ApiResponse({ status: 200, description: "다른 유저 검색 자동완성 완성" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async searchTargetUser(@GetUser() tokenInfo: TokenInfo, @Param("partialUsername") partialUsername: string) {
+    return await this.userService.searchTargetUser(tokenInfo, partialUsername);
   }
 
   @Get("nickname/:nickname/exists")
@@ -129,6 +135,27 @@ export class UserController {
     return await this.userService.getMyFollowListInfo(tokenInfo);
   }
 
+  @Get("followed-list")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 팔로워 리스트 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "내 팔로워 리스트 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getMyFollowerListInfo(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getMyFollowerListInfo(tokenInfo);
+  }
+
+  @Get("recommended")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "추천 사용자 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "추천 사용자 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async getRecommendUserListInfo(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getRecommendUserListInfo(tokenInfo);
+  }
+
   @Post()
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
@@ -136,6 +163,67 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   async singup(@Body() userInfoDto: UserInfoDto) {
     return await this.userService.signup(userInfoDto);
+  }
+
+
+  @Post("follow-list/:nickName")
+  @ApiParam({
+    name: "nickName",
+    required: true,
+    description: "팔로우 할 유저의 닉네임",
+    type: String,
+  })
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "유저 팔로우 하기" })
+  @ApiResponse({ status: 200, description: "유저 팔로우 성공" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @UsePipes(new ValidationPipe())
+  async followUser(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+    return await this.userService.followUser(tokenInfo, nickName);
+  }
+
+
+
+  @Post("/restaurant/:restaurantid")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 맛집 리스트에 등록하기" })
+  @ApiParam({
+    name: "restaurantid",
+    required: true,
+    description: "음식점 id",
+    type: Number,
+  })
+  @ApiResponse({ status: 200, description: "맛집리스트 등록 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async addRestaurantToNebob(
+    @Body() reviewInfoDto: ReviewInfoDto, @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
+    return await this.userService.addRestaurantToNebob(reviewInfoDto, tokenInfo, restaurantid);
+  }
+
+  @Delete("/restaurant/:restaurantid")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 맛집 리스트에서 삭제하기" })
+  @ApiResponse({ status: 200, description: "맛집리스트 삭제 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async deleteRestaurantFromNebob(
+    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
+    return await this.userService.deleteRestaurantFromNebob(tokenInfo, restaurantid);
+  }
+
+  @Post("logout")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "유저 로그아웃" })
+  @ApiResponse({ status: 200, description: "로그아웃 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async logout(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.logout(tokenInfo);
   }
 
   @Delete()
@@ -148,6 +236,24 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   async deleteUserAccount(@GetUser() tokenInfo: TokenInfo) {
     return await this.userService.deleteUserAccount(tokenInfo);
+  }
+
+  @Delete("follow-list/:nickName")
+  @ApiParam({
+    name: "nickName",
+    required: true,
+    description: "언팔로우 할 유저의 닉네임",
+    type: String,
+  })
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "유저 언팔로우 하기" })
+  @ApiResponse({ status: 200, description: "유저 언팔로우 성공" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @UsePipes(new ValidationPipe())
+  async unfollowUser(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+    return await this.userService.unfollowUser(tokenInfo, nickName);
   }
 
   @Put()
