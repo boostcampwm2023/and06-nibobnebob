@@ -72,10 +72,7 @@ class MyPageViewModel @Inject constructor(
     }
 
     fun logout() {
-
-        // api 연결 예정
-        viewModelScope.launch {
-            myPageRepository.logout()
+        myPageRepository.logout().onEach {
             _events.emit(MyEditPageEvent.NavigateToIntro)
         }
     }
