@@ -16,7 +16,7 @@ export class ReviewInfoDto {
   })
   @IsBoolean()
   @IsNotEmpty()
-  visitMethod: boolean;
+  isCarVisit: boolean;
 
   @ApiProperty({
     example: "0",

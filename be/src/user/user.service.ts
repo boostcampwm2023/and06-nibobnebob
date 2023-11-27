@@ -50,45 +50,10 @@ export class UserService {
     return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
   }
   async getMyRestaurantListInfo(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    let results;
-    if (searchInfoDto.radius) {
-      results = await this.userRestaurantListRepository
-        .createQueryBuilder('user_restaurant_lists')
-        .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
-        .select([
-          'user_restaurant_lists.restaurantId',
-          'restaurant.name',
-          'restaurant.location',
-          'restaurant.address',
-          'restaurant.category',
-          "restaurant.phoneNumber",
-          "restaurant.reviewCnt"
-        ])
-        .where(`user_restaurant_lists.user_id = :userId and ST_DistanceSphere(
-          location, 
-          ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
-      )<  ${searchInfoDto.radius}`, { userId: tokenInfo.id })
-        .getMany();
-    }
-    else {
-      results = await this.userRestaurantListRepository
-        .createQueryBuilder('user_restaurant_lists')
-        .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
-        .select([
-          'user_restaurant_lists.restaurantId AS restaurant_id',
-          'restaurant.name',
-          'restaurant.location',
-          'restaurant.address',
-          'restaurant.category',
-          "restaurant.phoneNumber",
-          "restaurant.reviewCnt"
-        ])
-        .where('user_restaurant_lists.user_id = :userId', { userId: tokenInfo.id })
-        .getRawMany();
-    }
+    const results = await this.userRestaurantListRepository.getMyRestaurantListInfo(searchInfoDto, tokenInfo.id);
     return results.map(result => ({
       ...result,
-      isMy: true
+      "isMy": true
     }));
   }
   async getMyFollowListInfo(tokenInfo: TokenInfo) {
@@ -146,16 +111,17 @@ export class UserService {
 
   async addRestaurantToNebob(reviewInfoDto: ReviewInfoDto, tokenInfo: TokenInfo, restaurantId: number) {
     const reviewEntity = this.reviewRepository.create(reviewInfoDto);
+    try {
+      await this.reviewRepository.save(reviewEntity);
+      await this.userRestaurantListRepository.addRestaurantToNebob(tokenInfo.id, restaurantId, reviewEntity);
+    } catch (err) {
+      throw new BadRequestException();
+    }
+    return null;
+  }
 
-    await this.reviewRepository.save(reviewEntity);
-
-    const userRestaurantList = new UserRestaurantListEntity();
-    userRestaurantList.userId = tokenInfo['id'];
-    userRestaurantList.restaurantId = restaurantId;
-    userRestaurantList.review = reviewEntity;
-
-    await this.userRestaurantListRepository.upsert(userRestaurantList, ["userId", "restaurantId"]);
-
+  async deleteRestaurantFromNebob(tokenInfo: TokenInfo, restaurantId: number) {
+    await this.userRestaurantListRepository.deleteRestaurantFromNebob(tokenInfo.id, restaurantId);
     return null;
   }
 
