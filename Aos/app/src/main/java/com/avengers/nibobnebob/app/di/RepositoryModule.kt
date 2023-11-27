@@ -1,5 +1,7 @@
 package com.avengers.nibobnebob.app.di
 
+import com.avengers.nibobnebob.data.repository.FollowRepository
+import com.avengers.nibobnebob.data.repository.FollowRepositoryImpl
 import com.avengers.nibobnebob.data.repository.GlobalRepository
 import com.avengers.nibobnebob.data.repository.GlobalRepositoryImpl
 import com.avengers.nibobnebob.data.repository.HomeRepository
@@ -49,6 +51,11 @@ abstract class RepositoryModule {
         homeRepositoryImpl: HomeRepositoryImpl
     ): HomeRepository
 
+    @Singleton
+    @Binds
+    abstract fun bindFollowRepository(
+        followRepositoryImpl: FollowRepositoryImpl
+    ): FollowRepository
 }
 
 
