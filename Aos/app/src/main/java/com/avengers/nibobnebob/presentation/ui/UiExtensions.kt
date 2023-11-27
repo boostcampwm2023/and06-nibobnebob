@@ -10,9 +10,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 
-internal fun Context.hideKeyboard(view: View) {
+internal fun Context.adjustKeyboard(view: View, show: Boolean) {
     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(view.windowToken, 0)
+    when (show) {
+        true -> imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+        false -> imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
 }
 
 internal fun Context.requestLocationPermission(
@@ -29,7 +33,7 @@ internal fun Context.requestLocationPermission(
     }
 
     if (permissionFlag) {
-        checkLocationIsOn(){
+        checkLocationIsOn() {
             onTrackingChangeListener(it)
         }
     } else {
