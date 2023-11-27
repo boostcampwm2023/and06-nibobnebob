@@ -8,6 +8,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentFollowBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.ui.main.follow.adapter.FollowAdapter
 
 class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_follow) {
 
@@ -18,6 +19,7 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+        binding.rvFollowList.adapter = FollowAdapter()
     }
 
 }
