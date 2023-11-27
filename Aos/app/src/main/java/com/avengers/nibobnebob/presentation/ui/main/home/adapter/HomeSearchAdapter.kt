@@ -64,7 +64,7 @@ class SearchViewHolder(private val binding: ItemHomeSearchBinding) :
                 spannableString.setSpan(colorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
 
-            tvResultOne.text = spannableString
+            tvResult.text = spannableString
             tvAddress.text = item.address
             root.setOnClickListener {
                 onClickSearchItem(item)

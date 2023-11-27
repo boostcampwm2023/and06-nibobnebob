@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_result_one"
+            android:id="@+id/tv_result"
             style="@style/TextSmallBold"
             android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
@@ -33,21 +33,14 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="맥도날드 " />
 
-        <TextView
-            android:id="@+id/tv_result_two"
-            style="@style/TextSmallBold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/tv_result_one"
-            app:layout_constraintTop_toTopOf="@id/tv_result_one"
-            tools:text="뱅뱅역점" />
+
 
         <TextView
             android:id="@+id/tv_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/tv_result_one"
-            app:layout_constraintTop_toBottomOf="@id/tv_result_one"
+            app:layout_constraintStart_toStartOf="@id/tv_result"
+            app:layout_constraintTop_toBottomOf="@id/tv_result"
             android:layout_marginTop="6dp"
             style="@style/CaptionRegular"
             android:textColor="@color/nn_dark4"
