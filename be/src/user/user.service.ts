@@ -8,6 +8,7 @@ import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
 import { In } from "typeorm";
+import { BadRequestException } from "@nestjs/common/exceptions";
 
 @Injectable()
 export class UserService {
@@ -89,6 +90,16 @@ export class UserService {
     const userIdValues = userIds.map(user => user.followedUserId);
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
+  }
+  async followUser(tokenInfo: TokenInfo, nickName: string) {
+    const targetId = await this.usersRepository.findOne({ select: ["id"], where: { "nickName": nickName } })
+    try {
+      await this.userFollowListRepositoy.followUser(tokenInfo.id, targetId["id"]);
+      return null;
+    }
+    catch (err) {
+      throw new BadRequestException();
+    }
   }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {

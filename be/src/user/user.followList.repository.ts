@@ -15,4 +15,11 @@ export class UserFollowListRepository extends Repository<FollowEntity> {
     async getMyFollowerListInfo(id: TokenInfo['id']) {
         return await this.find({ select: ["followedUserId"], where: { 'followingUserId': id } });
     }
+    async followUser(id: TokenInfo['id'], targetId: number) {
+        const followEntity = new FollowEntity();
+        followEntity.followedUserId = id;
+        followEntity.followingUserId = targetId;
+        followEntity.createdAt = new Date();
+        return await this.upsert(followEntity, ["followedUserId", "followingUserId"]);
+    }
 }
