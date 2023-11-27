@@ -4,7 +4,7 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +20,7 @@ import javax.inject.Inject
 data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
     val filterList: List<UiFilterData> = emptyList(),
-    val markerList: List<UiMarkerData> = emptyList(),
+    val markerList: List<UiRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST
 )
 
@@ -98,36 +98,36 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                     _uiState.update { state ->
                         state.copy(
                             markerList = listOf(
-                                UiMarkerData(
+                                UiRestaurantData(
                                     id = 1,
                                     latitude = 37.355594049034,
                                     longitude = 126.36707115682,
                                     name = "너무 맛있는 집",
                                     address = "서울시 중구 만리동",
                                     phoneNumber = "010-1234-5254",
-                                    reviewCount = "99개",
+                                    reviewCount = 99,
                                     isInWishList = false,
                                     isInMyList = false
                                 ),
-                                UiMarkerData(
+                                UiRestaurantData(
                                     id = 1,
                                     latitude = 37.555594049034,
                                     longitude = 126.96707115682,
                                     name = "그닥 맛없는 집",
                                     address = "서울시 중구 용현동",
                                     phoneNumber = "010-1234-5254",
-                                    reviewCount = "90개",
+                                    reviewCount = 90,
                                     isInWishList = false,
                                     isInMyList = false
                                 ),
-                                UiMarkerData(
+                                UiRestaurantData(
                                     id = 1,
                                     latitude = 37.255594049034,
                                     longitude = 126.16707115682,
                                     name = "그럭저럭?",
                                     address = "서울시 중구 만리동",
                                     phoneNumber = "010-1234-5254",
-                                    reviewCount = "99개",
+                                    reviewCount = 99,
                                     isInWishList = false,
                                     isInMyList = false
                                 ),
@@ -140,36 +140,36 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                     _uiState.update { state ->
                         state.copy(
                             markerList = listOf(
-                                UiMarkerData(
+                                UiRestaurantData(
                                     id = 1,
                                     latitude = 36.555594049034,
                                     longitude = 125.96707115682,
                                     name = "세영국밥",
                                     address = "서울시 영등포구",
                                     phoneNumber = "010-1234-5111",
-                                    reviewCount = "0개",
+                                    reviewCount = 0,
                                     isInWishList = false,
                                     isInMyList = false
                                 ),
-                                UiMarkerData(
+                                UiRestaurantData(
                                     id = 1,
                                     latitude = 37.355594049034,
                                     longitude = 125.96707115682,
                                     name = "균욱불뼈찜",
                                     address = "서울시 중구 만리동",
                                     phoneNumber = "010-1234-2254",
-                                    reviewCount = "90개",
+                                    reviewCount = 90,
                                     isInWishList = true,
                                     isInMyList = false
                                 ),
-                                UiMarkerData(
+                                UiRestaurantData(
                                     id = 1,
                                     latitude = 37.255594049034,
                                     longitude = 126.76707115682,
                                     name = "진성아구찜",
                                     address = "서울시 중구 만리동",
                                     phoneNumber = "010-1234-5254",
-                                    reviewCount = "99개",
+                                    reviewCount = 0,
                                     isInWishList = false,
                                     isInMyList = true
                                 ),

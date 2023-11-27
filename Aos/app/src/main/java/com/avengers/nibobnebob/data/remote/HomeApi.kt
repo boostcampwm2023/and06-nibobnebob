@@ -11,7 +11,8 @@ interface HomeApi {
     @GET("api/restaurant/autocomplete/{partialRestaurantName}")
     suspend fun searchRestaurant(
         @Path("partialRestaurantName") name: String,
-        @Query("location") location: String,
-        @Query("radius") radius: String
+        @Query("radius") radius: String?,
+        @Query("longitude") longitude: String?,
+        @Query("latitude") latitude: String?
     ): Response<BaseResponse<List<SearchRestaurantResponse>>>
 }

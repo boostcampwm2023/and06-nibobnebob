@@ -9,8 +9,9 @@ interface HomeRepository {
 
     fun searchRestaurant(
         name: String,
-        location: String,
-        radius: String
+        radius: String?,
+        longitude: String?,
+        latitude: String?
     ): Flow<BaseState<BaseResponse<List<SearchRestaurantResponse>>>>
 
 }

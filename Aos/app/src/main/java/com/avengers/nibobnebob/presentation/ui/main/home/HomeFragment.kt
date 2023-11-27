@@ -11,7 +11,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.avengers.nibobnebob.NavGraphDirections
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -19,7 +18,7 @@ import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
@@ -168,7 +167,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
-    private fun setMarker(data: UiMarkerData) {
+    private fun setMarker(data: UiRestaurantData) {
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
