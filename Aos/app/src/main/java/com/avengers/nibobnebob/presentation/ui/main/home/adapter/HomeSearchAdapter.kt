@@ -12,7 +12,7 @@ import com.avengers.nibobnebob.databinding.ItemHomeSearchBinding
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 
 class HomeSearchAdapter(
-    private val onClickSearchItem: (Int) -> Unit
+    private val onClickSearchItem: (UiRestaurantData) -> Unit
 ) : RecyclerView.Adapter<SearchViewHolder>() {
 
     private var resultList : List<UiRestaurantData> = emptyList()
@@ -47,7 +47,7 @@ class HomeSearchAdapter(
 
 class SearchViewHolder(private val binding: ItemHomeSearchBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiRestaurantData, position: Int, onClickSearchItem: (Int) -> Unit, keyword : String) {
+    fun bind(item: UiRestaurantData, position: Int, onClickSearchItem: (UiRestaurantData) -> Unit, keyword : String) {
         with(binding) {
 //            val start = item.name.indexOf(keyword)
 //            val end = start + keyword.length
@@ -59,7 +59,7 @@ class SearchViewHolder(private val binding: ItemHomeSearchBinding) :
             tvResultOne.text = item.name
             tvAddress.text = item.address
             root.setOnClickListener {
-                onClickSearchItem(position)
+                onClickSearchItem(item)
             }
         }
     }

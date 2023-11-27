@@ -28,7 +28,7 @@ data class RestaurantSearchUiState(
 
 sealed class RestaurantSearchEvent {
     data class OnClickResultItem(
-        val index: Int
+        val item: UiRestaurantData
     ) : RestaurantSearchEvent()
 
     data object NavigateToHome : RestaurantSearchEvent()
@@ -97,9 +97,9 @@ class RestaurantSearchViewModel @Inject constructor(
         }
     }
 
-    fun onClickSearchItem(index: Int) {
+    fun onClickSearchItem(item: UiRestaurantData) {
         viewModelScope.launch {
-            _events.emit(RestaurantSearchEvent.OnClickResultItem(index))
+            _events.emit(RestaurantSearchEvent.OnClickResultItem(item))
         }
     }
 }

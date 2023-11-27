@@ -23,8 +23,8 @@ class RestaurantSearchFragment :
     BaseFragment<FragmentRestaurantSearchBinding>(R.layout.fragment_restaurant_search) {
     private val viewModel: RestaurantSearchViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
-    private val adapter = HomeSearchAdapter { index ->
-        viewModel.onClickSearchItem(index)
+    private val adapter = HomeSearchAdapter { item ->
+        viewModel.onClickSearchItem(item)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,10 +53,8 @@ class RestaurantSearchFragment :
             viewModel.events.collect {
                 when (it) {
                     is RestaurantSearchEvent.OnClickResultItem -> {
-                        Log.d(
-                            "TEST",
-                            "${viewModel.uiState.value.searchList[(it as RestaurantSearchEvent.OnClickResultItem).index]}"
-                        )
+                        findNavController().toHome()
+                        parentViewModel.markSearchRestaurant(it.item)
                     }
 
                     is RestaurantSearchEvent.NavigateToHome -> findNavController().toHome()

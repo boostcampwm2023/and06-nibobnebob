@@ -2,6 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +32,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), OnMapReadyCallback {
@@ -141,6 +143,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         LocationTrackingMode.None
                 }
             }
+        }
+
+        repeatOnStarted {
+            parentViewModel.uiState.collectLatest { Log.d("TEST", "$it") }
         }
     }
 
