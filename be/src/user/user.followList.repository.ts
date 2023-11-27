@@ -9,6 +9,9 @@ export class UserFollowListRepository extends Repository<FollowEntity> {
     constructor(private dataSource: DataSource) {
         super(FollowEntity, dataSource.createEntityManager());
     }
+    async getFollowState(id: TokenInfo['id'], targetId: number) {
+        return await this.count({ select: ["followingUserId"], where: { "followingUserId": targetId, "followedUserId": id } })
+    }
     async getMyFollowListInfo(id: TokenInfo['id']) {
         return await this.find({ select: ["followingUserId"], where: { 'followedUserId': id } });
     }

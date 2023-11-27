@@ -42,23 +42,6 @@ export class UserController {
     return await this.userService.getMypageUserDetailInfo(tokenInfo);
   }
 
-  @Get(":nickname/details")
-  @UseGuards(AuthGuard("jwt"))
-  @ApiBearerAuth()
-  @ApiParam({
-    name: "nickname",
-    required: true,
-    description: "요청하고자 하는 유저의 닉네임",
-    type: String,
-  })
-  @ApiOperation({ summary: "유저 정보 가져오기" })
-  @ApiResponse({ status: 200, description: "정보 요청 성공" })
-  @ApiResponse({ status: 401, description: "인증 실패" })
-  @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async getUserInfo(@Param("nickname") nickname: UserInfoDto["nickName"]) {
-    return await this.userService.getUserInfo(nickname);
-  }
-
   @Get("/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -68,6 +51,17 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMypageUserInfo(@GetUser() tokenInfo: TokenInfo) {
     return await this.userService.getMypageUserInfo(tokenInfo);
+  }
+
+  @Get(":nickName/details")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "다른 유저 메인 마이페이지 유저 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "다른 유저 메인 마이페이지 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async getMypageTargetUserInfo(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+    return await this.userService.getMypageTargetUserInfo(tokenInfo, nickName);
   }
 
   @Get("nickname/:nickname/exists")

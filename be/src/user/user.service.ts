@@ -31,8 +31,16 @@ export class UserService {
   async getMypageUserInfo(tokenInfo: TokenInfo) {
     return await this.usersRepository.getMypageUserInfo(tokenInfo.id);
   }
-  async getUserInfo(nickName: UserInfoDto["nickName"]) {
-    return await this.usersRepository.getUserInfo(nickName);
+  async getMypageTargetUserInfo(tokenInfo: TokenInfo, nickName: string) {
+    const targetInfo = await this.usersRepository.findOne({ select: ["id"], where: { nickName: nickName } });
+    try {
+      const result = await this.usersRepository.getMypageTargetUserInfo(targetInfo.id);
+      result.userInfo["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, targetInfo.id);
+      return result;
+    }
+    catch (err) {
+      throw new BadRequestException();
+    }
   }
   async getMypageUserDetailInfo(tokenInfo: TokenInfo) {
     return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
@@ -91,6 +99,7 @@ export class UserService {
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
   }
+
   async followUser(tokenInfo: TokenInfo, nickName: string) {
     const targetId = await this.usersRepository.findOne({ select: ["id"], where: { "nickName": nickName } })
     try {
