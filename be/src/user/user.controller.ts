@@ -64,6 +64,17 @@ export class UserController {
     return await this.userService.getMypageTargetUserInfo(tokenInfo, nickName);
   }
 
+  @Get("/autocomplete/:partialUsername")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "다른 유저 검색 자동완성" })
+  @ApiResponse({ status: 200, description: "다른 유저 검색 자동완성 완성" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async searchTargetUser(@GetUser() tokenInfo: TokenInfo, @Param("partialUsername") partialUsername: string) {
+    return await this.userService.searchTargetUser(tokenInfo, partialUsername);
+  }
+
   @Get("nickname/:nickname/exists")
   @ApiParam({
     name: "nickname",

@@ -7,7 +7,7 @@ import { hashPassword } from "../utils/encryption.utils";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
-import { In } from "typeorm";
+import { Equal, In, Like, Not } from "typeorm";
 import { BadRequestException } from "@nestjs/common/exceptions";
 
 @Injectable()
@@ -98,6 +98,25 @@ export class UserService {
     const userIdValues = userIds.map(user => user.followedUserId);
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
+  }
+  async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
+    const users = await this.usersRepository.find({
+      select: ["id"],
+      where: {
+        "nickName": Like(`%${nickName}%`),
+        id: Not(Equal(tokenInfo.id))
+      },
+      take: 20,
+    });
+    if (users.length) {
+      const userIds = users.map(user => user.id);
+      const result = await this.usersRepository.getUsersInfo(userIds);
+      for (let i in result.userInfo) {
+        result.userInfo[i]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, userIds[i]);
+      }
+      return result;
+    }
+    return null;
   }
 
   async followUser(tokenInfo: TokenInfo, nickName: string) {
