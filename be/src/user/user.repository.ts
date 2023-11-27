@@ -75,7 +75,7 @@ export class UserRepository extends Repository<User> {
       .orderBy("RANDOM()")
       .limit(2)
       .getMany();
-    return { userInfo: userInfo };
+    return userInfo;
   }
   async logout(id: number) {
     return {};
