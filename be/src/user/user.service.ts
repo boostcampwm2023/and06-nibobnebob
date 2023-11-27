@@ -68,6 +68,12 @@ export class UserService {
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
   }
+  async getRecommendUserListInfo(tokenInfo: TokenInfo) {
+    const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
+    const userIdValues = userIds.map(user => user.followingUserId);
+    userIdValues.push(tokenInfo.id);
+    return await this.usersRepository.getRecommendUserListInfo(userIdValues);
+  }
   async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
     const users = await this.usersRepository.find({
       select: ["id"],

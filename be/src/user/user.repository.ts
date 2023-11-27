@@ -68,6 +68,15 @@ export class UserRepository extends Repository<User> {
     });
     return { userInfo: userInfo };
   }
+  async getRecommendUserListInfo(idList: number[]) {
+    const userInfo = await this.createQueryBuilder("user")
+      .select(["user.nickName", "user.region"])
+      .where("user.id NOT IN (:...idList)", { idList })
+      .orderBy("RANDOM()")
+      .limit(2)
+      .getMany();
+    return { userInfo: userInfo };
+  }
   async logout(id: number) {
     return {};
   }
