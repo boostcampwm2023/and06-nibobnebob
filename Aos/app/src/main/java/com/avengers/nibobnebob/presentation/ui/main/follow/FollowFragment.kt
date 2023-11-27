@@ -1,17 +1,23 @@
 package com.avengers.nibobnebob.presentation.ui.main.follow
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.databinding.FragmentFollowBinding
+import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 
-class FollowFragment : Fragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_follow, container, false)
+class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_follow) {
+
+    override val parentViewModel: MainViewModel by activityViewModels()
+    private val viewModel: FollowViewModel by viewModels()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.vm = viewModel
     }
+
 }

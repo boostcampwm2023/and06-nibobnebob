@@ -5,6 +5,10 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.follow.FollowViewModel" />
+
     </data>
 
     <androidx.core.widget.NestedScrollView
