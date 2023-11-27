@@ -14,6 +14,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.presentation.customview.OneButtonTitleDialog
+import com.avengers.nibobnebob.presentation.customview.TwoButtonTitleDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -25,6 +27,9 @@ abstract class BaseFragment<B : ViewDataBinding>(
     private var _binding: B? = null
     protected val binding get() = _binding!!
     protected abstract val parentViewModel : BaseActivityViewModel
+
+    private lateinit var twoButtonTitleDialog: TwoButtonTitleDialog
+    private lateinit var oneButtonTitleDialog: OneButtonTitleDialog
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,6 +67,23 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     fun showToastMessage(message: String){
         Toast.makeText(context,message, Toast.LENGTH_LONG).show()
+    }
+
+    fun showTwoButtonTitleDialog(
+        title: String,
+        description: String,
+        confirmBtnClickListener: () -> Unit,
+    ){
+        twoButtonTitleDialog = TwoButtonTitleDialog(requireContext(), title, description, confirmBtnClickListener)
+        twoButtonTitleDialog.show()
+    }
+
+    fun showOneButtonTitleDialog(
+        title: String,
+        confirmBtnClickListener: () -> Unit,
+    ){
+        oneButtonTitleDialog = OneButtonTitleDialog(requireContext(), title, confirmBtnClickListener)
+        oneButtonTitleDialog.show()
     }
 
     private fun noNetworkSnackBar() {

@@ -20,6 +20,8 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
+import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
+import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -196,27 +198,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         return true
     }
 
-    private fun addRestaurantTest(id: Int) {
-        findNavController().toAddRestaurant()
+    private fun addRestaurantTest(restaurantName: String, restaurantId: Int) {
+        findNavController().toAddRestaurant(restaurantName, restaurantId)
     }
 
-    private fun goReviewTest(id: Int) {
-        findNavController().toRestaurantDetail()
+    private fun goReviewTest(restaurantId: Int) {
+        findNavController().toRestaurantDetail(restaurantId)
     }
 
-
-    private fun NavController.toAddRestaurant() {
-        val action = NavGraphDirections.globalToAddMyRestaurantFragment()
-        navigate(action)
-    }
 
     private fun NavController.toSearchRestaurant() {
         val action = HomeFragmentDirections.actionHomeFragmentToRestaurantSearchFragment()
-        navigate(action)
-    }
-
-    private fun NavController.toRestaurantDetail() {
-        val action = NavGraphDirections.globalToRestaurantDetailFragment()
         navigate(action)
     }
 }

@@ -12,7 +12,7 @@ class RestaurantBottomSheet(
     context: Context,
     private val data: UiMarkerData,
     private val onClickAddWishRestaurant: (Int, Boolean) -> Boolean,
-    private val onClickAddMyRestaurant: (Int) -> Unit,
+    private val onClickAddMyRestaurant: (String, Int) -> Unit,
     private val onClickGoReview: (Int) -> Unit
 ): BottomSheetDialog(context) {
 
@@ -28,7 +28,7 @@ class RestaurantBottomSheet(
 
     private fun setBottomSheetListener(){
         binding.btnAddMyRestaurant.setOnClickListener {
-            onClickAddMyRestaurant(data.id)
+            onClickAddMyRestaurant(data.name, data.id)
             dismiss()
         }
 
