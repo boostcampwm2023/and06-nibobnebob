@@ -99,13 +99,13 @@
                     android:id="@+id/ti_follower"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="팔로워" />
+                    android:text="팔로워 127명" />
 
                 <com.google.android.material.tabs.TabItem
                     android:id="@+id/ti_following"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="팔로잉" />
+                    android:text="팔로잉 135명" />
 
             </com.google.android.material.tabs.TabLayout>
 
@@ -118,7 +118,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tb_following_tabs"
-                app:spanCount="2" />
+                app:spanCount="2"
+                tools:listitem="@layout/item_follower" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
