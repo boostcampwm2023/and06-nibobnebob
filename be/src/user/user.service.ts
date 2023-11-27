@@ -62,7 +62,7 @@ export class UserService {
     const result = await this.usersRepository.find({ select: ["nickName", "region"], where: { 'id': In(userIdValues) } });
     return result.map(user => ({
       ...user,
-      isFollow: 1
+      isFollow: true
     }));
   }
   async getMyFollowerListInfo(tokenInfo: TokenInfo) {
@@ -79,7 +79,7 @@ export class UserService {
       const { id, ...userInfo } = user;
       return {
         ...userInfo,
-        isFollow: followUserIdValues.includes(id) ? 1 : 0
+        isFollow: followUserIdValues.includes(id) ? true : false
       };
     });
   }
@@ -87,7 +87,11 @@ export class UserService {
     const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
     const userIdValues = userIds.map(user => user.followingUserId);
     userIdValues.push(tokenInfo.id);
-    return await this.usersRepository.getRecommendUserListInfo(userIdValues);
+    const result = await this.usersRepository.getRecommendUserListInfo(userIdValues);
+    return result.map(user => ({
+      ...user,
+      isFollow: false
+    }));
   }
   async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
     const users = await this.usersRepository.find({
@@ -102,7 +106,7 @@ export class UserService {
       const userIds = users.map(user => user.id);
       const result = await this.usersRepository.getUsersInfo(userIds);
       for (let i in result.userInfo) {
-        result.userInfo[i]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, userIds[i]);
+        result.userInfo[i]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, userIds[i]) ? true : false;
       }
       return result;
     }
