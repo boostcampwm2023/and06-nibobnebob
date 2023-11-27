@@ -26,11 +26,12 @@ export class RestaurantController {
   @ApiResponse({ status: 404, description: "존재하지 않는 음식점" })
   @UsePipes(new ValidationPipe())
   searchRestaurant(
+    @GetUser() tokenInfo: TokenInfo,
     @Query() locationDto: LocationDto,
     @Param('partialRestaurantName') partialName: string
   ) {
     const searchInfoDto = new SearchInfoDto(partialName, locationDto);
-    return this.restaurantService.searchRestaurant(searchInfoDto);
+    return this.restaurantService.searchRestaurant(searchInfoDto, tokenInfo);
   }
 
   @Get(":restaurantId/details")
@@ -49,7 +50,7 @@ export class RestaurantController {
     return this.restaurantService.detailInfo(parseInt(restaurantId));
   }
 
-  @Get(":filter")
+  @Get()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "필터링된 음식점 리스트 응답" })

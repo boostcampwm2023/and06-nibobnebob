@@ -30,8 +30,8 @@ export class RestaurantService implements OnModuleInit {
   ) {}
 
 
-  async searchRestaurant(searchInfoDto: SearchInfoDto) {
-    return this.restaurantRepository.searchRestarant(searchInfoDto);
+  async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
+    return this.restaurantRepository.searchRestarant(searchInfoDto, tokenInfo);
   }
 
   async detailInfo(restaurantId: number) {
