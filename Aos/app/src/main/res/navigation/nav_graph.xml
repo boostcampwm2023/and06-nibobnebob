@@ -37,7 +37,12 @@
         android:id="@+id/followDetailFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.follow.detail.FollowDetailFragment"
         android:label="fragment_follow_detail"
-        tools:layout="@layout/fragment_follow_detail"/>
+        tools:layout="@layout/fragment_follow_detail">
+        <argument
+            android:name="nickName"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
 
     <fragment
         android:id="@+id/myPageFragment"

@@ -1,6 +1,7 @@
 package com.avengers.nibobnebob.presentation.ui.main.follow
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class FollowUiState(
@@ -32,5 +34,16 @@ class FollowViewModel @Inject constructor(): ViewModel() {
     private val _events = MutableSharedFlow<FollowEvents>()
     val events: SharedFlow<FollowEvents> = _events.asSharedFlow()
 
+    fun navigateToFollowSearch(){
+        viewModelScope.launch {
+            _events.emit(FollowEvents.NavigateToFollowSearch)
+        }
+    }
+
+    fun navigateToFollowDetail(nickName: String){
+        viewModelScope.launch {
+            _events.emit(FollowEvents.NavigateToFollowDetail(nickName))
+        }
+    }
 
 }
