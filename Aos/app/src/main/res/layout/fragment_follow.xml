@@ -70,17 +70,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
-                android:drawableEnd="@drawable/ic_refresh"
                 android:onClick="@{() -> vm.getMyRecommendFollow()}"
                 android:text="추천 친구  "
                 app:layout_constraintStart_toEndOf="@id/gl_start"
-                app:layout_constraintTop_toBottomOf="@id/tv_header" />
+                app:layout_constraintTop_toBottomOf="@id/tv_header"
+                app:drawableEndCompat="@drawable/ic_refresh" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_recommend_friend"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                app:list="@{vm.uiState.recommendFollowList}"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 data class FollowUiState(
     val followList: List<UiFollowData> = emptyList(),
-    val recommendFriend: List<UiFollowData> = emptyList(),
+    val recommendFollowList: List<UiFollowData> = emptyList(),
     val curListState: CurListState = CurListState.FOLLOWER
 )
 
@@ -31,7 +31,7 @@ sealed class FollowEvents {
     data class ShowToastMessage(val msg: String) : FollowEvents()
 }
 
-enum class CurListState{
+enum class CurListState {
     FOLLOWER,
     FOLLOWING
 }
@@ -55,7 +55,7 @@ class FollowViewModel @Inject constructor(
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            recommendFriend = it.data.body.map { data ->
+                            recommendFollowList = it.data.body.map { data ->
                                 data.toUiFollowData(
                                     ::follow, ::unFollow, ::navigateToFollowDetail
                                 )
@@ -131,12 +131,31 @@ class FollowViewModel @Inject constructor(
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            followList = _uiState.value.followList.map { data ->
-                                if(data.nickName == nickName){
-                                    data.copy( isFollowing = true )
-                                }else {
-                                    data
+                            followList = when (_uiState.value.curListState) {
+
+                                CurListState.FOLLOWER -> {
+                                    _uiState.value.followList.map { data ->
+                                        if (data.nickName == nickName) data.copy(isFollowing = true)
+                                        else data
+                                    }
                                 }
+
+                                CurListState.FOLLOWING -> {
+                                    val newFollowList: MutableList<UiFollowData> = _uiState.value.followList.toMutableList()
+
+                                    _uiState.value.recommendFollowList.forEach { data ->
+                                        if (data.nickName == nickName) newFollowList.add(
+                                            data.copy(
+                                                isFollowing = true
+                                            )
+                                        )
+                                    }
+                                    newFollowList
+                                }
+                            },
+                            recommendFollowList = _uiState.value.recommendFollowList.map { data ->
+                                if (data.nickName == nickName) data.copy(isFollowing = true)
+                                else data
                             }
                         )
                     }
@@ -154,18 +173,25 @@ class FollowViewModel @Inject constructor(
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            followList = when(_uiState.value.curListState){
+                            followList = when (_uiState.value.curListState) {
+
                                 CurListState.FOLLOWER -> {
                                     _uiState.value.followList.map { data ->
-                                        if(data.nickName == nickName) data.copy( isFollowing = true )
+                                        if (data.nickName == nickName) data.copy(isFollowing = false)
                                         else data
                                     }
                                 }
+
                                 CurListState.FOLLOWING -> {
                                     _uiState.value.followList.filter { data ->
                                         data.nickName != nickName
                                     }
                                 }
+                            },
+
+                            recommendFollowList = _uiState.value.recommendFollowList.map { data ->
+                                if (data.nickName == nickName) data.copy(isFollowing = false)
+                                else data
                             }
                         )
                     }

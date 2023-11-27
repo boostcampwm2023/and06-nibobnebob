@@ -26,6 +26,7 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
 
         binding.vm = viewModel
         binding.rvFollowList.adapter = FollowAdapter()
+        binding.rvRecommendFriend.adapter = FollowAdapter()
         initEventObserver()
         setTabSelectedListener()
         viewModel.getMyRecommendFollow()
