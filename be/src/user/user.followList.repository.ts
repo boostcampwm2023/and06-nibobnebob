@@ -12,4 +12,7 @@ export class UserFollowListRepository extends Repository<FollowEntity> {
     async getMyFollowListInfo(id: TokenInfo['id']) {
         return await this.find({ select: ["followingUserId"], where: { 'followedUserId': id } });
     }
+    async getMyFollowerListInfo(id: TokenInfo['id']) {
+        return await this.find({ select: ["followedUserId"], where: { 'followingUserId': id } });
+    }
 }
