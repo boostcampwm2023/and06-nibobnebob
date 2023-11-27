@@ -144,6 +144,15 @@ export class UserController {
     return await this.userService.getMyFollowerListInfo(tokenInfo);
   }
 
+  @Get("recommended")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "추천 사용자 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "추천 사용자 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async getRecommendUserListInfo(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getRecommendUserListInfo(tokenInfo);
+  }
 
   @Post()
   @ApiOperation({ summary: "유저 회원가입" })

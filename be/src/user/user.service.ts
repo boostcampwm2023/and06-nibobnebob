@@ -59,14 +59,35 @@ export class UserService {
   async getMyFollowListInfo(tokenInfo: TokenInfo) {
     const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
     const userIdValues = userIds.map(user => user.followingUserId);
-    const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
-    return result.map(result => result.nickName);
+    const result = await this.usersRepository.find({ select: ["nickName", "region"], where: { 'id': In(userIdValues) } });
+    return result.map(user => ({
+      ...user,
+      isFollow: 1
+    }));
   }
   async getMyFollowerListInfo(tokenInfo: TokenInfo) {
-    const userIds = await this.userFollowListRepositoy.getMyFollowerListInfo(tokenInfo.id);
-    const userIdValues = userIds.map(user => user.followedUserId);
-    const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
-    return result.map(result => result.nickName);
+    const followerUserIds = await this.userFollowListRepositoy.getMyFollowerListInfo(tokenInfo.id);
+    const followUserIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
+    const followerUserIdValues = followerUserIds.map(user => user.followedUserId);
+    const followUserIdValues = followUserIds.map(user => user.followingUserId);
+    const result = await this.usersRepository.find({
+      select: ["id", "nickName", "region"],
+      where: { 'id': In(followerUserIdValues) }
+    });
+
+    return result.map(user => {
+      const { id, ...userInfo } = user;
+      return {
+        ...userInfo,
+        isFollow: followUserIdValues.includes(id) ? 1 : 0
+      };
+    });
+  }
+  async getRecommendUserListInfo(tokenInfo: TokenInfo) {
+    const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
+    const userIdValues = userIds.map(user => user.followingUserId);
+    userIdValues.push(tokenInfo.id);
+    return await this.usersRepository.getRecommendUserListInfo(userIdValues);
   }
   async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
     const users = await this.usersRepository.find({
