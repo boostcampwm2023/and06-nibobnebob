@@ -15,8 +15,8 @@ class HomeSearchAdapter(
     private val onClickSearchItem: (UiRestaurantData) -> Unit
 ) : RecyclerView.Adapter<SearchViewHolder>() {
 
-    private var resultList : List<UiRestaurantData> = emptyList()
-    private var keyword : String = ""
+    private var resultList: List<UiRestaurantData> = emptyList()
+    private var keyword: String = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         return SearchViewHolder(
@@ -29,7 +29,7 @@ class HomeSearchAdapter(
     }
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        holder.bind(resultList[position], position, onClickSearchItem, keyword)
+        holder.bind(resultList[position], onClickSearchItem, keyword)
     }
 
     override fun getItemCount(): Int {
@@ -37,7 +37,7 @@ class HomeSearchAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setResultList(list : List<UiRestaurantData>, keyword : String) {
+    fun setResultList(list: List<UiRestaurantData>, keyword: String) {
         resultList = list
         this.keyword = keyword
         notifyDataSetChanged()
@@ -47,16 +47,24 @@ class HomeSearchAdapter(
 
 class SearchViewHolder(private val binding: ItemHomeSearchBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiRestaurantData, position: Int, onClickSearchItem: (UiRestaurantData) -> Unit, keyword : String) {
+    fun bind(
+        item: UiRestaurantData,
+        onClickSearchItem: (UiRestaurantData) -> Unit,
+        keyword: String
+    ) {
         with(binding) {
-//            val start = item.name.indexOf(keyword)
-//            val end = start + keyword.length
-//            val colorSpan = ForegroundColorSpan(Color.BLUE)
-//
-//            val colorChanged = SpannableString(item.name)
-//            colorChanged.setSpan(colorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-            tvResultOne.text = item.name
+            val spannableString = SpannableString(item.name)
+
+            val start = item.name.indexOf(keyword)
+            val end = start + keyword.length
+
+            if (start >= 0) {
+                val colorSpan = ForegroundColorSpan(Color.BLUE)
+                spannableString.setSpan(colorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+
+            tvResultOne.text = spannableString
             tvAddress.text = item.address
             root.setOnClickListener {
                 onClickSearchItem(item)

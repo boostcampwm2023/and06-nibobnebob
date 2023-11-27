@@ -66,17 +66,23 @@ class RestaurantSearchViewModel @Inject constructor(
 
 
     fun searchRestaurant(keyword: CharSequence) {
-        if (keyword.isBlank()) {
+
+        if (keyword.length < 2) {
             _uiState.update { ui ->
                 ui.copy(
                     searchList = emptyList(),
                     searchKeyword = "",
-                    isResultEmpty = true
+                    isResultEmpty = keyword.isEmpty()
                 )
             }
             return
         }
-        val location = "${curLatitude.value} ${curLongitude.value}"
+
+        val location = if (curLatitude.value.isEmpty() || curLongitude.value.isEmpty()) {
+            // null 처리 해야함. 지금은 임시로 신도림 설정
+            "37.508796 126.891074"
+        } else "${curLatitude.value} ${curLongitude.value}"
+
         homeRepository.searchRestaurant(keyword.toString(), location, tempRadius)
             .onEach { state ->
                 when (state) {
