@@ -13,4 +13,6 @@ interface HomeRepository {
         radius: String
     ): Flow<BaseState<BaseResponse<List<SearchRestaurantResponse>>>>
 
+    fun followList() : Flow<BaseState<BaseResponse<List<String>>>>
+
 }

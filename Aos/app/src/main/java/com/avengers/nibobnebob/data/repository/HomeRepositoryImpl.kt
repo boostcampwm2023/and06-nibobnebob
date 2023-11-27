@@ -19,4 +19,8 @@ class HomeRepositoryImpl @Inject constructor(private val api : HomeApi) : HomeRe
         emit(result)
     }
 
+    override fun followList(): Flow<BaseState<BaseResponse<List<String>>>> = flow {
+        val result = runRemote { api.followList() }
+        emit(result)
+    }
 }

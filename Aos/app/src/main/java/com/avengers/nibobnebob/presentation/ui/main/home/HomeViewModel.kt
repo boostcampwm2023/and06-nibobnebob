@@ -1,8 +1,11 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.repository.HomeRepository
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
@@ -13,6 +16,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,7 +42,9 @@ sealed class HomeEvents {
 }
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val homeRepository: HomeRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -71,18 +78,32 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getFilterList() {
-        _uiState.update { state ->
-            // todo test 데이터 삽입
-            state.copy(
-                filterList = listOf(
-                    UiFilterData(MY_LIST, true, ::onFilterItemClicked),
-                    UiFilterData("K011 노균욱", false, ::onFilterItemClicked),
-                    UiFilterData("K015 박진성", false, ::onFilterItemClicked),
-                    UiFilterData("K024 오세영", false, ::onFilterItemClicked),
-                ),
-                curFilter = MY_LIST
-            )
-        }
+        homeRepository.followList().onEach {
+            when(it){
+                is BaseState.Success -> {
+                    val initialFilterData = UiFilterData(MY_LIST, true, ::onFilterItemClicked)
+                    val filterList = listOf(initialFilterData) +  it.data.body.map { name ->
+                        UiFilterData(name, false, ::onFilterItemClicked)
+                    }
+                    _uiState.update { state ->
+                        state.copy(
+                            filterList = filterList,
+                            curFilter = MY_LIST
+                        )
+                    }
+                }
+                is BaseState.Error ->{
+                    _uiState.update { state ->
+                        state.copy(
+                            filterList = listOf(UiFilterData(MY_LIST, true, ::onFilterItemClicked)),
+                            curFilter = MY_LIST
+                        )
+                    }
+                    Log.d("FilterListDebug","팔로우 리스트를 받아오지 못하였습니다. default 마이리스트")
+                }
+            }
+
+        }.launchIn(viewModelScope)
     }
 
     fun getMarkerList() {

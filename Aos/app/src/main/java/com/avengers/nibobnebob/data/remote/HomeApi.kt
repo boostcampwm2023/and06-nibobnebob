@@ -14,4 +14,7 @@ interface HomeApi {
         @Query("location") location: String,
         @Query("radius") radius: String
     ): Response<BaseResponse<List<SearchRestaurantResponse>>>
+
+    @GET("api/user/follow-list")
+    suspend fun followList() : Response<BaseResponse<List<String>>>
 }
