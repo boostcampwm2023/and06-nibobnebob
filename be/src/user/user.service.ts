@@ -7,7 +7,8 @@ import { hashPassword } from "../utils/encryption.utils";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
-import { In } from "typeorm";
+import { Equal, In, Like, Not } from "typeorm";
+import { BadRequestException } from "@nestjs/common/exceptions";
 
 @Injectable()
 export class UserService {
@@ -30,8 +31,16 @@ export class UserService {
   async getMypageUserInfo(tokenInfo: TokenInfo) {
     return await this.usersRepository.getMypageUserInfo(tokenInfo.id);
   }
-  async getUserInfo(nickName: UserInfoDto["nickName"]) {
-    return await this.usersRepository.getUserInfo(nickName);
+  async getMypageTargetUserInfo(tokenInfo: TokenInfo, nickName: string) {
+    const targetInfo = await this.usersRepository.findOne({ select: ["id"], where: { nickName: nickName } });
+    try {
+      const result = await this.usersRepository.getMypageTargetUserInfo(targetInfo.id);
+      result.userInfo["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, targetInfo.id);
+      return result;
+    }
+    catch (err) {
+      throw new BadRequestException();
+    }
   }
   async getMypageUserDetailInfo(tokenInfo: TokenInfo) {
     return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
@@ -83,6 +92,52 @@ export class UserService {
     const userIdValues = userIds.map(user => user.followingUserId);
     const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
     return result.map(result => result.nickName);
+  }
+  async getMyFollowerListInfo(tokenInfo: TokenInfo) {
+    const userIds = await this.userFollowListRepositoy.getMyFollowerListInfo(tokenInfo.id);
+    const userIdValues = userIds.map(user => user.followedUserId);
+    const result = await this.usersRepository.find({ select: ["nickName"], where: { 'id': In(userIdValues) } });
+    return result.map(result => result.nickName);
+  }
+  async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
+    const users = await this.usersRepository.find({
+      select: ["id"],
+      where: {
+        "nickName": Like(`%${nickName}%`),
+        id: Not(Equal(tokenInfo.id))
+      },
+      take: 20,
+    });
+    if (users.length) {
+      const userIds = users.map(user => user.id);
+      const result = await this.usersRepository.getUsersInfo(userIds);
+      for (let i in result.userInfo) {
+        result.userInfo[i]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, userIds[i]);
+      }
+      return result;
+    }
+    return null;
+  }
+
+  async followUser(tokenInfo: TokenInfo, nickName: string) {
+    const targetId = await this.usersRepository.findOne({ select: ["id"], where: { "nickName": nickName } })
+    try {
+      await this.userFollowListRepositoy.followUser(tokenInfo.id, targetId["id"]);
+      return null;
+    }
+    catch (err) {
+      throw new BadRequestException();
+    }
+  }
+  async unfollowUser(tokenInfo: TokenInfo, nickName: string) {
+    const targetId = await this.usersRepository.findOne({ select: ["id"], where: { "nickName": nickName } })
+    try {
+      await this.userFollowListRepositoy.unfollowUser(tokenInfo.id, targetId["id"]);
+      return null;
+    }
+    catch (err) {
+      throw new BadRequestException();
+    }
   }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
