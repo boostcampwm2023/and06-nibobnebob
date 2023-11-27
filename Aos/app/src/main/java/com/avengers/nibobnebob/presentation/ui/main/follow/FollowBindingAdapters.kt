@@ -11,8 +11,10 @@ fun bindFollowState(btn: AppCompatButton, isFollowing: Boolean){
     if( isFollowing ){
         btn.setBackgroundResource(R.drawable.rect_dark6fill_nostroke_20radius)
         btn.setTextColor(Color.BLACK)
+        btn.text = "언팔로우"
     } else {
         btn.setBackgroundResource(R.drawable.rect_primary4fill_nostroke_20radius)
         btn.setTextColor(Color.WHITE)
+        btn.text = "팔로우"
     }
 }

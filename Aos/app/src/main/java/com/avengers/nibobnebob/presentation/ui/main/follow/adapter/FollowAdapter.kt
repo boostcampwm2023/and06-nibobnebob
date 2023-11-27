@@ -2,13 +2,26 @@ package com.avengers.nibobnebob.presentation.ui.main.follow.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.databinding.ItemFollowerBinding
 import com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowData
 import com.avengers.nibobnebob.presentation.util.DefaultDiffUtil
 
-class FollowAdapter : ListAdapter<UiFollowData, FollowViewHolder>(DefaultDiffUtil<UiFollowData>()) {
+class FollowAdapter : ListAdapter<UiFollowData, FollowViewHolder>(diffCallback) {
+
+    companion object{
+        val diffCallback = object : DiffUtil.ItemCallback<UiFollowData>(){
+            override fun areItemsTheSame(oldItem: UiFollowData, newItem: UiFollowData): Boolean {
+                return oldItem.nickName == newItem.nickName
+            }
+
+            override fun areContentsTheSame(oldItem: UiFollowData, newItem: UiFollowData): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 
     override fun onBindViewHolder(holder: FollowViewHolder, position: Int) {
         holder.bind(getItem(position))

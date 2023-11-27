@@ -57,6 +57,7 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@android:color/transparent"
+                android:onClick="@{() -> vm.navigateToFollowSearch()}"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_search"
                 app:layout_constraintBottom_toBottomOf="@id/tv_header"
@@ -70,6 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
                 android:drawableEnd="@drawable/ic_refresh"
+                android:onClick="@{() -> vm.getMyRecommendFollow()}"
                 android:text="추천 친구  "
                 app:layout_constraintStart_toEndOf="@id/gl_start"
                 app:layout_constraintTop_toBottomOf="@id/tv_header" />
@@ -104,13 +106,13 @@
                     android:id="@+id/ti_follower"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="팔로워 127명" />
+                    android:text="팔로워" />
 
                 <com.google.android.material.tabs.TabItem
                     android:id="@+id/ti_following"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="팔로잉 135명" />
+                    android:text="팔로잉" />
 
             </com.google.android.material.tabs.TabLayout>
 
@@ -124,6 +126,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tb_following_tabs"
+                app:list="@{vm.uiState.followList}"
                 app:spanCount="2"
                 tools:listitem="@layout/item_follower" />
 

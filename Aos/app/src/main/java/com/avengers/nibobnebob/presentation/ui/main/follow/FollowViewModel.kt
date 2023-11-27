@@ -20,15 +20,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class FollowUiState(
-    val followingList: List<UiFollowData> = emptyList(),
-    val followerList: List<UiFollowData> = emptyList(),
-    val recommendFriend: List<UiFollowData> = emptyList()
+    val followList: List<UiFollowData> = emptyList(),
+    val recommendFriend: List<UiFollowData> = emptyList(),
+    val curListState: CurListState = CurListState.FOLLOWER
 )
 
 sealed class FollowEvents {
     data object NavigateToFollowSearch : FollowEvents()
     data class NavigateToFollowDetail(val nickName: String) : FollowEvents()
     data class ShowToastMessage(val msg: String) : FollowEvents()
+}
+
+enum class CurListState{
+    FOLLOWER,
+    FOLLOWING
 }
 
 
@@ -44,6 +49,7 @@ class FollowViewModel @Inject constructor(
     val events: SharedFlow<FollowEvents> = _events.asSharedFlow()
 
     fun getMyRecommendFollow() {
+
         followRepository.getMyRecommendFollow().onEach {
             when (it) {
                 is BaseState.Success -> {
@@ -66,12 +72,18 @@ class FollowViewModel @Inject constructor(
     }
 
     fun getMyFollower() {
+        _uiState.update { state ->
+            state.copy(
+                curListState = CurListState.FOLLOWER
+            )
+        }
+
         followRepository.getMyFollower().onEach {
             when (it) {
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            followerList = it.data.body.map { data ->
+                            followList = it.data.body.map { data ->
                                 data.toUiFollowData(
                                     ::follow, ::unFollow, ::navigateToFollowDetail
                                 )
@@ -87,12 +99,18 @@ class FollowViewModel @Inject constructor(
     }
 
     fun getMyFollowing() {
+        _uiState.update { state ->
+            state.copy(
+                curListState = CurListState.FOLLOWING
+            )
+        }
+
         followRepository.getMyFollowing().onEach {
             when (it) {
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            followingList = it.data.body.map { data ->
+                            followList = it.data.body.map { data ->
                                 data.toUiFollowData(
                                     ::follow, ::unFollow, ::navigateToFollowDetail
                                 )
@@ -109,13 +127,53 @@ class FollowViewModel @Inject constructor(
 
     private fun follow(nickName: String) {
         followRepository.follow(nickName).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            followList = _uiState.value.followList.map { data ->
+                                if(data.nickName == nickName){
+                                    data.copy( isFollowing = true )
+                                }else {
+                                    data
+                                }
+                            }
+                        )
+                    }
+                }
 
+                is BaseState.Error -> _events.emit(FollowEvents.ShowToastMessage(it.message))
+                else -> {}
+            }
         }.launchIn(viewModelScope)
     }
 
     private fun unFollow(nickName: String) {
         followRepository.unFollow(nickName).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            followList = when(_uiState.value.curListState){
+                                CurListState.FOLLOWER -> {
+                                    _uiState.value.followList.map { data ->
+                                        if(data.nickName == nickName) data.copy( isFollowing = true )
+                                        else data
+                                    }
+                                }
+                                CurListState.FOLLOWING -> {
+                                    _uiState.value.followList.filter { data ->
+                                        data.nickName != nickName
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
 
+                is BaseState.Error -> _events.emit(FollowEvents.ShowToastMessage(it.message))
+                else -> {}
+            }
         }.launchIn(viewModelScope)
     }
 
