@@ -7,6 +7,8 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -49,13 +51,25 @@ class RestaurantSearchFragment :
     private fun collectEvent() {
         repeatOnStarted {
             viewModel.events.collect {
-                // 이 정보 그대로 bottom sheet 보여주고 마커 찍으면 됨
-                Log.d(
-                    "TEST",
-                    "${viewModel.uiState.value.searchList[(it as RestaurantSearchEvent.OnClickResultItem).index]}"
-                )
+                when (it) {
+                    is RestaurantSearchEvent.OnClickResultItem -> {
+                        Log.d(
+                            "TEST",
+                            "${viewModel.uiState.value.searchList[(it as RestaurantSearchEvent.OnClickResultItem).index]}"
+                        )
+                    }
+
+                    is RestaurantSearchEvent.NavigateToHome -> findNavController().toHome()
+                }
+
             }
         }
+    }
+
+    private fun NavController.toHome() {
+        val action =
+            RestaurantSearchFragmentDirections.actionRestaurantSearchFragmentToHomeFragment()
+        navigate(action)
     }
 
     private fun setFocus() {

@@ -30,6 +30,8 @@ sealed class RestaurantSearchEvent {
     data class OnClickResultItem(
         val index: Int
     ) : RestaurantSearchEvent()
+
+    data object NavigateToHome : RestaurantSearchEvent()
 }
 
 @HiltViewModel
@@ -53,7 +55,13 @@ class RestaurantSearchViewModel @Inject constructor(
 
     fun searchRestaurant(keyword: CharSequence) {
         if (keyword.isBlank()) {
-            _uiState.update { ui -> ui.copy(searchList = emptyList(), searchKeyword = "", isResultEmpty = true) }
+            _uiState.update { ui ->
+                ui.copy(
+                    searchList = emptyList(),
+                    searchKeyword = "",
+                    isResultEmpty = true
+                )
+            }
             return
         }
         homeRepository.searchRestaurant(keyword.toString(), tempLocation, tempRadius)
@@ -71,14 +79,22 @@ class RestaurantSearchViewModel @Inject constructor(
                     }
 
                     else -> {
-                        _uiState.update { ui -> ui.copy(
-                            searchList = emptyList(),
-                            searchKeyword = "",
-                            isResultEmpty = true
-                        ) }
+                        _uiState.update { ui ->
+                            ui.copy(
+                                searchList = emptyList(),
+                                searchKeyword = "",
+                                isResultEmpty = true
+                            )
+                        }
                     }
                 }
             }.launchIn(viewModelScope)
+    }
+
+    fun navigateToHome() {
+        viewModelScope.launch {
+            _events.emit(RestaurantSearchEvent.NavigateToHome)
+        }
     }
 
     fun onClickSearchItem(index: Int) {

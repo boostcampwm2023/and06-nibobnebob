@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:background="@drawable/ic_back"
+            android:onClick="@{() -> vm.navigateToHome()}"
             app:layout_constraintBottom_toBottomOf="@id/v_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/v_search" />
