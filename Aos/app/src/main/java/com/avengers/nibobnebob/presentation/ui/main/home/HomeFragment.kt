@@ -1,16 +1,19 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
@@ -87,6 +90,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         setMapListener()
         initStateObserver()
         viewModel.getMarkerList()
+        findLocation()
     }
 
     private fun setMapListener() {
@@ -117,9 +121,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                             setMarker(data)
                         }
                     }
-
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
-                    else -> {}
                 }
             }
         }
@@ -148,19 +150,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
-
-    //TODO : 다시 확인하기 위치 관련해서
     private fun findLocation(){
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity as MainActivity)
-//        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-//
-//        }
-
-        locationSource.lastLocation?.let { location ->
-            viewModel.updateLocation(
-                location.latitude,
-                location.longitude
-            )
+        if(ActivityCompat.checkSelfPermission(App.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(App.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity as MainActivity)
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+                viewModel.updateLocation(
+                    location.latitude,
+                    location.longitude
+                )
+            }
         }
     }
 

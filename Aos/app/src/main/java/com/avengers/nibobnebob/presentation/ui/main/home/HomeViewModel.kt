@@ -28,8 +28,8 @@ data class HomeUiState(
     val filterList: List<UiFilterData> = emptyList(),
     val markerList: List<UiRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
-    val latitude: Double = 37.553836,
-    val longitude: Double = 126.969652
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )
 
 sealed class TrackingState {
