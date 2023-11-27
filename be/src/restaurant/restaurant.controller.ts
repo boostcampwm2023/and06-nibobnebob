@@ -5,7 +5,6 @@ import { RestaurantService } from "./restaurant.service";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { GetUser, TokenInfo } from "src/user/user.decorator";
-import { SearchInfo } from "./searchInfo.decorator";
 import { LocationDto } from "./dto/location.dto";
 
 @Controller("restaurant")
@@ -27,8 +26,10 @@ export class RestaurantController {
   @ApiResponse({ status: 404, description: "존재하지 않는 음식점" })
   @UsePipes(new ValidationPipe())
   searchRestaurant(
-    @SearchInfo() searchInfoDto: SearchInfoDto 
+    @Query() locationDto: LocationDto,
+    @Query('partialRestaurantName') partialName: string
   ) {
+    const searchInfoDto = new SearchInfoDto(partialName, locationDto);
     return this.restaurantService.searchRestaurant(searchInfoDto);
   }
 
