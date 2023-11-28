@@ -1,13 +1,13 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageInfoData
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,6 +31,8 @@ data class MyPageUiState(
 
 sealed class MyEditPageEvent {
     data object NavigateToIntro : MyEditPageEvent()
+    data class ShowToastMessage(val msg: String) : MyEditPageEvent()
+    data class ShowSnackMessage(val msg: String) : MyEditPageEvent()
 }
 
 @HiltViewModel
@@ -64,7 +66,7 @@ class MyPageViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> Log.d("TEST", "에러")
+                is BaseState.Error -> _events.emit(MyEditPageEvent.ShowSnackMessage(ERROR_MSG))
             }
 
         }.launchIn(viewModelScope)

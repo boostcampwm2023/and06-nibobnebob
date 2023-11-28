@@ -1,18 +1,17 @@
 package com.avengers.nibobnebob.app.di
 
 import com.avengers.nibobnebob.data.remote.FollowApi
-import com.avengers.nibobnebob.data.remote.GlobalApi
 import com.avengers.nibobnebob.data.remote.HomeApi
-import com.avengers.nibobnebob.data.remote.MyPageApi
 import com.avengers.nibobnebob.data.remote.IntroApi
+import com.avengers.nibobnebob.data.remote.MyPageApi
 import com.avengers.nibobnebob.data.remote.RefreshApi
+import com.avengers.nibobnebob.data.remote.RestaurantApi
 import com.avengers.nibobnebob.data.remote.ValidationApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
-import retrofit2.create
 import javax.inject.Singleton
 
 
@@ -42,13 +41,13 @@ object ApiModule {
     @Provides
     fun provideMyPageService(retrofit: Retrofit): MyPageApi = retrofit.create(MyPageApi::class.java)
 
-    
+
     @Singleton
     @Provides
-    fun provideGlobalService(retrofit: Retrofit) : GlobalApi {
-        return retrofit.create(GlobalApi::class.java)
+    fun provideRestaurantService(retrofit: Retrofit): RestaurantApi {
+        return retrofit.create(RestaurantApi::class.java)
     }
-    
+
 
     @Singleton
     @Provides

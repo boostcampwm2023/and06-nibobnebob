@@ -1,10 +1,11 @@
-package com.avengers.nibobnebob.presentation.ui.global.restaurantadd
+package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
-import com.avengers.nibobnebob.data.repository.GlobalRepository
+import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,11 +42,12 @@ sealed class AddMyRestaurantEvents {
     data object ShowConfirmDialog : AddMyRestaurantEvents()
     data object ShowSuccessDialog : AddMyRestaurantEvents()
     data class ShowToastMessage(val msg: String) : AddMyRestaurantEvents()
+    data class ShowSnackMessage(val msg: String) : AddMyRestaurantEvents()
 }
 
 @HiltViewModel
 class AddMyRestaurantViewModel @Inject constructor(
-    private val globalRepository: GlobalRepository
+    private val restaurantRepository: RestaurantRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddMyRestaurantUiState())
@@ -141,19 +143,26 @@ class AddMyRestaurantViewModel @Inject constructor(
 
     fun addReview() {
         viewModelScope.launch {
-            globalRepository.addRestaurant(restaurantId, AddRestaurantRequest(
-                isCarVisit = _uiState.value.visitWithCar,
-                transportationAccessibility =  if(_uiState.value.visitWithCar) null else _uiState.value.traffic,
-                parkingArea = if(_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
-                taste = _uiState.value.taste,
-                service = _uiState.value.taste,
-                restroomCleanliness = _uiState.value.toilet,
-                overallExperience = comment.value
-            )).onEach { state ->
-                when(state){
-                    is BaseState.Success -> _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
-                    is BaseState.Error -> _events.emit(AddMyRestaurantEvents.ShowToastMessage(state.message))
-                    else -> {}
+            restaurantRepository.addRestaurant(
+                restaurantId, AddRestaurantRequest(
+                    isCarVisit = _uiState.value.visitWithCar,
+                    transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
+                    parkingArea = if (_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
+                    taste = _uiState.value.taste,
+                    service = _uiState.value.taste,
+                    restroomCleanliness = _uiState.value.toilet,
+                    overallExperience = comment.value
+                )
+            ).onEach { state ->
+                when (state) {
+                    is BaseState.Success -> {
+                        _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
+                        _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
+                    }
+
+                    is BaseState.Error -> _events.emit(
+                        AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
+                    )
                 }
             }.launchIn(viewModelScope)
         }

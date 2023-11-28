@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.global.restaurantdetail.adapter
+package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.databinding.ItemReviewListBinding
-import com.avengers.nibobnebob.presentation.ui.global.model.UiReviewData
+import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
 
 class RestaurantReviewAdapter : ListAdapter<UiReviewData, ReviewFilterViewHolder>(diffCallback) {
     companion object {

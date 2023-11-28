@@ -6,6 +6,7 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,7 +39,7 @@ sealed class InputState {
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
     data object NavigateToLoginFragment : DetailSignupEvents()
-    data class ShowToastMessage(val msg: String) : DetailSignupEvents()
+    data class ShowSnackMessage(val msg: String) : DetailSignupEvents()
 }
 
 @HiltViewModel
@@ -133,9 +134,7 @@ class DetailSignupViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> {
-                    _events.emit(DetailSignupEvents.ShowToastMessage(it.message))
-                }
+                is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
@@ -153,7 +152,7 @@ class DetailSignupViewModel @Inject constructor(
         ).onEach {
             when (it) {
                 is BaseState.Success -> navigateToLoginFragment()
-                is BaseState.Error -> showToastMessage(it.message)
+                is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
@@ -185,12 +184,6 @@ class DetailSignupViewModel @Inject constructor(
     private fun navigateToLoginFragment() {
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.NavigateToLoginFragment)
-        }
-    }
-
-    private fun showToastMessage(message: String) {
-        viewModelScope.launch {
-            _events.emit(DetailSignupEvents.ShowToastMessage(message))
         }
     }
 }

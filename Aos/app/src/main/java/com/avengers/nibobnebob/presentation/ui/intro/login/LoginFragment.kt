@@ -50,6 +50,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
                         // TODO : FINAL -> 다이얼로그
                     }
                     is LoginEvent.NavigateToDetailSignup -> findNavController().toDetailSignup()
+                    is LoginEvent.ShowSnackMessage -> showSnackBar(it.msg)
                 }
             }
         }

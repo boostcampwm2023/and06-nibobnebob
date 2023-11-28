@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.global.restaurantadd
+package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
 import android.annotation.SuppressLint
 import android.graphics.Color

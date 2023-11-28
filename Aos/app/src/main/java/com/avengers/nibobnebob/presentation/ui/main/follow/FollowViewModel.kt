@@ -6,6 +6,7 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.FollowRepository
 import com.avengers.nibobnebob.presentation.ui.main.follow.mapper.toUiFollowData
 import com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowData
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,7 @@ sealed class FollowEvents {
     data object NavigateToFollowSearch : FollowEvents()
     data class NavigateToFollowDetail(val nickName: String) : FollowEvents()
     data class ShowToastMessage(val msg: String) : FollowEvents()
+    data class ShowSnackMessage(val msg: String) : FollowEvents()
 }
 
 enum class CurListState {
@@ -64,7 +66,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowToastMessage(it.message))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
 
@@ -92,7 +94,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowToastMessage(it.message))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -119,7 +121,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowToastMessage(it.message))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -159,9 +161,10 @@ class FollowViewModel @Inject constructor(
                             }
                         )
                     }
+                    _events.emit(FollowEvents.ShowToastMessage("팔로우 성공"))
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowToastMessage(it.message))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -195,9 +198,10 @@ class FollowViewModel @Inject constructor(
                             }
                         )
                     }
+                    _events.emit(FollowEvents.ShowToastMessage("언팔로우 성공"))
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowToastMessage(it.message))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
