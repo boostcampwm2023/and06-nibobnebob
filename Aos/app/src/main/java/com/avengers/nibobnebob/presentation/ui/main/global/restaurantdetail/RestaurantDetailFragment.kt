@@ -43,6 +43,7 @@ class RestaurantDetailFragment :
                     is RestaurantDetailEvents.NavigateToDetailReview -> {
                         // 상세리뷰로 이동
                     }
+                    is RestaurantDetailEvents.ShowSnackMessage -> showSnackBar(event.msg)
                 }
             }
         }

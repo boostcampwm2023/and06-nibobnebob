@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -9,6 +8,7 @@ import com.avengers.nibobnebob.data.repository.HomeRepository
 import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,8 +40,11 @@ sealed class TrackingState {
 
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
-    data object SetNewMarkers: HomeEvents()
-    data object RemoveMarkers: HomeEvents()
+    data object SetNewMarkers : HomeEvents()
+    data object RemoveMarkers : HomeEvents()
+    data class ShowSnackMessage(
+        val msg : String
+    ) : HomeEvents()
 }
 
 @HiltViewModel
@@ -112,7 +115,7 @@ class HomeViewModel @Inject constructor(
                             curFilter = MY_LIST
                         )
                     }
-                    Log.d("FilterList Test", "Error : $it")
+                    _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
 
@@ -132,11 +135,13 @@ class HomeViewModel @Inject constructor(
                                 })
                             }
                         }
-                        is BaseState.Error -> Log.d("Filter Test", "Error : $it")
+
+                        is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
                     }
                     _events.emit(HomeEvents.SetNewMarkers)
                 }.launchIn(viewModelScope)
             }
+
             else -> {
                 homeRepository.filterRestaurantList(
                     _uiState.value.curFilter,
@@ -152,7 +157,8 @@ class HomeViewModel @Inject constructor(
                                 })
                             }
                         }
-                        is BaseState.Error -> Log.d("Filter Test", "Error : $it")
+
+                        is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
                     }
                     _events.emit(HomeEvents.SetNewMarkers)
                 }.launchIn(viewModelScope)

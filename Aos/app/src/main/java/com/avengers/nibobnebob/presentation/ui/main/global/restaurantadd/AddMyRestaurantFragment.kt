@@ -53,7 +53,8 @@ class AddMyRestaurantFragment :
                         }
                     }
 
-                    else -> {}
+                    is AddMyRestaurantEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                    is AddMyRestaurantEvents.ShowToastMessage -> showToastMessage(it.msg)
                 }
             }
         }

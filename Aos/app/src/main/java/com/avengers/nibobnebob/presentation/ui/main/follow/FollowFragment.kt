@@ -40,7 +40,7 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
                     is FollowEvents.NavigateToFollowSearch -> findNavController().toFollowSearch()
                     is FollowEvents.NavigateToFollowDetail -> findNavController().toFollowDetail(it.nickName)
                     is FollowEvents.ShowToastMessage -> showToastMessage(it.msg)
-                    else -> {}
+                    is FollowEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
             }
         }

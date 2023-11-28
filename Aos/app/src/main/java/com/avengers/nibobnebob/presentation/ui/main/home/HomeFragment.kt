@@ -121,6 +121,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         }
                     }
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
+                    is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
             }
         }

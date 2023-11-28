@@ -26,11 +26,11 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     private var _binding: B? = null
     protected val binding get() = _binding!!
-    protected abstract val parentViewModel : BaseActivityViewModel
+    protected abstract val parentViewModel: BaseActivityViewModel
 
     private lateinit var twoButtonTitleDialog: TwoButtonTitleDialog
     private lateinit var oneButtonTitleDialog: OneButtonTitleDialog
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,55 +45,62 @@ abstract class BaseFragment<B : ViewDataBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         repeatOnStarted {
-            parentViewModel.networkState.collect{
-                when(it){
+            parentViewModel.networkState.collect {
+                when (it) {
                     NetWorkState.NETWORK_DISCONNECTED -> {
-                        noNetworkSnackBar()
+                        showSnackBar(resources.getString(R.string.no_network_text), "재시도")
                     }
+
                     NetWorkState.NETWORK_CONNECTED -> {
                         // todo initNetworkView 실행
                     }
+
                     else -> {}
                 }
             }
         }
     }
-    
+
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
         }
     }
 
-    fun showToastMessage(message: String){
-        Toast.makeText(context,message, Toast.LENGTH_LONG).show()
+    fun showToastMessage(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     fun showTwoButtonTitleDialog(
         title: String,
         description: String,
         confirmBtnClickListener: () -> Unit,
-    ){
-        twoButtonTitleDialog = TwoButtonTitleDialog(requireContext(), title, description, confirmBtnClickListener)
+    ) {
+        twoButtonTitleDialog =
+            TwoButtonTitleDialog(requireContext(), title, description, confirmBtnClickListener)
         twoButtonTitleDialog.show()
     }
 
     fun showOneButtonTitleDialog(
         title: String,
         confirmBtnClickListener: () -> Unit,
-    ){
-        oneButtonTitleDialog = OneButtonTitleDialog(requireContext(), title, confirmBtnClickListener)
+    ) {
+        oneButtonTitleDialog =
+            OneButtonTitleDialog(requireContext(), title, confirmBtnClickListener)
         oneButtonTitleDialog.show()
     }
 
-    private fun noNetworkSnackBar() {
+    fun showSnackBar(text: String, action: String? = null) {
         Snackbar.make(
             binding.root,
-            R.string.no_network_text,
+            text,
             Snackbar.LENGTH_INDEFINITE
-        ).setAction(R.string.retry) {
-            //initViewData()
-        }.show()
+        ).apply {
+            action?.let {
+                setAction(it) {}
+            }
+            show()
+        }
     }
 
     override fun onDestroyView() {

@@ -59,6 +59,8 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                     }
+                    is MyEditPageEvent.ShowSnackMessage -> showSnackBar(event.msg)
+                    is MyEditPageEvent.ShowToastMessage -> showToastMessage(event.msg)
                 }
             }
         }

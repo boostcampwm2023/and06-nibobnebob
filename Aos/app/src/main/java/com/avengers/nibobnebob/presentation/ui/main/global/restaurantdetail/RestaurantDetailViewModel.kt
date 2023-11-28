@@ -1,12 +1,12 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantDetailInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +23,7 @@ import javax.inject.Inject
 sealed class RestaurantDetailEvents {
     data object NavigateToBack : RestaurantDetailEvents()
     data class NavigateToDetailReview(val reviewId: Int) : RestaurantDetailEvents()
+    data class ShowSnackMessage(val msg: String) : RestaurantDetailEvents()
 }
 
 data class RestaurantDetailUiState(
@@ -40,7 +41,6 @@ data class RestaurantDetailUiState(
 class RestaurantDetailViewModel @Inject constructor(
     private val restaurantRepository: RestaurantRepository
 ) : ViewModel() {
-    private val TAG = "RestaurantDetailViewModelDebug"
 
     private val _uiState = MutableStateFlow(RestaurantDetailUiState())
     val uiState: StateFlow<RestaurantDetailUiState> = _uiState.asStateFlow()
@@ -69,7 +69,7 @@ class RestaurantDetailViewModel @Inject constructor(
                 }
 
                 is BaseState.Error -> {
-                    Log.d(TAG, it.message)
+                    _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
         }.launchIn(viewModelScope)

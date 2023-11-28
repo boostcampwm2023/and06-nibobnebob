@@ -54,8 +54,9 @@ class EditProfileFragment :
                 when (event) {
                     is EditProfileUiEvent.EditProfileDone -> {
                         navController.navigate(EditProfileFragmentDirections.globalToMyPageFragment())
-                        showToastMessage("수정 완료")
                     }
+                    is EditProfileUiEvent.ShowToastMessage -> showToastMessage(event.msg)
+                    is EditProfileUiEvent.ShowSnackMessage -> showSnackBar(event.msg)
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.intro.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
@@ -8,6 +7,7 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.StatusCode
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.presentation.ui.intro.login.model.UiLoginData
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +23,9 @@ sealed class LoginEvent {
     data object NavigateToMain : LoginEvent()
     data object NavigateToDetailSignup : LoginEvent()
     data object NavigateToDialog : LoginEvent()
+    data class ShowSnackMessage(
+        val msg : String
+    ) : LoginEvent()
 }
 
 @HiltViewModel
@@ -84,11 +87,8 @@ class LoginViewModel @Inject constructor(
                     }
                     is BaseState.Error -> {
                         when(state.statusCode){
-                            StatusCode.ERROR_AUTH-> {Log.d(TAG,"토큰 오류")}
-                            StatusCode.ERROR_NONE ->{ _events.emit(LoginEvent.NavigateToDetailSignup)}
-                            else ->{
-                                Log.d(TAG,"오류 Exception")
-                            }
+                            StatusCode.ERROR_NONE -> _events.emit(LoginEvent.NavigateToDetailSignup)
+                            else -> _events.emit(LoginEvent.ShowSnackMessage(ERROR_MSG))
                         }
                     }
                 }

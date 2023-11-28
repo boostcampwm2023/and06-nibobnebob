@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -9,6 +8,7 @@ import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.LocationArray
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,6 +40,8 @@ data class InputState(
 
 sealed class EditProfileUiEvent {
     data object EditProfileDone : EditProfileUiEvent()
+    data class ShowToastMessage(val msg: String) : EditProfileUiEvent()
+    data class ShowSnackMessage(val msg: String) : EditProfileUiEvent()
 }
 
 
@@ -101,7 +103,7 @@ class EditProfileViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> testLog(it.message)
+                else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
@@ -147,7 +149,7 @@ class EditProfileViewModel @Inject constructor(
                     }
                 }
 
-                else -> testLog("검증 실패")
+                else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
 
@@ -182,7 +184,6 @@ class EditProfileViewModel @Inject constructor(
             if (originalBirth.isEmpty()) return@onEach
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
-                testLog("${originalBirth}, $birth")
                 state.copy(
                     birth = InputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
@@ -210,15 +211,10 @@ class EditProfileViewModel @Inject constructor(
         ).onEach {
             when (it) {
                 is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
-                else -> testLog("수정 실패")
+                else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
-
-    private fun testLog(msg: String) {
-        Log.d("TEST", msg)
-    }
-
 
     companion object {
         val BIRTH_REGEX = Regex("""^\d{4}/\d{2}/\d{2}${'$'}""")

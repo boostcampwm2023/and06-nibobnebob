@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,7 @@ sealed class AddMyRestaurantEvents {
     data object ShowConfirmDialog : AddMyRestaurantEvents()
     data object ShowSuccessDialog : AddMyRestaurantEvents()
     data class ShowToastMessage(val msg: String) : AddMyRestaurantEvents()
+    data class ShowSnackMessage(val msg: String) : AddMyRestaurantEvents()
 }
 
 @HiltViewModel
@@ -153,9 +155,14 @@ class AddMyRestaurantViewModel @Inject constructor(
                 )
             ).onEach { state ->
                 when (state) {
-                    is BaseState.Success -> _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
-                    is BaseState.Error -> _events.emit(AddMyRestaurantEvents.ShowToastMessage(state.message))
-                    else -> {}
+                    is BaseState.Success -> {
+                        _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
+                        _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
+                    }
+
+                    is BaseState.Error -> _events.emit(
+                        AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
+                    )
                 }
             }.launchIn(viewModelScope)
         }

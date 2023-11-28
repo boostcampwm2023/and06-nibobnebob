@@ -45,7 +45,7 @@ class DetailSignupFragment :
                 when (it) {
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
                     is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
-                    is DetailSignupEvents.ShowToastMessage -> showToastMessage(it.msg)
+                    is DetailSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
             }
         }
