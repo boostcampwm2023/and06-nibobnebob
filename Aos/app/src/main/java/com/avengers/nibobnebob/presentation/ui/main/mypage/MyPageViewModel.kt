@@ -1,6 +1,8 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -27,7 +29,7 @@ data class MyPageUiState(
     val gender: String = "",
 )
 
-sealed class MyEditPageEvent{
+sealed class MyEditPageEvent {
     data object NavigateToIntro : MyEditPageEvent()
 }
 
@@ -43,8 +45,9 @@ class MyPageViewModel @Inject constructor(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val events : SharedFlow<MyEditPageEvent> = _events.asSharedFlow()
+    val events: SharedFlow<MyEditPageEvent> = _events.asSharedFlow()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getUserInfo() {
         myPageRepository.getMyInfo().onEach {
             when (it) {
@@ -68,16 +71,13 @@ class MyPageViewModel @Inject constructor(
 
     }
 
-    fun logout(){
-
-        // api 연결 예정
-        viewModelScope.launch {
-            myPageRepository.logout()
+    fun logout() {
+        myPageRepository.logout().onEach {
             _events.emit(MyEditPageEvent.NavigateToIntro)
         }
     }
 
-    fun withdraw(){
+    fun withdraw() {
         myPageRepository.withdraw().onEach {
             _events.emit(MyEditPageEvent.NavigateToIntro)
         }.launchIn(viewModelScope)
