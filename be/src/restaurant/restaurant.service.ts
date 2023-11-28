@@ -5,8 +5,6 @@ import * as proj4 from "proj4";
 import axios from "axios";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { TokenInfo } from "src/user/user.decorator";
-import { UserRestaurantListRepository } from "src/user/user.restaurantList.repository";
-import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
 import { UserRepository } from "src/user/user.repository";
 import { ReviewRepository } from "src/review/review.repository";
 
@@ -27,7 +25,6 @@ export class RestaurantService implements OnModuleInit {
   constructor(
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
-    private userRestaurantListRepository: UserRestaurantListRepository,
     private reviewRepository: ReviewRepository
   ) {}
 
@@ -59,63 +56,7 @@ export class RestaurantService implements OnModuleInit {
       where: { nickName: filterInfoDto.filter },
     });
 
-    let restaurants
-    if(filterInfoDto.longitude && filterInfoDto.latitude){
-      restaurants = await this.userRestaurantListRepository
-      .createQueryBuilder("user_restaurant_lists")
-      .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
-      .leftJoin(
-        "user_restaurant_lists",
-        "current_url",
-        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
-        { currentUserId: tokenInfo.id }
-      )
-      .select([
-        "user_restaurant_lists.restaurantId AS restaurant_id",
-        "restaurant.name",
-        "restaurant.location",
-        "restaurant.address",
-        "restaurant.category",
-        "restaurant.phoneNumber",
-        'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
-        "restaurant.reviewCnt"
-      ])
-      .where(
-        `ST_DistanceSphere(
-          location, 
-          ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius} and user_restaurant_lists.user_id = :targetId`,
-        { targetId: target.id }
-      )
-      .limit(15)
-      .getRawMany();
-    }
-    else{
-      restaurants = await this.userRestaurantListRepository
-      .createQueryBuilder("user_restaurant_lists")
-      .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
-      .leftJoin(
-        "user_restaurant_lists",
-        "current_url",
-        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
-        { currentUserId: tokenInfo.id }
-      )
-      .select([
-        "user_restaurant_lists.restaurantId AS restaurant_id",
-        "restaurant.name",
-        "restaurant.location",
-        "restaurant.address",
-        "restaurant.category",
-        "restaurant.phoneNumber",
-        'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
-        "restaurant.reviewCnt"
-      ])
-      .where(
-        `user_restaurant_lists.user_id = :targetId`,
-        { targetId: target.id }
-      )
-      .limit(15)
-      .getRawMany();
-    }
+    const restaurants = await this.restaurantRepository.filteredRestaurantList(filterInfoDto,tokenInfo,target);
 
     for (const restaurant of restaurants) {
       const reviewCount = await this.reviewRepository.createQueryBuilder("review")

@@ -4,6 +4,8 @@ import { RestaurantInfoEntity } from "./entities/restaurant.entity";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
 import { TokenInfo } from "src/user/user.decorator";
 import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
+import { FilterInfoDto } from "./dto/filterInfo.dto";
+import { User } from "src/user/entities/user.entity";
 
 @Injectable()
 export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
@@ -80,6 +82,71 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         })
         .limit(15)
         .getRawMany();
+    }
+  }
+
+  async filteredRestaurantList(filterInfoDto: FilterInfoDto, tokenInfo: TokenInfo, target: User){
+    if(filterInfoDto.longitude && filterInfoDto.latitude){
+      return this
+      .createQueryBuilder("restaurant")
+      .innerJoin(
+        UserRestaurantListEntity,
+        "user_restaurant_list",
+        "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :targetId",
+        { targetId: target.id }
+      )
+      .leftJoin(
+        UserRestaurantListEntity,
+        "current_url",
+        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
+        { currentUserId: tokenInfo.id }
+      )
+      .select([
+        "user_restaurant_lists.restaurantId AS restaurant_id",
+        "restaurant.name",
+        "restaurant.location",
+        "restaurant.address",
+        "restaurant.category",
+        "restaurant.phoneNumber",
+        'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
+        "restaurant.reviewCnt"
+      ])
+      .where(
+        `ST_DistanceSphere(
+          location, 
+          ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius} and user_restaurant_lists.user_id = :targetId`,
+        { targetId: target.id }
+      )
+      .limit(15)
+      .getRawMany();
+    }
+    else{
+      return this
+      .createQueryBuilder("restaurant")
+      .innerJoin(
+        UserRestaurantListEntity,
+        "user_restaurant_list",
+        "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :targetId",
+        { targetId: target.id }
+      )
+      .leftJoin(
+        UserRestaurantListEntity,
+        "current_url",
+        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
+        { currentUserId: tokenInfo.id }
+      )
+      .select([
+        "restaurant.id AS restaurant_id",
+        "restaurant.name",
+        "restaurant.location",
+        "restaurant.address",
+        "restaurant.category",
+        "restaurant.phoneNumber",
+        'CASE WHEN current_url.userId IS NOT NULL THEN true ELSE false END AS "isMy"',
+        "restaurant.reviewCnt"
+      ])
+      .limit(15)
+      .getRawMany();
     }
   }
 
