@@ -23,6 +23,7 @@ import com.avengers.nibobnebob.presentation.ui.adjustKeyboard
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeSearchAdapter
+import com.avengers.nibobnebob.presentation.ui.toHome
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -63,8 +64,8 @@ class RestaurantSearchFragment :
             viewModel.events.collect {
                 when (it) {
                     is RestaurantSearchEvent.OnClickResultItem -> {
-                        findNavController().toHome()
-                        parentViewModel.markSearchRestaurant(it.item)
+                        findNavController().toSearchMap()
+                        //parentViewModel.markSearchRestaurant(it.item)
                     }
 
                     is RestaurantSearchEvent.NavigateToHome -> findNavController().toHome()
@@ -110,9 +111,8 @@ class RestaurantSearchFragment :
         }
     }
 
-    private fun NavController.toHome() {
-        val action =
-            RestaurantSearchFragmentDirections.actionRestaurantSearchFragmentToHomeFragment()
+    private fun NavController.toSearchMap(){
+        val action = RestaurantSearchFragmentDirections.actionRestaurantSearchFragmentToRestaurantSearchMapFragment()
         navigate(action)
     }
 

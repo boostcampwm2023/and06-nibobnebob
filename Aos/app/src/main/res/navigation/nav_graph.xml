@@ -79,6 +79,9 @@
         app:destination="@id/addMyRestaurantFragment"
         app:popUpTo="@id/homeFragment"
         app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_homeFragment"
+        app:destination="@id/homeFragment"/>
 
     <fragment
         android:id="@+id/editProfileFragment"
@@ -101,6 +104,9 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_restaurantSearchFragment_to_restaurantSearchMapFragment"
+            app:destination="@id/restaurantSearchMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/addMyRestaurantFragment"
@@ -125,4 +131,8 @@
             android:defaultValue="1"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/restaurantSearchMapFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchMapFragment"
+        android:label="RestaurantSearchMapFragment" />
 </navigation>
