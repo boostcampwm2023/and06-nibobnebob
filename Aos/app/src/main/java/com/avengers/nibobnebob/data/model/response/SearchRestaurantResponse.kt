@@ -1,7 +1,7 @@
 package com.avengers.nibobnebob.data.model.response
 
 data class SearchRestaurantResponse(
-    val id : Long,
+    val id : Int,
     val name : String,
     val location : String,
     val address : String,

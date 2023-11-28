@@ -4,13 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.BottomSheetRestaurantBinding
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 class RestaurantBottomSheet(
     context: Context,
-    private val data: UiMarkerData,
+    private val data: UiRestaurantData,
     private val onClickAddWishRestaurant: (Int, Boolean) -> Boolean,
     private val onClickAddMyRestaurant: (String, Int) -> Unit,
     private val onClickGoReview: (Int) -> Unit

@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.avengers.nibobnebob.NavGraphDirections
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -18,10 +17,11 @@ import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -44,6 +44,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val markerList = mutableListOf<Marker>()
 
     private val locationPermissionList = arrayOf(
@@ -100,7 +101,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
         // todo GPS 기반 위치변화 리스너
         naverMap.addOnLocationChangeListener {
-
+            viewModel.updateLocation(
+                it.latitude,
+                it.longitude
+            )
         }
     }
 
@@ -114,9 +118,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                             setMarker(data)
                         }
                     }
-
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
-                    else -> {}
                 }
             }
         }
@@ -134,9 +136,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         )
                     }
 
-                    is TrackingState.On -> naverMap.locationTrackingMode =
-                        LocationTrackingMode.Follow
-
+                    is TrackingState.On -> {
+                        naverMap.locationTrackingMode =
+                            LocationTrackingMode.Follow
+                    }
                     is TrackingState.Off -> naverMap.locationTrackingMode =
                         LocationTrackingMode.None
                 }
@@ -162,7 +165,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
-    private fun setMarker(data: UiMarkerData) {
+    private fun setMarker(data: UiRestaurantData) {
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
