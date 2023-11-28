@@ -58,6 +58,10 @@ export class UserService {
       "isMy": true
     }));
   }
+  async getMyWishRestaurantListInfo(tokenInfo: TokenInfo) {
+    const result = await this.userWishRestaurantListRepository.getMyWishRestaurantListInfo(tokenInfo.id);
+    return result;
+  }
   async getMyFollowListInfo(tokenInfo: TokenInfo) {
     const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
     const userIdValues = userIds.map(user => user.followingUserId);

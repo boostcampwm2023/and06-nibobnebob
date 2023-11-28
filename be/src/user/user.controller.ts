@@ -124,6 +124,17 @@ export class UserController {
     return await this.userService.getMyRestaurantListInfo(searchInfoDto, tokenInfo);
   }
 
+  @Get("/wish-restaurant")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 위시 맛집 리스트 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async getMyWishRestaurantListInfo(
+    @GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getMyWishRestaurantListInfo(tokenInfo);
+  }
+
   @Get("follow-list")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
