@@ -18,4 +18,8 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
         await this.upsert(userWishRestaurantList, ["userId", "restaurantId"]);
         return null;
     }
+    async deleteRestaurantFromWishNebob(id: TokenInfo["id"], restaurantId: number) {
+        await this.update({ userId: id, restaurantId: restaurantId }, { deletedAt: new Date() });
+        return null;
+    }
 }

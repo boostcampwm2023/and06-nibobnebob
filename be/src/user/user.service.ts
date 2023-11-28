@@ -22,7 +22,7 @@ export class UserService {
     private userRestaurantListRepository: UserRestaurantListRepository,
     private userFollowListRepositoy: UserFollowListRepository,
     private reviewRepository: ReviewRepository,
-    private userWishRestaurantListRepositoy: UserWishRestaurantListRepository
+    private userWishRestaurantListRepository: UserWishRestaurantListRepository
   ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
@@ -154,10 +154,15 @@ export class UserService {
 
   async addRestaurantToWishNebob(tokenInfo: TokenInfo, restaurantId: number) {
     try {
-      await this.userWishRestaurantListRepositoy.addRestaurantToWishNebob(tokenInfo.id, restaurantId);
+      await this.userWishRestaurantListRepository.addRestaurantToWishNebob(tokenInfo.id, restaurantId);
     } catch (err) {
       throw new BadRequestException();
     }
+    return null;
+  }
+
+  async deleteRestaurantFromWishNebob(tokenInfo: TokenInfo, restaurantId: number) {
+    await this.userWishRestaurantListRepository.deleteRestaurantFromWishNebob(tokenInfo.id, restaurantId);
     return null;
   }
 

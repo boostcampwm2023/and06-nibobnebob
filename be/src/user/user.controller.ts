@@ -232,6 +232,18 @@ export class UserController {
     return await this.userService.addRestaurantToWishNebob(tokenInfo, restaurantid);
   }
 
+  @Delete("/wish-restaurant/:restaurantid")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 위시 맛집 리스트에서 삭제하기" })
+  @ApiResponse({ status: 200, description: "위시 맛집리스트 삭제 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async deleteRestaurantFromWishNebob(
+    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
+    return await this.userService.deleteRestaurantFromWishNebob(tokenInfo, restaurantid);
+  }
+
   @Post("logout")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
