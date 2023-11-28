@@ -7,6 +7,7 @@ import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.
 import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { User } from "src/user/entities/user.entity";
 import { LocationDto } from "./dto/location.dto";
+import { UserWishRestaurantListEntity } from "src/user/entities/user.wishrestaurantlist.entity";
 
 @Injectable()
 export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
@@ -23,6 +24,12 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :userId",
           { userId: tokenInfo.id }
         )
+        .leftJoin(
+          UserWishRestaurantListEntity,
+          "user_wish_list",
+          "user_wish_list.restaurantId = restaurant.id AND user_wish_list.userId = :userId",
+          { userId: tokenInfo.id }
+        )
         .select([
           "restaurant.id",
           "restaurant.name",
@@ -36,6 +43,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         ST_GeomFromText(:point, 4326)
       ) AS distance`,
           `CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"`,
+          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`
         ])
         .where("restaurant.name LIKE :partialName")
         .andWhere(
@@ -66,6 +74,12 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :userId",
           { userId: tokenInfo.id }
         )
+        .leftJoin(
+          UserWishRestaurantListEntity,
+          "user_wish_list",
+          "user_wish_list.restaurantId = restaurant.id AND user_wish_list.userId = :userId",
+          { userId: tokenInfo.id }
+        )
         .select([
           "restaurant.id",
           "restaurant.name",
@@ -75,6 +89,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "restaurant.reviewCnt",
           "restaurant.category",
           `CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"`,
+          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`
         ])
         .where("restaurant.name LIKE :partialName")
         .setParameters({
@@ -102,6 +117,12 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
           { currentUserId: tokenInfo.id }
         )
+        .leftJoin(
+          UserWishRestaurantListEntity,
+          "user_wish_list",
+          "user_wish_list.restaurantId = restaurant.id AND user_wish_list.userId = :userId",
+          { userId: tokenInfo.id }
+        )
         .select([
           "user_restaurant_list.restaurantId AS restaurant_id",
           "restaurant.name",
@@ -110,6 +131,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "restaurant.category",
           "restaurant.phoneNumber",
           'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
+          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
           "restaurant.reviewCnt"
         ])
         .where(
@@ -134,6 +156,12 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
           { currentUserId: tokenInfo.id }
         )
+        .leftJoin(
+          UserWishRestaurantListEntity,
+          "user_wish_list",
+          "user_wish_list.restaurantId = restaurant.id AND user_wish_list.userId = :userId",
+          { userId: tokenInfo.id }
+        )
         .select([
           "restaurant.id AS restaurant_id",
           "restaurant.name",
@@ -142,6 +170,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "restaurant.category",
           "restaurant.phoneNumber",
           'CASE WHEN current_url.userId IS NOT NULL THEN true ELSE false END AS "isMy"',
+          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
           "restaurant.reviewCnt"
         ])
         .getRawMany();

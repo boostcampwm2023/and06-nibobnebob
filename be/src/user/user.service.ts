@@ -53,10 +53,17 @@ export class UserService {
   }
   async getMyRestaurantListInfo(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
     const results = await this.userRestaurantListRepository.getMyRestaurantListInfo(searchInfoDto, tokenInfo.id);
-    return results.map(result => ({
-      ...result,
-      "isMy": true
-    }));
+
+    for (const restaurant of results) {
+      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+        .getCount();
+  
+      restaurant.isMy = true;
+      restaurant.restaurant_reviewCnt = reviewCount;
+    }
+
+    return results;
   }
   async getMyWishRestaurantListInfo(tokenInfo: TokenInfo) {
     const result = await this.userWishRestaurantListRepository.getMyWishRestaurantListInfo(tokenInfo.id);
