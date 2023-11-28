@@ -45,9 +45,10 @@ export class RestaurantController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 404, description: "존재하지 않는 음식점" })
   detailInfo(
+    @GetUser() tokenInfo: TokenInfo,
     @Param("restaurantId") restaurantId: string,
   ) {
-    return this.restaurantService.detailInfo(parseInt(restaurantId));
+    return this.restaurantService.detailInfo(parseInt(restaurantId), tokenInfo);
   }
 
   @Get()
@@ -73,5 +74,25 @@ export class RestaurantController {
   ) {
     const filterInfoDto = new FilterInfoDto(filter, locationDto);
     return this.restaurantService.filteredRestaurantList(filterInfoDto, tokenInfo);
+  }
+  @Get('all')
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "현위치 기반 반경 내의 전체 음식점 리스트 응답" })
+  @ApiQuery({ name: 'latitude', required: true, type: String, description: '위도' })
+  @ApiQuery({ name: 'longitude', required: true, type: String, description: '경도' })
+  @ApiQuery({ name: 'radius', required: true, type: String, description: '검색 반경' })
+  @ApiResponse({
+    status: 200,
+    description: "전체 음식점 리스트 요청 성공",
+  })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "쿼리파라미터 형식이 올바르지 않음" })
+  @UsePipes(new ValidationPipe())
+  entireRestaurantList(
+    @GetUser() tokenInfo: TokenInfo,
+    @Query() locationDto: LocationDto,
+  ) {
+    return this.restaurantService.entireRestaurantList(locationDto, tokenInfo);
   }
 }

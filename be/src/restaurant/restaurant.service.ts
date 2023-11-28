@@ -5,9 +5,9 @@ import * as proj4 from "proj4";
 import axios from "axios";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { TokenInfo } from "src/user/user.decorator";
-import { UserRestaurantListRepository } from "src/user/user.restaurantList.repository";
-import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
 import { UserRepository } from "src/user/user.repository";
+import { ReviewRepository } from "src/review/review.repository";
+import { LocationDto } from "./dto/location.dto";
 
 const key = "api키 입력하세요";
 
@@ -26,16 +26,46 @@ export class RestaurantService implements OnModuleInit {
   constructor(
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
-    private userRestaurantListRepository: UserRestaurantListRepository
+    private reviewRepository: ReviewRepository
   ) {}
 
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    return this.restaurantRepository.searchRestarant(searchInfoDto, tokenInfo);
+    const restaurants = await this.restaurantRepository.searchRestarant(searchInfoDto, tokenInfo);
+
+    for (const restaurant of restaurants) {
+      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+        .getCount();
+  
+      restaurant.restaurant_reviewCnt = reviewCount;
+    }
+
+    return restaurants;
   }
 
-  async detailInfo(restaurantId: number) {
-    return this.restaurantRepository.detailInfo(restaurantId);
+  async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {
+    const restaurant = await this.restaurantRepository.detailInfo(restaurantId, tokenInfo);
+
+    const [reviews, reviewCount] = await this.reviewRepository.createQueryBuilder("review")
+      .select([
+        "review.id",
+        'review.isCarVisit',
+        'review.transportationAccessibility',
+        'review.parkingArea',
+        "review.taste",
+        "review.service",
+        'review.restroomCleanliness',
+        'review.overallExperience'
+      ])
+      .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+      .getManyAndCount();
+
+    restaurant.reviews = reviews.slice(0,3);
+    restaurant.restaurant_reviewCnt = reviewCount;
+
+    return restaurant;
+
   }
 
   async filteredRestaurantList(
@@ -47,62 +77,31 @@ export class RestaurantService implements OnModuleInit {
       where: { nickName: filterInfoDto.filter },
     });
 
-    if(filterInfoDto.longitude && filterInfoDto.latitude){
-      return this.userRestaurantListRepository
-      .createQueryBuilder("user_restaurant_lists")
-      .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
-      .leftJoin(
-        "user_restaurant_lists",
-        "current_url",
-        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
-        { currentUserId: tokenInfo.id }
-      )
-      .select([
-        "user_restaurant_lists.restaurantId AS restaurant_id",
-        "restaurant.name",
-        "restaurant.location",
-        "restaurant.address",
-        "restaurant.category",
-        "restaurant.phoneNumber",
-        'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
-        "restaurant.reviewCnt"
-      ])
-      .where(
-        `ST_DistanceSphere(
-          location, 
-          ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius} and user_restaurant_lists.user_id = :targetId`,
-        { targetId: target.id }
-      )
-      .limit(15)
-      .getRawMany();
+    const restaurants = await this.restaurantRepository.filteredRestaurantList(filterInfoDto,tokenInfo,target);
+
+    for (const restaurant of restaurants) {
+      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+        .getCount();
+  
+      restaurant.restaurant_reviewCnt = reviewCount;
     }
-    else{
-      return this.userRestaurantListRepository
-      .createQueryBuilder("user_restaurant_lists")
-      .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
-      .leftJoin(
-        "user_restaurant_lists",
-        "current_url",
-        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
-        { currentUserId: tokenInfo.id }
-      )
-      .select([
-        "user_restaurant_lists.restaurantId AS restaurant_id",
-        "restaurant.name",
-        "restaurant.location",
-        "restaurant.address",
-        "restaurant.category",
-        "restaurant.phoneNumber",
-        'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
-        "restaurant.reviewCnt"
-      ])
-      .where(
-        `user_restaurant_lists.user_id = :targetId`,
-        { targetId: target.id }
-      )
-      .limit(15)
-      .getRawMany();
+
+    return restaurants;
+  }
+
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo){
+    const restaurants = await this.restaurantRepository.entireRestaurantList(locationDto,tokenInfo);
+
+    for (const restaurant of restaurants) {
+      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+        .getCount();
+  
+      restaurant.restaurant_reviewCnt = reviewCount;
     }
+
+    return restaurants;
   }
 
   async getRestaurantsListFromSeoulData(startPage) {
