@@ -86,16 +86,71 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
     }
   }
 
-  async filteredRestaurantList(filterInfoDto: FilterInfoDto, tokenInfo: TokenInfo, target: User){
-    if(filterInfoDto.longitude && filterInfoDto.latitude){
+  async filteredRestaurantList(filterInfoDto: FilterInfoDto, tokenInfo: TokenInfo, target: User) {
+    if (filterInfoDto.longitude && filterInfoDto.latitude) {
       return this
+        .createQueryBuilder("restaurant")
+        .innerJoin(
+          UserRestaurantListEntity,
+          "user_restaurant_list",
+          "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :targetId",
+          { targetId: target.id }
+        )
+        .leftJoin(
+          UserRestaurantListEntity,
+          "current_url",
+          "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
+          { currentUserId: tokenInfo.id }
+        )
+        .select([
+          "user_restaurant_list.restaurantId AS restaurant_id",
+          "restaurant.name",
+          "restaurant.location",
+          "restaurant.address",
+          "restaurant.category",
+          "restaurant.phoneNumber",
+          'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
+          "restaurant.reviewCnt"
+        ])
+        .where(
+          `ST_DistanceSphere(
+          location, 
+          ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius}`
+        )
+        .getRawMany();
+    }
+    else {
+      return this
+        .createQueryBuilder("restaurant")
+        .innerJoin(
+          UserRestaurantListEntity,
+          "user_restaurant_list",
+          "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :targetId",
+          { targetId: target.id }
+        )
+        .leftJoin(
+          UserRestaurantListEntity,
+          "current_url",
+          "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
+          { currentUserId: tokenInfo.id }
+        )
+        .select([
+          "restaurant.id AS restaurant_id",
+          "restaurant.name",
+          "restaurant.location",
+          "restaurant.address",
+          "restaurant.category",
+          "restaurant.phoneNumber",
+          'CASE WHEN current_url.userId IS NOT NULL THEN true ELSE false END AS "isMy"',
+          "restaurant.reviewCnt"
+        ])
+        .getRawMany();
+    }
+  }
+
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
+    return this
       .createQueryBuilder("restaurant")
-      .innerJoin(
-        UserRestaurantListEntity,
-        "user_restaurant_list",
-        "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :targetId",
-        { targetId: target.id }
-      )
       .leftJoin(
         UserRestaurantListEntity,
         "current_url",
@@ -103,7 +158,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         { currentUserId: tokenInfo.id }
       )
       .select([
-        "user_restaurant_lists.restaurantId AS restaurant_id",
+        "restaurant.id",
         "restaurant.name",
         "restaurant.location",
         "restaurant.address",
@@ -114,88 +169,32 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
       ])
       .where(
         `ST_DistanceSphere(
-          location, 
-          ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius} and user_restaurant_lists.user_id = :targetId`,
-        { targetId: target.id }
+        location, 
+        ST_GeomFromText('POINT(${locationDto.longitude} ${locationDto.latitude})', 4326)) < ${locationDto.radius}`
       )
       .getRawMany();
-    }
-    else{
-      return this
-      .createQueryBuilder("restaurant")
-      .innerJoin(
-        UserRestaurantListEntity,
-        "user_restaurant_list",
-        "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :targetId",
-        { targetId: target.id }
-      )
+  }
+
+  async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {
+    return this.createQueryBuilder("restaurant")
       .leftJoin(
         UserRestaurantListEntity,
-        "current_url",
-        "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
-        { currentUserId: tokenInfo.id }
+        "user_restaurant_list",
+        "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :userId",
+        { userId: tokenInfo.id }
       )
       .select([
-        "restaurant.id AS restaurant_id",
+        "restaurant.id",
         "restaurant.name",
         "restaurant.location",
         "restaurant.address",
         "restaurant.category",
         "restaurant.phoneNumber",
-        'CASE WHEN current_url.userId IS NOT NULL THEN true ELSE false END AS "isMy"',
+        'CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"',
         "restaurant.reviewCnt"
       ])
-      .getRawMany();
-    }
-  }
-
-  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo){
-    return this
-    .createQueryBuilder("restaurant")
-    .leftJoin(
-      UserRestaurantListEntity,
-      "current_url",
-      "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
-      { currentUserId: tokenInfo.id }
-    )
-    .select([
-      "restaurant.id",
-      "restaurant.name",
-      "restaurant.location",
-      "restaurant.address",
-      "restaurant.category",
-      "restaurant.phoneNumber",
-      'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
-      "restaurant.reviewCnt"
-    ])
-    .where(
-      `ST_DistanceSphere(
-        location, 
-        ST_GeomFromText('POINT(${locationDto.longitude} ${locationDto.latitude})', 4326)) < ${locationDto.radius}`
-    )
-    .getRawMany();
-  }
-
-  async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {
-    return this.createQueryBuilder("restaurant")
-    .leftJoin(
-      UserRestaurantListEntity,
-      "user_restaurant_list",
-      "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :userId",
-      { userId: tokenInfo.id }
-    )
-    .select([
-      "restaurant.id",
-      "restaurant.name",
-      "restaurant.location",
-      "restaurant.address",
-      "restaurant.category",
-      "restaurant.phoneNumber",
-      'CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"',
-      "restaurant.reviewCnt"
-    ])
-    .where("restaurant.id = :restaurantId", { restaurantId })
-    .getRawOne();
+      .where("restaurant.id = :restaurantId", { restaurantId })
+      .getRawOne();
   }
 
   async updateRestaurantsFromSeoulData(data: RestaurantInfoEntity[]) {
