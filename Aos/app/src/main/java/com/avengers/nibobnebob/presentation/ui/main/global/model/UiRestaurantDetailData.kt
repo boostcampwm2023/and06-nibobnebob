@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.global.model
+package com.avengers.nibobnebob.presentation.ui.main.global.model
 
 data class UiRestaurantDetailData(
     val name : String,

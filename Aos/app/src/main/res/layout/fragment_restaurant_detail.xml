@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.avengers.nibobnebob.presentation.ui.global.restaurantdetail.RestaurantDetailViewModel" />
+            type="com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.RestaurantDetailViewModel" />
 
     </data>
 

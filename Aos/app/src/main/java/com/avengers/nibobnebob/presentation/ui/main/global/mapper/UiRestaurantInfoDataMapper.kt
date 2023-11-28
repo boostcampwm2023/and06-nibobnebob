@@ -1,7 +1,7 @@
-package com.avengers.nibobnebob.presentation.ui.global.mapper
+package com.avengers.nibobnebob.presentation.ui.main.global.mapper
 
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
-import com.avengers.nibobnebob.presentation.ui.global.model.UiRestaurantDetailData
+import com.avengers.nibobnebob.presentation.ui.main.global.model.UiRestaurantDetailData
 
 internal fun RestaurantDetailResponse.toUiRestaurantDetailInfo() = UiRestaurantDetailData(
     name = name,

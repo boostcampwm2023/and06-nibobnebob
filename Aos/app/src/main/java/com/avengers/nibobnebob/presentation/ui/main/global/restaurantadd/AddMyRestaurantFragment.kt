@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.global.restaurantadd
+package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
 import android.os.Bundle
 import android.view.View

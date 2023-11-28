@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.global.restaurantdetail
+package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter

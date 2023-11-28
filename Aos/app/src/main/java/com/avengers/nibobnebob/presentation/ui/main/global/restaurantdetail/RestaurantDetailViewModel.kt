@@ -1,12 +1,12 @@
-package com.avengers.nibobnebob.presentation.ui.global.restaurantdetail
+package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.GlobalRepository
-import com.avengers.nibobnebob.presentation.ui.global.mapper.toUiRestaurantDetailInfo
-import com.avengers.nibobnebob.presentation.ui.global.model.UiReviewData
+import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantDetailInfo
+import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

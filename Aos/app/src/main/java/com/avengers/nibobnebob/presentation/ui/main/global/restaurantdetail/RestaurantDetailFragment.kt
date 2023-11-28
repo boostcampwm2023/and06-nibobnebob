@@ -1,4 +1,4 @@
-package com.avengers.nibobnebob.presentation.ui.global.restaurantdetail
+package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
 import android.os.Bundle
 import android.view.View
@@ -9,7 +9,7 @@ import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantDetailBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
-import com.avengers.nibobnebob.presentation.ui.global.restaurantdetail.adapter.RestaurantReviewAdapter
+import com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.adapter.RestaurantReviewAdapter
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

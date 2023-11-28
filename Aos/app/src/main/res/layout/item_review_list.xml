@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.avengers.nibobnebob.presentation.ui.global.model.UiReviewData" />
+            type="com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData" />
 
     </data>
 
