@@ -34,9 +34,11 @@ class MyPageRepositoryImpl @Inject constructor(
         emit(result)
     }
 
-    override suspend fun logout() {
+    override fun logout(): Flow<BaseState<Unit>> = flow {
+        val result = runRemote { api.logout() }
         dataStoreManager.deleteAccessToken()
         dataStoreManager.deleteRefreshToken()
+        emit(result)
 
     }
 
