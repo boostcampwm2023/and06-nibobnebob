@@ -2,14 +2,17 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.mylist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.ItemMyListBinding
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyPageListData
 
 class MyRestaurantAdapter(
-    private val onClickMenu: (Int) -> Unit
+    private val showDetail: (Int) -> Unit,
+    private val deleteItem: (Int) -> Unit
 ) : ListAdapter<UiMyPageListData, MyRestaurantViewHolder>(diffCallback) {
     companion object {
         val diffCallback = object : DiffUtil.ItemCallback<UiMyPageListData>() {
@@ -39,7 +42,7 @@ class MyRestaurantAdapter(
     }
 
     override fun onBindViewHolder(holder: MyRestaurantViewHolder, position: Int) {
-        holder.bind(getItem(position), onClickMenu)
+        holder.bind(getItem(position), showDetail, deleteItem)
     }
 
 }
@@ -47,13 +50,27 @@ class MyRestaurantAdapter(
 class MyRestaurantViewHolder(
     private val binding: ItemMyListBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiMyPageListData, onClickMenu: (Int) -> Unit) {
+    fun bind(item: UiMyPageListData, showDetail: (Int) -> Unit, deleteItem: (Int) -> Unit) {
         binding.item = item
-//        binding.tvTitle.text = item.name
-//        binding.tvAddress.text = item.address
+        binding.ivMore.setOnClickListener { listMenu(item, showDetail, deleteItem) }
         binding.executePendingBindings()
-        binding.root.setOnClickListener {
-            onClickMenu(item.id)
+
+    }
+
+    private fun listMenu(
+        item: UiMyPageListData,
+        showDetail: (Int) -> Unit,
+        deleteItem: (Int) -> Unit
+    ) {
+        val menu = PopupMenu(binding.root.context, binding.ivMore)
+        menu.menuInflater.inflate(R.menu.my_page_list_menu, menu.menu)
+        menu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_detail -> showDetail(item.id)
+                R.id.menu_delete -> deleteItem(item.id)
+            }
+            true
         }
+        menu.show()
     }
 }

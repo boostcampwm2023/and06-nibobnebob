@@ -6,6 +6,7 @@ import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -21,6 +22,11 @@ interface RestaurantApi {
     suspend fun addRestaurant(
         @Path("restaurantId") restaurantId: Int,
         @Body params: AddRestaurantRequest
+    ): Response<BaseResponse<Unit>>
+
+    @DELETE("api/user/restaurant/{restaurantid}")
+    suspend fun deleteRestaurant(
+        @Path("restaurantid") restaurantId: Int
     ): Response<BaseResponse<Unit>>
 
     // 내 맛집 리스트

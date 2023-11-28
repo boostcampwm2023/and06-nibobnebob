@@ -18,6 +18,10 @@ interface RestaurantRepository {
         body: AddRestaurantRequest
     ): Flow<BaseState<BaseResponse<Unit>>>
 
+    fun deleteRestaurant(
+        restaurantId: Int,
+    ): Flow<BaseState<BaseResponse<Unit>>>
+
     fun myRestaurantList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
 
     fun myWishList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>

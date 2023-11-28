@@ -30,6 +30,11 @@ class RestaurantRepositoryImpl @Inject constructor(
             emit(result)
         }
 
+    override fun deleteRestaurant(restaurantId: Int): Flow<BaseState<BaseResponse<Unit>>> = flow {
+        val result = runRemote { api.deleteRestaurant(restaurantId) }
+        emit(result)
+    }
+
 
     override fun myRestaurantList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> =
         flow {

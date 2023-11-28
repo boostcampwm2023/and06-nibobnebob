@@ -13,3 +13,8 @@ internal fun NavController.toAddRestaurant(restaurantName: String, restaurantId:
     val action = NavGraphDirections.globalToAddMyRestaurantFragment(restaurantName, restaurantId)
     navigate(action)
 }
+
+internal fun NavController.toMyPage() {
+    val action = NavGraphDirections.globalToMyPageFragment()
+    navigate(action)
+}

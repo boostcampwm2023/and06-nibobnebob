@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.mylist
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MyRestaurantUiState(
@@ -27,7 +27,9 @@ data class MyRestaurantUiState(
 )
 
 sealed class MyRestaurantEvent {
+    data class NavigateToRestaurantDetail(val id: Int) : MyRestaurantEvent()
     data class ShowSnackMessage(val msg: String) : MyRestaurantEvent()
+    data class ShowToastMessage(val msg: String) : MyRestaurantEvent()
 }
 
 
@@ -65,8 +67,31 @@ class MyRestaurantListViewModel @Inject constructor(
     }
 
 
-    fun clickItem(id: Int) {
-        Log.d("TEST", "$id")
+    fun showDetail(id: Int) {
+        viewModelScope.launch { _events.emit(MyRestaurantEvent.NavigateToRestaurantDetail(id)) }
     }
+
+    fun deleteMyList(id: Int) {
+        restaurantRepository.deleteRestaurant(id).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _events.emit(MyRestaurantEvent.ShowToastMessage("삭제 되었습니다."))
+                    myRestaurantList()
+                }
+
+                is BaseState.Error -> {
+                    _events.emit(MyRestaurantEvent.ShowSnackMessage(ERROR_MSG))
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+//    private fun updateList(deleteId : Int){
+//        _uiState.update { state ->
+//            state.copy(
+//                myList = state.myList.filter { it.id != deleteId }.map { it }
+//            )
+//        }
+//    }
 
 }

@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
+import com.avengers.nibobnebob.presentation.ui.toMyPage
+import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,11 +21,9 @@ class MyRestaurantListFragment :
 
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
     private val viewModel: MyRestaurantListViewModel by viewModels()
-    private lateinit var navController: NavController
     override val parentViewModel: MainViewModel by activityViewModels()
-    private val adapter = MyRestaurantAdapter { id ->
-        viewModel.clickItem(id)
-    }
+    private val adapter = MyRestaurantAdapter({ id -> viewModel.showDetail(id) },
+        { id -> viewModel.deleteMyList(id) })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,22 +36,33 @@ class MyRestaurantListFragment :
         binding.svm = sharedViewModel
         binding.vm = viewModel
         binding.rvMyRestaurant.adapter = adapter
+        binding.rvMyRestaurant.animation = null
 
-        navController = Navigation.findNavController(view)
 
-
-        viewLifecycleOwner.repeatOnStarted {
+        repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
-                    is MyPageSharedUiEvent.NavigateToBack ->
-                        navController.navigate(MyRestaurantListFragmentDirections.globalToMyPageFragment())
-
+                    is MyPageSharedUiEvent.NavigateToBack -> findNavController().toMyPage()
                     else -> Unit
                 }
 
             }
         }
 
+        repeatOnStarted {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is MyRestaurantEvent.NavigateToRestaurantDetail -> findNavController().toRestaurantDetail(
+                        event.id
+                    )
+
+                    is MyRestaurantEvent.ShowToastMessage -> showToastMessage(event.msg)
+                    is MyRestaurantEvent.ShowSnackMessage -> showSnackBar(event.msg)
+                }
+            }
+        }
+
     }
+
 
 }
