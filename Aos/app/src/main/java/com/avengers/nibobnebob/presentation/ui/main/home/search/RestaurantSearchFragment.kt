@@ -65,10 +65,11 @@ class RestaurantSearchFragment :
                 when (it) {
                     is RestaurantSearchEvent.OnClickResultItem -> {
                         findNavController().toSearchMap()
-                        //parentViewModel.markSearchRestaurant(it.item)
+                        parentViewModel.markSearchRestaurant(it.item)
                     }
 
                     is RestaurantSearchEvent.NavigateToHome -> findNavController().toHome()
+                    else -> {}
                 }
 
             }
@@ -111,8 +112,9 @@ class RestaurantSearchFragment :
         }
     }
 
-    private fun NavController.toSearchMap(){
-        val action = RestaurantSearchFragmentDirections.actionRestaurantSearchFragmentToRestaurantSearchMapFragment()
+    private fun NavController.toSearchMap() {
+        val action =
+            RestaurantSearchFragmentDirections.actionRestaurantSearchFragmentToRestaurantSearchMapFragment()
         navigate(action)
     }
 

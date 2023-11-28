@@ -120,6 +120,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                             setMarker(data)
                         }
                     }
+
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
                     is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
@@ -143,26 +144,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         naverMap.locationTrackingMode =
                             LocationTrackingMode.Follow
                     }
+
                     is TrackingState.Off -> naverMap.locationTrackingMode =
                         LocationTrackingMode.None
                 }
-            }
-        }
-
-        repeatOnStarted {
-            parentViewModel.uiState.collectLatest {
-                if (it.id < 0) return@collectLatest
-
-                setSearchResultMarker(it)
-
-                RestaurantBottomSheet(
-                    context = requireContext(),
-                    data = it,
-                    onClickAddWishRestaurant = ::addWishTest,
-                    onClickAddMyRestaurant = ::addRestaurantTest,
-                    onClickGoReview = ::goReviewTest
-                ).show()
-
             }
         }
     }
@@ -213,17 +198,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             it.map = null
         }
         markerList.clear()
-    }
-
-    private fun setSearchResultMarker(data: UiRestaurantData) {
-        Marker().apply {
-            position = LatLng(data.latitude, data.longitude)
-            icon = OverlayImage.fromResource(R.drawable.ic_marker)
-            map = naverMap
-        }
-
-        val cameraUpdate = CameraUpdate.scrollTo(LatLng(data.latitude, data.longitude))
-        naverMap.moveCamera(cameraUpdate)
     }
 
 
