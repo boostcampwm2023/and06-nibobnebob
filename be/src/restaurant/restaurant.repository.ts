@@ -150,19 +150,26 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
     }
   }
 
-  async detailInfo(restaurantId: number) {
-    return this.findOne({
-      select: [
-        "id",
-        "name",
-        "location",
-        "address",
-        "phoneNumber",
-        "reviewCnt",
-        "category",
-      ],
-      where: { id: restaurantId },
-    });
+  async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {
+    return this.createQueryBuilder("restaurant")
+    .leftJoin(
+      UserRestaurantListEntity,
+      "user_restaurant_list",
+      "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :userId",
+      { userId: tokenInfo.id }
+    )
+    .select([
+      "restaurant.id",
+      "restaurant.name",
+      "restaurant.location",
+      "restaurant.address",
+      "restaurant.category",
+      "restaurant.phoneNumber",
+      'CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"',
+      "restaurant.reviewCnt"
+    ])
+    .where("restaurant.id = :restaurantId", { restaurantId })
+    .getRawOne();
   }
 
   async updateRestaurantsFromSeoulData(data: RestaurantInfoEntity[]) {

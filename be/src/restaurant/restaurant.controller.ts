@@ -45,9 +45,10 @@ export class RestaurantController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 404, description: "존재하지 않는 음식점" })
   detailInfo(
+    @GetUser() tokenInfo: TokenInfo,
     @Param("restaurantId") restaurantId: string,
   ) {
-    return this.restaurantService.detailInfo(parseInt(restaurantId));
+    return this.restaurantService.detailInfo(parseInt(restaurantId), tokenInfo);
   }
 
   @Get()

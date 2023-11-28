@@ -43,8 +43,8 @@ export class RestaurantService implements OnModuleInit {
     return restaurants;
   }
 
-  async detailInfo(restaurantId: number) {
-    return this.restaurantRepository.detailInfo(restaurantId);
+  async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {
+    return this.restaurantRepository.detailInfo(restaurantId, tokenInfo);
   }
 
   async filteredRestaurantList(
