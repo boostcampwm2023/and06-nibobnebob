@@ -6,6 +6,7 @@ import { TokenInfo } from "src/user/user.decorator";
 import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { User } from "src/user/entities/user.entity";
+import { LocationDto } from "./dto/location.dto";
 
 @Injectable()
 export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
@@ -148,6 +149,33 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
       .limit(15)
       .getRawMany();
     }
+  }
+
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo){
+    return this
+    .createQueryBuilder("restaurant")
+    .leftJoin(
+      UserRestaurantListEntity,
+      "current_url",
+      "current_url.restaurantId = restaurant.id AND current_url.userId = :currentUserId",
+      { currentUserId: tokenInfo.id }
+    )
+    .select([
+      "restaurant.id",
+      "restaurant.name",
+      "restaurant.location",
+      "restaurant.address",
+      "restaurant.category",
+      "restaurant.phoneNumber",
+      'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
+      "restaurant.reviewCnt"
+    ])
+    .where(
+      `ST_DistanceSphere(
+        location, 
+        ST_GeomFromText('POINT(${locationDto.longitude} ${locationDto.latitude})', 4326)) < ${locationDto.radius}`
+    )
+    .getRawMany();
   }
 
   async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {

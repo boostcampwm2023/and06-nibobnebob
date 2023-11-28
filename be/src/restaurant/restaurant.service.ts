@@ -7,6 +7,7 @@ import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { TokenInfo } from "src/user/user.decorator";
 import { UserRepository } from "src/user/user.repository";
 import { ReviewRepository } from "src/review/review.repository";
+import { LocationDto } from "./dto/location.dto";
 
 const key = "api키 입력하세요";
 
@@ -37,7 +38,7 @@ export class RestaurantService implements OnModuleInit {
         .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
         .getCount();
   
-      restaurant.reviewCnt = reviewCount;
+      restaurant.restaurant_reviewCnt = reviewCount;
     }
 
     return restaurants;
@@ -61,7 +62,7 @@ export class RestaurantService implements OnModuleInit {
       .getManyAndCount();
 
     restaurant.reviews = reviews.slice(0,3);
-    restaurant.reviewCnt = reviewCount;
+    restaurant.restaurant_reviewCnt = reviewCount;
 
     return restaurant;
 
@@ -83,7 +84,21 @@ export class RestaurantService implements OnModuleInit {
         .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
         .getCount();
   
-      restaurant.reviewCnt = reviewCount;
+      restaurant.restaurant_reviewCnt = reviewCount;
+    }
+
+    return restaurants;
+  }
+
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo){
+    const restaurants = await this.restaurantRepository.entireRestaurantList(locationDto,tokenInfo);
+
+    for (const restaurant of restaurants) {
+      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+        .getCount();
+  
+      restaurant.restaurant_reviewCnt = reviewCount;
     }
 
     return restaurants;
