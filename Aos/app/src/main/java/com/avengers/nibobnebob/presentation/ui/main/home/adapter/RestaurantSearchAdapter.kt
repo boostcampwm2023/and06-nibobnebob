@@ -24,6 +24,7 @@ class RestaurantSearchAdapter(private val onClickSearchItem: (Int) -> Unit) :
         holder.bind(getItem(position), position, onClickSearchItem)
     }
 
+
 }
 
 class HomeSearchViewHolder(private val binding: ItemHomeSearchBinding) :
