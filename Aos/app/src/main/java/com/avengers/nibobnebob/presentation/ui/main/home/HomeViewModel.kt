@@ -27,7 +27,6 @@ data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
     val filterList: List<UiFilterData> = emptyList(),
     val markerList: List<UiRestaurantData> = emptyList(),
-    val markerList: List<UiRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0

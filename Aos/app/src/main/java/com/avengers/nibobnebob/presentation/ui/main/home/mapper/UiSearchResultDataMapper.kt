@@ -10,7 +10,7 @@ fun SearchRestaurantResponse.toUiRestaurantData(): UiRestaurantData = UiRestaura
     name = name,
     address = address,
     phoneNumber = phoneNumber,
-    reviewCount = reviewCnt,
+    reviewCount = reviewCnt.toString(),
     isInWishList = false,
     isInMyList = false
 
