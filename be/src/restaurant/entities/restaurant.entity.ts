@@ -50,9 +50,12 @@ export class RestaurantInfoEntity {
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @OneToMany(() => UserRestaurantListEntity, userRestaurant => userRestaurant.restaurant)
-  userRestaurant: UserRestaurantListEntity
+  @OneToMany(
+    () => UserRestaurantListEntity,
+    (userRestaurant) => userRestaurant.restaurant
+  )
+  userRestaurant: UserRestaurantListEntity;
 
-  @OneToMany(() => ReviewInfoEntity, review => review.restaurant)
-  review: ReviewInfoEntity
+  @OneToMany(() => ReviewInfoEntity, (review) => review.restaurant)
+  review: ReviewInfoEntity;
 }

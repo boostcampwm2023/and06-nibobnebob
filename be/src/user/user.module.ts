@@ -9,11 +9,16 @@ import { UserFollowListRepository } from "./user.followList.repository";
 import { ReviewModule } from "../review/review.module";
 import { UserWishRestaurantListRepository } from "./user.wishrestaurantList.repository";
 
-
 @Module({
   imports: [forwardRef(() => AuthModule), ReviewModule],
   controllers: [UserController],
-  providers: [UserService, UserRepository, UserRestaurantListRepository, UserFollowListRepository, UserWishRestaurantListRepository],
+  providers: [
+    UserService,
+    UserRepository,
+    UserRestaurantListRepository,
+    UserFollowListRepository,
+    UserWishRestaurantListRepository,
+  ],
   exports: [UserRepository, UserRestaurantListRepository],
 })
-export class UserModule { }
+export class UserModule {}

@@ -17,6 +17,7 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { UserService } from "./user.service";
@@ -28,8 +29,9 @@ import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 
 @Controller("user")
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
+  @ApiTags("Mypage")
   @Get()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -44,6 +46,7 @@ export class UserController {
     return await this.userService.getMypageUserDetailInfo(tokenInfo);
   }
 
+  @ApiTags("Mypage")
   @Get("/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -55,17 +58,25 @@ export class UserController {
     return await this.userService.getMypageUserInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Get(":nickName/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "다른 유저 메인 마이페이지 유저 정보 가져오기" })
-  @ApiResponse({ status: 200, description: "다른 유저 메인 마이페이지 정보 요청 성공" })
+  @ApiResponse({
+    status: 200,
+    description: "다른 유저 메인 마이페이지 정보 요청 성공",
+  })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async getMypageTargetUserInfo(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+  async getMypageTargetUserInfo(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("nickName") nickName: string
+  ) {
     return await this.userService.getMypageTargetUserInfo(tokenInfo, nickName);
   }
 
+  @ApiTags("Follow/Following")
   @Get("/autocomplete/:partialUsername")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -73,10 +84,14 @@ export class UserController {
   @ApiResponse({ status: 200, description: "다른 유저 검색 자동완성 완성" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async searchTargetUser(@GetUser() tokenInfo: TokenInfo, @Param("partialUsername") partialUsername: string) {
+  async searchTargetUser(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("partialUsername") partialUsername: string
+  ) {
     return await this.userService.searchTargetUser(tokenInfo, partialUsername);
   }
 
+  @ApiTags("Signup", "Mypage")
   @Get("nickname/:nickname/exists")
   @ApiParam({
     name: "nickname",
@@ -93,6 +108,7 @@ export class UserController {
     return await this.userService.getNickNameAvailability(nickname);
   }
 
+  @ApiTags("Signup", "Mypage")
   @Get("email/:email/exists")
   @ApiParam({
     name: "email",
@@ -107,34 +123,55 @@ export class UserController {
     return await this.userService.getEmailAvailability(email);
   }
 
+  @ApiTags("Mypage", "Home")
   @Get("/restaurant")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 맛집 리스트 정보 가져오기" })
-  @ApiQuery({ name: 'latitude', required: false, type: String, description: '위도' })
-  @ApiQuery({ name: 'longitude', required: false, type: String, description: '경도' })
-  @ApiQuery({ name: 'radius', required: false, type: String, description: '검색 반경' })
+  @ApiQuery({
+    name: "latitude",
+    required: false,
+    type: String,
+    description: "위도",
+  })
+  @ApiQuery({
+    name: "longitude",
+    required: false,
+    type: String,
+    description: "경도",
+  })
+  @ApiQuery({
+    name: "radius",
+    required: false,
+    type: String,
+    description: "검색 반경",
+  })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMyRestaurantListInfo(
     @Query() locationDto: LocationDto,
-    @GetUser() tokenInfo: TokenInfo) {
-    const searchInfoDto = new SearchInfoDto('', locationDto);
-    return await this.userService.getMyRestaurantListInfo(searchInfoDto, tokenInfo);
+    @GetUser() tokenInfo: TokenInfo
+  ) {
+    const searchInfoDto = new SearchInfoDto("", locationDto);
+    return await this.userService.getMyRestaurantListInfo(
+      searchInfoDto,
+      tokenInfo
+    );
   }
 
+  @ApiTags("Mypage")
   @Get("/wish-restaurant")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 위시 맛집 리스트 정보 가져오기" })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
-  async getMyWishRestaurantListInfo(
-    @GetUser() tokenInfo: TokenInfo) {
+  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo) {
     return await this.userService.getMyWishRestaurantListInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following", "Home")
   @Get("follow-list")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -146,6 +183,7 @@ export class UserController {
     return await this.userService.getMyFollowListInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Get("followed-list")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -157,6 +195,7 @@ export class UserController {
     return await this.userService.getMyFollowerListInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Get("recommended")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -167,6 +206,7 @@ export class UserController {
     return await this.userService.getRecommendUserListInfo(tokenInfo);
   }
 
+  @ApiTags("Signup")
   @Post()
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
@@ -176,7 +216,7 @@ export class UserController {
     return await this.userService.signup(userInfoDto);
   }
 
-
+  @ApiTags("Follow/Following")
   @Post("follow-list/:nickName")
   @ApiParam({
     name: "nickName",
@@ -191,10 +231,14 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @UsePipes(new ValidationPipe())
-  async followUser(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+  async followUser(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("nickName") nickName: string
+  ) {
     return await this.userService.followUser(tokenInfo, nickName);
   }
 
+  @ApiTags("RestaurantList")
   @Post("/restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -209,10 +253,18 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async addRestaurantToNebob(
-    @Body() reviewInfoDto: ReviewInfoDto, @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.addRestaurantToNebob(reviewInfoDto, tokenInfo, restaurantid);
+    @Body() reviewInfoDto: ReviewInfoDto,
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.addRestaurantToNebob(
+      reviewInfoDto,
+      tokenInfo,
+      restaurantid
+    );
   }
 
+  @ApiTags("RestaurantList")
   @Delete("/restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -221,10 +273,16 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async deleteRestaurantFromNebob(
-    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.deleteRestaurantFromNebob(tokenInfo, restaurantid);
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.deleteRestaurantFromNebob(
+      tokenInfo,
+      restaurantid
+    );
   }
 
+  @ApiTags("WishRestaurantList")
   @Post("/wish-restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -239,10 +297,16 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async addRestaurantToWishNebob(
-    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.addRestaurantToWishNebob(tokenInfo, restaurantid);
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.addRestaurantToWishNebob(
+      tokenInfo,
+      restaurantid
+    );
   }
 
+  @ApiTags("WishRestaurantList")
   @Delete("/wish-restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -251,10 +315,16 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async deleteRestaurantFromWishNebob(
-    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.deleteRestaurantFromWishNebob(tokenInfo, restaurantid);
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.deleteRestaurantFromWishNebob(
+      tokenInfo,
+      restaurantid
+    );
   }
 
+  @ApiTags("Mypage")
   @Post("logout")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -265,6 +335,7 @@ export class UserController {
     return await this.userService.logout(tokenInfo);
   }
 
+  @ApiTags("Mypage")
   @Delete()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -277,6 +348,7 @@ export class UserController {
     return await this.userService.deleteUserAccount(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Delete("follow-list/:nickName")
   @ApiParam({
     name: "nickName",
@@ -291,10 +363,14 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @UsePipes(new ValidationPipe())
-  async unfollowUser(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+  async unfollowUser(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("nickName") nickName: string
+  ) {
     return await this.userService.unfollowUser(tokenInfo, nickName);
   }
 
+  @ApiTags("Mypage")
   @Put()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -309,5 +385,4 @@ export class UserController {
   ) {
     return await this.userService.updateMypageUserInfo(tokenInfo, userInfoDto);
   }
-
 }

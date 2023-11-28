@@ -29,15 +29,20 @@ export class RestaurantService implements OnModuleInit {
     private reviewRepository: ReviewRepository
   ) {}
 
-
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    const restaurants = await this.restaurantRepository.searchRestarant(searchInfoDto, tokenInfo);
+    const restaurants = await this.restaurantRepository.searchRestarant(
+      searchInfoDto,
+      tokenInfo
+    );
 
     for (const restaurant of restaurants) {
-      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
-        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+      const reviewCount = await this.reviewRepository
+        .createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", {
+          restaurantId: restaurant.restaurant_id,
+        })
         .getCount();
-  
+
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
@@ -45,27 +50,32 @@ export class RestaurantService implements OnModuleInit {
   }
 
   async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {
-    const restaurant = await this.restaurantRepository.detailInfo(restaurantId, tokenInfo);
+    const restaurant = await this.restaurantRepository.detailInfo(
+      restaurantId,
+      tokenInfo
+    );
 
-    const [reviews, reviewCount] = await this.reviewRepository.createQueryBuilder("review")
+    const [reviews, reviewCount] = await this.reviewRepository
+      .createQueryBuilder("review")
       .select([
         "review.id",
-        'review.isCarVisit',
-        'review.transportationAccessibility',
-        'review.parkingArea',
+        "review.isCarVisit",
+        "review.transportationAccessibility",
+        "review.parkingArea",
         "review.taste",
         "review.service",
-        'review.restroomCleanliness',
-        'review.overallExperience'
+        "review.restroomCleanliness",
+        "review.overallExperience",
       ])
-      .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+      .where("review.restaurant_id = :restaurantId", {
+        restaurantId: restaurant.restaurant_id,
+      })
       .getManyAndCount();
 
-    restaurant.reviews = reviews.slice(0,3);
+    restaurant.reviews = reviews.slice(0, 3);
     restaurant.restaurant_reviewCnt = reviewCount;
 
     return restaurant;
-
   }
 
   async filteredRestaurantList(
@@ -77,27 +87,40 @@ export class RestaurantService implements OnModuleInit {
       where: { nickName: filterInfoDto.filter },
     });
 
-    const restaurants = await this.restaurantRepository.filteredRestaurantList(filterInfoDto,tokenInfo,target);
+    const restaurants = await this.restaurantRepository.filteredRestaurantList(
+      filterInfoDto,
+      tokenInfo,
+      target
+    );
 
     for (const restaurant of restaurants) {
-      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
-        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+      const reviewCount = await this.reviewRepository
+        .createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", {
+          restaurantId: restaurant.restaurant_id,
+        })
         .getCount();
-  
+
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
     return restaurants;
   }
 
-  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo){
-    const restaurants = await this.restaurantRepository.entireRestaurantList(locationDto,tokenInfo);
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
+    const restaurants = await this.restaurantRepository.entireRestaurantList(
+      locationDto,
+      tokenInfo
+    );
 
     for (const restaurant of restaurants) {
-      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
-        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+      const reviewCount = await this.reviewRepository
+        .createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", {
+          restaurantId: restaurant.restaurant_id,
+        })
         .getCount();
-  
+
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
@@ -109,8 +132,9 @@ export class RestaurantService implements OnModuleInit {
       "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43";
     const wgs84 = "EPSG:4326";
 
-    const apiUrl = `http://openapi.seoul.go.kr:8088/${key}/json/LOCALDATA_072404/${startPage}/${startPage + 999
-      }/`;
+    const apiUrl = `http://openapi.seoul.go.kr:8088/${key}/json/LOCALDATA_072404/${startPage}/${
+      startPage + 999
+    }/`;
 
     const response = axios.get(apiUrl);
 

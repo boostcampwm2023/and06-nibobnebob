@@ -23,7 +23,7 @@ export class UserService {
     private userFollowListRepositoy: UserFollowListRepository,
     private reviewRepository: ReviewRepository,
     private userWishRestaurantListRepository: UserWishRestaurantListRepository
-  ) { }
+  ) {}
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
     return await this.usersRepository.createUser(userInfoDto);
@@ -38,27 +38,45 @@ export class UserService {
     return await this.usersRepository.getMypageUserInfo(tokenInfo.id);
   }
   async getMypageTargetUserInfo(tokenInfo: TokenInfo, nickName: string) {
-    const targetInfo = await this.usersRepository.findOne({ select: ["id"], where: { nickName: nickName } });
+    const targetInfo = await this.usersRepository.findOne({
+      select: ["id"],
+      where: { nickName: nickName },
+    });
     try {
-      const result = await this.usersRepository.getMypageTargetUserInfo(targetInfo.id);
-      result.userInfo["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, targetInfo.id);
+      const result = await this.usersRepository.getMypageTargetUserInfo(
+        targetInfo.id
+      );
+      result.userInfo["isFollow"] =
+        await this.userFollowListRepositoy.getFollowState(
+          tokenInfo.id,
+          targetInfo.id
+        );
       return result;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException();
     }
   }
   async getMypageUserDetailInfo(tokenInfo: TokenInfo) {
     return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
   }
-  async getMyRestaurantListInfo(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    const results = await this.userRestaurantListRepository.getMyRestaurantListInfo(searchInfoDto, tokenInfo.id);
+  async getMyRestaurantListInfo(
+    searchInfoDto: SearchInfoDto,
+    tokenInfo: TokenInfo
+  ) {
+    const results =
+      await this.userRestaurantListRepository.getMyRestaurantListInfo(
+        searchInfoDto,
+        tokenInfo.id
+      );
 
     for (const restaurant of results) {
-      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
-        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+      const reviewCount = await this.reviewRepository
+        .createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", {
+          restaurantId: restaurant.restaurant_id,
+        })
         .getCount();
-  
+
       restaurant.isMy = true;
       restaurant.restaurant_reviewCnt = reviewCount;
     }
@@ -66,60 +84,83 @@ export class UserService {
     return results;
   }
   async getMyWishRestaurantListInfo(tokenInfo: TokenInfo) {
-    const result = await this.userWishRestaurantListRepository.getMyWishRestaurantListInfo(tokenInfo.id);
+    const result =
+      await this.userWishRestaurantListRepository.getMyWishRestaurantListInfo(
+        tokenInfo.id
+      );
     return result;
   }
   async getMyFollowListInfo(tokenInfo: TokenInfo) {
-    const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
-    const userIdValues = userIds.map(user => user.followingUserId);
-    const result = await this.usersRepository.find({ select: ["nickName", "region"], where: { 'id': In(userIdValues) } });
-    return result.map(user => ({
+    const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(
+      tokenInfo.id
+    );
+    const userIdValues = userIds.map((user) => user.followingUserId);
+    const result = await this.usersRepository.find({
+      select: ["nickName", "region"],
+      where: { id: In(userIdValues) },
+    });
+    return result.map((user) => ({
       ...user,
-      isFollow: true
+      isFollow: true,
     }));
   }
   async getMyFollowerListInfo(tokenInfo: TokenInfo) {
-    const followerUserIds = await this.userFollowListRepositoy.getMyFollowerListInfo(tokenInfo.id);
-    const followUserIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
-    const followerUserIdValues = followerUserIds.map(user => user.followedUserId);
-    const followUserIdValues = followUserIds.map(user => user.followingUserId);
+    const followerUserIds =
+      await this.userFollowListRepositoy.getMyFollowerListInfo(tokenInfo.id);
+    const followUserIds =
+      await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
+    const followerUserIdValues = followerUserIds.map(
+      (user) => user.followedUserId
+    );
+    const followUserIdValues = followUserIds.map(
+      (user) => user.followingUserId
+    );
     const result = await this.usersRepository.find({
       select: ["id", "nickName", "region"],
-      where: { 'id': In(followerUserIdValues) }
+      where: { id: In(followerUserIdValues) },
     });
 
-    return result.map(user => {
+    return result.map((user) => {
       const { id, ...userInfo } = user;
       return {
         ...userInfo,
-        isFollow: followUserIdValues.includes(id) ? true : false
+        isFollow: followUserIdValues.includes(id) ? true : false,
       };
     });
   }
   async getRecommendUserListInfo(tokenInfo: TokenInfo) {
-    const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(tokenInfo.id);
-    const userIdValues = userIds.map(user => user.followingUserId);
+    const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(
+      tokenInfo.id
+    );
+    const userIdValues = userIds.map((user) => user.followingUserId);
     userIdValues.push(tokenInfo.id);
-    const result = await this.usersRepository.getRecommendUserListInfo(userIdValues);
-    return result.map(user => ({
+    const result =
+      await this.usersRepository.getRecommendUserListInfo(userIdValues);
+    return result.map((user) => ({
       ...user,
-      isFollow: false
+      isFollow: false,
     }));
   }
   async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
     const users = await this.usersRepository.find({
       select: ["id"],
       where: {
-        "nickName": Like(`%${nickName}%`),
-        id: Not(Equal(tokenInfo.id))
+        nickName: Like(`%${nickName}%`),
+        id: Not(Equal(tokenInfo.id)),
       },
       take: 20,
     });
     if (users.length) {
-      const userIds = users.map(user => user.id);
+      const userIds = users.map((user) => user.id);
       const result = await this.usersRepository.getUsersInfo(userIds);
       for (let i in result.userInfo) {
-        result.userInfo[i]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, userIds[i]) ? true : false;
+        result.userInfo[i]["isFollow"] =
+          (await this.userFollowListRepositoy.getFollowState(
+            tokenInfo.id,
+            userIds[i]
+          ))
+            ? true
+            : false;
       }
       return result;
     }
@@ -127,31 +168,49 @@ export class UserService {
   }
 
   async followUser(tokenInfo: TokenInfo, nickName: string) {
-    const targetId = await this.usersRepository.findOne({ select: ["id"], where: { "nickName": nickName } })
+    const targetId = await this.usersRepository.findOne({
+      select: ["id"],
+      where: { nickName: nickName },
+    });
     try {
-      await this.userFollowListRepositoy.followUser(tokenInfo.id, targetId["id"]);
+      await this.userFollowListRepositoy.followUser(
+        tokenInfo.id,
+        targetId["id"]
+      );
       return null;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException();
     }
   }
   async unfollowUser(tokenInfo: TokenInfo, nickName: string) {
-    const targetId = await this.usersRepository.findOne({ select: ["id"], where: { "nickName": nickName } })
+    const targetId = await this.usersRepository.findOne({
+      select: ["id"],
+      where: { nickName: nickName },
+    });
     try {
-      await this.userFollowListRepositoy.unfollowUser(tokenInfo.id, targetId["id"]);
+      await this.userFollowListRepositoy.unfollowUser(
+        tokenInfo.id,
+        targetId["id"]
+      );
       return null;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException();
     }
   }
 
-  async addRestaurantToNebob(reviewInfoDto: ReviewInfoDto, tokenInfo: TokenInfo, restaurantId: number) {
+  async addRestaurantToNebob(
+    reviewInfoDto: ReviewInfoDto,
+    tokenInfo: TokenInfo,
+    restaurantId: number
+  ) {
     const reviewEntity = this.reviewRepository.create(reviewInfoDto);
     try {
       await this.reviewRepository.save(reviewEntity);
-      await this.userRestaurantListRepository.addRestaurantToNebob(tokenInfo.id, restaurantId, reviewEntity);
+      await this.userRestaurantListRepository.addRestaurantToNebob(
+        tokenInfo.id,
+        restaurantId,
+        reviewEntity
+      );
     } catch (err) {
       throw new BadRequestException();
     }
@@ -159,21 +218,33 @@ export class UserService {
   }
 
   async deleteRestaurantFromNebob(tokenInfo: TokenInfo, restaurantId: number) {
-    await this.userRestaurantListRepository.deleteRestaurantFromNebob(tokenInfo.id, restaurantId);
+    await this.userRestaurantListRepository.deleteRestaurantFromNebob(
+      tokenInfo.id,
+      restaurantId
+    );
     return null;
   }
 
   async addRestaurantToWishNebob(tokenInfo: TokenInfo, restaurantId: number) {
     try {
-      await this.userWishRestaurantListRepository.addRestaurantToWishNebob(tokenInfo.id, restaurantId);
+      await this.userWishRestaurantListRepository.addRestaurantToWishNebob(
+        tokenInfo.id,
+        restaurantId
+      );
     } catch (err) {
       throw new BadRequestException();
     }
     return null;
   }
 
-  async deleteRestaurantFromWishNebob(tokenInfo: TokenInfo, restaurantId: number) {
-    await this.userWishRestaurantListRepository.deleteRestaurantFromWishNebob(tokenInfo.id, restaurantId);
+  async deleteRestaurantFromWishNebob(
+    tokenInfo: TokenInfo,
+    restaurantId: number
+  ) {
+    await this.userWishRestaurantListRepository.deleteRestaurantFromWishNebob(
+      tokenInfo.id,
+      restaurantId
+    );
     return null;
   }
 
