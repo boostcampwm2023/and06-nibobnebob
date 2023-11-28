@@ -44,7 +44,27 @@ export class RestaurantService implements OnModuleInit {
   }
 
   async detailInfo(restaurantId: number, tokenInfo: TokenInfo) {
-    return this.restaurantRepository.detailInfo(restaurantId, tokenInfo);
+    const restaurant = await this.restaurantRepository.detailInfo(restaurantId, tokenInfo);
+
+    const [reviews, reviewCount] = await this.reviewRepository.createQueryBuilder("review")
+      .select([
+        "review.id",
+        'review.isCarVisit',
+        'review.transportationAccessibility',
+        'review.parkingArea',
+        "review.taste",
+        "review.service",
+        'review.restroomCleanliness',
+        'review.overallExperience'
+      ])
+      .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+      .getManyAndCount();
+
+    restaurant.reviews = reviews.slice(0,3);
+    restaurant.reviewCnt = reviewCount;
+
+    return restaurant;
+
   }
 
   async filteredRestaurantList(
