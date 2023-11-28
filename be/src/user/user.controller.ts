@@ -17,6 +17,7 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { UserService } from "./user.service";
@@ -30,6 +31,7 @@ import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @ApiTags("Mypage")
   @Get()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -44,6 +46,7 @@ export class UserController {
     return await this.userService.getMypageUserDetailInfo(tokenInfo);
   }
 
+  @ApiTags("Mypage")
   @Get("/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -55,6 +58,7 @@ export class UserController {
     return await this.userService.getMypageUserInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Get(":nickName/details")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -72,6 +76,7 @@ export class UserController {
     return await this.userService.getMypageTargetUserInfo(tokenInfo, nickName);
   }
 
+  @ApiTags("Follow/Following")
   @Get("/autocomplete/:partialUsername")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -86,6 +91,7 @@ export class UserController {
     return await this.userService.searchTargetUser(tokenInfo, partialUsername);
   }
 
+  @ApiTags("Signup", "Mypage")
   @Get("nickname/:nickname/exists")
   @ApiParam({
     name: "nickname",
@@ -102,6 +108,7 @@ export class UserController {
     return await this.userService.getNickNameAvailability(nickname);
   }
 
+  @ApiTags("Signup", "Mypage")
   @Get("email/:email/exists")
   @ApiParam({
     name: "email",
@@ -116,6 +123,7 @@ export class UserController {
     return await this.userService.getEmailAvailability(email);
   }
 
+  @ApiTags("Mypage", "Home")
   @Get("/restaurant")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -152,6 +160,7 @@ export class UserController {
     );
   }
 
+  @ApiTags("Mypage")
   @Get("/wish-restaurant")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -162,6 +171,7 @@ export class UserController {
     return await this.userService.getMyWishRestaurantListInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following", "Home")
   @Get("follow-list")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -173,6 +183,7 @@ export class UserController {
     return await this.userService.getMyFollowListInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Get("followed-list")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -184,6 +195,7 @@ export class UserController {
     return await this.userService.getMyFollowerListInfo(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Get("recommended")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -194,6 +206,7 @@ export class UserController {
     return await this.userService.getRecommendUserListInfo(tokenInfo);
   }
 
+  @ApiTags("Signup")
   @Post()
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
@@ -203,6 +216,7 @@ export class UserController {
     return await this.userService.signup(userInfoDto);
   }
 
+  @ApiTags("Follow/Following")
   @Post("follow-list/:nickName")
   @ApiParam({
     name: "nickName",
@@ -224,6 +238,7 @@ export class UserController {
     return await this.userService.followUser(tokenInfo, nickName);
   }
 
+  @ApiTags("RestaurantList")
   @Post("/restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -249,6 +264,7 @@ export class UserController {
     );
   }
 
+  @ApiTags("RestaurantList")
   @Delete("/restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -266,6 +282,7 @@ export class UserController {
     );
   }
 
+  @ApiTags("WishRestaurantList")
   @Post("/wish-restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -289,6 +306,7 @@ export class UserController {
     );
   }
 
+  @ApiTags("WishRestaurantList")
   @Delete("/wish-restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -306,6 +324,7 @@ export class UserController {
     );
   }
 
+  @ApiTags("Mypage")
   @Post("logout")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -316,6 +335,7 @@ export class UserController {
     return await this.userService.logout(tokenInfo);
   }
 
+  @ApiTags("Mypage")
   @Delete()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -328,6 +348,7 @@ export class UserController {
     return await this.userService.deleteUserAccount(tokenInfo);
   }
 
+  @ApiTags("Follow/Following")
   @Delete("follow-list/:nickName")
   @ApiParam({
     name: "nickName",
@@ -349,6 +370,7 @@ export class UserController {
     return await this.userService.unfollowUser(tokenInfo, nickName);
   }
 
+  @ApiTags("Mypage")
   @Put()
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()

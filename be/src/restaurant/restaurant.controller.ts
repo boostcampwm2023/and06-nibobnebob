@@ -14,6 +14,7 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 import { RestaurantService } from "./restaurant.service";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
@@ -21,6 +22,7 @@ import { FilterInfoDto } from "./dto/filterInfo.dto";
 import { GetUser, TokenInfo } from "src/user/user.decorator";
 import { LocationDto } from "./dto/location.dto";
 
+@ApiTags("Home")
 @Controller("restaurant")
 export class RestaurantController {
   constructor(private restaurantService: RestaurantService) {}

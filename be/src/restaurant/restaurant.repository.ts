@@ -94,7 +94,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         .where("restaurant.name LIKE :partialName")
         .setParameters({
           partialName: `%${searchInfoDto.partialName}%`,
-          userId: tokenInfo.id, 
+          userId: tokenInfo.id,
         })
         .limit(15)
         .getRawMany();
