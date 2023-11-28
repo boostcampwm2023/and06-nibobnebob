@@ -7,7 +7,7 @@ data class UiRestaurantData(
     val name: String = "",
     val address: String = "",
     val phoneNumber: String = "",
-    val reviewCount: Int = 0,
+    val reviewCount: String = "",
     val isInWishList: Boolean = false,
     val isInMyList: Boolean = false
 )

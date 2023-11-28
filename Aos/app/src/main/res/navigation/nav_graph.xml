@@ -18,7 +18,32 @@
         android:id="@+id/followFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.follow.FollowFragment"
         android:label="fragment_follow"
-        tools:layout="@layout/fragment_follow" />
+        tools:layout="@layout/fragment_follow" >
+        <action
+            android:id="@+id/action_followFragment_to_followSearchFragment"
+            app:destination="@id/followSearchFragment" />
+        <action
+            android:id="@+id/action_followFragment_to_followDetailFragment"
+            app:destination="@id/followDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/followSearchFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.follow.search.FollowSearchFragment"
+        android:label="fragment_follow_search"
+        tools:layout="@layout/fragment_follow_search"/>
+
+    <fragment
+        android:id="@+id/followDetailFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.follow.detail.FollowDetailFragment"
+        android:label="fragment_follow_detail"
+        tools:layout="@layout/fragment_follow_detail">
+        <argument
+            android:name="nickName"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
+
     <fragment
         android:id="@+id/myPageFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.MyPageFragment"
