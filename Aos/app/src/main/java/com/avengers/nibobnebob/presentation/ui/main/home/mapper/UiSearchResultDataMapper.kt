@@ -5,12 +5,12 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 
 fun SearchRestaurantResponse.toUiRestaurantData(): UiRestaurantData = UiRestaurantData(
     id = id,
-    location = location,
+    latitude = location.split(" ")[0].toDouble(),
+    longitude = location.split(" ")[1].toDouble(),
     name = name,
     address = address,
     phoneNumber = phoneNumber,
-    reviewCount = reviewCnt,
+    reviewCount = reviewCnt.toString(),
     isInWishList = false,
     isInMyList = false
-
 )

@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData" />
+            type="com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData" />
 
     </data>
 

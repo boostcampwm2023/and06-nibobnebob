@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.config
 
+import android.util.Log
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.presentation.util.Constants.AUTHORIZATION
 import com.avengers.nibobnebob.presentation.util.Constants.BEARER
@@ -20,6 +21,7 @@ class AccessTokenInterceptor @Inject constructor(private val dataStoreManager: D
             dataStoreManager.getAccessToken().first()
         }
 
+        Log.d("token",accessToken.toString())
         val builder: Request.Builder = chain.request().newBuilder()
         accessToken?.takeIf { it.isNotEmpty() }?.let {
             builder.addHeader(AUTHORIZATION, "$BEARER $it")

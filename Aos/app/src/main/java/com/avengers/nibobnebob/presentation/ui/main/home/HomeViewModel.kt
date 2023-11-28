@@ -1,10 +1,14 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.repository.HomeRepository
+import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiMarkerData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,6 +17,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,8 +26,10 @@ import javax.inject.Inject
 data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
     val filterList: List<UiFilterData> = emptyList(),
-    val markerList: List<UiMarkerData> = emptyList(),
-    val curFilter: String = MY_LIST
+    val markerList: List<UiRestaurantData> = emptyList(),
+    val curFilter: String = MY_LIST,
+    val curLatitude: Double = 0.0,
+    val curLongitude: Double = 0.0
 )
 
 sealed class TrackingState {
@@ -32,18 +40,29 @@ sealed class TrackingState {
 
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
-    data object SetNewMarkers: HomeEvents()
-    data object RemoveMarkers: HomeEvents()
+    data object SetNewMarkers : HomeEvents()
+    data object RemoveMarkers : HomeEvents()
 }
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val homeRepository: HomeRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private val _events = MutableSharedFlow<HomeEvents>()
     val events: SharedFlow<HomeEvents> = _events.asSharedFlow()
+
+    fun updateLocation(latitude: Double, longitude: Double) {
+        _uiState.update { state ->
+            state.copy(
+                curLatitude = latitude,
+                curLongitude = longitude
+            )
+        }
+    }
 
     fun locationBtnClicked() {
         _uiState.update { state ->
@@ -71,115 +90,73 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getFilterList() {
-        _uiState.update { state ->
-            // todo test 데이터 삽입
-            state.copy(
-                filterList = listOf(
-                    UiFilterData(MY_LIST, true, ::onFilterItemClicked),
-                    UiFilterData("K011 노균욱", false, ::onFilterItemClicked),
-                    UiFilterData("K015 박진성", false, ::onFilterItemClicked),
-                    UiFilterData("K024 오세영", false, ::onFilterItemClicked),
-                ),
-                curFilter = MY_LIST
-            )
-        }
-    }
-
-    fun getMarkerList() {
-        // todo 현재 필터를 서버에 보내서, 데이터 가져오기
-
-        // todo 데이터 성공적 수신시, setMarker 하기
-        viewModelScope.launch {
-
-            _events.emit(HomeEvents.RemoveMarkers)
-
-            when (_uiState.value.curFilter) {
-                MY_LIST -> {
+        homeRepository.followList().onEach { it ->
+            when (it) {
+                is BaseState.Success -> {
+                    val initialFilterData = UiFilterData(MY_LIST, true, ::onFilterItemClicked)
+                    val filterList = listOf(initialFilterData) + it.data.body.map {
+                        UiFilterData(it.nickName, false, ::onFilterItemClicked)
+                    }
                     _uiState.update { state ->
                         state.copy(
-                            markerList = listOf(
-                                UiMarkerData(
-                                    id = 1,
-                                    latitude = 37.355594049034,
-                                    longitude = 126.36707115682,
-                                    name = "너무 맛있는 집",
-                                    address = "서울시 중구 만리동",
-                                    phoneNumber = "010-1234-5254",
-                                    reviewCount = "99개",
-                                    isInWishList = false,
-                                    isInMyList = false
-                                ),
-                                UiMarkerData(
-                                    id = 1,
-                                    latitude = 37.555594049034,
-                                    longitude = 126.96707115682,
-                                    name = "그닥 맛없는 집",
-                                    address = "서울시 중구 용현동",
-                                    phoneNumber = "010-1234-5254",
-                                    reviewCount = "90개",
-                                    isInWishList = false,
-                                    isInMyList = false
-                                ),
-                                UiMarkerData(
-                                    id = 1,
-                                    latitude = 37.255594049034,
-                                    longitude = 126.16707115682,
-                                    name = "그럭저럭?",
-                                    address = "서울시 중구 만리동",
-                                    phoneNumber = "010-1234-5254",
-                                    reviewCount = "99개",
-                                    isInWishList = false,
-                                    isInMyList = false
-                                ),
-                            )
+                            filterList = filterList,
+                            curFilter = MY_LIST
                         )
                     }
                 }
 
-                "K011 노균욱" -> {
+                is BaseState.Error -> {
                     _uiState.update { state ->
                         state.copy(
-                            markerList = listOf(
-                                UiMarkerData(
-                                    id = 1,
-                                    latitude = 36.555594049034,
-                                    longitude = 125.96707115682,
-                                    name = "세영국밥",
-                                    address = "서울시 영등포구",
-                                    phoneNumber = "010-1234-5111",
-                                    reviewCount = "0개",
-                                    isInWishList = false,
-                                    isInMyList = false
-                                ),
-                                UiMarkerData(
-                                    id = 1,
-                                    latitude = 37.355594049034,
-                                    longitude = 125.96707115682,
-                                    name = "균욱불뼈찜",
-                                    address = "서울시 중구 만리동",
-                                    phoneNumber = "010-1234-2254",
-                                    reviewCount = "90개",
-                                    isInWishList = true,
-                                    isInMyList = false
-                                ),
-                                UiMarkerData(
-                                    id = 1,
-                                    latitude = 37.255594049034,
-                                    longitude = 126.76707115682,
-                                    name = "진성아구찜",
-                                    address = "서울시 중구 만리동",
-                                    phoneNumber = "010-1234-5254",
-                                    reviewCount = "99개",
-                                    isInWishList = false,
-                                    isInMyList = true
-                                ),
-                            )
+                            filterList = listOf(UiFilterData(MY_LIST, true, ::onFilterItemClicked)),
+                            curFilter = MY_LIST
                         )
                     }
+                    Log.d("FilterList Test", "Error : $it")
                 }
             }
 
-            _events.emit(HomeEvents.SetNewMarkers)
+        }.launchIn(viewModelScope)
+    }
+
+    fun getMarkerList() {
+        when (_uiState.value.curFilter) {
+            MY_LIST -> {
+                homeRepository.myRestaurantList().onEach {
+                    _events.emit(HomeEvents.RemoveMarkers)
+                    when (it) {
+                        is BaseState.Success -> {
+                            _uiState.update { state ->
+                                state.copy(markerList = it.data.body.map { data ->
+                                    data.toUiRestaurantData()
+                                })
+                            }
+                        }
+                        is BaseState.Error -> Log.d("Filter Test", "Error : $it")
+                    }
+                    _events.emit(HomeEvents.SetNewMarkers)
+                }.launchIn(viewModelScope)
+            }
+            else -> {
+                homeRepository.filterRestaurantList(
+                    _uiState.value.curFilter,
+                    "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
+                    50000
+                ).onEach {
+                    _events.emit(HomeEvents.RemoveMarkers)
+                    when (it) {
+                        is BaseState.Success -> {
+                            _uiState.update { state ->
+                                state.copy(markerList = it.data.body.map { data ->
+                                    data.toUiRestaurantData()
+                                })
+                            }
+                        }
+                        is BaseState.Error -> Log.d("Filter Test", "Error : $it")
+                    }
+                    _events.emit(HomeEvents.SetNewMarkers)
+                }.launchIn(viewModelScope)
+            }
         }
     }
 
