@@ -25,12 +25,12 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         return null;
     }
     async getMyRestaurantListInfo(searchInfoDto: SearchInfoDto, id: TokenInfo["id"]) {
-        if (searchInfoDto.radius) {
+        if (searchInfoDto.latitude && searchInfoDto.longitude) {
             return await this
                 .createQueryBuilder('user_restaurant_lists')
                 .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
                 .select([
-                    'user_restaurant_lists.restaurantId',
+                    'user_restaurant_lists.restaurantId AS restaurant_id',
                     'restaurant.name',
                     'restaurant.location',
                     'restaurant.address',
@@ -42,7 +42,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
                 location, 
                 ST_GeomFromText('POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})', 4326)
             )<  ${searchInfoDto.radius} and user_restaurant_lists.deleted_at IS NULL`, { userId: id })
-                .getMany();
+                .getRawMany();
         }
         else {
             return await this
