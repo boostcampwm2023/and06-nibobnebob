@@ -12,6 +12,7 @@ import { BadRequestException } from "@nestjs/common/exceptions";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 import { ReviewRepository } from "src/review/review.repository";
 import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
+import { UserWishRestaurantListRepository } from "./user.wishrestaurantList.repository";
 
 @Injectable()
 export class UserService {
@@ -20,7 +21,8 @@ export class UserService {
     private usersRepository: UserRepository,
     private userRestaurantListRepository: UserRestaurantListRepository,
     private userFollowListRepositoy: UserFollowListRepository,
-    private reviewRepository: ReviewRepository
+    private reviewRepository: ReviewRepository,
+    private userWishRestaurantListRepositoy: UserWishRestaurantListRepository
   ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
@@ -147,6 +149,15 @@ export class UserService {
 
   async deleteRestaurantFromNebob(tokenInfo: TokenInfo, restaurantId: number) {
     await this.userRestaurantListRepository.deleteRestaurantFromNebob(tokenInfo.id, restaurantId);
+    return null;
+  }
+
+  async addRestaurantToWishNebob(tokenInfo: TokenInfo, restaurantId: number) {
+    try {
+      await this.userWishRestaurantListRepositoy.addRestaurantToWishNebob(tokenInfo.id, restaurantId);
+    } catch (err) {
+      throw new BadRequestException();
+    }
     return null;
   }
 
