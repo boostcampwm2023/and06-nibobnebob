@@ -8,6 +8,7 @@ import { TokenInfo } from "src/user/user.decorator";
 import { UserRestaurantListRepository } from "src/user/user.restaurantList.repository";
 import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
 import { UserRepository } from "src/user/user.repository";
+import { ReviewRepository } from "src/review/review.repository";
 
 const key = "api키 입력하세요";
 
@@ -26,12 +27,23 @@ export class RestaurantService implements OnModuleInit {
   constructor(
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
-    private userRestaurantListRepository: UserRestaurantListRepository
+    private userRestaurantListRepository: UserRestaurantListRepository,
+    private reviewRepository: ReviewRepository
   ) {}
 
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    return this.restaurantRepository.searchRestarant(searchInfoDto, tokenInfo);
+    const restaurants = await this.restaurantRepository.searchRestarant(searchInfoDto, tokenInfo);
+
+    for (const restaurant of restaurants) {
+      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+        .getCount();
+  
+      restaurant.reviewCnt = reviewCount;
+    }
+
+    return restaurants;
   }
 
   async detailInfo(restaurantId: number) {
@@ -47,8 +59,9 @@ export class RestaurantService implements OnModuleInit {
       where: { nickName: filterInfoDto.filter },
     });
 
+    let restaurants
     if(filterInfoDto.longitude && filterInfoDto.latitude){
-      return this.userRestaurantListRepository
+      restaurants = await this.userRestaurantListRepository
       .createQueryBuilder("user_restaurant_lists")
       .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
       .leftJoin(
@@ -77,7 +90,7 @@ export class RestaurantService implements OnModuleInit {
       .getRawMany();
     }
     else{
-      return this.userRestaurantListRepository
+      restaurants = await this.userRestaurantListRepository
       .createQueryBuilder("user_restaurant_lists")
       .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
       .leftJoin(
@@ -103,6 +116,16 @@ export class RestaurantService implements OnModuleInit {
       .limit(15)
       .getRawMany();
     }
+
+    for (const restaurant of restaurants) {
+      const reviewCount = await this.reviewRepository.createQueryBuilder("review")
+        .where("review.restaurant_id = :restaurantId", { restaurantId: restaurant.restaurant_id })
+        .getCount();
+  
+      restaurant.reviewCnt = reviewCount;
+    }
+
+    return restaurants;
   }
 
   async getRestaurantsListFromSeoulData(startPage) {
