@@ -32,6 +32,24 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
     );
     return null;
   }
+
+  async getTargetRestaurantListInfo(targetId: number) {
+        const ids = await this.find({ select: ["restaurantId"], where: { userId: targetId }, order: { createdAt: "DESC" }, take: 3 });
+        const restaurantIds = ids.map(entity => entity.restaurantId);
+        return await this.createQueryBuilder('user_restaurant_lists')
+            .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
+            .select([
+                'user_restaurant_lists.restaurantId',
+                'restaurant.name',
+                'restaurant.location',
+                'restaurant.address',
+                'restaurant.category',
+                "restaurant.phoneNumber"])
+            .where("user_restaurant_lists.restaurantId  IN (:...id)", { id: restaurantIds })
+            .getMany();
+
+    }
+
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
     id: TokenInfo["id"]

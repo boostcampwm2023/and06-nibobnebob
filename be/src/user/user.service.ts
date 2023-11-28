@@ -43,14 +43,10 @@ export class UserService {
       where: { nickName: nickName },
     });
     try {
-      const result = await this.usersRepository.getMypageTargetUserInfo(
-        targetInfo.id
-      );
-      result.userInfo["isFollow"] =
-        await this.userFollowListRepositoy.getFollowState(
-          tokenInfo.id,
-          targetInfo.id
-        );
+      const result = await this.usersRepository.getMypageTargetUserInfo(targetInfo.id);
+      result.userInfo[0]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, targetInfo.id) ? true : false;
+      const restaurantList = await this.userRestaurantListRepository.getTargetRestaurantListInfo(targetInfo.id);
+      result.userInfo[0]["restaurants"] = restaurantList;
       return result;
     } catch (err) {
       throw new BadRequestException();
