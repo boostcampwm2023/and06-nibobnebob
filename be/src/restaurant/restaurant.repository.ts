@@ -118,7 +118,6 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius} and user_restaurant_lists.user_id = :targetId`,
         { targetId: target.id }
       )
-      .limit(15)
       .getRawMany();
     }
     else{
@@ -146,7 +145,6 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         'CASE WHEN current_url.userId IS NOT NULL THEN true ELSE false END AS "isMy"',
         "restaurant.reviewCnt"
       ])
-      .limit(15)
       .getRawMany();
     }
   }
