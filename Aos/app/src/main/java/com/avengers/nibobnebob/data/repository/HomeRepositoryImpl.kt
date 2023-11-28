@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class HomeRepositoryImpl @Inject constructor(private val api : HomeApi) : HomeRepository{
+class HomeRepositoryImpl @Inject constructor(private val api: HomeApi) : HomeRepository {
     override fun searchRestaurant(
         name: String,
         radius: String?,
         longitude: String?,
         latitude: String?
-    ): Flow<BaseState<BaseResponse<List<SearchRestaurantResponse>>>> = flow  {
+    ): Flow<BaseState<BaseResponse<List<SearchRestaurantResponse>>>> = flow {
         val result = runRemote { api.searchRestaurant(name, radius, longitude, latitude) }
         emit(result)
     }
@@ -27,17 +27,13 @@ class HomeRepositoryImpl @Inject constructor(private val api : HomeApi) : HomeRe
         emit(result)
     }
 
-    override fun myRestaurantList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> = flow{
-        val result = runRemote { api.myRestaurantList() }
-        emit(result)
-    }
 
     override fun filterRestaurantList(
-        filter : String,
+        filter: String,
         location: String,
         radius: Int
-    ): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> = flow{
-        val result = runRemote { api.filterRestaurantList(filter,location,radius) }
+    ): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> = flow {
+        val result = runRemote { api.filterRestaurantList(filter, location, radius) }
         emit(result)
     }
 }
