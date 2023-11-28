@@ -33,22 +33,32 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         return null;
     }
 
-    async getTargetRestaurantListInfo(targetId: number) {
-        const ids = await this.find({ select: ["restaurantId"], where: { userId: targetId }, order: { createdAt: "DESC" }, take: 3 });
+    async getTargetRestaurantListInfo(targetId: number, id: TokenInfo["id"]) {
+        const ids = await this.find({
+            select: ["restaurantId"],
+            where: { userId: targetId },
+            order: { createdAt: "DESC" },
+            take: 3
+        });
         const restaurantIds = ids.map(entity => entity.restaurantId);
         return await this.createQueryBuilder('user_restaurant_lists')
             .leftJoinAndSelect('user_restaurant_lists.restaurant', 'restaurant')
+            .leftJoin('user_restaurant_lists', 'user_restaurant_lists_other',
+                'user_restaurant_lists.restaurantId = user_restaurant_lists_other.restaurantId AND user_restaurant_lists_other.userId = :currentUserId')
             .select([
-                'user_restaurant_lists.restaurantId',
+                'user_restaurant_lists.restaurantId as restaurant_id',
                 'restaurant.name',
                 'restaurant.location',
                 'restaurant.address',
                 'restaurant.category',
-                "restaurant.phoneNumber"])
-            .where("user_restaurant_lists.restaurantId  IN (:...id) and user_restaurant_lists.userId = :targetId", { id: restaurantIds, targetId: targetId })
-            .getMany();
+                "restaurant.phoneNumber",
+                `CASE WHEN user_restaurant_lists_other.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"`
+            ])
+            .where("user_restaurant_lists.restaurantId IN (:...restaurantIds) and user_restaurant_lists.userId = :targetId", { restaurantIds: restaurantIds, targetId: targetId, currentUserId: id })
+            .getRawMany();
 
     }
+
 
     async getMyRestaurantListInfo(
         searchInfoDto: SearchInfoDto,

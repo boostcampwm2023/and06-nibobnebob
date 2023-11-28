@@ -23,7 +23,7 @@ export class UserService {
     private userFollowListRepositoy: UserFollowListRepository,
     private reviewRepository: ReviewRepository,
     private userWishRestaurantListRepository: UserWishRestaurantListRepository
-  ) {}
+  ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
     return await this.usersRepository.createUser(userInfoDto);
@@ -45,7 +45,7 @@ export class UserService {
     try {
       const result = await this.usersRepository.getMypageTargetUserInfo(targetInfo.id);
       result.userInfo[0]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, targetInfo.id) ? true : false;
-      const restaurantList = await this.userRestaurantListRepository.getTargetRestaurantListInfo(targetInfo.id);
+      const restaurantList = await this.userRestaurantListRepository.getTargetRestaurantListInfo(targetInfo.id, tokenInfo.id);
       result.userInfo[0]["restaurants"] = restaurantList;
       return result;
     } catch (err) {
