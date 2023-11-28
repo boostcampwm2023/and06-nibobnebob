@@ -40,7 +40,8 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
                 'restaurant.address',
                 'restaurant.category',
                 "restaurant.phoneNumber",
-                'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"'
+                'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
+                'CASE WHEN user_wishrestaurant_lists.user_id IS NOT NULL THEN true ELSE false END AS "isWish"'
             ])
             .where(`user_wishrestaurant_lists.user_id = :userId and user_wishrestaurant_lists.deleted_at IS NULL`, { userId: id })
             .getRawMany();
