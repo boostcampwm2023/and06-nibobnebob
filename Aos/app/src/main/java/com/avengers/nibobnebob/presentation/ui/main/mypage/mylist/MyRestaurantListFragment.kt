@@ -12,22 +12,31 @@ import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MyRestaurantListFragment :
     BaseFragment<FragmentMyRestaurantListBinding>(R.layout.fragment_my_restaurant_list) {
 
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
+    private val viewModel: MyRestaurantListViewModel by viewModels()
     private lateinit var navController: NavController
     override val parentViewModel: MainViewModel by activityViewModels()
+    private val adapter = MyRestaurantAdapter { id ->
+        viewModel.clickItem(id)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initView(view)
+        viewModel.myRestaurantList()
     }
 
     private fun initView(view: View) {
-        binding.vm = sharedViewModel
+        binding.svm = sharedViewModel
+        binding.vm = viewModel
+        binding.rvMyRestaurant.adapter = adapter
 
         navController = Navigation.findNavController(view)
 
