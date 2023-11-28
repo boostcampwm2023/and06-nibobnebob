@@ -189,7 +189,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
-        marker.icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
+        marker.icon = OverlayImage.fromResource(R.drawable.ic_marker)
         marker.map = naverMap
 
         marker.setOnClickListener {
@@ -218,7 +218,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private fun setSearchResultMarker(data: UiRestaurantData) {
         Marker().apply {
             position = LatLng(data.latitude, data.longitude)
-            icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
+            icon = OverlayImage.fromResource(R.drawable.ic_marker)
             map = naverMap
         }
 
