@@ -6,7 +6,7 @@ import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import kotlinx.coroutines.flow.Flow
 
-interface GlobalRepository {
+interface RestaurantRepository {
 
     fun restaurantDetail(
         restaurantId: Int

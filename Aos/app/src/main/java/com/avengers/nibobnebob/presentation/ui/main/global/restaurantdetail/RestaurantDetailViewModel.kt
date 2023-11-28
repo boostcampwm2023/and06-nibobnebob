@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.repository.GlobalRepository
+import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantDetailInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,23 +22,23 @@ import javax.inject.Inject
 
 sealed class RestaurantDetailEvents {
     data object NavigateToBack : RestaurantDetailEvents()
-    data class NavigateToDetailReview(val reviewId : Int) : RestaurantDetailEvents()
+    data class NavigateToDetailReview(val reviewId: Int) : RestaurantDetailEvents()
 }
 
 data class RestaurantDetailUiState(
-    val name : String = "",
-    val address : String = "",
-    val reviewCnt : Int = 0,
-    val phoneNumber : String = "",
-    val category : String = "",
-    val isWish : Boolean = false,
-    val reviewList : List<UiReviewData> = emptyList()
+    val name: String = "",
+    val address: String = "",
+    val reviewCnt: Int = 0,
+    val phoneNumber: String = "",
+    val category: String = "",
+    val isWish: Boolean = false,
+    val reviewList: List<UiReviewData> = emptyList()
 )
 
 
 @HiltViewModel
 class RestaurantDetailViewModel @Inject constructor(
-    private val globalRepository: GlobalRepository
+    private val restaurantRepository: RestaurantRepository
 ) : ViewModel() {
     private val TAG = "RestaurantDetailViewModelDebug"
 
@@ -50,9 +50,9 @@ class RestaurantDetailViewModel @Inject constructor(
 
     private val restaurantId = MutableStateFlow<Int>(1)
 
-    fun restaurantDetail(){
-        globalRepository.restaurantDetail(restaurantId = restaurantId.value).onEach {
-            when(it){
+    fun restaurantDetail() {
+        restaurantRepository.restaurantDetail(restaurantId = restaurantId.value).onEach {
+            when (it) {
                 is BaseState.Success -> {
                     it.data.body.toUiRestaurantDetailInfo().apply {
                         _uiState.update { state ->
@@ -67,23 +67,24 @@ class RestaurantDetailViewModel @Inject constructor(
                         }
                     }
                 }
+
                 is BaseState.Error -> {
-                    Log.d(TAG,it.message)
+                    Log.d(TAG, it.message)
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun updateWish(){
+    fun updateWish() {
         _uiState.update { state ->
-            if(state.isWish)
+            if (state.isWish)
                 state.copy(isWish = false)
             else
                 state.copy(isWish = true)
         }
     }
 
-    fun getReviewList(){
+    fun getReviewList() {
         _uiState.update { state ->
             state.copy(
                 reviewList = listOf(
@@ -248,14 +249,12 @@ class RestaurantDetailViewModel @Inject constructor(
     }
 
 
-
-    private fun onReviewClicked(reviewId: Int){
+    private fun onReviewClicked(reviewId: Int) {
         navigateToRestaurantDetail(reviewId = reviewId)
     }
 
 
-
-    fun setRestaurantId(id : Int){
+    fun setRestaurantId(id: Int) {
         restaurantId.value = id
     }
 
@@ -265,7 +264,7 @@ class RestaurantDetailViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToRestaurantDetail(reviewId : Int) {
+    private fun navigateToRestaurantDetail(reviewId: Int) {
         viewModelScope.launch {
             _events.emit(RestaurantDetailEvents.NavigateToDetailReview(reviewId = reviewId))
         }

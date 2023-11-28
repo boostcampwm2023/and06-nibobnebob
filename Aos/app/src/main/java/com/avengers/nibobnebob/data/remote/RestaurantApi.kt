@@ -9,16 +9,16 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-interface GlobalApi {
+interface RestaurantApi {
 
     @GET("api/restaurant/{restaurantId}/details")
     suspend fun restaurantDetail(
-        @Path("restaurantId") restaurantId : Int
-    ) : Response<BaseResponse<RestaurantDetailResponse>>
+        @Path("restaurantId") restaurantId: Int
+    ): Response<BaseResponse<RestaurantDetailResponse>>
 
     @POST("api/user/restaurant/{restaurantId}")
     suspend fun addRestaurant(
         @Path("restaurantId") restaurantId: Int,
         @Body params: AddRestaurantRequest
-    ) : Response<BaseResponse<Unit>>
+    ): Response<BaseResponse<Unit>>
 }

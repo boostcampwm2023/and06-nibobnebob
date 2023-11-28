@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.app.di
 
-import android.content.Context
 import com.avengers.nibobnebob.BuildConfig
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.config.AccessTokenInterceptor
@@ -9,7 +8,6 @@ import com.avengers.nibobnebob.presentation.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
