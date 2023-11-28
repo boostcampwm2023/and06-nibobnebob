@@ -3,6 +3,6 @@ import { ReviewRepository } from "./review.repository";
 
 @Module({
   providers: [ReviewRepository],
-  exports: [ReviewRepository]
+  exports: [ReviewRepository],
 })
-export class ReviewModule { }
+export class ReviewModule {}

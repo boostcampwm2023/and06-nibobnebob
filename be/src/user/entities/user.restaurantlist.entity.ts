@@ -36,5 +36,3 @@ export class UserRestaurantListEntity {
   @JoinColumn({ name: "review_id" })
   review: ReviewInfoEntity;
 }
-
-

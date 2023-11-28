@@ -49,5 +49,5 @@ export class ReviewInfoEntity {
   restaurant: RestaurantInfoEntity;
 
   @OneToOne(() => UserRestaurantListEntity)
-  userRestaurant: UserRestaurantListEntity
+  userRestaurant: UserRestaurantListEntity;
 }

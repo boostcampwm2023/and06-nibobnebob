@@ -43,7 +43,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         ST_GeomFromText(:point, 4326)
       ) AS distance`,
           `CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"`,
-          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`
+          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
         ])
         .where("restaurant.name LIKE :partialName")
         .andWhere(
@@ -62,7 +62,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           point: `POINT(${searchInfoDto.longitude} ${searchInfoDto.latitude})`,
           partialName: `%${searchInfoDto.partialName}%`,
           radius: searchInfoDto.radius,
-          userId: tokenInfo.id, // 현재 사용자 ID
+          userId: tokenInfo.id,
         })
         .limit(15)
         .getRawMany();
@@ -89,22 +89,25 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "restaurant.reviewCnt",
           "restaurant.category",
           `CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"`,
-          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`
+          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
         ])
         .where("restaurant.name LIKE :partialName")
         .setParameters({
           partialName: `%${searchInfoDto.partialName}%`,
-          userId: tokenInfo.id, // 현재 사용자 ID
+          userId: tokenInfo.id, 
         })
         .limit(15)
         .getRawMany();
     }
   }
 
-  async filteredRestaurantList(filterInfoDto: FilterInfoDto, tokenInfo: TokenInfo, target: User) {
+  async filteredRestaurantList(
+    filterInfoDto: FilterInfoDto,
+    tokenInfo: TokenInfo,
+    target: User
+  ) {
     if (filterInfoDto.longitude && filterInfoDto.latitude) {
-      return this
-        .createQueryBuilder("restaurant")
+      return this.createQueryBuilder("restaurant")
         .innerJoin(
           UserRestaurantListEntity,
           "user_restaurant_list",
@@ -132,7 +135,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "restaurant.phoneNumber",
           'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
           `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
-          "restaurant.reviewCnt"
+          "restaurant.reviewCnt",
         ])
         .where(
           `ST_DistanceSphere(
@@ -140,10 +143,8 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           ST_GeomFromText('POINT(${filterInfoDto.longitude} ${filterInfoDto.latitude})', 4326)) < ${filterInfoDto.radius}`
         )
         .getRawMany();
-    }
-    else {
-      return this
-        .createQueryBuilder("restaurant")
+    } else {
+      return this.createQueryBuilder("restaurant")
         .innerJoin(
           UserRestaurantListEntity,
           "user_restaurant_list",
@@ -171,15 +172,14 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
           "restaurant.phoneNumber",
           'CASE WHEN current_url.userId IS NOT NULL THEN true ELSE false END AS "isMy"',
           `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
-          "restaurant.reviewCnt"
+          "restaurant.reviewCnt",
         ])
         .getRawMany();
     }
   }
 
   async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
-    return this
-      .createQueryBuilder("restaurant")
+    return this.createQueryBuilder("restaurant")
       .leftJoin(
         UserRestaurantListEntity,
         "current_url",
@@ -194,7 +194,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         "restaurant.category",
         "restaurant.phoneNumber",
         'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
-        "restaurant.reviewCnt"
+        "restaurant.reviewCnt",
       ])
       .where(
         `ST_DistanceSphere(
@@ -220,7 +220,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         "restaurant.category",
         "restaurant.phoneNumber",
         'CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"',
-        "restaurant.reviewCnt"
+        "restaurant.reviewCnt",
       ])
       .where("restaurant.id = :restaurantId", { restaurantId })
       .getRawOne();

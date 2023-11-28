@@ -28,7 +28,7 @@ import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 
 @Controller("user")
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get()
   @UseGuards(AuthGuard("jwt"))
@@ -59,10 +59,16 @@ export class UserController {
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "다른 유저 메인 마이페이지 유저 정보 가져오기" })
-  @ApiResponse({ status: 200, description: "다른 유저 메인 마이페이지 정보 요청 성공" })
+  @ApiResponse({
+    status: 200,
+    description: "다른 유저 메인 마이페이지 정보 요청 성공",
+  })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async getMypageTargetUserInfo(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+  async getMypageTargetUserInfo(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("nickName") nickName: string
+  ) {
     return await this.userService.getMypageTargetUserInfo(tokenInfo, nickName);
   }
 
@@ -73,7 +79,10 @@ export class UserController {
   @ApiResponse({ status: 200, description: "다른 유저 검색 자동완성 완성" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  async searchTargetUser(@GetUser() tokenInfo: TokenInfo, @Param("partialUsername") partialUsername: string) {
+  async searchTargetUser(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("partialUsername") partialUsername: string
+  ) {
     return await this.userService.searchTargetUser(tokenInfo, partialUsername);
   }
 
@@ -111,17 +120,36 @@ export class UserController {
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 맛집 리스트 정보 가져오기" })
-  @ApiQuery({ name: 'latitude', required: false, type: String, description: '위도' })
-  @ApiQuery({ name: 'longitude', required: false, type: String, description: '경도' })
-  @ApiQuery({ name: 'radius', required: false, type: String, description: '검색 반경' })
+  @ApiQuery({
+    name: "latitude",
+    required: false,
+    type: String,
+    description: "위도",
+  })
+  @ApiQuery({
+    name: "longitude",
+    required: false,
+    type: String,
+    description: "경도",
+  })
+  @ApiQuery({
+    name: "radius",
+    required: false,
+    type: String,
+    description: "검색 반경",
+  })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMyRestaurantListInfo(
     @Query() locationDto: LocationDto,
-    @GetUser() tokenInfo: TokenInfo) {
-    const searchInfoDto = new SearchInfoDto('', locationDto);
-    return await this.userService.getMyRestaurantListInfo(searchInfoDto, tokenInfo);
+    @GetUser() tokenInfo: TokenInfo
+  ) {
+    const searchInfoDto = new SearchInfoDto("", locationDto);
+    return await this.userService.getMyRestaurantListInfo(
+      searchInfoDto,
+      tokenInfo
+    );
   }
 
   @Get("/wish-restaurant")
@@ -130,8 +158,7 @@ export class UserController {
   @ApiOperation({ summary: "내 위시 맛집 리스트 정보 가져오기" })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
-  async getMyWishRestaurantListInfo(
-    @GetUser() tokenInfo: TokenInfo) {
+  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo) {
     return await this.userService.getMyWishRestaurantListInfo(tokenInfo);
   }
 
@@ -176,7 +203,6 @@ export class UserController {
     return await this.userService.signup(userInfoDto);
   }
 
-
   @Post("follow-list/:nickName")
   @ApiParam({
     name: "nickName",
@@ -191,7 +217,10 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @UsePipes(new ValidationPipe())
-  async followUser(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+  async followUser(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("nickName") nickName: string
+  ) {
     return await this.userService.followUser(tokenInfo, nickName);
   }
 
@@ -209,8 +238,15 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async addRestaurantToNebob(
-    @Body() reviewInfoDto: ReviewInfoDto, @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.addRestaurantToNebob(reviewInfoDto, tokenInfo, restaurantid);
+    @Body() reviewInfoDto: ReviewInfoDto,
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.addRestaurantToNebob(
+      reviewInfoDto,
+      tokenInfo,
+      restaurantid
+    );
   }
 
   @Delete("/restaurant/:restaurantid")
@@ -221,8 +257,13 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async deleteRestaurantFromNebob(
-    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.deleteRestaurantFromNebob(tokenInfo, restaurantid);
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.deleteRestaurantFromNebob(
+      tokenInfo,
+      restaurantid
+    );
   }
 
   @Post("/wish-restaurant/:restaurantid")
@@ -239,8 +280,13 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async addRestaurantToWishNebob(
-    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.addRestaurantToWishNebob(tokenInfo, restaurantid);
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.addRestaurantToWishNebob(
+      tokenInfo,
+      restaurantid
+    );
   }
 
   @Delete("/wish-restaurant/:restaurantid")
@@ -251,8 +297,13 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async deleteRestaurantFromWishNebob(
-    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
-    return await this.userService.deleteRestaurantFromWishNebob(tokenInfo, restaurantid);
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("restaurantid") restaurantid: number
+  ) {
+    return await this.userService.deleteRestaurantFromWishNebob(
+      tokenInfo,
+      restaurantid
+    );
   }
 
   @Post("logout")
@@ -291,7 +342,10 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @UsePipes(new ValidationPipe())
-  async unfollowUser(@GetUser() tokenInfo: TokenInfo, @Param("nickName") nickName: string) {
+  async unfollowUser(
+    @GetUser() tokenInfo: TokenInfo,
+    @Param("nickName") nickName: string
+  ) {
     return await this.userService.unfollowUser(tokenInfo, nickName);
   }
 
@@ -309,5 +363,4 @@ export class UserController {
   ) {
     return await this.userService.updateMypageUserInfo(tokenInfo, userInfoDto);
   }
-
 }
