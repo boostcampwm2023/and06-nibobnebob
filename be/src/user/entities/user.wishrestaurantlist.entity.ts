@@ -8,10 +8,9 @@ import {
 } from "typeorm";
 import { User } from "./user.entity";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
-import { ReviewInfoEntity } from "src/review/entities/review.entity";
 
-@Entity("user_restaurant_lists")
-export class UserRestaurantListEntity {
+@Entity("user_wishrestaurant_lists")
+export class UserWishRestaurantListEntity {
   @PrimaryColumn({ name: "user_id" })
   userId: number;
 
@@ -31,8 +30,4 @@ export class UserRestaurantListEntity {
   @ManyToOne(() => RestaurantInfoEntity)
   @JoinColumn({ name: "restaurant_id" })
   restaurant: RestaurantInfoEntity;
-
-  @ManyToOne(() => ReviewInfoEntity)
-  @JoinColumn({ name: "review_id" })
-  review: ReviewInfoEntity;
 }

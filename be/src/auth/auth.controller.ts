@@ -16,6 +16,7 @@ import {
 } from "@nestjs/swagger";
 import { RefreshTokenDto } from "./dto/refreshToken.dto";
 
+@ApiTags("Authentication")
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}

@@ -4,7 +4,7 @@ import { ReviewInfoEntity } from "./entities/review.entity";
 
 @Injectable()
 export class ReviewRepository extends Repository<ReviewInfoEntity> {
-    constructor(private dataSource: DataSource) {
-        super(ReviewInfoEntity, dataSource.createEntityManager());
-    }
+  constructor(private dataSource: DataSource) {
+    super(ReviewInfoEntity, dataSource.createEntityManager());
+  }
 }

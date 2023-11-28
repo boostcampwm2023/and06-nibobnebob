@@ -46,15 +46,15 @@ export class User {
   @UpdateDateColumn({ type: "timestamp" })
   updated_at: Date;
 
-  @OneToMany(() => FollowEntity, follow => follow.followingUserId)
-  following: FollowEntity[]
+  @OneToMany(() => FollowEntity, (follow) => follow.followingUserId)
+  following: FollowEntity[];
 
-  @OneToMany(() => FollowEntity, follow => follow.followedUserId)
-  follower: FollowEntity[]
+  @OneToMany(() => FollowEntity, (follow) => follow.followedUserId)
+  follower: FollowEntity[];
 
-  @OneToMany(() => UserRestaurantListEntity, list => list.userId)
-  restaurant: UserRestaurantListEntity[]
+  @OneToMany(() => UserRestaurantListEntity, (list) => list.userId)
+  restaurant: UserRestaurantListEntity[];
 
-  @OneToMany(() => ReviewInfoEntity, review => review.user)
-  review: UserRestaurantListEntity[]
+  @OneToMany(() => ReviewInfoEntity, (review) => review.user)
+  review: UserRestaurantListEntity[];
 }

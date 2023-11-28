@@ -1,7 +1,11 @@
 import { DataSource, IsNull, Repository, Not, In } from "typeorm";
 import { User } from "./entities/user.entity";
 import { UserInfoDto } from "./dto/userInfo.dto";
-import { ConflictException, Injectable, BadRequestException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  BadRequestException,
+} from "@nestjs/common";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
