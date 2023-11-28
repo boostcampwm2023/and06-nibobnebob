@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.app.di
 
+import com.avengers.nibobnebob.data.remote.FollowApi
 import com.avengers.nibobnebob.data.remote.GlobalApi
 import com.avengers.nibobnebob.data.remote.HomeApi
 import com.avengers.nibobnebob.data.remote.MyPageApi
@@ -52,5 +53,9 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideHomeService(retrofit: Retrofit): HomeApi = retrofit.create(HomeApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideFollowService(retrofit: Retrofit): FollowApi = retrofit.create(FollowApi::class.java)
 
 }
