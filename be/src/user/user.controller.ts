@@ -118,10 +118,21 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMyRestaurantListInfo(
-    @Query() locationDto: LocationDto, 
+    @Query() locationDto: LocationDto,
     @GetUser() tokenInfo: TokenInfo) {
     const searchInfoDto = new SearchInfoDto('', locationDto);
     return await this.userService.getMyRestaurantListInfo(searchInfoDto, tokenInfo);
+  }
+
+  @Get("/wish-restaurant")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 위시 맛집 리스트 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async getMyWishRestaurantListInfo(
+    @GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getMyWishRestaurantListInfo(tokenInfo);
   }
 
   @Get("follow-list")
@@ -184,8 +195,6 @@ export class UserController {
     return await this.userService.followUser(tokenInfo, nickName);
   }
 
-
-
   @Post("/restaurant/:restaurantid")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -214,6 +223,36 @@ export class UserController {
   async deleteRestaurantFromNebob(
     @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
     return await this.userService.deleteRestaurantFromNebob(tokenInfo, restaurantid);
+  }
+
+  @Post("/wish-restaurant/:restaurantid")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 위시 맛집 리스트에 등록하기" })
+  @ApiParam({
+    name: "restaurantid",
+    required: true,
+    description: "음식점 id",
+    type: Number,
+  })
+  @ApiResponse({ status: 200, description: "위시 맛집리스트 등록 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async addRestaurantToWishNebob(
+    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
+    return await this.userService.addRestaurantToWishNebob(tokenInfo, restaurantid);
+  }
+
+  @Delete("/wish-restaurant/:restaurantid")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "내 위시 맛집 리스트에서 삭제하기" })
+  @ApiResponse({ status: 200, description: "위시 맛집리스트 삭제 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 400, description: "부적절한 요청" })
+  async deleteRestaurantFromWishNebob(
+    @GetUser() tokenInfo: TokenInfo, @Param("restaurantid") restaurantid: number) {
+    return await this.userService.deleteRestaurantFromWishNebob(tokenInfo, restaurantid);
   }
 
   @Post("logout")
