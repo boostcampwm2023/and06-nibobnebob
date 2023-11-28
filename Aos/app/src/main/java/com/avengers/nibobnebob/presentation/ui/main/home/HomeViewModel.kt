@@ -40,8 +40,8 @@ sealed class TrackingState {
 
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
-    data object SetNewMarkers : HomeEvents()
-    data object RemoveMarkers : HomeEvents()
+    data object SetNewMarkers: HomeEvents()
+    data object RemoveMarkers: HomeEvents()
 }
 
 @HiltViewModel

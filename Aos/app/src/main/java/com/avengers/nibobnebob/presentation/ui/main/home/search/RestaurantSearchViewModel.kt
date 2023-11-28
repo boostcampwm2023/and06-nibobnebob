@@ -22,13 +22,16 @@ import javax.inject.Inject
 
 data class RestaurantSearchUiState(
     val searchList: List<UiRestaurantData> = emptyList(),
+    val searchKeyword: String = "",
     val isResultEmpty: Boolean = false,
 )
 
 sealed class RestaurantSearchEvent {
     data class OnClickResultItem(
-        val index: Int
+        val item: UiRestaurantData
     ) : RestaurantSearchEvent()
+
+    data object NavigateToHome : RestaurantSearchEvent()
 }
 
 @HiltViewModel
@@ -46,16 +49,40 @@ class RestaurantSearchViewModel @Inject constructor(
     )
     val events: SharedFlow<RestaurantSearchEvent> = _events.asSharedFlow()
 
-    private val tempLocation = "37.508796 126.891074"
     private val tempRadius = "5000"
+
+    private val curLongitude = MutableStateFlow("")
+    private val curLatitude = MutableStateFlow("")
+
+
+    fun setCurrentLocation(latitude: Double?, longitude: Double?) {
+        if (latitude == null || longitude == null) return
+
+        viewModelScope.launch {
+            curLatitude.emit(latitude.toString())
+            curLongitude.emit(longitude.toString())
+        }
+    }
 
 
     fun searchRestaurant(keyword: CharSequence) {
-        if (keyword.isBlank()) {
-            _uiState.update { ui -> ui.copy(searchList = emptyList(), isResultEmpty = true) }
+
+        if (keyword.length < 2) {
+            _uiState.update { ui ->
+                ui.copy(
+                    searchList = emptyList(),
+                    searchKeyword = "",
+                    isResultEmpty = keyword.isEmpty()
+                )
+            }
             return
         }
-        homeRepository.searchRestaurant(keyword.toString(), tempLocation, tempRadius)
+
+        val longitude = curLongitude.value.ifEmpty { null }
+        val latitude = curLatitude.value.ifEmpty { null }
+
+
+        homeRepository.searchRestaurant(keyword.toString(), tempRadius, longitude, latitude)
             .onEach { state ->
                 when (state) {
                     is BaseState.Success -> {
@@ -63,21 +90,34 @@ class RestaurantSearchViewModel @Inject constructor(
                         _uiState.update { ui ->
                             ui.copy(
                                 searchList = item.map { it.toUiRestaurantData() },
+                                searchKeyword = keyword.toString(),
                                 isResultEmpty = item.isEmpty()
                             )
                         }
                     }
 
                     else -> {
-                        _uiState.update { ui -> ui.copy(isResultEmpty = true) }
+                        _uiState.update { ui ->
+                            ui.copy(
+                                searchList = emptyList(),
+                                searchKeyword = "",
+                                isResultEmpty = true
+                            )
+                        }
                     }
                 }
             }.launchIn(viewModelScope)
     }
 
-    fun onClickSearchItem(index: Int) {
+    fun navigateToHome() {
         viewModelScope.launch {
-            _events.emit(RestaurantSearchEvent.OnClickResultItem(index))
+            _events.emit(RestaurantSearchEvent.NavigateToHome)
+        }
+    }
+
+    fun onClickSearchItem(item: UiRestaurantData) {
+        viewModelScope.launch {
+            _events.emit(RestaurantSearchEvent.OnClickResultItem(item))
         }
     }
 }

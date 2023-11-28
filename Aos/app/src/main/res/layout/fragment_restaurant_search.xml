@@ -14,6 +14,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingVertical="20dp">
@@ -24,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:background="@drawable/ic_back"
+            android:onClick="@{() -> vm.navigateToHome()}"
             app:layout_constraintBottom_toBottomOf="@id/v_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/v_search" />
@@ -80,7 +82,6 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search"
-            list="@{vm.uiState.searchList}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"

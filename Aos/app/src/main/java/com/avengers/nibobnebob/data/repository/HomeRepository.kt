@@ -11,8 +11,9 @@ interface HomeRepository {
 
     fun searchRestaurant(
         name: String,
-        location: String,
-        radius: String
+        radius: String?,
+        longitude: String?,
+        latitude: String?
     ): Flow<BaseState<BaseResponse<List<SearchRestaurantResponse>>>>
 
     fun followList(): Flow<BaseState<BaseResponse<List<FollowingResponse>>>>

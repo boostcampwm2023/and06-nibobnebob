@@ -14,10 +14,11 @@ import javax.inject.Inject
 class HomeRepositoryImpl @Inject constructor(private val api : HomeApi) : HomeRepository{
     override fun searchRestaurant(
         name: String,
-        location: String,
-        radius: String
+        radius: String?,
+        longitude: String?,
+        latitude: String?
     ): Flow<BaseState<BaseResponse<List<SearchRestaurantResponse>>>> = flow  {
-        val result = runRemote { api.searchRestaurant(name, location, radius) }
+        val result = runRemote { api.searchRestaurant(name, radius, longitude, latitude) }
         emit(result)
     }
 

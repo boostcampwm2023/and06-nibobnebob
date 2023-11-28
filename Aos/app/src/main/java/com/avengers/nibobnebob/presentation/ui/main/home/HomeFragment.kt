@@ -23,6 +23,7 @@ import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -31,6 +32,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), OnMapReadyCallback {
@@ -145,6 +147,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 }
             }
         }
+
+        repeatOnStarted {
+            parentViewModel.uiState.collectLatest {
+                if (it.id < 0) return@collectLatest
+
+                setSearchResultMarker(it)
+
+                RestaurantBottomSheet(
+                    context = requireContext(),
+                    data = it,
+                    onClickAddWishRestaurant = ::addWishTest,
+                    onClickAddMyRestaurant = ::addRestaurantTest,
+                    onClickGoReview = ::goReviewTest
+                ).show()
+
+            }
+        }
     }
 
     private fun startPermissionLauncher() {
@@ -193,6 +212,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             it.map = null
         }
         markerList.clear()
+    }
+
+    private fun setSearchResultMarker(data: UiRestaurantData) {
+        Marker().apply {
+            position = LatLng(data.latitude, data.longitude)
+            icon = OverlayImage.fromResource(R.drawable.ic_location_circle)
+            map = naverMap
+        }
+
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng(data.latitude, data.longitude))
+        naverMap.moveCamera(cameraUpdate)
     }
 
 

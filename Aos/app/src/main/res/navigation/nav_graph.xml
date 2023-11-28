@@ -95,7 +95,13 @@
     <fragment
         android:id="@+id/restaurantSearchFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchFragment"
-        android:label="RestaurantSearchFragment" />
+        android:label="RestaurantSearchFragment" >
+        <action
+            android:id="@+id/action_restaurantSearchFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
     <fragment
         android:id="@+id/addMyRestaurantFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.global.restaurantadd.AddMyRestaurantFragment"
