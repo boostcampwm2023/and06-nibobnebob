@@ -28,8 +28,8 @@ data class HomeUiState(
     val filterList: List<UiFilterData> = emptyList(),
     val markerList: List<UiRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0
+    val curLatitude: Double = 0.0,
+    val curLongitude: Double = 0.0
 )
 
 sealed class TrackingState {
@@ -58,8 +58,8 @@ class HomeViewModel @Inject constructor(
     fun updateLocation(latitude: Double, longitude: Double) {
         _uiState.update { state ->
             state.copy(
-                latitude = latitude,
-                longitude = longitude
+                curLatitude = latitude,
+                curLongitude = longitude
             )
         }
     }
@@ -90,7 +90,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getFilterList() {
-        homeRepository.followList().onEach {
+        homeRepository.followList().onEach { it ->
             when (it) {
                 is BaseState.Success -> {
                     val initialFilterData = UiFilterData(MY_LIST, true, ::onFilterItemClicked)
@@ -120,44 +120,42 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getMarkerList() {
-        viewModelScope.launch {
-            when(_uiState.value.curFilter){
-                MY_LIST ->{
-                    homeRepository.myRestaurantList().onEach {
-                        _events.emit(HomeEvents.RemoveMarkers)
-                        when(it){
-                            is BaseState.Success ->{
-                                _uiState.update { state ->
-                                    state.copy(markerList = it.data.body.map { data ->
-                                        data.toUiRestaurantData()
-                                    })
-                                }
+        when (_uiState.value.curFilter) {
+            MY_LIST -> {
+                homeRepository.myRestaurantList().onEach {
+                    _events.emit(HomeEvents.RemoveMarkers)
+                    when (it) {
+                        is BaseState.Success -> {
+                            _uiState.update { state ->
+                                state.copy(markerList = it.data.body.map { data ->
+                                    data.toUiRestaurantData()
+                                })
                             }
-                            is BaseState.Error -> Log.d("Filter Test","Error : $it")
                         }
-                        _events.emit(HomeEvents.SetNewMarkers)
-                    }.launchIn(viewModelScope)
-                }
-                else ->{
-                    homeRepository.filterRestaurantList(
-                        _uiState.value.curFilter,
-                        "${_uiState.value.latitude} ${_uiState.value.longitude}",
-                        50000
-                    ).onEach {
-                        _events.emit(HomeEvents.RemoveMarkers)
-                        when(it){
-                            is BaseState.Success -> {
-                                _uiState.update {state ->
-                                    state.copy(markerList = it.data.body.map { data ->
-                                        data.toUiRestaurantData()
-                                    })
-                                }
+                        is BaseState.Error -> Log.d("Filter Test", "Error : $it")
+                    }
+                    _events.emit(HomeEvents.SetNewMarkers)
+                }.launchIn(viewModelScope)
+            }
+            else -> {
+                homeRepository.filterRestaurantList(
+                    _uiState.value.curFilter,
+                    "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
+                    50000
+                ).onEach {
+                    _events.emit(HomeEvents.RemoveMarkers)
+                    when (it) {
+                        is BaseState.Success -> {
+                            _uiState.update { state ->
+                                state.copy(markerList = it.data.body.map { data ->
+                                    data.toUiRestaurantData()
+                                })
                             }
-                            is BaseState.Error -> Log.d("Filter Test","Error : $it")
                         }
-                        _events.emit(HomeEvents.SetNewMarkers)
-                    }.launchIn(viewModelScope)
-                }
+                        is BaseState.Error -> Log.d("Filter Test", "Error : $it")
+                    }
+                    _events.emit(HomeEvents.SetNewMarkers)
+                }.launchIn(viewModelScope)
             }
         }
     }

@@ -1,24 +1,20 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
-import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
-import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
@@ -26,7 +22,6 @@ import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -90,7 +85,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         setMapListener()
         initStateObserver()
         viewModel.getMarkerList()
-        setLocation()
     }
 
     private fun setMapListener() {
@@ -107,7 +101,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
         // todo GPS 기반 위치변화 리스너
         naverMap.addOnLocationChangeListener {
-
+            viewModel.updateLocation(
+                it.latitude,
+                it.longitude
+            )
         }
     }
 
@@ -145,25 +142,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                     }
                     is TrackingState.Off -> naverMap.locationTrackingMode =
                         LocationTrackingMode.None
-                }
-            }
-        }
-    }
-
-    private fun setLocation(){
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity as MainActivity)
-        if(ActivityCompat.checkSelfPermission(App.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(App.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity as MainActivity)
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                if(location!= null){
-                    viewModel.updateLocation(
-                        location.latitude,
-                        location.longitude
-                    )
                 }
             }
         }
