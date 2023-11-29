@@ -5,6 +5,10 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.follow.search.FollowSearchViewModel" />
+
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -31,6 +35,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:text="@={vm.keyword}"
                 android:background="@drawable/rect_dark7fill_nostroke_10radius"
                 android:hint="닉네임/ 이름으로 검색하세요"
                 android:paddingHorizontal="12dp"

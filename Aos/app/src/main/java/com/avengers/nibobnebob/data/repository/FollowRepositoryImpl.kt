@@ -39,8 +39,8 @@ class FollowRepositoryImpl @Inject constructor(
         emit(result)
     }
 
-    override fun searchFollow(keyword: String): Flow<BaseState<BaseResponse<FollowSearchResponse>>> = flow{
-        val result = runRemote { api.searchFollow(keyword) }
+    override fun searchFollow(keyword: String, region: List<String>): Flow<BaseState<BaseResponse<FollowSearchResponse>>> = flow{
+        val result = runRemote { api.searchFollow(keyword, region) }
         emit(result)
     }
 }

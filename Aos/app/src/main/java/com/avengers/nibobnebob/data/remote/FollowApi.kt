@@ -9,6 +9,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface FollowApi {
 
@@ -33,6 +34,7 @@ interface FollowApi {
 
     @GET("api/user/autocomplete/{partialUsername}")
     suspend fun searchFollow(
-        @Path("partialUsername") keyword: String
+        @Path("partialUsername") keyword: String,
+        @Query("region") region: List<String>
     ): Response<BaseResponse<FollowSearchResponse>>
 }
