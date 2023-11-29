@@ -174,4 +174,66 @@ describe("마이페이지", () => {
       })
     );
   });
+
+  it("유저 회원탈퇴", async () => {
+    const userInfoDto: UserInfoDto = {
+      email: "test@email.com",
+      password: "1234",
+      provider: " ",
+      nickName: "hi",
+      region: "인천",
+      birthdate: "1999/10/13",
+      isMale: true
+    };
+    const userRepository = dataSource.getRepository(User);
+    const id = await userRepository.save(userInfoDto);
+
+    await userService.deleteUserAccount(id)
+
+    const result = await userRepository.findOne({ where: { id: id["id"] } });
+
+    expect(result).toEqual(await
+      expect.objectContaining({
+
+      })
+    );
+  });
+  it("유저 정보 업데이트", async () => {
+    const userInfoDto: UserInfoDto = {
+      email: "test@email.com",
+      password: "1234",
+      provider: " ",
+      nickName: "hi",
+      region: "인천",
+      birthdate: "1999/10/13",
+      isMale: true
+    };
+    const userRepository = dataSource.getRepository(User);
+    const id = await userRepository.save(userInfoDto);
+
+    const userUpdateInfoDto: UserInfoDto = {
+      email: "testSuccess@email.com",
+      password: "4321",
+      provider: " ",
+      nickName: "Good",
+      region: "서울",
+      birthdate: "2000/01/03",
+      isMale: false
+    }
+
+    await userService.updateMypageUserInfo(id, userUpdateInfoDto)
+
+    const result = await userRepository.findOne({ where: { id: id["id"] } });
+    expect(result).toEqual(await
+      expect.objectContaining({
+        email: "testSuccess@email.com",
+        password: "4321",
+        provider: " ",
+        nickName: "Good",
+        region: "서울",
+        birthdate: "2000/01/03",
+        isMale: false
+      })
+    );
+  });
 });
