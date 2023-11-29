@@ -18,6 +18,7 @@ import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
+import com.avengers.nibobnebob.presentation.ui.toHome
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
@@ -36,9 +37,6 @@ class RestaurantSearchMapFragment :
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
 
-    companion object {
-        const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-    }
 
     private val locationPermissionList = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -64,10 +62,12 @@ class RestaurantSearchMapFragment :
 
     private fun initStateObserver() {
         repeatOnStarted {
-            parentViewModel.uiState.collectLatest {
+            parentViewModel.selectedItem.collectLatest {
                 if (it.id < 0) return@collectLatest
 
                 setSearchResultMarker(it)
+
+                binding.tvSearchKeyword.text = it.name
 
                 RestaurantBottomSheet(
                     context = requireContext(),
@@ -79,6 +79,16 @@ class RestaurantSearchMapFragment :
 
             }
         }
+
+        binding.vSearch.setOnClickListener {
+            parentViewModel.keepSearchKeyword(binding.tvSearchKeyword.text.toString())
+            findNavController().popBackStack()
+        }
+
+        binding.ivClose.setOnClickListener {
+            findNavController().toHome()
+        }
+
     }
 
     private fun setSearchResultMarker(data: UiRestaurantData) {
@@ -157,5 +167,8 @@ class RestaurantSearchMapFragment :
         }
     }
 
+    companion object {
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
 
 }

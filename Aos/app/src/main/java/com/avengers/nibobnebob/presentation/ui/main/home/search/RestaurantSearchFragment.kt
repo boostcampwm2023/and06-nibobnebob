@@ -9,6 +9,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -16,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -33,6 +35,8 @@ class RestaurantSearchFragment :
     BaseFragment<FragmentRestaurantSearchBinding>(R.layout.fragment_restaurant_search) {
     private val viewModel: RestaurantSearchViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
+    private val args: RestaurantSearchFragmentArgs by navArgs()
+
     private val adapter = HomeSearchAdapter { item ->
         viewModel.onClickSearchItem(item)
     }
@@ -68,8 +72,7 @@ class RestaurantSearchFragment :
                         parentViewModel.markSearchRestaurant(it.item)
                     }
 
-                    is RestaurantSearchEvent.NavigateToHome -> findNavController().toHome()
-                    else -> {}
+                    is RestaurantSearchEvent.NavigateToHome -> findNavController().popBackStack()
                 }
 
             }
@@ -119,8 +122,18 @@ class RestaurantSearchFragment :
     }
 
     private fun setFocus() {
+        repeatOnStarted {
+            parentViewModel.searchKeyword.collectLatest {
+                Log.d("TEST", "$it")
+                binding.tietInputSearch.setText(it)
+                if(it.isNotEmpty()){
+                    viewModel.searchRestaurant(it)
+                }
+            }
+        }
         binding.tietInputSearch.requestFocus()
         requireActivity().adjustKeyboard(binding.tietInputSearch.findFocus(), true)
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -133,5 +146,10 @@ class RestaurantSearchFragment :
             }
             return@setOnTouchListener false
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        parentViewModel.clearKeyword()
     }
 }
