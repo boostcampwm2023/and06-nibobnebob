@@ -119,6 +119,35 @@ describe("마이페이지", () => {
   afterAll(async () => {
     await dataSource.destroy();
   });
+  it("닉네임 중복 확인 요청", async () => {
+
+    const firstResult = await userService.getNickNameAvailability("hi");
+
+    expect(firstResult).toEqual(await
+      expect.objectContaining({
+        isexist: false
+      })
+    );
+    const userInfoDto: UserInfoDto = {
+      email: "test@email.com",
+      password: "1234",
+      provider: " ",
+      nickName: "hi",
+      region: "인천",
+      birthdate: "1999/10/13",
+      isMale: true
+    };
+    const userRepository = dataSource.getRepository(User);
+    await userRepository.save(userInfoDto);
+
+    const result = await userService.getNickNameAvailability("hi");
+
+    expect(result).toEqual(await
+      expect.objectContaining({
+        isexist: true
+      })
+    );
+  });
 
   it("마이페이지 정보 요청", async () => {
     const userInfoDto: UserInfoDto = {
