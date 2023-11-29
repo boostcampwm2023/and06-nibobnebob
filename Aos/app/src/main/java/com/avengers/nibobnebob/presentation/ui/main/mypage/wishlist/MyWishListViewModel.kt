@@ -6,7 +6,6 @@ import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyWishListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyWishData
-import com.avengers.nibobnebob.presentation.util.Constants
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
@@ -29,6 +28,7 @@ data class MyWishUiState(
 
 sealed class MyWishEvent {
     data class NavigateToRestaurantDetail(val id: Int) : MyWishEvent()
+    data class NavigateToRestaurantAdd(val item: UiMyWishData) : MyWishEvent()
     data class ShowSnackMessage(val msg: String) : MyWishEvent()
     data class ShowToastMessage(val msg: String) : MyWishEvent()
 }
@@ -50,7 +50,7 @@ class MyWishListViewModel @Inject constructor(
 
     fun myWishList() {
         restaurantRepository.myWishList().onEach { wish ->
-            when(wish){
+            when (wish) {
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         val list = wish.data.body.map { it.toMyWishListData() }
@@ -60,6 +60,7 @@ class MyWishListViewModel @Inject constructor(
                         )
                     }
                 }
+
                 else -> _events.emit(MyWishEvent.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
@@ -70,8 +71,17 @@ class MyWishListViewModel @Inject constructor(
         viewModelScope.launch { _events.emit(MyWishEvent.NavigateToRestaurantDetail(id)) }
     }
 
+    fun addMyList(item: UiMyWishData) {
+        viewModelScope.launch {
+            _events.emit(
+                if (item.isMy) MyWishEvent.ShowToastMessage("이미 나의 맛집 리스트에 추가된 맛집입니다.")
+                else MyWishEvent.NavigateToRestaurantAdd(item)
+            )
+        }
+    }
+
     fun deleteMyList(id: Int) {
-        restaurantRepository.deleteRestaurant(id).onEach {
+        restaurantRepository.deleteWishList(id).onEach {
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))
@@ -79,7 +89,7 @@ class MyWishListViewModel @Inject constructor(
                 }
 
                 is BaseState.Error -> {
-                    _events.emit(MyWishEvent.ShowSnackMessage(Constants.ERROR_MSG))
+                    _events.emit(MyWishEvent.ShowSnackMessage(ERROR_MSG))
                 }
             }
         }.launchIn(viewModelScope)

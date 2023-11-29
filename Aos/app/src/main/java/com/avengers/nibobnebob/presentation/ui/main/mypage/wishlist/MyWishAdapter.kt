@@ -11,9 +11,9 @@ import com.avengers.nibobnebob.databinding.ItemWishListBinding
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyWishData
 
 class MyWishAdapter(
-    private val toggleWish: (Int) -> Unit,
+    private val deleteMyWish: (Int) -> Unit,
     private val showDetail: (Int) -> Unit,
-    private val addItem: (Int) -> Unit
+    private val addItem: (UiMyWishData) -> Unit
 ) : ListAdapter<UiMyWishData, MyWishViewHolder>(diffCallback) {
     companion object {
         val diffCallback = object : DiffUtil.ItemCallback<UiMyWishData>() {
@@ -43,7 +43,7 @@ class MyWishAdapter(
     }
 
     override fun onBindViewHolder(holder: MyWishViewHolder, position: Int) {
-        holder.bind(getItem(position), toggleWish, showDetail, addItem)
+        holder.bind(getItem(position), deleteMyWish, showDetail, addItem)
     }
 
 }
@@ -53,13 +53,13 @@ class MyWishViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(
         item: UiMyWishData,
-        toggleWish: (Int) -> Unit,
+        deleteMyWish: (Int) -> Unit,
         showDetail: (Int) -> Unit,
-        addItem: (Int) -> Unit
+        addItem: (UiMyWishData) -> Unit
     ) {
         binding.item = item
         binding.ivMore.setOnClickListener { listMenu(item, showDetail, addItem) }
-        binding.ivStar.setOnClickListener { toggleWish(item.id) }
+        binding.ivStar.setOnClickListener { deleteMyWish(item.id) }
         binding.executePendingBindings()
 
     }
@@ -67,14 +67,14 @@ class MyWishViewHolder(
     private fun listMenu(
         item: UiMyWishData,
         showDetail: (Int) -> Unit,
-        addItem: (Int) -> Unit
+        addItem: (UiMyWishData) -> Unit
     ) {
         val menu = PopupMenu(binding.root.context, binding.ivMore)
-        menu.menuInflater.inflate(R.menu.my_page_list_menu, menu.menu)
+        menu.menuInflater.inflate(R.menu.my_page_wish_list_menu, menu.menu)
         menu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_detail -> showDetail(item.id)
-                R.id.menu_delete -> addItem(item.id)
+                R.id.menu_add -> addItem(item)
             }
             true
         }
