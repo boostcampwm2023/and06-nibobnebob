@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.data.repository
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RestaurantApi
@@ -26,6 +27,24 @@ class RestaurantRepositoryImpl @Inject constructor(
     ): Flow<BaseState<BaseResponse<Unit>>> =
         flow {
             val result = runRemote { api.addRestaurant(restaurantId, body) }
+            emit(result)
+        }
+
+    override fun deleteRestaurant(restaurantId: Int): Flow<BaseState<BaseResponse<Unit>>> = flow {
+        val result = runRemote { api.deleteRestaurant(restaurantId) }
+        emit(result)
+    }
+
+
+    override fun myRestaurantList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> =
+        flow {
+            val result = runRemote { api.myRestaurantList() }
+            emit(result)
+        }
+
+    override fun myWishList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> =
+        flow {
+            val result = runRemote { api.myWishList() }
             emit(result)
         }
 }

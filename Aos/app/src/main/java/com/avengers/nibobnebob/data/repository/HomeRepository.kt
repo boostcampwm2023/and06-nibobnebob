@@ -18,12 +18,10 @@ interface HomeRepository {
 
     fun followList(): Flow<BaseState<BaseResponse<List<FollowingResponse>>>>
 
-    fun myRestaurantList() : Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
-
     fun filterRestaurantList(
-        filter : String,
+        filter: String,
         location: String,
         radius: Int
-    ) : Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
+    ): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
 
 }
