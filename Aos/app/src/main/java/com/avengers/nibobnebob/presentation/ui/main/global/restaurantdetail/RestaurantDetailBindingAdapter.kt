@@ -8,11 +8,12 @@ import com.avengers.nibobnebob.R
 @BindingAdapter("filterRateBackground")
 fun bindFilterBackground(iv: ImageView, rate : Int){
     when(rate){
-        1 -> {iv.setBackgroundResource(R.drawable.oval_primary1fill_nostroke)}
-        2 -> {iv.setBackgroundResource(R.drawable.oval_primary2fill_nostroke)}
-        3 -> {iv.setBackgroundResource(R.drawable.oval_primary3fill_nostroke)}
-        4 -> {iv.setBackgroundResource(R.drawable.oval_primary4fill_nostroke)}
-        5 -> {iv.setBackgroundResource(R.drawable.oval_primary5fill_nostroke)}
+        0 -> {iv.setBackgroundResource(R.drawable.oval_primary1fill_nostroke)}
+        1 -> {iv.setBackgroundResource(R.drawable.oval_primary2fill_nostroke)}
+        2 -> {iv.setBackgroundResource(R.drawable.oval_primary3fill_nostroke)}
+        3 -> {iv.setBackgroundResource(R.drawable.oval_primary4fill_nostroke)}
+        4 -> {iv.setBackgroundResource(R.drawable.oval_primary5fill_nostroke)}
+        else -> {iv.setBackgroundResource(R.drawable.oval_primary1fill_nostroke)}
     }
 }
 
