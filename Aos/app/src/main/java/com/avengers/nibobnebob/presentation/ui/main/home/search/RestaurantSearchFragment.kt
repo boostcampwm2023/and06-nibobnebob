@@ -121,18 +121,21 @@ class RestaurantSearchFragment :
         navigate(action)
     }
 
-    private fun setFocus() {
+    private fun setFocus() = with(binding) {
+        tietInputSearch.requestFocus()
+
         repeatOnStarted {
             parentViewModel.searchKeyword.collectLatest {
-                Log.d("TEST", "$it")
-                binding.tietInputSearch.setText(it)
-                if(it.isNotEmpty()){
+                tietInputSearch.setText(it)
+                tietInputSearch.setSelection(it.length)
+
+                if (it.isNotEmpty()) {
                     viewModel.searchRestaurant(it)
                 }
             }
         }
-        binding.tietInputSearch.requestFocus()
-        requireActivity().adjustKeyboard(binding.tietInputSearch.findFocus(), true)
+
+        requireActivity().adjustKeyboard(tietInputSearch.findFocus(), true)
 
     }
 
