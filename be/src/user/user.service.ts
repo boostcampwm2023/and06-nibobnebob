@@ -137,13 +137,17 @@ export class UserService {
       isFollow: false,
     }));
   }
-  async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
+  async searchTargetUser(tokenInfo: TokenInfo, nickName: string, region: string[]) {
+    const whereCondition: any = {
+      nickName: Like(`%${nickName}%`),
+      id: Not(Equal(tokenInfo.id)),
+    };
+    if (region) {
+      whereCondition.region = In(region);
+    }
     const users = await this.usersRepository.find({
       select: ["id"],
-      where: {
-        nickName: Like(`%${nickName}%`),
-        id: Not(Equal(tokenInfo.id)),
-      },
+      where: whereCondition,
       take: 20,
     });
     if (users.length) {
