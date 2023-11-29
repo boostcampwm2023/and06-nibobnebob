@@ -149,6 +149,36 @@ describe("마이페이지", () => {
     );
   });
 
+  it("이메일 중복 확인 요청", async () => {
+
+    const firstResult = await userService.getEmailAvailability("test@email.com");
+
+    expect(firstResult).toEqual(await
+      expect.objectContaining({
+        isexist: false
+      })
+    );
+    const userInfoDto: UserInfoDto = {
+      email: "test@email.com",
+      password: "1234",
+      provider: " ",
+      nickName: "hi",
+      region: "인천",
+      birthdate: "1999/10/13",
+      isMale: true
+    };
+    const userRepository = dataSource.getRepository(User);
+    await userRepository.save(userInfoDto);
+
+    const result = await userService.getEmailAvailability("test@email.com");
+
+    expect(result).toEqual(await
+      expect.objectContaining({
+        isexist: true
+      })
+    );
+  });
+
   it("마이페이지 정보 요청", async () => {
     const userInfoDto: UserInfoDto = {
       email: "test@email.com",
