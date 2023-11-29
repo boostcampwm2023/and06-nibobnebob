@@ -30,7 +30,6 @@ class RestaurantDetailFragment :
         viewModel.setRestaurantId(restaurantId)
         viewModel.restaurantDetail()
         initEventObserver()
-        viewModel.getReviewList()
         binding.rvReview.adapter = RestaurantReviewAdapter()
 
     }
