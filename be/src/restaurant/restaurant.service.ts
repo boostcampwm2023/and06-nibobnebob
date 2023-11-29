@@ -27,7 +27,7 @@ export class RestaurantService implements OnModuleInit {
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
     private reviewRepository: ReviewRepository
-  ) {}
+  ) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
     const restaurants = await this.restaurantRepository.searchRestarant(
@@ -55,8 +55,9 @@ export class RestaurantService implements OnModuleInit {
       tokenInfo
     );
 
-    const [reviews, reviewCount] = await this.reviewRepository
+    const reviews = await this.reviewRepository
       .createQueryBuilder("review")
+      .leftJoinAndSelect("review.user", "user")
       .select([
         "review.id",
         "review.isCarVisit",
@@ -66,14 +67,16 @@ export class RestaurantService implements OnModuleInit {
         "review.service",
         "review.restroomCleanliness",
         "review.overallExperience",
+        "user.nickName as reviewer"
       ])
       .where("review.restaurant_id = :restaurantId", {
         restaurantId: restaurant.restaurant_id,
       })
-      .getManyAndCount();
+      .getRawMany();
 
+    restaurant.restaurant_reviewCnt = reviews.length;
     restaurant.reviews = reviews.slice(0, 3);
-    restaurant.restaurant_reviewCnt = reviewCount;
+
 
     return restaurant;
   }
@@ -132,9 +135,8 @@ export class RestaurantService implements OnModuleInit {
       "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43";
     const wgs84 = "EPSG:4326";
 
-    const apiUrl = `http://openapi.seoul.go.kr:8088/${key}/json/LOCALDATA_072404/${startPage}/${
-      startPage + 999
-    }/`;
+    const apiUrl = `http://openapi.seoul.go.kr:8088/${key}/json/LOCALDATA_072404/${startPage}/${startPage + 999
+      }/`;
 
     const response = axios.get(apiUrl);
 

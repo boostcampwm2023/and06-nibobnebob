@@ -261,6 +261,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: "맛집리스트 등록 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @UsePipes(new ValidationPipe())
   async addRestaurantToNebob(
     @Body() reviewInfoDto: ReviewInfoDto,
     @GetUser() tokenInfo: TokenInfo,

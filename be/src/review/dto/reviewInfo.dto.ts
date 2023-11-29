@@ -7,6 +7,8 @@ import {
   MaxLength,
   IsOptional,
   MinLength,
+  Max,
+  Min,
 } from "class-validator";
 
 export class ReviewInfoDto {
@@ -24,7 +26,8 @@ export class ReviewInfoDto {
   })
   @IsInt()
   @IsOptional()
-  @MaxLength(1)
+  @Min(0)
+  @Max(4)
   transportationAccessibility: number | null;
 
   @ApiProperty({
@@ -33,19 +36,22 @@ export class ReviewInfoDto {
   })
   @IsInt()
   @IsOptional()
-  @MaxLength(1)
+  @Min(0)
+  @Max(4)
   parkingArea: number | null;
 
   @ApiProperty({ example: "0", description: "The taste of the food" })
   @IsInt()
   @IsNotEmpty()
-  @MaxLength(1)
+  @Min(0)
+  @Max(4)
   taste: number;
 
   @ApiProperty({ example: "0", description: "The service of the restaurant" })
   @IsInt()
   @IsNotEmpty()
-  @MaxLength(1)
+  @Min(0)
+  @Max(4)
   service: number;
 
   @ApiProperty({
@@ -54,7 +60,8 @@ export class ReviewInfoDto {
   })
   @IsInt()
   @IsNotEmpty()
-  @MaxLength(1)
+  @Min(0)
+  @Max(4)
   restroomCleanliness: number;
 
   @ApiProperty({
