@@ -65,6 +65,7 @@
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/cg_filter"
+                style="@style/Widget.Material3.Chip.Input"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
