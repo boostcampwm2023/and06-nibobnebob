@@ -155,8 +155,8 @@ export class UserService {
     if (users.length) {
       const userIds = users.map((user) => user.id);
       const result = await this.usersRepository.getUsersInfo(userIds);
-      for (let i in result.userInfo) {
-        result.userInfo[i]["isFollow"] =
+      for (let i in result) {
+        result[i]["isFollow"] =
           (await this.userFollowListRepositoy.getFollowState(
             tokenInfo.id,
             userIds[i]
@@ -166,7 +166,7 @@ export class UserService {
       }
       return result;
     }
-    return null;
+    return [];
   }
 
   async followUser(tokenInfo: TokenInfo, nickName: string) {
