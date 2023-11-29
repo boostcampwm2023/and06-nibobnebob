@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentFollowSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.SelectRegionDialog
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.follow.adapter.FollowSearchAdapter
 import com.avengers.nibobnebob.presentation.ui.toUserDetail
@@ -43,7 +44,9 @@ class FollowSearchFragment: BaseFragment<FragmentFollowSearchBinding>(R.layout.f
                 when(it){
                     is FollowSearchEvents.NavigateToUserDetail -> findNavController().toUserDetail(it.nickName)
                     is FollowSearchEvents.ShowSnackMessage -> showSnackBar(it.msg)
-                    is FollowSearchEvents.ShowFilterDialog -> {}
+                    is FollowSearchEvents.ShowFilterDialog -> {
+                        SelectRegionDialog(requireContext(), it.curRegion, it.changeFilterListener).show()
+                    }
                 }
             }
         }

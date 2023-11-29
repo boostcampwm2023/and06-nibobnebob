@@ -102,6 +102,4 @@ class FollowSearchViewModel @Inject constructor(
         }
     }
 
-
-
 }
