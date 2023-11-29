@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.follow
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -12,6 +11,7 @@ import com.avengers.nibobnebob.databinding.FragmentFollowBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.follow.adapter.FollowAdapter
+import com.avengers.nibobnebob.presentation.ui.toUserDetail
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +38,7 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
             viewModel.events.collect{
                 when(it){
                     is FollowEvents.NavigateToFollowSearch -> findNavController().toFollowSearch()
-                    is FollowEvents.NavigateToFollowDetail -> findNavController().toFollowDetail(it.nickName)
+                    is FollowEvents.NavigateToUserDetail -> findNavController().toUserDetail(it.nickName)
                     is FollowEvents.ShowToastMessage -> showToastMessage(it.msg)
                     is FollowEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
@@ -64,8 +64,4 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
         navigate(action)
     }
 
-    private fun NavController.toFollowDetail(nickName: String){
-        val action = FollowFragmentDirections.actionFollowFragmentToFollowDetailFragment(nickName)
-        navigate(action)
-    }
 }

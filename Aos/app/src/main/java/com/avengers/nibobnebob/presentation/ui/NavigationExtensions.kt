@@ -18,3 +18,8 @@ internal fun NavController.toMyPage() {
     val action = NavGraphDirections.globalToMyPageFragment()
     navigate(action)
 }
+
+internal fun NavController.toUserDetail(nickName: String) {
+    val action = NavGraphDirections.globalToUserDetailFragment(nickName)
+    navigate(action)
+}
