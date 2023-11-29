@@ -19,3 +19,8 @@ internal fun NavController.toHome(){
     val action = NavGraphDirections.globalToHomeFragment()
     navigate(action)
 }
+
+internal fun NavController.toMyPage() {
+    val action = NavGraphDirections.globalToMyPageFragment()
+    navigate(action)
+}

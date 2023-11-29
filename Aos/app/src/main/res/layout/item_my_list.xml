@@ -1,78 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="88dp"
-    android:layout_marginBottom="16dp"
-    android:background="@drawable/rect_primarylight3fill_12radius">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/gl_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="16dp" />
+    <data>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/gl_end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="16dp" />
+        <variable
+            name="item"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyPageListData" />
+    </data>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/gl_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="12dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rect_primarylight3fill_12radius">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/gl_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="12dp" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="16dp" />
 
-    <TextView
-        android:id="@+id/tv_title"
-        style="@style/TextSmallBold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="음식점 이름"
-        app:layout_constraintStart_toStartOf="@id/gl_start"
-        app:layout_constraintTop_toTopOf="@id/gl_top" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="16dp" />
 
-    <TextView
-        android:id="@+id/tv_address"
-        style="@style/CaptionRegular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="서울특별시 용산구"
-        android:textColor="@color/nn_primary5"
-        app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
-        app:layout_constraintStart_toStartOf="@id/gl_start"
-        app:layout_constraintTop_toTopOf="@id/gl_top" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="12dp" />
 
-    <TextView
-        android:id="@+id/tv_date"
-        style="@style/CaptionRegular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2023.11.11 등록"
-        android:textColor="@color/nn_primary5"
-        app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
-        app:layout_constraintStart_toStartOf="@id/gl_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_address" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="12dp" />
 
-    <ImageView
-        android:id="@+id/iv_more"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_more"
-        app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
-        app:layout_constraintEnd_toEndOf="@id/gl_end"
-        app:layout_constraintTop_toTopOf="@id/gl_top" />
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/TextSmallBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.name}"
+            app:layout_constraintStart_toStartOf="@id/gl_start"
+            app:layout_constraintTop_toTopOf="@id/gl_top" />
+
+        <TextView
+            android:id="@+id/tv_address"
+            style="@style/CaptionRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.address}"
+            android:textColor="@color/nn_primary5"
+            app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
+            app:layout_constraintStart_toStartOf="@id/gl_start"
+            app:layout_constraintTop_toTopOf="@id/gl_top" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            style="@style/CaptionRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2023.11.11 등록"
+            android:textColor="@color/nn_primary5"
+            app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
+            app:layout_constraintStart_toStartOf="@id/gl_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_address" />
+
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_more"
+            app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
+            app:layout_constraintEnd_toEndOf="@id/gl_end"
+            app:layout_constraintTop_toTopOf="@id/gl_top" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
