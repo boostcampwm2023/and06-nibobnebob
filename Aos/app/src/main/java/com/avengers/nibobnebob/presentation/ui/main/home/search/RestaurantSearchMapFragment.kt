@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchMapBinding
@@ -47,6 +48,7 @@ class RestaurantSearchMapFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initMapView()
+        initClickEvent()
     }
 
     private fun initMapView() {
@@ -66,7 +68,6 @@ class RestaurantSearchMapFragment :
                 if (it.id < 0) return@collectLatest
 
                 setSearchResultMarker(it)
-
                 binding.tvSearchKeyword.text = it.name
 
                 RestaurantBottomSheet(
@@ -79,17 +80,18 @@ class RestaurantSearchMapFragment :
 
             }
         }
-
-        binding.vSearch.setOnClickListener {
-            parentViewModel.keepSearchKeyword(binding.tvSearchKeyword.text.toString())
-            findNavController().popBackStack()
-        }
-
-        binding.ivClose.setOnClickListener {
-            findNavController().toHome()
-        }
-
     }
+
+    private fun initClickEvent() = with(binding) {
+        ivClose.setOnClickListener { findNavController().toHome() }
+        listOf(ibBack, vSearch).forEach {
+            it.setOnClickListener {
+                parentViewModel.keepSearchKeyword(binding.tvSearchKeyword.text.toString())
+                findNavController().popBackStack()
+            }
+        }
+    }
+
 
     private fun setSearchResultMarker(data: UiRestaurantData) {
         val marker = Marker().apply {
