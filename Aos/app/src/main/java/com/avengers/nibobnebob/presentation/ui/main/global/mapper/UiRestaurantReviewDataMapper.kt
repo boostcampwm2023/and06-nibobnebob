@@ -10,6 +10,7 @@ internal fun Reviews.toUiRestaurantReviewDataInfo(
 ) = UiReviewData(
     reviewId = id,
     overallExperience = overallExperience,
+    isCarVisit = isCarVisit,
     parkingArea = parkingArea,
     cleanliness = restroomCleanliness,
     service = service,

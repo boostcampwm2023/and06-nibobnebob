@@ -111,7 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/parking_convenience"
+            android:text="@{item.isCarVisit ? @string/parking_convenience : @string/transportation_accessibility}"
             android:textColor="@color/nn_text_black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_when_visited" />
@@ -122,7 +122,7 @@
             android:layout_height="24dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/oval_primary1fill_nostroke"
-            app:filterRateBackground="@{item.transportationAccessibility}"
+            app:filterRateBackground="@{item.isCarVisit ? item.parkingArea : item.transportationAccessibility}"
             app:layout_constraintEnd_toEndOf="@id/tv_parking_convenience_label"
             app:layout_constraintStart_toStartOf="@id/tv_parking_convenience_label"
             app:layout_constraintTop_toBottomOf="@id/tv_parking_convenience_label" />

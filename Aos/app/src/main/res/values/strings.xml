@@ -57,6 +57,7 @@
     <string name="menu_delete">삭제하기</string>
     <string name="delete_my_list_label">맛집 삭제하기</string>
     <string name="delete_my_list">내 맛집 리스트에서 삭제하시겠습니까?</string>
+    <string name="transportation_accessibility">교통 접근성</string>
 
     <string-array name="location_list">
         <item>용산구</item>
