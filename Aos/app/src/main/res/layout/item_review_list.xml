@@ -7,8 +7,7 @@
 
         <variable
             name="item"
-            type="com.avengers.nibobnebob.presentation.ui.global.model.UiReviewData" />
-
+            type="com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,8 +29,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="60dp"
-            android:text="@{item.nickName}"
             android:layout_marginTop="0dp"
+            android:text="@{item.reviewer}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/nickname" />
@@ -61,12 +60,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
+            android:onClick="@{() -> item.onThumbsUpClick.invoke(item.reviewId)}"
             android:src="@drawable/ic_thumbs_up_blank"
-            android:onClick="@{() -> item.onThumbsUpClick.invoke(item)}"
-            app:thumbsUpStatus="@{item.thumbsUp}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_up_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname"
+            app:thumbsUpStatus="@{item.thumbsUp}" />
+
 
         <TextView
             android:id="@+id/tv_thumbs_up_count"
@@ -85,12 +85,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
+            android:onClick="@{() -> item.onThumbsDownClick.invoke(item.reviewId)}"
             android:src="@drawable/ic_thumbs_down_blank"
-            android:onClick="@{() -> item.onThumbsDownClick.invoke(item)}"
-            app:thumbsDownStatus="@{item.thumbsDown}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_down_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname"
+            app:thumbsDownStatus="@{item.thumbsDown}" />
+
 
         <TextView
             android:id="@+id/tv_thumbs_down_count"
@@ -121,7 +122,7 @@
             android:layout_height="24dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/oval_primary1fill_nostroke"
-            app:filterRateBackground="@{item.parkingConvenience}"
+            app:filterRateBackground="@{item.transportationAccessibility}"
             app:layout_constraintEnd_toEndOf="@id/tv_parking_convenience_label"
             app:layout_constraintStart_toStartOf="@id/tv_parking_convenience_label"
             app:layout_constraintTop_toBottomOf="@id/tv_parking_convenience_label" />
@@ -198,7 +199,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@{item.review}"
+            android:text="@{item.overallExperience}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_cleanliness_rank"
             tools:text="@string/test_review" />
