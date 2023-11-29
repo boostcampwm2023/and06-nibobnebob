@@ -43,6 +43,7 @@ class FollowSearchFragment: BaseFragment<FragmentFollowSearchBinding>(R.layout.f
                 when(it){
                     is FollowSearchEvents.NavigateToUserDetail -> findNavController().toUserDetail(it.nickName)
                     is FollowSearchEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                    is FollowSearchEvents.ShowFilterDialog -> {}
                 }
             }
         }

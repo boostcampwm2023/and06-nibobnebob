@@ -22,12 +22,17 @@ import javax.inject.Inject
 
 data class FollowSearchUiState(
     val searchList: List<UiFollowSearchData> = emptyList(),
-    val curRegionFilter: List<String> = emptyList()
+    val curRegionFilter: List<String> = emptyList(),
+    val searchCount: String = ""
 )
 
 sealed class FollowSearchEvents{
     data class ShowSnackMessage(val msg: String): FollowSearchEvents()
     data class NavigateToUserDetail(val nickName: String): FollowSearchEvents()
+    data class ShowFilterDialog(
+        val curRegion: List<String>,
+        val changeFilterListener: (List<String>) -> Unit
+    ): FollowSearchEvents()
 }
 
 @HiltViewModel
@@ -59,7 +64,8 @@ class FollowSearchViewModel @Inject constructor(
                                     state.copy(
                                         searchList = data.map { data ->
                                             data.toUiFollowSearchData(::navigateToUserDetail)
-                                        }
+                                        },
+                                        searchCount = "검색결과 ${data.size}건"
                                     )
                                 }
                             }
@@ -78,5 +84,24 @@ class FollowSearchViewModel @Inject constructor(
             _events.emit(FollowSearchEvents.NavigateToUserDetail(nickName))
         }
     }
+
+    fun showFilterDialog(){
+        viewModelScope.launch {
+            _events.emit(FollowSearchEvents.ShowFilterDialog(
+                _uiState.value.curRegionFilter,
+                ::changeFilterListener
+            ))
+        }
+    }
+
+    private fun changeFilterListener(newFilter: List<String>){
+        _uiState.update { state ->
+            state.copy(
+                curRegionFilter = newFilter
+            )
+        }
+    }
+
+
 
 }
