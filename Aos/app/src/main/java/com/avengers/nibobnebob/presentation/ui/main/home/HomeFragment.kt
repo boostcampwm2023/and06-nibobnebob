@@ -46,7 +46,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val markerList = mutableListOf<Marker>()
 
     private val locationPermissionList = arrayOf(
@@ -70,7 +69,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 childFragmentManager.beginTransaction().add(R.id.map_fragment, it).commit()
             }
 
-        mapFragment.getMapAsync(this)
+        mapFragment?.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
@@ -116,10 +115,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 when (it) {
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
                     is HomeEvents.SetNewMarkers -> {
+                        viewModel.trackingOff()
+                        val cameraUpdate = CameraUpdate.scrollTo(
+                            LatLng(
+                                viewModel.uiState.value.cameraLatitude,
+                                viewModel.uiState.value.cameraLongitude
+                            )
+                        )
+                        naverMap.moveCamera(cameraUpdate)
                         viewModel.uiState.value.markerList.forEach { data ->
                             setMarker(data)
                         }
                     }
+
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
                     is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
@@ -143,6 +151,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         naverMap.locationTrackingMode =
                             LocationTrackingMode.Follow
                     }
+
                     is TrackingState.Off -> naverMap.locationTrackingMode =
                         LocationTrackingMode.None
                 }

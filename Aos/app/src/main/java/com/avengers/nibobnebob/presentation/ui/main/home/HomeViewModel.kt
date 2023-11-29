@@ -29,6 +29,8 @@ data class HomeUiState(
     val filterList: List<UiFilterData> = emptyList(),
     val markerList: List<UiRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
+    val cameraLatitude: Double = 0.0,
+    val cameraLongitude: Double = 0.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0
 )
@@ -65,6 +67,15 @@ class HomeViewModel @Inject constructor(
             state.copy(
                 curLatitude = latitude,
                 curLongitude = longitude
+            )
+        }
+    }
+
+    fun updateCamera(latitude: Double, longitude: Double) {
+        _uiState.update { state ->
+            state.copy(
+                cameraLatitude = latitude ,
+                cameraLongitude = longitude
             )
         }
     }
@@ -136,6 +147,7 @@ class HomeViewModel @Inject constructor(
                                     data.toUiRestaurantData()
                                 })
                             }
+                            moveCamera()
                         }
 
                         is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
@@ -158,6 +170,7 @@ class HomeViewModel @Inject constructor(
                                     data.toUiRestaurantData()
                                 })
                             }
+                            moveCamera()
                         }
 
                         is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
@@ -165,6 +178,21 @@ class HomeViewModel @Inject constructor(
                     _events.emit(HomeEvents.SetNewMarkers)
                 }.launchIn(viewModelScope)
             }
+        }
+    }
+
+
+    private fun moveCamera() {
+        val list = _uiState.value.markerList
+        val markerSize = list.size
+        val averageLatitude = list.sumOf { it.latitude }
+        val averageLongitude = list.sumOf { it.longitude }
+
+        _uiState.update { state ->
+            state.copy(
+                cameraLatitude = averageLatitude / markerSize,
+                cameraLongitude = averageLongitude / markerSize
+            )
         }
     }
 
