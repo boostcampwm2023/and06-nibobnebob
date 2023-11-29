@@ -9,6 +9,7 @@ internal fun Reviews.toUiRestaurantReviewDataInfo(
     onReviewClick: (Int) -> Unit
 ) = UiReviewData(
     reviewId = id,
+    createdAt = createdAt,
     overallExperience = overallExperience,
     isCarVisit = isCarVisit,
     parkingArea = parkingArea,

@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:text="@{item.visited}"
+            android:text="@{com.avengers.nibobnebob.presentation.util.TimeUtil.INSTANCE.formatTime(item.createdAt)}"
             app:layout_constraintBottom_toBottomOf="@id/tv_when_visited_label"
             app:layout_constraintStart_toEndOf="@id/tv_when_visited_label"
             app:layout_constraintTop_toTopOf="@id/tv_when_visited_label"

@@ -3,7 +3,7 @@ package com.avengers.nibobnebob.presentation.ui.main.global.model
 data class UiReviewData(
     val reviewId : Int,
     val reviewer : String,
-    val visited : String = "2023.11.29 테스트",
+    val createdAt : String = "2023.11.29 테스트",
     val isCarVisit : Boolean,
     val transportationAccessibility : Int = 0,
     val parkingArea : Int = 0,

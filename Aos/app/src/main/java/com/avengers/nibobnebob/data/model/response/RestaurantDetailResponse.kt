@@ -17,6 +17,7 @@ data class RestaurantDetailResponse(
 
 data class Reviews(
     @SerializedName("review_id")val id: Int,
+    @SerializedName("review_created_at")val createdAt : String,
     @SerializedName("review_isCarVisit")val isCarVisit: Boolean,
     @SerializedName("review_overallExperience")val overallExperience: String,
     @SerializedName("review_parkingArea")val parkingArea: Int,
