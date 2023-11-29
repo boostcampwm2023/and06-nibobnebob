@@ -3,7 +3,6 @@ package com.avengers.nibobnebob.data.repository
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.FollowListResponse
-import com.avengers.nibobnebob.data.model.response.FollowSearchResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.FollowApi
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +38,7 @@ class FollowRepositoryImpl @Inject constructor(
         emit(result)
     }
 
-    override fun searchFollow(keyword: String, region: List<String>): Flow<BaseState<BaseResponse<FollowSearchResponse>>> = flow{
+    override fun searchFollow(keyword: String, region: List<String>): Flow<BaseState<BaseResponse<List<FollowListResponse>>>> = flow{
         val result = runRemote { api.searchFollow(keyword, region) }
         emit(result)
     }

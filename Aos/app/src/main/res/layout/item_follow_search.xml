@@ -5,11 +5,16 @@
 
     <data>
 
+        <variable
+            name="item"
+            type="com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowSearchData" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> item.onRootClickListener.invoke(item.nickName)}">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_profile"
@@ -27,6 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:text="@{item.nickName}"
             android:textAlignment="center"
             app:layout_constraintBottom_toTopOf="@id/tv_region"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -39,6 +45,7 @@
             style="@style/TextSmallRegular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:text="@{item.region}"
             android:textAlignment="center"
             android:textColor="@color/nn_dark4"
             app:layout_constraintBottom_toBottomOf="@id/iv_profile"

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -26,6 +27,7 @@ data class FollowSearchUiState(
 
 sealed class FollowSearchEvents{
     data class ShowSnackMessage(val msg: String): FollowSearchEvents()
+    data class NavigateToUserDetail(val nickName: String): FollowSearchEvents()
 }
 
 @HiltViewModel
@@ -47,26 +49,34 @@ class FollowSearchViewModel @Inject constructor(
 
     private fun observeKeyword(){
         keyword.onEach {
-            followRepository.searchFollow(it, _uiState.value.curRegionFilter).onEach { response ->
-                when(response){
-                    is BaseState.Success -> {
-                        _uiState.update { state ->
-                            state.copy(
-                                searchList = response.data.body.userInfo.map { data ->
-                                    data.toUiFollowSearchData {
+            if(it.isNotBlank()){
 
-                                    }
+                followRepository.searchFollow(it, _uiState.value.curRegionFilter).onEach { response ->
+                    when(response){
+                        is BaseState.Success -> {
+                            response.data.body.let{ data ->
+                                _uiState.update { state ->
+                                    state.copy(
+                                        searchList = data.map { data ->
+                                            data.toUiFollowSearchData(::navigateToUserDetail)
+                                        }
+                                    )
                                 }
-                            )
+                            }
+                        }
+                        is BaseState.Error -> {
+                            _events.emit(FollowSearchEvents.ShowSnackMessage(response.message))
                         }
                     }
-                    is BaseState.Error -> {
-                        _events.emit(FollowSearchEvents.ShowSnackMessage(response.message))
-                    }
-                }
+                }.launchIn(viewModelScope)
             }
         }.launchIn(viewModelScope)
     }
 
+    private fun navigateToUserDetail(nickName: String) {
+        viewModelScope.launch {
+            _events.emit(FollowSearchEvents.NavigateToUserDetail(nickName))
+        }
+    }
 
 }
