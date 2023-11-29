@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.HomeRepository
+import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
@@ -43,13 +44,14 @@ sealed class HomeEvents {
     data object SetNewMarkers : HomeEvents()
     data object RemoveMarkers : HomeEvents()
     data class ShowSnackMessage(
-        val msg : String
+        val msg: String
     ) : HomeEvents()
 }
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    private val restaurantRepository: RestaurantRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -125,7 +127,7 @@ class HomeViewModel @Inject constructor(
     fun getMarkerList() {
         when (_uiState.value.curFilter) {
             MY_LIST -> {
-                homeRepository.myRestaurantList().onEach {
+                restaurantRepository.myRestaurantList().onEach {
                     _events.emit(HomeEvents.RemoveMarkers)
                     when (it) {
                         is BaseState.Success -> {
