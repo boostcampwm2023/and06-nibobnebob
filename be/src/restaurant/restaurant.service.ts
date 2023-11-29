@@ -67,7 +67,8 @@ export class RestaurantService implements OnModuleInit {
         "review.service",
         "review.restroomCleanliness",
         "review.overallExperience",
-        "user.nickName as reviewer"
+        "user.nickName as reviewer",
+        "review.createdAt"
       ])
       .where("review.restaurant_id = :restaurantId", {
         restaurantId: restaurant.restaurant_id,
