@@ -11,6 +11,8 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
@@ -31,6 +37,7 @@ data class HomeUiState(
     val curFilter: String = MY_LIST,
     val cameraLatitude: Double = 0.0,
     val cameraLongitude: Double = 0.0,
+    val cameraBound: LatLngBounds = LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0)),
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0
 )
@@ -74,7 +81,7 @@ class HomeViewModel @Inject constructor(
     fun updateCamera(latitude: Double, longitude: Double) {
         _uiState.update { state ->
             state.copy(
-                cameraLatitude = latitude ,
+                cameraLatitude = latitude,
                 cameraLongitude = longitude
             )
         }
@@ -181,20 +188,100 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+//TODO 문제 -> 다 보여주려면 ZOOM을 축소 고정 -> 다 가까울 때 문제
+
+//        private fun moveCamera() {
+//        val list = _uiState.value.markerList
+//        val markerSize = list.size
+//        val averageLatitude = list.sumOf { it.latitude }
+//        val averageLongitude = list.sumOf { it.longitude }
+//
+//        _uiState.update { state ->
+//            state.copy(
+//                cameraLatitude = averageLatitude / markerSize,
+//                cameraLongitude = averageLongitude / markerSize
+//            )
+//        }
+//    }
+
+
+// //TODO 해결 1. 현재 카메라의 위치를 기준으로 가장 가가운 곳으로 줌 레벨을 설정
+//
+//    private fun haversineDistance(latitude: Double, longitude: Double): Double {
+//        val radius = 6371
+//        val distanceLatitude = Math.toRadians(_uiState.value.cameraLatitude - latitude)
+//        val distanceLongitude = Math.toRadians(_uiState.value.cameraLongitude - longitude)
+//
+//        val a = (sin(distanceLatitude / 2) * sin(distanceLatitude / 2)) +
+//                (cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(latitude)) *
+//                        sin(distanceLongitude / 2) * sin(distanceLongitude / 2))
+//
+//        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+//        return radius * c
+//    }
+//
+//    private fun moveCamera() {
+//        if (_uiState.value.markerList.isEmpty()) return
+//
+//        var closestPoint: LatLng? = null
+//        var minDistance = Double.MAX_VALUE
+//
+//        for (point in _uiState.value.markerList) {
+//            val distance = haversineDistance(point.latitude,point.longitude)
+//            if (distance < minDistance) {
+//                minDistance = distance
+//                closestPoint = LatLng(point.latitude,point.longitude)
+//            }
+//        }
+//        closestPoint?.let {
+//            _uiState.update { state ->
+//                state.copy(
+//                    cameraLatitude = closestPoint.latitude,
+//                    cameraLongitude = closestPoint.longitude
+//                )
+//            }
+//        }
+//    }
+
+    private fun findExtremeCoordinates(): Pair<LatLng, LatLng> {
+
+        var minLatitude = Double.MAX_VALUE
+        var maxLatitude = Double.MIN_VALUE
+        var minLongitude = Double.MAX_VALUE
+        var maxLongitude = Double.MIN_VALUE
+
+        for (point in _uiState.value.markerList) {
+            if (point.latitude < minLatitude) {
+                minLatitude = point.latitude
+            }
+            if (point.latitude > maxLatitude) {
+                maxLatitude = point.latitude
+            }
+            if (point.longitude < minLongitude) {
+                minLongitude = point.longitude
+            }
+            if (point.longitude > maxLongitude) {
+                maxLongitude = point.longitude
+            }
+        }
+
+
+        val padding = 0.03
+        val minCoordinates = LatLng(minLatitude, minLongitude-padding)
+        val maxCoordinates = LatLng(maxLatitude, maxLongitude+padding)
+
+        return Pair(minCoordinates, maxCoordinates)
+    }
 
     private fun moveCamera() {
-        val list = _uiState.value.markerList
-        val markerSize = list.size
-        val averageLatitude = list.sumOf { it.latitude }
-        val averageLongitude = list.sumOf { it.longitude }
-
-        _uiState.update { state ->
+        val coordinates = findExtremeCoordinates()
+        _uiState.update {state ->
             state.copy(
-                cameraLatitude = averageLatitude / markerSize,
-                cameraLongitude = averageLongitude / markerSize
+                cameraBound = LatLngBounds(coordinates.first,coordinates.second)
             )
         }
     }
+
 
     private fun onFilterItemClicked(name: String) {
         _uiState.update { state ->

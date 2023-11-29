@@ -21,8 +21,8 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -116,16 +116,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
                     is HomeEvents.SetNewMarkers -> {
                         viewModel.trackingOff()
-                        val cameraUpdate = CameraUpdate.scrollTo(
-                            LatLng(
-                                viewModel.uiState.value.cameraLatitude,
-                                viewModel.uiState.value.cameraLongitude
-                            )
-                        )
+
+                        val bounds = viewModel.uiState.value.cameraBound
+                        val cameraUpdate = CameraUpdate.fitBounds(bounds)
                         naverMap.moveCamera(cameraUpdate)
+
+
                         viewModel.uiState.value.markerList.forEach { data ->
                             setMarker(data)
                         }
+
                     }
 
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
@@ -134,6 +134,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             }
         }
     }
+
+//                        val lat = viewModel.uiState.value.cameraLatitude
+//                        val lng = viewModel.uiState.value.cameraLongitude
+//                        val cameraUpdate = CameraUpdate.scrollTo(
+//                            LatLng(
+//                                lat,
+//                                lng
+//                            )
+//                        )
+//                        val cameraPosition = CameraPosition(LatLng(lat, lng), 14.0)
+//                        naverMap.moveCamera(cameraUpdate)
+//                        naverMap.cameraPosition = cameraPosition
 
     private fun initStateObserver() {
         repeatOnStarted {
