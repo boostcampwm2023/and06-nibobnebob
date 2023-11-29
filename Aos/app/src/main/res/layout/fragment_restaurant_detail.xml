@@ -264,6 +264,8 @@
             android:background="@drawable/rect_primary6fill_nostroke_8radius"
             android:text="@string/add_my_list_review"
             android:textColor="@color/white"
+            app:addRestaurantState="@{vm.uiState.isMy}"
+            android:onClick="@{() -> vm.onMyListClicked()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

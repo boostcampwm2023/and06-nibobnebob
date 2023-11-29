@@ -55,6 +55,8 @@
     <string name="when_visited">방문날짜 :</string>
     <string name="menu_detail">상세보기</string>
     <string name="menu_delete">삭제하기</string>
+    <string name="delete_my_list_label">맛집 삭제하기</string>
+    <string name="delete_my_list">내 맛집 리스트에서 삭제하시겠습니까?</string>
 
     <string-array name="location_list">
         <item>용산구</item>

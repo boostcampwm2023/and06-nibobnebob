@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -26,7 +25,10 @@ import javax.inject.Inject
 sealed class RestaurantDetailEvents {
     data object NavigateToBack : RestaurantDetailEvents()
     data class NavigateToDetailReview(val reviewId: Int) : RestaurantDetailEvents()
+    data class NavigateToAddMyList(val restaurantId: Int) : RestaurantDetailEvents()
+    data class NavigateToDeleteMyList(val restaurantId: Int) : RestaurantDetailEvents()
     data class ShowSnackMessage(val msg: String) : RestaurantDetailEvents()
+    data class ShowToastMessage(val msg: String) : RestaurantDetailEvents()
 }
 
 data class RestaurantDetailUiState(
@@ -102,10 +104,27 @@ class RestaurantDetailViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    fun deleteMyList() {
+        restaurantRepository.deleteRestaurant(restaurantId.value).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _events.emit(RestaurantDetailEvents.ShowToastMessage("삭제 되었습니다."))
+                    _uiState.update { state ->
+                        state.copy(
+                            isMy = false
+                        )
+                    }
+                }
+
+                is BaseState.Error -> {
+                    _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
     fun onWishClicked() {
-        Log.d("test", "위시 클릭")
         if (_uiState.value.isWish) {
-            Log.d("test", "위시 true")
             restaurantRepository.deleteWishRestaurant(restaurantId.value).onEach {
                 when (it) {
                     is BaseState.Success -> {
@@ -122,7 +141,6 @@ class RestaurantDetailViewModel @Inject constructor(
                 }
             }.launchIn(viewModelScope)
         } else {
-            Log.d("test", "위시 false")
             restaurantRepository.addWishRestaurant(restaurantId.value).onEach {
                 when (it) {
                     is BaseState.Success -> {
@@ -210,7 +228,15 @@ class RestaurantDetailViewModel @Inject constructor(
 
 
     private fun onReviewClicked(reviewId: Int) {
-        navigateToRestaurantDetail(reviewId = reviewId)
+        navigateToReviewDetail(reviewId = reviewId)
+    }
+
+    fun onMyListClicked() {
+        if (_uiState.value.isMy) {
+            navigateToDeleteMyList()
+        } else {
+            navigateToAddMyList()
+        }
     }
 
 
@@ -224,7 +250,19 @@ class RestaurantDetailViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToRestaurantDetail(reviewId: Int) {
+    private fun navigateToDeleteMyList() {
+        viewModelScope.launch {
+            _events.emit(RestaurantDetailEvents.NavigateToDeleteMyList(restaurantId.value))
+        }
+    }
+
+    private fun navigateToAddMyList() {
+        viewModelScope.launch {
+            _events.emit(RestaurantDetailEvents.NavigateToAddMyList(restaurantId.value))
+        }
+    }
+
+    private fun navigateToReviewDetail(reviewId: Int) {
         viewModelScope.launch {
             _events.emit(RestaurantDetailEvents.NavigateToDetailReview(reviewId = reviewId))
         }

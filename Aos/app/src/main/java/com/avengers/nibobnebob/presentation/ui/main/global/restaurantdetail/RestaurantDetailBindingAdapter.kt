@@ -1,6 +1,8 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
+import android.graphics.Color
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.databinding.BindingAdapter
 import com.avengers.nibobnebob.R
 
@@ -41,5 +43,19 @@ fun setWishStatus(iv:ImageView, isWish : Boolean){
         iv.setImageResource(R.drawable.ic_star_full)
     }else{
         iv.setImageResource(R.drawable.ic_star_border)
+    }
+}
+
+
+@BindingAdapter("addRestaurantState")
+fun bindAddRestaurantStatus(btn: AppCompatButton, isMy : Boolean){
+    if( isMy ){
+        btn.setBackgroundResource(R.drawable.rect_dark6fill_nostroke_20radius)
+        btn.setTextColor(Color.BLACK)
+        btn.text = "맛집 삭제하기"
+    } else {
+        btn.setBackgroundResource(R.drawable.rect_primary4fill_nostroke_20radius)
+        btn.setTextColor(Color.WHITE)
+        btn.text = "맛집 추가하기 / 리뷰하기"
     }
 }
