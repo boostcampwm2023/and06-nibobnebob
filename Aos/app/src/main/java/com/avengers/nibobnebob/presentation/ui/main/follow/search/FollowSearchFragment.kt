@@ -9,6 +9,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentFollowSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.SelectRegionDialog
+import com.avengers.nibobnebob.presentation.ui.adjustKeyboard
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.follow.adapter.FollowSearchAdapter
 import com.avengers.nibobnebob.presentation.ui.toUserDetail
@@ -25,6 +26,7 @@ class FollowSearchFragment: BaseFragment<FragmentFollowSearchBinding>(R.layout.f
         binding.rvFollowSearch.adapter = FollowSearchAdapter()
         binding.rvFollowSearch.itemAnimator = null
         initEventObserver()
+        setEditText()
     }
 
     private fun initEventObserver(){
@@ -39,5 +41,10 @@ class FollowSearchFragment: BaseFragment<FragmentFollowSearchBinding>(R.layout.f
                 }
             }
         }
+    }
+
+    private fun setEditText(){
+        binding.etSearch.requestFocus()
+        requireContext().adjustKeyboard(binding.etSearch, true)
     }
 }
