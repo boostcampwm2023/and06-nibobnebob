@@ -4,6 +4,7 @@
 
 #config
 typeorm.config.ts
+objectStorage.config.json
 
 # Logs
 logs
