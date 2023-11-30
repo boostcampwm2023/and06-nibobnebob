@@ -36,4 +36,14 @@ interface RestaurantApi {
     // 내 위시 리스트
     @GET("api/user/wish-restaurant")
     suspend fun myWishList(): Response<BaseResponse<List<FilterRestaurantResponse>>>
+
+    @POST("api/user/wish-restaurant/{restaurantid}")
+    suspend fun addWishList(
+        @Path("restaurantid") restaurantId: Int
+    ): Response<BaseResponse<Unit>>
+
+    @DELETE("api/user/wish-restaurant/{restaurantid}")
+    suspend fun deleteWishList(
+        @Path("restaurantid") restaurantId: Int
+    ): Response<BaseResponse<Unit>>
 }

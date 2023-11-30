@@ -23,7 +23,7 @@ class MyRestaurantListFragment :
     private val viewModel: MyRestaurantListViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
     private val adapter = MyRestaurantAdapter({ id -> viewModel.showDetail(id) },
-        { id -> viewModel.deleteMyList(id) })
+        { id -> showDeleteCheckDialog(id) })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,6 +62,16 @@ class MyRestaurantListFragment :
             }
         }
 
+    }
+
+    private fun showDeleteCheckDialog(id: Int) {
+        showTwoButtonTitleDialog(
+            title = "삭제하시겠습니까?",
+            description = "내 맛집 리스트에서 삭제됩니다.",
+            confirmBtnClickListener = {
+                viewModel.deleteMyList(id)
+            }
+        )
     }
 
 

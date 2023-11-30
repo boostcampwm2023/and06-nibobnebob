@@ -1,6 +1,7 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -305,6 +306,15 @@ class HomeViewModel @Inject constructor(
         }
 
         getMarkerList()
+    }
+
+    fun addWishTest(id: Int) {
+        restaurantRepository.addWishList(id).onEach {
+            when (it) {
+                is BaseState.Success -> Log.d("TEST", "success")
+                is BaseState.Error -> Log.d("TEST", "fail")
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun navigateToSearchRestaurant() {

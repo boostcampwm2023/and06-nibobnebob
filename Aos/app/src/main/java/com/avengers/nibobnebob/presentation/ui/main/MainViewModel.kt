@@ -16,11 +16,19 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val networkManager: NetworkManager
 ) : BaseActivityViewModel(networkManager) {
-    private val _uiState = MutableStateFlow(UiRestaurantData())
-    val uiState: StateFlow<UiRestaurantData> = _uiState.asStateFlow()
+    val selectedItem = MutableStateFlow(UiRestaurantData())
+    val searchKeyword = MutableStateFlow("")
 
     fun markSearchRestaurant(item: UiRestaurantData) {
-        viewModelScope.launch { _uiState.emit(item) }
+        viewModelScope.launch { selectedItem.emit(item) }
+    }
+
+    fun keepSearchKeyword(keyword : String){
+        viewModelScope.launch { searchKeyword.emit(keyword) }
+    }
+
+    fun clearKeyword(){
+        viewModelScope.launch { searchKeyword.emit("") }
     }
 
 

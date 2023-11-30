@@ -47,4 +47,14 @@ class RestaurantRepositoryImpl @Inject constructor(
             val result = runRemote { api.myWishList() }
             emit(result)
         }
+
+    override fun addWishList(restaurantId: Int): Flow<BaseState<BaseResponse<Unit>>> = flow {
+        val result = runRemote { api.addWishList(restaurantId) }
+        emit(result)
+    }
+
+    override fun deleteWishList(restaurantId: Int): Flow<BaseState<BaseResponse<Unit>>> = flow {
+        val result = runRemote { api.deleteWishList(restaurantId) }
+        emit(result)
+    }
 }
