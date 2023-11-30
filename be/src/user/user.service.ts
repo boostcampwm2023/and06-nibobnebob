@@ -40,7 +40,7 @@ export class UserService {
 
     const newUser = this.usersRepository.create(user);
     await this.usersRepository.createUser(newUser);
-    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
     return;
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
@@ -279,9 +279,23 @@ export class UserService {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
   async updateMypageUserInfo(tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
-    return await this.usersRepository.updateMypageUserInfo(
+    userInfoDto.password = await hashPassword(userInfoDto.password);
+    const user = {
+      ...userInfoDto,
+      profileImage: "profile/images/defaultprofile.png",
+    };
+
+    if (userInfoDto.profileImage) {
+      const uuid = v4();
+      user.profileImage = `profile/images/${uuid}.png`;
+    } 
+
+    const newUser = this.usersRepository.create(user);
+    const result = await this.usersRepository.updateMypageUserInfo(
       tokenInfo.id,
-      userInfoDto
+      newUser
     );
+    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    return result;
   }
 }

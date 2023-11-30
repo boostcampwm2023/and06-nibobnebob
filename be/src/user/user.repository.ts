@@ -95,13 +95,13 @@ export class UserRepository extends Repository<User> {
     }
     return {};
   }
-  async updateMypageUserInfo(id: number, userInfoDto: UserInfoDto) {
+  async updateMypageUserInfo(id: number, userEntity: User) {
     const user = await this.findOne({ select: ["id"], where: { id: id } });
     const [emailUser, nickNameUser] = await Promise.all([
-      this.findOne({ select: ["id"], where: { email: userInfoDto["email"] } }),
+      this.findOne({ select: ["id"], where: { email: userEntity["email"] } }),
       this.findOne({
         select: ["id"],
-        where: { nickName: userInfoDto["nickName"] },
+        where: { nickName: userEntity["nickName"] },
       }),
     ]);
 
@@ -109,18 +109,19 @@ export class UserRepository extends Repository<User> {
     const isNickNameDuplicate = !!nickNameUser;
 
     let updateObject = {
-      birthdate: userInfoDto["birthdate"],
-      isMale: userInfoDto["isMale"],
-      region: userInfoDto["region"],
-      provider: userInfoDto["provider"],
-      password: userInfoDto["password"],
+      birthdate: userEntity["birthdate"],
+      isMale: userEntity["isMale"],
+      region: userEntity["region"],
+      provider: userEntity["provider"],
+      password: userEntity["password"],
+      profileImage : userEntity["profileImage"]
     };
 
     if (!isEmailDuplicate) {
-      updateObject["email"] = userInfoDto["email"];
+      updateObject["email"] =userEntity["email"];
     }
     if (!isNickNameDuplicate) {
-      updateObject["nickName"] = userInfoDto["nickName"];
+      updateObject["nickName"] = userEntity["nickName"];
     }
     await this.update(user.id, updateObject);
     return {
