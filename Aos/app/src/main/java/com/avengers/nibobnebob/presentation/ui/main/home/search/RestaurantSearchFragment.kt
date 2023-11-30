@@ -35,7 +35,6 @@ class RestaurantSearchFragment :
     BaseFragment<FragmentRestaurantSearchBinding>(R.layout.fragment_restaurant_search) {
     private val viewModel: RestaurantSearchViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
-    private val args: RestaurantSearchFragmentArgs by navArgs()
 
     private val adapter = HomeSearchAdapter { item ->
         viewModel.onClickSearchItem(item)

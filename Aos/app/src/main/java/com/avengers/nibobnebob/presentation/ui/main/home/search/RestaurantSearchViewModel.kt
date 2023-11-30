@@ -49,7 +49,7 @@ class RestaurantSearchViewModel @Inject constructor(
     )
     val events: SharedFlow<RestaurantSearchEvent> = _events.asSharedFlow()
 
-    private val tempRadius = "5000"
+    private val tempRadius = "5000000"
 
     private val curLongitude = MutableStateFlow("")
     private val curLatitude = MutableStateFlow("")

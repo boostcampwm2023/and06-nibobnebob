@@ -126,7 +126,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         val zoom = viewModel.uiState.value.cameraZoom
                         val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
                         val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
-                            .apply { animate(CameraAnimation.Linear, 1000) }
+                            .apply { animate(CameraAnimation.Linear, 500) }
 
                         naverMap.moveCamera(cameraUpdate)
                         viewModel.uiState.value.markerList.forEach { data ->
