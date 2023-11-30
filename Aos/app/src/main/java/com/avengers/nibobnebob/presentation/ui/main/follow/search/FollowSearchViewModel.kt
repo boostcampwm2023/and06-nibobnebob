@@ -38,7 +38,7 @@ sealed class FollowSearchEvents{
 @HiltViewModel
 class FollowSearchViewModel @Inject constructor(
     private val followRepository: FollowRepository
-): ViewModel() {
+): ViewModel(), RemoveChipInterface {
 
     private val _uiState = MutableStateFlow(FollowSearchUiState())
     val uiState: StateFlow<FollowSearchUiState> = _uiState.asStateFlow()
@@ -91,6 +91,16 @@ class FollowSearchViewModel @Inject constructor(
                 _uiState.value.curRegionFilter,
                 ::changeFilterListener
             ))
+        }
+    }
+
+    override fun removeChip(data: String) {
+        _uiState.update { state ->
+            state.copy(
+                curRegionFilter = _uiState.value.curRegionFilter.filter {
+                    it != data
+                }
+            )
         }
     }
 
