@@ -16,3 +16,6 @@
 .cxx
 local.properties
 *.jks
+*.apk
+google-services.json
+output-metadata.json
