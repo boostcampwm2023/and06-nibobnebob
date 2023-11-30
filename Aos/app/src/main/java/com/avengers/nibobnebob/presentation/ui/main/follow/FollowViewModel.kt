@@ -28,7 +28,7 @@ data class FollowUiState(
 
 sealed class FollowEvents {
     data object NavigateToFollowSearch : FollowEvents()
-    data class NavigateToFollowDetail(val nickName: String) : FollowEvents()
+    data class NavigateToUserDetail(val nickName: String) : FollowEvents()
     data class ShowToastMessage(val msg: String) : FollowEvents()
     data class ShowSnackMessage(val msg: String) : FollowEvents()
 }
@@ -59,7 +59,7 @@ class FollowViewModel @Inject constructor(
                         state.copy(
                             recommendFollowList = it.data.body.map { data ->
                                 data.toUiFollowData(
-                                    ::follow, ::unFollow, ::navigateToFollowDetail
+                                    ::follow, ::unFollow, ::navigateToUserDetail
                                 )
                             }
                         )
@@ -87,7 +87,7 @@ class FollowViewModel @Inject constructor(
                         state.copy(
                             followList = it.data.body.map { data ->
                                 data.toUiFollowData(
-                                    ::follow, ::unFollow, ::navigateToFollowDetail
+                                    ::follow, ::unFollow, ::navigateToUserDetail
                                 )
                             }
                         )
@@ -114,7 +114,7 @@ class FollowViewModel @Inject constructor(
                         state.copy(
                             followList = it.data.body.map { data ->
                                 data.toUiFollowData(
-                                    ::follow, ::unFollow, ::navigateToFollowDetail
+                                    ::follow, ::unFollow, ::navigateToUserDetail
                                 )
                             }
                         )
@@ -143,7 +143,8 @@ class FollowViewModel @Inject constructor(
                                 }
 
                                 CurListState.FOLLOWING -> {
-                                    val newFollowList: MutableList<UiFollowData> = _uiState.value.followList.toMutableList()
+                                    val newFollowList: MutableList<UiFollowData> =
+                                        _uiState.value.followList.toMutableList()
 
                                     _uiState.value.recommendFollowList.forEach { data ->
                                         if (data.nickName == nickName) newFollowList.add(
@@ -214,9 +215,9 @@ class FollowViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToFollowDetail(nickName: String) {
+    private fun navigateToUserDetail(nickName: String) {
         viewModelScope.launch {
-            _events.emit(FollowEvents.NavigateToFollowDetail(nickName))
+            _events.emit(FollowEvents.NavigateToUserDetail(nickName))
         }
     }
 
