@@ -14,4 +14,11 @@
         <item name="cornerSizeBottomRight">24dp</item>
         <item name="cornerSizeBottomLeft">24dp</item>
     </style>
+
+    <style name="All50RadiusImageView" parent="">
+        <item name="cornerSizeTopRight">50dp</item>
+        <item name="cornerSizeTopLeft">50dp</item>
+        <item name="cornerSizeBottomRight">50dp</item>
+        <item name="cornerSizeBottomLeft">50dp</item>
+    </style>
 </resources>

@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.data.repository
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.FollowListResponse
+import com.avengers.nibobnebob.data.model.response.UserDetailResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.FollowApi
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +36,16 @@ class FollowRepositoryImpl @Inject constructor(
 
     override fun unFollow(nickName: String): Flow<BaseState<BaseResponse<Unit>>> = flow{
         val result = runRemote { api.unFollow(nickName) }
+        emit(result)
+    }
+
+    override fun searchFollow(keyword: String, region: List<String>): Flow<BaseState<BaseResponse<List<FollowListResponse>>>> = flow{
+        val result = runRemote { api.searchFollow(keyword, region) }
+        emit(result)
+    }
+
+    override fun getUserDetail(nick: String): Flow<BaseState<BaseResponse<UserDetailResponse>>> = flow {
+        val result = runRemote { api.getUserDetail(nick) }
         emit(result)
     }
 }

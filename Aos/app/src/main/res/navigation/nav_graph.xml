@@ -22,9 +22,6 @@
         <action
             android:id="@+id/action_followFragment_to_followSearchFragment"
             app:destination="@id/followSearchFragment" />
-        <action
-            android:id="@+id/action_followFragment_to_followDetailFragment"
-            app:destination="@id/followDetailFragment" />
     </fragment>
 
     <fragment
@@ -34,10 +31,10 @@
         tools:layout="@layout/fragment_follow_search"/>
 
     <fragment
-        android:id="@+id/followDetailFragment"
-        android:name="com.avengers.nibobnebob.presentation.ui.main.follow.detail.FollowDetailFragment"
-        android:label="fragment_follow_detail"
-        tools:layout="@layout/fragment_follow_detail">
+        android:id="@+id/userDetailFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.global.userdetail.UserDetailFragment"
+        android:label="fragment_user_detail"
+        tools:layout="@layout/fragment_user_detail">
         <argument
             android:name="nickName"
             app:argType="string"
@@ -84,6 +81,9 @@
         app:destination="@id/homeFragment"
         app:popUpTo="@id/homeFragment"
         app:popUpToInclusive="true"/>
+    <action
+        android:id="@+id/global_to_userDetailFragment"
+        app:destination="@id/userDetailFragment"/>
 
     <fragment
         android:id="@+id/editProfileFragment"
