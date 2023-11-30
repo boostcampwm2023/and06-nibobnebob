@@ -5,6 +5,7 @@ import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
+import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import kotlinx.coroutines.flow.Flow
 
 interface RestaurantRepository {
@@ -24,7 +25,7 @@ interface RestaurantRepository {
 
     fun myRestaurantList(): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
 
-    fun myWishList(): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
+    fun myWishList(): Flow<BaseState<BaseResponse<List<WishRestaurantResponse>>>>
 
     fun addWishRestaurant(
         restaurantId: Int

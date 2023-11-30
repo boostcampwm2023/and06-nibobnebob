@@ -5,6 +5,7 @@ import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
+import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RestaurantApi
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +43,7 @@ class RestaurantRepositoryImpl @Inject constructor(
             emit(result)
         }
 
-    override fun myWishList(): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>> =
+    override fun myWishList(): Flow<BaseState<BaseResponse<List<WishRestaurantResponse>>>> =
         flow {
             val result = runRemote { api.myWishList() }
             emit(result)

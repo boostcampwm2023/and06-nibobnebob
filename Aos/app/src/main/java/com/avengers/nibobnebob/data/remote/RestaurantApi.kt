@@ -4,6 +4,7 @@ import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
+import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -35,7 +36,7 @@ interface RestaurantApi {
 
     // 내 위시 리스트
     @GET("api/user/wish-restaurant")
-    suspend fun myWishList(): Response<BaseResponse<List<RestaurantResponse>>>
+    suspend fun myWishList(): Response<BaseResponse<List<WishRestaurantResponse>>>
 
     @POST("api/user/wish-restaurant/{restaurantId}")
     suspend fun addWishRestaurant(
