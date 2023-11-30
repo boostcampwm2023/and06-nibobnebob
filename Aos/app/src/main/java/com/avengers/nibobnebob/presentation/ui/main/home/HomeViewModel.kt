@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -12,6 +11,7 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
+import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,12 +24,19 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
     val filterList: List<UiFilterData> = emptyList(),
     val markerList: List<UiRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
+    val cameraLatitude: Double = 0.0,
+    val cameraLongitude: Double = 0.0,
+    val cameraZoom: Double = 0.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0
 )
@@ -66,6 +73,16 @@ class HomeViewModel @Inject constructor(
             state.copy(
                 curLatitude = latitude,
                 curLongitude = longitude
+            )
+        }
+    }
+
+    fun updateCamera(latitude: Double, longitude: Double, zoom: Double) {
+        _uiState.update { state ->
+            state.copy(
+                cameraLatitude = latitude,
+                cameraLongitude = longitude,
+                cameraZoom = zoom
             )
         }
     }
@@ -137,6 +154,7 @@ class HomeViewModel @Inject constructor(
                                     data.toUiRestaurantData()
                                 })
                             }
+                            moveCamera()
                         }
 
                         is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
@@ -159,6 +177,7 @@ class HomeViewModel @Inject constructor(
                                     data.toUiRestaurantData()
                                 })
                             }
+                            moveCamera()
                         }
 
                         is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
@@ -168,6 +187,75 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    private fun calculateDensity(latitude: Double, longitude: Double, radius: Double): Int {
+        var density = 0
+
+        for (point in _uiState.value.markerList) {
+            val distance = haversineDistance(latitude, longitude, point.latitude, point.longitude)
+            if (distance <= radius) {
+                density++
+            } else {
+                break
+            }
+        }
+
+        return density
+    }
+
+    private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val radius = 6371
+        val distanceLatitude = Math.toRadians(lat2 - lat1)
+        val distanceLongitude = Math.toRadians(lon2 - lon1)
+
+        val a = (sin(distanceLatitude / 2) * sin(distanceLatitude / 2)) +
+                (cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+                        sin(distanceLongitude / 2) * sin(distanceLongitude / 2))
+
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        return radius * c
+    }
+
+    private fun moveCamera() {
+        if (_uiState.value.markerList.isEmpty()) return
+
+        var closestPoint: LatLng? = null
+        var maxDensityPoint: LatLng? = null
+        var minDistance = Double.MAX_VALUE
+        var maxDensity = 0
+        val radius = 5.0
+
+        for (point in _uiState.value.markerList) {
+            val distance = haversineDistance(
+                _uiState.value.cameraLatitude,
+                _uiState.value.cameraLongitude,
+                point.latitude,
+                point.longitude
+            )
+            val density = calculateDensity(point.latitude, point.longitude, radius)
+
+            if (distance < minDistance) {
+                minDistance = distance
+                closestPoint = LatLng(point.latitude, point.longitude)
+            }
+
+            if (density > maxDensity) {
+                maxDensity = density
+                maxDensityPoint = LatLng(point.latitude, point.longitude)
+            }
+        }
+
+        val targetPoint = maxDensityPoint ?: closestPoint
+        targetPoint?.let {
+            _uiState.update { state ->
+                state.copy(
+                    cameraLatitude = targetPoint.latitude,
+                    cameraLongitude = targetPoint.longitude
+                )
+            }
+        }
+    }
+
 
     private fun onFilterItemClicked(name: String) {
         _uiState.update { state ->
