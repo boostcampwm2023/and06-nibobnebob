@@ -21,8 +21,9 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -32,7 +33,6 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), OnMapReadyCallback {
@@ -46,7 +46,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val markerList = mutableListOf<Marker>()
 
     private val locationPermissionList = arrayOf(
@@ -70,7 +69,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 childFragmentManager.beginTransaction().add(R.id.map_fragment, it).commit()
             }
 
-        mapFragment.getMapAsync(this)
+        mapFragment?.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
@@ -96,12 +95,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
         }
 
-        // todo 화면이동 끝났을때 리스너
         naverMap.addOnCameraIdleListener {
-
+            val cameraPosition = naverMap.cameraPosition
+            viewModel.updateCamera(
+                cameraPosition.target.latitude,
+                cameraPosition.target.longitude,
+                cameraPosition.zoom
+            )
         }
 
-        // todo GPS 기반 위치변화 리스너
         naverMap.addOnLocationChangeListener {
             viewModel.updateLocation(
                 it.latitude,
@@ -116,6 +118,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 when (it) {
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
                     is HomeEvents.SetNewMarkers -> {
+                        viewModel.trackingOff()
+                        val lat = viewModel.uiState.value.cameraLatitude
+                        val lng = viewModel.uiState.value.cameraLongitude
+                        val zoom = viewModel.uiState.value.cameraZoom
+                        val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
+                        val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
+                            .apply { animate(CameraAnimation.Linear, 1000) }
+
+                        naverMap.moveCamera(cameraUpdate)
                         viewModel.uiState.value.markerList.forEach { data ->
                             setMarker(data)
                         }
@@ -127,6 +138,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             }
         }
     }
+
 
     private fun initStateObserver() {
         repeatOnStarted {
@@ -169,7 +181,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         else viewModel.trackingOff()
     }
 
-    // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
     private fun setMarker(data: UiRestaurantData) {
         val marker = Marker()
 
@@ -192,7 +203,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         markerList.add(marker)
     }
 
-    // todo 모든 marker 데이터 markerList 에 저장해 놨다가, remove 다음 방식으로 진행
     private fun removeAllMarker() {
         markerList.forEach {
             it.map = null
