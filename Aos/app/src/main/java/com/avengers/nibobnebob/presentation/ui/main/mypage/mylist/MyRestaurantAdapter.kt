@@ -8,24 +8,24 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.ItemMyListBinding
-import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyPageListData
+import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
 
 class MyRestaurantAdapter(
     private val showDetail: (Int) -> Unit,
     private val deleteItem: (Int) -> Unit
-) : ListAdapter<UiMyPageListData, MyRestaurantViewHolder>(diffCallback) {
+) : ListAdapter<UiMyListData, MyRestaurantViewHolder>(diffCallback) {
     companion object {
-        val diffCallback = object : DiffUtil.ItemCallback<UiMyPageListData>() {
+        val diffCallback = object : DiffUtil.ItemCallback<UiMyListData>() {
             override fun areItemsTheSame(
-                oldItem: UiMyPageListData,
-                newItem: UiMyPageListData
+                oldItem: UiMyListData,
+                newItem: UiMyListData
             ): Boolean {
                 return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(
-                oldItem: UiMyPageListData,
-                newItem: UiMyPageListData
+                oldItem: UiMyListData,
+                newItem: UiMyListData
             ): Boolean {
                 return oldItem == newItem
             }
@@ -50,7 +50,7 @@ class MyRestaurantAdapter(
 class MyRestaurantViewHolder(
     private val binding: ItemMyListBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiMyPageListData, showDetail: (Int) -> Unit, deleteItem: (Int) -> Unit) {
+    fun bind(item: UiMyListData, showDetail: (Int) -> Unit, deleteItem: (Int) -> Unit) {
         binding.item = item
         binding.ivMore.setOnClickListener { listMenu(item, showDetail, deleteItem) }
         binding.executePendingBindings()
@@ -58,7 +58,7 @@ class MyRestaurantViewHolder(
     }
 
     private fun listMenu(
-        item: UiMyPageListData,
+        item: UiMyListData,
         showDetail: (Int) -> Unit,
         deleteItem: (Int) -> Unit
     ) {
