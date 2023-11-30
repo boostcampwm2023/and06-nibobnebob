@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -13,6 +12,7 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -167,6 +167,35 @@ class HomeViewModel @Inject constructor(
                 }.launchIn(viewModelScope)
             }
         }
+    }
+
+    suspend fun updateWish(id: Int, curState: Boolean): Boolean {
+
+        val result: Boolean = viewModelScope.async {
+            var flag = true
+            if (curState) {
+                restaurantRepository.deleteWishRestaurant(id).onEach {
+                    flag = when (it) {
+                        is BaseState.Success -> true
+                        else -> false
+                    }
+                }.launchIn(viewModelScope)
+                flag
+            } else {
+                restaurantRepository.addWishRestaurant(id).onEach {
+                    flag = when (it) {
+                        is BaseState.Success -> true
+                        else -> false
+                    }
+                }.launchIn(viewModelScope)
+                flag
+            }
+
+        }.await()
+
+        return result
+
+
     }
 
     private fun onFilterItemClicked(name: String) {

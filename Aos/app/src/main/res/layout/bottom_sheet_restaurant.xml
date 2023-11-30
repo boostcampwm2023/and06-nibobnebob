@@ -22,8 +22,7 @@
             android:id="@+id/btn_add_wish_restaurant"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_star_border"
+            app:star="@{item.inWishList}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

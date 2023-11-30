@@ -11,6 +11,7 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchMapBinding
@@ -30,6 +31,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
@@ -37,6 +39,7 @@ class RestaurantSearchMapFragment :
     BaseFragment<FragmentRestaurantSearchMapBinding>(R.layout.fragment_restaurant_search_map),
     OnMapReadyCallback {
     override val parentViewModel: MainViewModel by activityViewModels()
+    private val viewModel: RestaurantSearchMapViewModel by viewModels()
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
 
@@ -129,9 +132,10 @@ class RestaurantSearchMapFragment :
         initStateObserver()
     }
 
-    private fun addWishTest(id: Int, curState: Boolean): Boolean {
-        // todo wish 맛집 리스트 에 추가 or 삭제 API 통신
-        return true
+    private suspend fun addWishTest(id: Int, curState: Boolean): Boolean {
+        return lifecycleScope.async {
+            viewModel.updateWish(id, curState)
+        }.await()
     }
 
     private fun addRestaurantTest(restaurantName: String, restaurantId: Int) {

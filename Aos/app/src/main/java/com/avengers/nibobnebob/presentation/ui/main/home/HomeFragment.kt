@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
@@ -23,7 +24,6 @@ import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -32,7 +32,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.async
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), OnMapReadyCallback {
@@ -201,9 +201,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
 
-    private fun addWishTest(id: Int, curState: Boolean): Boolean {
-        // todo wish 맛집 리스트 에 추가 or 삭제 API 통신
-        return true
+    private suspend fun addWishTest(id: Int, curState: Boolean): Boolean {
+        return lifecycleScope.async {
+            viewModel.updateWish(id, curState)
+        }.await()
     }
 
     private fun addRestaurantTest(restaurantName: String, restaurantId: Int) {

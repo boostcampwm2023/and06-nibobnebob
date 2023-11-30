@@ -115,6 +115,7 @@ class RestaurantSearchViewModel @Inject constructor(
         }
     }
 
+
     fun onClickSearchItem(item: UiRestaurantData) {
         viewModelScope.launch {
             _events.emit(RestaurantSearchEvent.OnClickResultItem(item))
