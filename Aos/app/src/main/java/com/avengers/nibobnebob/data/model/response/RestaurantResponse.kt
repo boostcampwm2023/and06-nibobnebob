@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.data.model.response
 
 import com.google.gson.annotations.SerializedName
 
-data class FilterRestaurantResponse(
+data class RestaurantResponse(
     @SerializedName("isMy")val isMy: Boolean,
     @SerializedName("isWish")val isWish : Boolean,
     @SerializedName("restaurant_reviewCnt") val reviewCnt : Int,

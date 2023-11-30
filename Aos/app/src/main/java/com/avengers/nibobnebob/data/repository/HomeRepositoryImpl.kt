@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.response.BaseResponse
-import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.FollowingResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import com.avengers.nibobnebob.data.model.runRemote
@@ -32,7 +32,7 @@ class HomeRepositoryImpl @Inject constructor(private val api: HomeApi) : HomeRep
         filter: String,
         location: String,
         radius: Int
-    ): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>> = flow {
+    ): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>> = flow {
         val result = runRemote { api.filterRestaurantList(filter, location, radius) }
         emit(result)
     }

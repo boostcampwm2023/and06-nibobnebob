@@ -3,7 +3,7 @@ package com.avengers.nibobnebob.data.repository
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
-import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -22,9 +22,9 @@ interface RestaurantRepository {
         restaurantId: Int,
     ): Flow<BaseState<BaseResponse<Unit>>>
 
-    fun myRestaurantList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
+    fun myRestaurantList(): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
 
-    fun myWishList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
+    fun myWishList(): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
 
     fun addWishRestaurant(
         restaurantId: Int
