@@ -5,9 +5,10 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryColumn,
+  DeleteDateColumn,
 } from "typeorm";
 import { User } from "./user.entity";
-import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
+import { RestaurantInfoEntity } from "../../restaurant/entities/restaurant.entity";
 
 @Entity("user_wishrestaurant_lists")
 export class UserWishRestaurantListEntity {
@@ -20,7 +21,7 @@ export class UserWishRestaurantListEntity {
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date;
 
-  @Column({ name: "deleted_at", type: "timestamp", nullable: true })
+  @DeleteDateColumn({ name: "deleted_at", type: "timestamp", nullable: true })
   deletedAt: Date | null;
 
   @ManyToOne(() => User)

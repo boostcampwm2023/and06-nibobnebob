@@ -55,7 +55,7 @@ export class UserRepository extends Repository<User> {
       select: ["nickName", "region"],
       where: { id: In(targetInfoIds) },
     });
-    return { userInfo: userInfo };
+    return userInfo;
   }
   async getMypageUserDetailInfo(id: number) {
     const userInfo = await this.findOne({
