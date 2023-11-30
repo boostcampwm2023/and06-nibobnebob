@@ -31,9 +31,7 @@ class FollowSearchFragment: BaseFragment<FragmentFollowSearchBinding>(R.layout.f
     private fun initStateObserver(){
         repeatOnStarted {
             viewModel.uiState.collect{
-                if(it.searchList.isNotEmpty()){
-                    adapter.submitList(it.searchList)
-                }
+                adapter.submitList(it.searchList)
             }
         }
     }
