@@ -80,8 +80,8 @@ class MyWishListViewModel @Inject constructor(
         }
     }
 
-    fun deleteMyList(id: Int) {
-        restaurantRepository.deleteWishList(id).onEach {
+    fun deleteWishList(id: Int) {
+        restaurantRepository.deleteWishRestaurant(id).onEach {
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))

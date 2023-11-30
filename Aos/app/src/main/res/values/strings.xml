@@ -52,9 +52,12 @@
     <string name="service">서비스</string>
     <string name="cleanliness">청결도</string>
     <string name="test_review">어떻게 맛도 좋고 서비스도 좋을수가 있는거..\n대박대박 왕대박 너무 맛있어요~</string>
-    <string name="when_visited">방문날짜 :</string>
+    <string name="when_visited">방문시기 :</string>
     <string name="menu_detail">상세보기</string>
     <string name="menu_delete">삭제하기</string>
+    <string name="delete_my_list_label">맛집 삭제하기</string>
+    <string name="delete_my_list">내 맛집 리스트에서 삭제하시겠습니까?</string>
+    <string name="transportation_accessibility">교통 접근성</string>
     <string name="menu_add">내 맛집 리스트에 추가</string>
 
     <string-array name="location_list">
