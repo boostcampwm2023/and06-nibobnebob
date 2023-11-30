@@ -18,7 +18,7 @@ class SelectRegionDialog(
 
     private lateinit var binding: DialogSelectRegionBinding
     private val filterList = context.resources.getStringArray(R.array.location_list)
-    private var newFilterList = curFilterList.toMutableList()
+    private var newFilterList = curFilterList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,14 +33,14 @@ class SelectRegionDialog(
             val chip = layoutInflater.inflate(R.layout.layout_filter_chip, cgRegion, false) as Chip
             chip.id = View.generateViewId()
             chip.text = it
+            chip.setChipBackgroundColorResource(R.color.selector_filter_background)
             cgRegion.addView(chip)
             if (it in curFilterList) cgRegion.check(chip.id)
         }
 
         cgRegion.setOnCheckedStateChangeListener { _, checkedIds ->
-            checkedIds.forEach {
-                val checkedFilter = findViewById<Chip>(it).text.toString()
-                if( checkedFilter !in newFilterList) newFilterList.add(checkedFilter)
+            newFilterList = checkedIds.map {
+                findViewById<Chip>(it).text.toString()
             }
         }
 
