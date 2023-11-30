@@ -76,7 +76,7 @@ class MyPageViewModel @Inject constructor(
     fun logout() {
         myPageRepository.logout().onEach {
             _events.emit(MyEditPageEvent.NavigateToIntro)
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun withdraw() {

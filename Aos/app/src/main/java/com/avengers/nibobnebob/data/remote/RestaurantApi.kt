@@ -2,8 +2,9 @@ package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
-import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
+import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -31,11 +32,11 @@ interface RestaurantApi {
 
     // 내 맛집 리스트
     @GET("api/user/restaurant")
-    suspend fun myRestaurantList(): Response<BaseResponse<List<FilterRestaurantResponse>>>
+    suspend fun myRestaurantList(): Response<BaseResponse<List<RestaurantResponse>>>
 
     // 내 위시 리스트
     @GET("api/user/wish-restaurant")
-    suspend fun myWishList(): Response<BaseResponse<List<FilterRestaurantResponse>>>
+    suspend fun myWishList(): Response<BaseResponse<List<WishRestaurantResponse>>>
 
     @POST("api/user/wish-restaurant/{restaurantId}")
     suspend fun addWishRestaurant(

@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
@@ -33,6 +34,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), OnMapReadyCallback {
@@ -69,7 +71,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 childFragmentManager.beginTransaction().add(R.id.map_fragment, it).commit()
             }
 
-        mapFragment?.getMapAsync(this)
+        mapFragment.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
@@ -124,12 +126,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         val zoom = viewModel.uiState.value.cameraZoom
                         val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
                         val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
-                            .apply { animate(CameraAnimation.Linear, 1000) }
+                            .apply { animate(CameraAnimation.Linear, 500) }
 
                         naverMap.moveCamera(cameraUpdate)
                         viewModel.uiState.value.markerList.forEach { data ->
                             setMarker(data)
                         }
+                    }
+
+                    is HomeEvents.SetSingleMarker -> {
+                        setSingleMarker(it.marker, it.item)
                     }
 
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
@@ -196,6 +202,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
             )
+            viewModel.setSelectedMarker(marker)
             bottomSheet.show()
 
             true
@@ -203,6 +210,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         markerList.add(marker)
     }
 
+    private fun setSingleMarker(marker: Marker?, item: UiRestaurantData) {
+
+        marker?.setOnClickListener {
+            val bottomSheet = RestaurantBottomSheet(
+                context = requireContext(),
+                data = item,
+                onClickAddWishRestaurant = ::addWishTest,
+                onClickAddMyRestaurant = ::addRestaurantTest,
+                onClickGoReview = ::goReviewTest
+            )
+            bottomSheet.show()
+
+            true
+        }
+
+    }
+
+
+    // todo 모든 marker 데이터 markerList 에 저장해 놨다가, remove 다음 방식으로 진행
     private fun removeAllMarker() {
         markerList.forEach {
             it.map = null
@@ -211,9 +237,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
 
-    private fun addWishTest(id: Int, curState: Boolean): Boolean {
-        // todo wish 맛집 리스트 에 추가 or 삭제 API 통신
-        return true
+    private suspend fun addWishTest(id: Int, curState: Boolean): Boolean {
+        return lifecycleScope.async {
+            viewModel.updateWish(id, curState)
+        }.await()
     }
 
     private fun addRestaurantTest(restaurantName: String, restaurantId: Int) {

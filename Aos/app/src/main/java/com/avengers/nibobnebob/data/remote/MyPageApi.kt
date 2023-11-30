@@ -23,7 +23,7 @@ interface MyPageApi {
         @Body data: EditMyInfoRequest
     ): Response<Unit>
 
-    @POST("/api/auth/logout")
+    @POST("api/user/logout")
     suspend fun logout(): Response<Unit>
 
     @DELETE("api/user")

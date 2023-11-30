@@ -17,6 +17,7 @@ class NetworkManager @Inject constructor(private val connectivityManager: Connec
         .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         .build()
 
+// 한번 더 확인하기!!
 //    private fun isInternetOn() : Boolean{
 //        val network = connectivityManager.activeNetwork
 //        val connection = connectivityManager.getNetworkCapabilities(network)

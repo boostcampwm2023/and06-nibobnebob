@@ -11,8 +11,10 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,7 +40,8 @@ data class HomeUiState(
     val cameraLongitude: Double = 0.0,
     val cameraZoom: Double = 0.0,
     val curLatitude: Double = 0.0,
-    val curLongitude: Double = 0.0
+    val curLongitude: Double = 0.0,
+    val curSelectedMarker: Marker? = null
 )
 
 sealed class TrackingState {
@@ -50,6 +53,11 @@ sealed class TrackingState {
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
     data object SetNewMarkers : HomeEvents()
+    data class SetSingleMarker(
+        val marker: Marker?,
+        val item: UiRestaurantData
+    ) : HomeEvents()
+
     data object RemoveMarkers : HomeEvents()
     data class ShowSnackMessage(
         val msg: String
@@ -185,6 +193,61 @@ class HomeViewModel @Inject constructor(
                     _events.emit(HomeEvents.SetNewMarkers)
                 }.launchIn(viewModelScope)
             }
+        }
+    }
+
+    suspend fun updateWish(id: Int, curState: Boolean): Boolean {
+
+        val result: Boolean = viewModelScope.async {
+            var flag = true
+            if (curState) {
+                restaurantRepository.deleteWishRestaurant(id).onEach {
+                    flag = when (it) {
+                        is BaseState.Success -> true
+                        else -> false
+                    }
+                }.launchIn(viewModelScope)
+                flag
+            } else {
+                restaurantRepository.addWishRestaurant(id).onEach {
+                    flag = when (it) {
+                        is BaseState.Success -> true
+                        else -> false
+                    }
+                }.launchIn(viewModelScope)
+                flag
+            }
+
+        }.await()
+
+
+
+        if (result) {
+            _uiState.update { state ->
+                state.copy(
+                    markerList = uiState.value.markerList.map {
+                        if (it.id == id) {
+                            it.copy(isInWishList = !curState)
+                        } else it
+                    }
+                )
+            }
+            _events.emit(
+                HomeEvents.SetSingleMarker(
+                    uiState.value.curSelectedMarker,
+                    uiState.value.markerList.find { it.id == id }!!
+                )
+            )
+        }
+
+        return result
+
+
+    }
+
+    fun setSelectedMarker(marker: Marker) {
+        _uiState.update { state ->
+            state.copy(curSelectedMarker = marker)
         }
     }
 

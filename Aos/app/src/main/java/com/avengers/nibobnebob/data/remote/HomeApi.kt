@@ -1,7 +1,7 @@
 package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.response.BaseResponse
-import com.avengers.nibobnebob.data.model.response.FilterRestaurantResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.FollowingResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import retrofit2.Response
@@ -27,5 +27,5 @@ interface HomeApi {
         @Query("filter") filter: String,
         @Query("location") location: String,
         @Query("radius") radius: Int
-    ): Response<BaseResponse<List<FilterRestaurantResponse>>>
+    ): Response<BaseResponse<List<RestaurantResponse>>>
 }

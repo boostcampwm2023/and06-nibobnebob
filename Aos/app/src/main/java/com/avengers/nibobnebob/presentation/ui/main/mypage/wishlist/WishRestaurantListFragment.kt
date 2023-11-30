@@ -29,11 +29,11 @@ class WishRestaurantListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initView(view)
+        initView()
         viewModel.myWishList()
     }
 
-    private fun initView(view: View) {
+    private fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
         binding.rvWishRestaurant.adapter = adapter
