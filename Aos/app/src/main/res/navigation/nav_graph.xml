@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_restaurantSearchFragment"
+            app:destination="@id/restaurantSearchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/followFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.follow.FollowFragment"
+        android:label="fragment_follow"
+        tools:layout="@layout/fragment_follow" >
+        <action
+            android:id="@+id/action_followFragment_to_followSearchFragment"
+            app:destination="@id/followSearchFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/followSearchFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.follow.search.FollowSearchFragment"
+        android:label="fragment_follow_search"
+        tools:layout="@layout/fragment_follow_search"/>
+
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.global.userdetail.UserDetailFragment"
+        android:label="fragment_user_detail"
+        tools:layout="@layout/fragment_user_detail">
+        <argument
+            android:name="nickName"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/myPageFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.MyPageFragment"
+        android:label="fragment_my_page"
+        tools:layout="@layout/fragment_my_page" />
+    <action
+        android:id="@+id/global_to_editProfileFragment"
+        app:destination="@id/editProfileFragment"
+        app:popUpTo="@id/myPageFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_myRestaurantListFragment"
+        app:destination="@id/myRestaurantListFragment"
+        app:popUpTo="@id/myPageFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_wishRestaurantListFragment"
+        app:destination="@id/wishRestaurantListFragment"
+        app:popUpTo="@id/myPageFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_myPageFragment"
+        app:destination="@id/myPageFragment"
+        app:popUpTo="@id/myPageFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_restaurantDetailFragment"
+        app:destination="@id/restaurantDetailFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_addMyRestaurantFragment"
+        app:destination="@id/addMyRestaurantFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_homeFragment"
+        app:destination="@id/homeFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="true"/>
+    <action
+        android:id="@+id/global_to_userDetailFragment"
+        app:destination="@id/userDetailFragment"/>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditProfileFragment"
+        android:label="EditProfileFragment" />
+    <fragment
+        android:id="@+id/myRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.mylist.MyRestaurantListFragment"
+        android:label="MyRestaurantListFragment" />
+    <fragment
+        android:id="@+id/wishRestaurantListFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist.WishRestaurantListFragment"
+        android:label="WishRestaurantListFragment" />
+    <fragment
+        android:id="@+id/restaurantSearchFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchFragment"
+        android:label="RestaurantSearchFragment" >
+        <argument
+            android:name="searchKeyword"
+            app:argType="string"
+            android:defaultValue=""/>
+        <action
+            android:id="@+id/action_restaurantSearchFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_restaurantSearchFragment_to_restaurantSearchMapFragment"
+            app:destination="@id/restaurantSearchMapFragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/addMyRestaurantFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd.AddMyRestaurantFragment"
+        android:label="AddMyRestaurantFragment" >
+        <argument
+            android:name="restaurantName"
+            android:defaultValue="matzip"
+            app:argType="string" />
+        <argument
+            android:name="restaurantId"
+            android:defaultValue="1"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/restaurantDetailFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.RestaurantDetailFragment"
+        android:label="RestaurantDetailFragment">
+        <argument
+            android:name="restaurantId"
+            android:defaultValue="1"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_restaurantDetailFragment_to_addMyRestaurantFragment"
+            app:destination="@id/addMyRestaurantFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/restaurantSearchMapFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchMapFragment"
+        android:label="RestaurantSearchMapFragment" >
+        <action
+            android:id="@+id/action_restaurantSearchMapFragment_to_restaurantSearchFragment"
+            app:destination="@id/restaurantSearchFragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@layout/fragment_restaurant_search_map">
+        </action>
+    </fragment>
+</navigation>

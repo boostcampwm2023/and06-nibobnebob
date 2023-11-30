@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.follow.search.FollowSearchViewModel" />
+
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="20dp">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_back"
+                android:onClick="@{() -> vm.navigateToBack()}"
+                app:layout_constraintBottom_toBottomOf="@id/et_search"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/et_search" />
+
+            <EditText
+                android:id="@+id/et_search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/rect_dark7fill_nostroke_10radius"
+                android:hint="닉네임/ 이름으로 검색하세요"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp"
+                android:text="@={vm.keyword}"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_back"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/ic_search"
+                app:layout_constraintBottom_toBottomOf="@id/et_search"
+                app:layout_constraintEnd_toEndOf="@id/et_search"
+                app:layout_constraintTop_toTopOf="@id/et_search" />
+
+
+            <TextView
+                android:id="@+id/tv_filter"
+                style="@style/TextSmallBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:onClick="@{() -> vm.showFilterDialog()}"
+                android:text="지역  "
+                app:drawableEndCompat="@drawable/ic_filter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_search" />
+
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cg_filter"
+                style="@style/Widget.Material3.Chip.Input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:chipRemoveListener="@{vm}"
+                app:curFilterChips="@{vm.uiState.curRegionFilter}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_filter"></com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/tv_search_count"
+                style="@style/TextSmallRegular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@{vm.uiState.searchCount}"
+                android:textColor="@color/nn_dark4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cg_filter"
+                tools:text="검색결과 120건" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_follow_search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_search_count"
+                app:list="@{vm.uiState.searchList}"
+                tools:listitem="@layout/item_follow_search" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>

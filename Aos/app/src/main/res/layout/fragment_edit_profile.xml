@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="ui_state"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditProfileUiState" />
+
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditProfileViewModel" />
+
+        <variable
+            name="svm"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.ui.main.mypage.edit.EditProfileFragment">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="20dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="20dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="20dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_edit_topbar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_edit_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/ic_back"
+                android:onClick="@{()->svm.navigateToMenu(3)}"
+                app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
+
+
+            <TextView
+                android:id="@+id/tv_edit_topbar_title"
+                style="@style/TextMediumBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/my_edit_title"
+                app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
+                app:layout_constraintStart_toEndOf="@id/iv_edit_back"
+                app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tv_edit_done"
+                style="@style/TextMediumBold"
+                set_enabled="@{vm.uiState}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:onClick="@{() -> vm.doneEditProfile()}"
+                android:paddingEnd="20dp"
+                android:text="@string/my_edit_done"
+                android:textColor="@color/selector_nick_check_text"
+                app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/gl_end"
+            app:layout_constraintStart_toStartOf="@id/gl_start"
+            app:layout_constraintTop_toBottomOf="@id/cl_edit_topbar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/iv_profile"
+                    android:layout_width="122dp"
+                    android:layout_height="116dp"
+                    android:layout_marginTop="50dp"
+                    android:background="@drawable/ic_mypage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_nickname_label"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/my_edit_nick"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/iv_profile" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_nick"
+                    set_nick_input_layout="@{ui_state.nickName}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_nickname_label"
+                    app:placeholderText="@string/my_edit_nick_warn">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_nick"
+                        style="@style/TextSmallRegular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@={vm.nickState}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/tv_nick_helper_text"
+                    style="@style/CaptionBold"
+                    set_nick_helper_text="@{ui_state.nickName}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/til_nick"
+                    tools:text="이미 사용중인 닉네임 입니다" />
+                <!--                app:helperMessage="@{vm.uiState.nickState}"-->
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_nick_duplication_check"
+                    style="@style/CaptionBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:enabled="@{(!vm.nickState.empty &amp;&amp; ui_state.nickName.isChanged)? true : false}"
+                    android:minHeight="0dp"
+                    android:onClick="@{() -> vm.checkNickValidation()}"
+                    android:text="@string/my_edit_nick_check"
+                    android:textColor="@color/selector_nick_check_text"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_nick_helper_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_nick_helper_text" />
+
+                <TextView
+                    android:id="@+id/tv_email_label"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/my_edit_email"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_nick_helper_text" />
+
+                <TextView
+                    android:id="@+id/tv_naver_label"
+                    style="@style/TextMediumRegular"
+                    login_type="@{vm.uiState.provider}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:textColor="@color/nn_dark5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_email_label" />
+
+                <TextView
+                    android:id="@+id/tv_naver_email"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@{vm.uiState.email}"
+                    android:textColor="@color/nn_dark5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_naver_label" />
+
+                <TextView
+                    android:id="@+id/tv_location_label"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/my_edit_location"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_naver_email" />
+
+                <TextView
+                    android:id="@+id/tv_location"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:paddingStart="8dp"
+                    android:text="@{vm.locationTextState}"
+                    android:textColor="@color/nn_dark4"
+                    android:visibility="@{vm.locationEditMode ? View.INVISIBLE : View.VISIBLE}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_location_label" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_edit_location"
+                    style="@style/CaptionRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> vm.setLocationEditMode()}"
+                    android:text="@string/edit_change"
+                    android:visibility="@{vm.locationEditMode ? View.INVISIBLE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_location"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_location" />
+
+
+                <Spinner
+                    android:id="@+id/s_location"
+                    style="?attr/textInputStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/selector_location_drop_down"
+                    android:entries="@{vm.locationList}"
+                    android:paddingStart="8dp"
+                    android:selectedItemPosition="@={vm.locationState}"
+                    android:visibility="@{vm.locationEditMode ? View.VISIBLE : View.INVISIBLE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_location_label" />
+
+
+                <TextView
+                    android:id="@+id/tv_birth_label"
+                    style="@style/TextMediumRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/my_edit_birth"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/s_location" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_birth"
+                    set_date_input_style="@{ui_state.birth}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:endIconDrawable="@drawable/ic_calendar"
+                    app:endIconMode="custom"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_birth_label"
+                    app:placeholderText="@string/my_edit_birth_ph">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_birth"
+                        style="@style/TextSmallRegular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@={vm.birthState}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

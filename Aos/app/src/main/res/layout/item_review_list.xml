@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_mypage"
+            app:layout_constraintBottom_toBottomOf="@id/tv_when_visited"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
+
+        <TextView
+            android:id="@+id/tv_nickname"
+            style="@style/TextMediumBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="0dp"
+            android:text="@{item.reviewer}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/nickname" />
+
+        <TextView
+            android:id="@+id/tv_when_visited_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/when_visited"
+            app:layout_constraintStart_toStartOf="@id/tv_nickname"
+            app:layout_constraintTop_toBottomOf="@id/tv_nickname" />
+
+        <TextView
+            android:id="@+id/tv_when_visited"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@{com.avengers.nibobnebob.presentation.util.TimeUtil.INSTANCE.formatTime(item.createdAt)}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_when_visited_label"
+            app:layout_constraintStart_toEndOf="@id/tv_when_visited_label"
+            app:layout_constraintTop_toTopOf="@id/tv_when_visited_label"
+            tools:text="2023.11.12" />
+
+
+        <ImageView
+            android:id="@+id/iv_thumbs_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:onClick="@{() -> item.onThumbsUpClick.invoke(item.reviewId)}"
+            android:src="@drawable/ic_thumbs_up_blank"
+            app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
+            app:layout_constraintEnd_toStartOf="@id/tv_thumbs_up_count"
+            app:layout_constraintTop_toTopOf="@id/tv_nickname"
+            app:thumbsUpStatus="@{item.thumbsUp}" />
+
+
+        <TextView
+            android:id="@+id/tv_thumbs_up_count"
+            style="@style/CaptionRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:text="@{String.valueOf(item.thumbsUpCnt)}"
+            android:textColor="@color/nn_dark5"
+            app:layout_constraintBottom_toBottomOf="@id/iv_thumbs_up"
+            app:layout_constraintEnd_toStartOf="@id/iv_thumbs_down"
+            tools:text="315" />
+
+        <ImageView
+            android:id="@+id/iv_thumbs_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:onClick="@{() -> item.onThumbsDownClick.invoke(item.reviewId)}"
+            android:src="@drawable/ic_thumbs_down_blank"
+            app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
+            app:layout_constraintEnd_toStartOf="@id/tv_thumbs_down_count"
+            app:layout_constraintTop_toTopOf="@id/tv_nickname"
+            app:thumbsDownStatus="@{item.thumbsDown}" />
+
+
+        <TextView
+            android:id="@+id/tv_thumbs_down_count"
+            style="@style/CaptionRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@{String.valueOf(item.thumbsDownCnt)}"
+            android:textColor="@color/nn_dark5"
+            app:layout_constraintBottom_toBottomOf="@id/iv_thumbs_down"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="18" />
+
+        <TextView
+            android:id="@+id/tv_parking_convenience_label"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@{item.isCarVisit ? @string/parking_convenience : @string/transportation_accessibility}"
+            android:textColor="@color/nn_text_black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_when_visited" />
+
+        <ImageView
+            android:id="@+id/iv_parking_convenience_rank"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/oval_primary1fill_nostroke"
+            app:filterRateBackground="@{item.isCarVisit ? item.parkingArea : item.transportationAccessibility}"
+            app:layout_constraintEnd_toEndOf="@id/tv_parking_convenience_label"
+            app:layout_constraintStart_toStartOf="@id/tv_parking_convenience_label"
+            app:layout_constraintTop_toBottomOf="@id/tv_parking_convenience_label" />
+
+        <TextView
+            android:id="@+id/tv_taste_label"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="@string/taste"
+            android:textColor="@color/nn_text_black"
+            app:layout_constraintStart_toEndOf="@id/tv_parking_convenience_label"
+            app:layout_constraintTop_toTopOf="@+id/tv_parking_convenience_label" />
+
+        <ImageView
+            android:id="@+id/iv_taste_rank"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/oval_primary2fill_nostroke"
+            app:filterRateBackground="@{item.taste}"
+            app:layout_constraintEnd_toEndOf="@id/tv_taste_label"
+            app:layout_constraintStart_toStartOf="@id/tv_taste_label"
+            app:layout_constraintTop_toBottomOf="@id/tv_taste_label" />
+
+        <TextView
+            android:id="@+id/tv_service_label"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="@string/service"
+            android:textColor="@color/nn_text_black"
+            app:layout_constraintStart_toEndOf="@id/tv_taste_label"
+            app:layout_constraintTop_toTopOf="@+id/tv_taste_label" />
+
+        <ImageView
+            android:id="@+id/iv_service_rank"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/oval_primary3fill_nostroke"
+            app:filterRateBackground="@{item.service}"
+            app:layout_constraintEnd_toEndOf="@id/tv_service_label"
+            app:layout_constraintStart_toStartOf="@id/tv_service_label"
+            app:layout_constraintTop_toBottomOf="@id/tv_service_label" />
+
+        <TextView
+            android:id="@+id/tv_cleanliness_label"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="@string/cleanliness"
+            android:textColor="@color/nn_text_black"
+            app:layout_constraintStart_toEndOf="@id/tv_service_label"
+            app:layout_constraintTop_toTopOf="@+id/tv_service_label" />
+
+        <ImageView
+            android:id="@+id/iv_cleanliness_rank"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/oval_primary5fill_nostroke"
+            app:filterRateBackground="@{item.cleanliness}"
+            app:layout_constraintEnd_toEndOf="@id/tv_cleanliness_label"
+            app:layout_constraintStart_toStartOf="@id/tv_cleanliness_label"
+            app:layout_constraintTop_toBottomOf="@id/tv_cleanliness_label" />
+
+        <TextView
+            android:id="@+id/tv_review"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@{item.overallExperience}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_cleanliness_rank"
+            tools:text="@string/test_review" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginVertical="20dp"
+            app:dividerColor="@color/nn_dark6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_review" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

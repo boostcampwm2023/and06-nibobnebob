@@ -1,0 +1,78 @@
+package com.avengers.nibobnebob.presentation.ui.main.mypage.mylist
+
+import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.databinding.FragmentMyRestaurantListBinding
+import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
+import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
+import com.avengers.nibobnebob.presentation.ui.toMyPage
+import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class MyRestaurantListFragment :
+    BaseFragment<FragmentMyRestaurantListBinding>(R.layout.fragment_my_restaurant_list) {
+
+    private val sharedViewModel: MyPageSharedViewModel by viewModels()
+    private val viewModel: MyRestaurantListViewModel by viewModels()
+    override val parentViewModel: MainViewModel by activityViewModels()
+    private val adapter = MyRestaurantAdapter({ id -> viewModel.showDetail(id) },
+        { id -> showDeleteCheckDialog(id) })
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initView(view)
+        viewModel.myRestaurantList()
+    }
+
+    private fun initView(view: View) {
+        binding.svm = sharedViewModel
+        binding.vm = viewModel
+        binding.rvMyRestaurant.adapter = adapter
+        binding.rvMyRestaurant.animation = null
+
+
+        repeatOnStarted {
+            sharedViewModel.uiEvent.collect { event ->
+                when (event) {
+                    is MyPageSharedUiEvent.NavigateToBack -> findNavController().toMyPage()
+                    else -> Unit
+                }
+
+            }
+        }
+
+        repeatOnStarted {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is MyRestaurantEvent.NavigateToRestaurantDetail -> findNavController().toRestaurantDetail(
+                        event.id
+                    )
+
+                    is MyRestaurantEvent.ShowToastMessage -> showToastMessage(event.msg)
+                    is MyRestaurantEvent.ShowSnackMessage -> showSnackBar(event.msg)
+                }
+            }
+        }
+
+    }
+
+    private fun showDeleteCheckDialog(id: Int) {
+        showTwoButtonTitleDialog(
+            title = "삭제하시겠습니까?",
+            description = "내 맛집 리스트에서 삭제됩니다.",
+            confirmBtnClickListener = {
+                viewModel.deleteMyList(id)
+            }
+        )
+    }
+
+
+}
