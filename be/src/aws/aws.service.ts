@@ -18,16 +18,12 @@ export class AwsService {
     });
   }
 
-  uploadToS3(path: string, data: Buffer): string {
-    const uuid = v4();
-
-    this.s3.putObject({
+  async uploadToS3(path: string, data: Buffer){
+    await this.s3.putObject({
       Bucket: awsConfig.bucket,
-      Key: `${path}/${uuid}.png`,
+      Key: path,
       Body: data,
-    });
-
-    return uuid;
+    }).promise();
   }
 
   getImageURL(path: string) {
@@ -37,6 +33,6 @@ export class AwsService {
       Expires: 60,
     });
 
-    console.log(signedUrl);
+    return signedUrl;
   }
 }

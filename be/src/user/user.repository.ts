@@ -12,10 +12,9 @@ export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-  async createUser(userinfoDto: UserInfoDto): Promise<User> {
-    const newUser = this.create(userinfoDto);
+  async createUser(userentity: User): Promise<User> {
     try {
-      await this.save(newUser);
+      await this.save(userentity);
     } catch (err) {
       if (err.code === "23505") {
         throw new ConflictException("Duplicated Value");

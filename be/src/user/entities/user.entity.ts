@@ -37,7 +37,7 @@ export class User {
   @Column({ type: "varchar", length: 20, nullable: true })
   provider: string | null;
 
-  @Column({ type: "string", nullable: true })
+  @Column({ type: "text", nullable: true })
   profileImage: string | null;
 
   @CreateDateColumn({ type: "timestamp" })
