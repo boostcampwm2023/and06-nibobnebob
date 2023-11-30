@@ -44,11 +44,11 @@ export class UserRepository extends Repository<User> {
     return { userInfo: userInfo };
   }
   async getMypageTargetUserInfo(targetInfoId: number) {
-    const userInfo = await this.find({
+    const userInfo = await this.findOne({
       select: ["nickName", "birthdate", "isMale", "region", "profileImage"],
       where: { id: targetInfoId },
     });
-    return { userInfo: userInfo };
+    return userInfo;
   }
   async getUsersInfo(targetInfoIds: number[]) {
     const userInfo = await this.find({

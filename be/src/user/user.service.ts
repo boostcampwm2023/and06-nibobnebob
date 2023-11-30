@@ -63,7 +63,7 @@ export class UserService {
       const result = await this.usersRepository.getMypageTargetUserInfo(
         targetInfo.id
       );
-      result.userInfo[0]["isFollow"] =
+      result["isFollow"] =
         (await this.userFollowListRepositoy.getFollowState(
           tokenInfo.id,
           targetInfo.id
@@ -75,8 +75,8 @@ export class UserService {
           targetInfo.id,
           tokenInfo.id
         );
-      if ( restaurantList )result.userInfo[0]["restaurants"] = restaurantList;
-      result.userInfo[0].profileImage = this.awsService.getImageURL(result.userInfo[0].profileImage);
+      if ( restaurantList )result["restaurants"] = restaurantList;
+      result.profileImage = this.awsService.getImageURL(result.profileImage);
       return result;
     } catch (err) {
       throw new BadRequestException();
