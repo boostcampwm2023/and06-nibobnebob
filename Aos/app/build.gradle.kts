@@ -8,6 +8,7 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -23,7 +24,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "NAVER_LOGIN_CLIENT_ID", getProperty("naverLoginClientId"))
@@ -109,4 +110,11 @@ dependencies {
     // datastore preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore-core:1.0.0")
+
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
+
+
+    // firebase-analytics
+    implementation("com.google.firebase:firebase-analytics")
 }
