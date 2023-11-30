@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.home.HomeViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.ui.main.home.HomeFragment">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map_fragment"
+            android:name="com.naver.maps.map.MapFragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/v_search"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/rect_dark7fill_nostroke_10radius"
+            android:onClick="@{() -> vm.navigateToSearchRestaurant()}"
+            app:layout_constraintEnd_toStartOf="@id/btn_recommend_menu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/ic_search"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toEndOf="@id/v_search"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <TextView
+            android:id="@+id/tiet_input_search"
+            style="@style/TextMediumRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:maxLines="1"
+            android:paddingHorizontal="16dp"
+            android:text="음식점 이름을 검색하세요."
+            android:textColor="@color/nn_dark5"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toStartOf="@id/iv_search"
+            app:layout_constraintStart_toStartOf="@id/v_search"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <ImageButton
+            android:id="@+id/btn_recommend_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_logo_home"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <ImageButton
+            android:id="@+id/btn_location"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="40dp"
+            android:background="@android:color/transparent"
+            android:onClick="@{() -> vm.locationBtnClicked()}"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_location_off"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:trackingBtnDrawable="@{vm.uiState.locationTrackingState}" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_home_filter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/v_search"
+            app:list="@{vm.uiState.filterList}"
+            tools:listitem="@layout/item_home_filter" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

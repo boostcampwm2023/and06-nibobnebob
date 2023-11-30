@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="pvm"
+            type="com.avengers.nibobnebob.presentation.ui.main.MainViewModel" />
+
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingVertical="20dp">
+
+        <ImageButton
+            android:id="@+id/ib_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/ic_back"
+            android:onClick="@{() -> vm.navigateToHome()}"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <View
+            android:id="@+id/v_search"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/rect_dark7fill_nostroke_10radius"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ib_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/ic_search"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toEndOf="@id/v_search"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_input_search"
+            style="@style/TextMediumRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:hint="음식점 이름을 검색하세요."
+            android:inputType="text"
+            android:maxLines="1"
+            android:onTextChanged="@{(word, a, b, c) -> vm.searchRestaurant(word)}"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toStartOf="@id/iv_search"
+            app:layout_constraintStart_toStartOf="@id/v_search"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <TextView
+            android:id="@+id/tv_empty"
+            style="@style/TextMediumRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="검색 결과가 없습니다."
+            android:textColor="@color/nn_dark5"
+            android:visibility="@{vm.uiState.resultEmpty? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/v_search"
+            tools:listitem="@layout/item_home_search" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

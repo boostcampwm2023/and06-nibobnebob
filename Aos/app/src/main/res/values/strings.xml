@@ -1,0 +1,89 @@
+<resources>
+    <string name="app_name">니밥내밥</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_network_text">네트워크 연결이 되어있지 않습니다.</string>
+    <string name="retry">재시도</string>
+
+    <string name="helper_invalid_nick">사용할 수 없는 닉네임입니다.</string>
+    <string name="helper_valid_nick">사용 가능한 닉네임입니다.</string>
+    <string name="helper_invalid_date">날짜 형식이 바르지 않습니다.</string>
+    <string name="login">로그인</string>
+    <string name="email">이메일</string>
+    <string name="email_input_text">이메일을 입력해주세요.</string>
+    <string name="signup_yet_text">아직 회원가입을 안하셨나요?</string>
+    <string name="password_input_text">비밀번호를 입력해주세요.</string>
+    <string name="do_signup_text">회원가입 하기</string>
+    <string name="password">비밀번호</string>
+    <string name="start_naver_text">네이버로 시작하기</string>
+    <string name="auto_login">자동 로그인</string>
+    <string name="my_main_title">마이페이지</string>
+    <string name="my_main_gender">성별</string>
+    <string name="my_main_age">연령대</string>
+    <string name="my_main_location">활동지역</string>
+    <string name="my_main_edit_title">프로필 수정</string>
+    <string name="my_main_mylist_title">내 맛집리스트 보기</string>
+    <string name="my_main_wishlist_title">내 위시리스트 보기</string>
+    <string name="my_main_logout_title">로그아웃</string>
+    <string name="my_main_withdraw_title">회원탈퇴</string>
+    <string name="my_edit_title">프로필 수정</string>
+    <string name="my_edit_done">완료</string>
+    <string name="my_edit_nick">닉네임</string>
+    <string name="my_edit_nick_warn">닉네임을 입력하세요.</string>
+    <string name="my_edit_nick_check">닉네임 중복확인</string>
+    <string name="my_edit_email">이메일</string>
+    <string name="my_edit_location">활동 지역</string>
+    <string name="my_edit_birth">생년월일</string>
+    <string name="my_edit_birth_ph">YYYY/MM/DD</string>
+    <string name="my_my_title">내 맛집 리스트</string>
+    <string name="my_wish_list">내 위시 맛집 리스트</string>
+    <string name="edit_change">변경하기</string>
+    <string name="restaurant_detail_title">맛집 상세화면</string>
+    <string name="address">주소</string>
+    <string name="phone_number">전화번호</string>
+    <string name="review_count">리뷰수</string>
+    <string name="review">리뷰</string>
+    <string name="best">최상</string>
+    <string name="worst">최악</string>
+    <string name="add_my_list_review">맛집 추가하기 / 리뷰하기</string>
+    <string name="nickname">닉네임</string>
+    <string name="parking_convenience">주차공간</string>
+    <string name="taste">맛</string>
+    <string name="service">서비스</string>
+    <string name="cleanliness">청결도</string>
+    <string name="test_review">어떻게 맛도 좋고 서비스도 좋을수가 있는거..\n대박대박 왕대박 너무 맛있어요~</string>
+    <string name="when_visited">방문시기 :</string>
+    <string name="menu_detail">상세보기</string>
+    <string name="menu_delete">삭제하기</string>
+    <string name="delete_my_list_label">맛집 삭제하기</string>
+    <string name="delete_my_list">내 맛집 리스트에서 삭제하시겠습니까?</string>
+    <string name="transportation_accessibility">교통 접근성</string>
+    <string name="menu_add">내 맛집 리스트에 추가</string>
+
+    <string-array name="location_list">
+        <item>용산구</item>
+        <item>은평구</item>
+        <item>강서구</item>
+        <item>강남구</item>
+        <item>서초구</item>
+        <item>동작구</item>
+        <item>관악구</item>
+        <item>금천구</item>
+        <item>영등포구</item>
+        <item>양천구</item>
+        <item>구로구</item>
+        <item>송파구</item>
+        <item>광진구</item>
+        <item>강동구</item>
+        <item>성동구</item>
+        <item>중구</item>
+        <item>종로구</item>
+        <item>서대문구</item>
+        <item>마포구</item>
+        <item>은평구</item>
+        <item>도봉구</item>
+        <item>노원구</item>
+        <item>중랑구</item>
+    </string-array>
+
+</resources>

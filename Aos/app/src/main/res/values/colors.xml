@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="nn_text_black">#FF1D1F24</color>
+
+    <color name="nn_primary0">#FFFFEEEE</color>
+    <color name="nn_primary1">#FFE1D6CC</color>
+    <color name="nn_primary2">#FFBAB9AA</color>
+    <color name="nn_primary3">#FF909D8F</color>
+    <color name="nn_primary4">#FF68827B</color>
+    <color name="nn_primary5">#FF46656A</color>
+    <color name="nn_primary6">#FF2F4858</color>
+
+    <color name="nn_primary_dark1">#FFC7B6A7</color>
+    <color name="nn_primary_dark2">#FFDACABB</color>
+    <color name="nn_primary_dark3">#CCE1D6CC</color>
+    <color name="nn_primary_light4">#99E1D6CC</color>
+    <color name="nn_primary_light3">#66E1D6CC</color>
+    <color name="nn_primary_light2">#33E1D6CC</color>
+    <color name="nn_primary_light1">#1AE1D6CC</color>
+
+    <color name="nn_dark1">#FF28324C</color>
+    <color name="nn_dark2">#FF394254</color>
+    <color name="nn_dark4">#FF717784</color>
+    <color name="nn_dark5">#FF9CA1AA</color>
+    <color name="nn_dark6">#FFC8CBD0</color>
+    <color name="nn_dark7">#FFF4F5F6</color>
+
+    <color name="nn_rainbow_red">#FFCC4141</color>
+    <color name="nn_rainbow_orange">#FFF59A11</color>
+    <color name="nn_rainbow_yellow">#FFE0DC88</color>
+    <color name="nn_rainbow_green">#FF4AA754</color>
+    <color name="nn_rainbow_blue">#FF0D1986</color>
+    <color name="nn_rainbow_indigo">#FF222152</color>
+    <color name="nn_rainbow_purple">#FF6437E1</color>
+
+    <color name="naver_green">#FF03C75A</color>
+    <color name="wish_list_color">#4D909D8F</color>
+
+</resources>
