@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.ui.main.home.search.RestaurantSearchMapFragment"
+        android:paddingTop="20dp">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/search_map_fragment"
+            android:name="com.naver.maps.map.MapFragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="76dp"
+            android:background="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/ib_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <View
+            android:id="@+id/v_search"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/rect_dark7fill_nostroke_10radius"
+            app:layout_constraintEnd_toStartOf="@id/iv_close"
+            app:layout_constraintStart_toEndOf="@id/ib_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_close"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/ic_close"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <TextView
+            android:id="@+id/tv_search_keyword"
+            style="@style/TextMediumRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:maxLines="1"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toEndOf="@id/v_search"
+            app:layout_constraintStart_toStartOf="@id/v_search"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

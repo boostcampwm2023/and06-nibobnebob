@@ -4,7 +4,9 @@ data class UiRestaurantDetailData(
     val name : String,
     val address : String,
     val category : String,
-    val reviewCnt : Int,
+    val reviewCnt : String,
     val phoneNumber : String,
-    val isWish : Boolean
+    val isWish : Boolean,
+    val isMy : Boolean,
+    val onWishClick : () -> Unit
 )
