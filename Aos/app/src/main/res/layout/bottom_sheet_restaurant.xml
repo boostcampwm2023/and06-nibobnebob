@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
             name="item"
             type="com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData" />
@@ -107,6 +107,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_add_my_restaurant"
             style="@style/TextSmallBold"
+            android:visibility="@{item.inMyList ? View.INVISIBLE : View.VISIBLE}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
