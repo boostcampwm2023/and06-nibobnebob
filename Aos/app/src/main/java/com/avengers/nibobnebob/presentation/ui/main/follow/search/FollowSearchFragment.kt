@@ -38,6 +38,7 @@ class FollowSearchFragment: BaseFragment<FragmentFollowSearchBinding>(R.layout.f
                     is FollowSearchEvents.ShowFilterDialog -> {
                         SelectRegionDialog(requireContext(), it.curRegion, it.changeFilterListener).show()
                     }
+                    is FollowSearchEvents.NavigateToBack -> findNavController().navigateUp()
                 }
             }
         }

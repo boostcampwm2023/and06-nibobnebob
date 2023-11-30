@@ -33,6 +33,7 @@ sealed class FollowSearchEvents{
         val curRegion: List<String>,
         val changeFilterListener: (List<String>) -> Unit
     ): FollowSearchEvents()
+    data object NavigateToBack: FollowSearchEvents()
 }
 
 @HiltViewModel
@@ -114,6 +115,12 @@ class FollowSearchViewModel @Inject constructor(
         }
 
         observeKeyword()
+    }
+
+    fun navigateToBack(){
+        viewModelScope.launch {
+            _events.emit(FollowSearchEvents.NavigateToBack)
+        }
     }
 
 }
