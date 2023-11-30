@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -13,7 +12,6 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.geometry.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +36,8 @@ data class HomeUiState(
     val curFilter: String = MY_LIST,
     val cameraLatitude: Double = 0.0,
     val cameraLongitude: Double = 0.0,
-    val cameraBound: LatLngBounds = LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0)),
+    val cameraZoom: Double = 0.0,
+//    val cameraBound: LatLngBounds = LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0)),
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0
 )
@@ -79,11 +78,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateCamera(latitude: Double, longitude: Double) {
+    fun updateCamera(latitude: Double, longitude: Double, zoom: Double) {
         _uiState.update { state ->
             state.copy(
                 cameraLatitude = latitude,
-                cameraLongitude = longitude
+                cameraLongitude = longitude,
+                cameraZoom = zoom
             )
         }
     }
@@ -189,97 +189,72 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-//TODO 문제 -> 다 보여주려면 ZOOM을 축소 고정 -> 다 가까울 때 문제
-
-//        private fun moveCamera() {
-//        val list = _uiState.value.markerList
-//        val markerSize = list.size
-//        val averageLatitude = list.sumOf { it.latitude }
-//        val averageLongitude = list.sumOf { it.longitude }
-//
-//        _uiState.update { state ->
-//            state.copy(
-//                cameraLatitude = averageLatitude / markerSize,
-//                cameraLongitude = averageLongitude / markerSize
-//            )
-//        }
-//    }
-
-
-// //TODO 해결 1. 현재 카메라의 위치를 기준으로 가장 가가운 곳으로 줌 레벨을 설정
-//
-//    private fun haversineDistance(latitude: Double, longitude: Double): Double {
-//        val radius = 6371
-//        val distanceLatitude = Math.toRadians(_uiState.value.cameraLatitude - latitude)
-//        val distanceLongitude = Math.toRadians(_uiState.value.cameraLongitude - longitude)
-//
-//        val a = (sin(distanceLatitude / 2) * sin(distanceLatitude / 2)) +
-//                (cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(latitude)) *
-//                        sin(distanceLongitude / 2) * sin(distanceLongitude / 2))
-//
-//        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-//        return radius * c
-//    }
-//
-//    private fun moveCamera() {
-//        if (_uiState.value.markerList.isEmpty()) return
-//
-//        var closestPoint: LatLng? = null
-//        var minDistance = Double.MAX_VALUE
-//
-//        for (point in _uiState.value.markerList) {
-//            val distance = haversineDistance(point.latitude,point.longitude)
-//            if (distance < minDistance) {
-//                minDistance = distance
-//                closestPoint = LatLng(point.latitude,point.longitude)
-//            }
-//        }
-//        closestPoint?.let {
-//            _uiState.update { state ->
-//                state.copy(
-//                    cameraLatitude = closestPoint.latitude,
-//                    cameraLongitude = closestPoint.longitude
-//                )
-//            }
-//        }
-//    }
-
-    private fun findExtremeCoordinates(): Pair<LatLng, LatLng> {
-
-        var minLatitude = Double.MAX_VALUE
-        var maxLatitude = Double.MIN_VALUE
-        var minLongitude = Double.MAX_VALUE
-        var maxLongitude = Double.MIN_VALUE
+    // todo : 반경을 설정하고 그것을 기준으로 응집도 계산 + 모든 것이 멀리 있을 시 가장 가까운 곳으로 이동
+    private fun calculateDensity(latitude: Double, longitude: Double, radius: Double): Int {
+        var density = 0
 
         for (point in _uiState.value.markerList) {
-            if (point.latitude < minLatitude) {
-                minLatitude = point.latitude
-            }
-            if (point.latitude > maxLatitude) {
-                maxLatitude = point.latitude
-            }
-            if (point.longitude < minLongitude) {
-                minLongitude = point.longitude
-            }
-            if (point.longitude > maxLongitude) {
-                maxLongitude = point.longitude
+            val distance = haversineDistance(latitude, longitude, point.latitude, point.longitude)
+            if (distance <= radius) {
+                density++
+            } else {
+                break
             }
         }
 
+        return density
+    }
 
-        val padding = 0.03
-        val minCoordinates = LatLng(minLatitude, minLongitude-padding)
-        val maxCoordinates = LatLng(maxLatitude, maxLongitude+padding)
+    private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val radius = 6371
+        val distanceLatitude = Math.toRadians(lat2 - lat1)
+        val distanceLongitude = Math.toRadians(lon2 - lon1)
 
-        return Pair(minCoordinates, maxCoordinates)
+        val a = (sin(distanceLatitude / 2) * sin(distanceLatitude / 2)) +
+                (cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+                        sin(distanceLongitude / 2) * sin(distanceLongitude / 2))
+
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        return radius * c
     }
 
     private fun moveCamera() {
-        val coordinates = findExtremeCoordinates()
-        _uiState.update {state ->
-            state.copy(
-                cameraBound = LatLngBounds(coordinates.first,coordinates.second)
+        if (_uiState.value.markerList.isEmpty()) return
+
+        var closestPoint: LatLng? = null
+        var maxDensityPoint: LatLng? = null
+        var minDistance = Double.MAX_VALUE
+        var maxDensity = 0
+        val radius = 5.0
+
+        for (point in _uiState.value.markerList) {
+            val distance = haversineDistance(
+                _uiState.value.cameraLatitude,
+                _uiState.value.cameraLongitude,
+                point.latitude,
+                point.longitude
             )
+            val density = calculateDensity(point.latitude, point.longitude, radius)
+
+            if (distance < minDistance) {
+                minDistance = distance
+                closestPoint = LatLng(point.latitude, point.longitude)
+            }
+
+            if (density > maxDensity) {
+                maxDensity = density
+                maxDensityPoint = LatLng(point.latitude, point.longitude)
+            }
+        }
+
+        val targetPoint = maxDensityPoint ?: closestPoint
+        targetPoint?.let {
+            _uiState.update { state ->
+                state.copy(
+                    cameraLatitude = targetPoint.latitude,
+                    cameraLongitude = targetPoint.longitude
+                )
+            }
         }
     }
 
