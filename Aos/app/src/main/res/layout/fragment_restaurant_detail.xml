@@ -19,7 +19,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_toolbar"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:paddingHorizontal="20dp"
             android:paddingVertical="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -38,13 +38,14 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                style="@style/TextHeader"
+                style="@style/TextMediumBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:text="@string/restaurant_detail_title"
                 app:layout_constraintStart_toStartOf="@id/cl_toolbar"
-                app:layout_constraintTop_toTopOf="@id/cl_toolbar" />
+                app:layout_constraintTop_toTopOf="@id/cl_toolbar"
+                app:layout_constraintBottom_toBottomOf="@id/cl_toolbar"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -62,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingHorizontal="20dp"
-                android:paddingTop="10dp">
+                android:paddingTop="20dp">
 
                 <ImageView
                     android:id="@+id/btn_add_wish_restaurant"
@@ -77,11 +78,12 @@
 
                 <TextView
                     android:id="@+id/tv_restaurant_name"
-                    style="@style/TextLargeBold"
+                    style="@style/TextMediumBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:ellipsize="end"
+                    android:paddingVertical="20dp"
                     android:maxLines="1"
                     android:text="@{vm.uiState.name}"
                     app:layout_constraintStart_toEndOf="@+id/btn_add_wish_restaurant"
@@ -157,7 +159,7 @@
 
                 <TextView
                     android:id="@+id/tv_review_label"
-                    style="@style/TextLargeBold"
+                    style="@style/TextMediumBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="50dp"

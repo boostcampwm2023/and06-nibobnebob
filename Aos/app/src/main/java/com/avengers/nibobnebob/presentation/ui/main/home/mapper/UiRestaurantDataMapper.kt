@@ -10,7 +10,7 @@ fun RestaurantResponse.toUiRestaurantData(): UiRestaurantData = UiRestaurantData
     name = name,
     address = address,
     phoneNumber = phoneNumber,
-    reviewCount = "0",
+    reviewCount = "${reviewCnt}개",
     isInWishList = isWish,
     isInMyList = isMy
 )
