@@ -38,14 +38,14 @@ export class UserRepository extends Repository<User> {
   }
   async getMypageUserInfo(id: number) {
     const userInfo = await this.findOne({
-      select: ["nickName", "birthdate", "isMale", "region"],
+      select: ["nickName", "birthdate", "isMale", "region", "profileImage"],
       where: { id: id },
     });
     return { userInfo: userInfo };
   }
   async getMypageTargetUserInfo(targetInfoId: number) {
     const userInfo = await this.find({
-      select: ["nickName", "birthdate", "isMale", "region"],
+      select: ["nickName", "birthdate", "isMale", "region", "profileImage"],
       where: { id: targetInfoId },
     });
     return { userInfo: userInfo };
@@ -66,6 +66,7 @@ export class UserRepository extends Repository<User> {
         "region",
         "provider",
         "email",
+        "profileImage",
       ],
       where: { id: id },
     });

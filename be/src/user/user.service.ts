@@ -50,7 +50,9 @@ export class UserService {
     return await this.usersRepository.getEmailAvailability(email);
   }
   async getMypageUserInfo(tokenInfo: TokenInfo) {
-    return await this.usersRepository.getMypageUserInfo(tokenInfo.id);
+    const result = await this.usersRepository.getMypageUserInfo(tokenInfo.id);
+    result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
+    return result;
   }
   async getMypageTargetUserInfo(tokenInfo: TokenInfo, nickName: string) {
     const targetInfo = await this.usersRepository.findOne({
@@ -73,14 +75,17 @@ export class UserService {
           targetInfo.id,
           tokenInfo.id
         );
-      result.userInfo[0]["restaurants"] = restaurantList;
+      if ( restaurantList )result.userInfo[0]["restaurants"] = restaurantList;
+      result.userInfo[0].profileImage = this.awsService.getImageURL(result.userInfo[0].profileImage);
       return result;
     } catch (err) {
       throw new BadRequestException();
     }
   }
   async getMypageUserDetailInfo(tokenInfo: TokenInfo) {
-    return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
+    const result = await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
+    result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
+    return result;
   }
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
