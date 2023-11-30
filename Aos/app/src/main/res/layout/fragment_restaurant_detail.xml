@@ -38,7 +38,7 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                style="@style/TextHeaderBold"
+                style="@style/TextHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -69,7 +69,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@drawable/ic_star_border"
-                    android:onClick="@{() -> vm.updateWish()}"
+                    android:onClick="@{() -> vm.onWishClicked()}"
                     app:wishStatus="@{vm.uiState.isWish}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_restaurant_name"
                     app:layout_constraintStart_toStartOf="@id/cl_content"
@@ -85,7 +85,8 @@
                     android:maxLines="1"
                     android:text="@{vm.uiState.name}"
                     app:layout_constraintStart_toEndOf="@+id/btn_add_wish_restaurant"
-                    app:layout_constraintTop_toTopOf="@id/cl_content" />
+                    app:layout_constraintTop_toTopOf="@id/cl_content"
+                    tools:text="맥도날드 뱅뱅역점"/>
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guidline"
@@ -106,12 +107,13 @@
 
                 <TextView
                     android:id="@+id/tv_address"
-                    style="@style/TextSmallBold"
+                    style="@style/TextSmallRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{vm.uiState.address}"
                     app:layout_constraintStart_toStartOf="@id/guidline"
-                    app:layout_constraintTop_toTopOf="@id/tv_address_label" />
+                    app:layout_constraintTop_toTopOf="@id/tv_address_label"
+                    tools:text="서울 특별시 중구 102-51 1층"/>
 
                 <TextView
                     android:id="@+id/tv_phone_number_label"
@@ -125,12 +127,13 @@
 
                 <TextView
                     android:id="@+id/tv_phone_number"
-                    style="@style/TextSmallBold"
+                    style="@style/TextSmallRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{vm.uiState.phoneNumber}"
                     app:layout_constraintStart_toStartOf="@id/guidline"
-                    app:layout_constraintTop_toTopOf="@id/tv_phone_number_label" />
+                    app:layout_constraintTop_toTopOf="@id/tv_phone_number_label"
+                    tools:text="02 123 2323"/>
 
                 <TextView
                     android:id="@+id/tv_review_count_label"
@@ -144,12 +147,13 @@
 
                 <TextView
                     android:id="@+id/tv_review_count"
-                    style="@style/TextSmallBold"
+                    style="@style/TextSmallRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{String.valueOf(vm.uiState.reviewCnt)}"
+                    android:text="@{vm.uiState.reviewCnt}"
                     app:layout_constraintStart_toStartOf="@id/guidline"
-                    app:layout_constraintTop_toTopOf="@id/tv_review_count_label" />
+                    app:layout_constraintTop_toTopOf="@id/tv_review_count_label"
+                    tools:text="99"/>
 
                 <TextView
                     android:id="@+id/tv_review_label"
@@ -197,7 +201,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/oval_primary5fill_nostroke"
+                    android:background="@drawable/oval_primary4fill_nostroke"
                     app:layout_constraintBottom_toBottomOf="@id/tv_best_label"
                     app:layout_constraintEnd_toStartOf="@id/iv_rank_one"
                     app:layout_constraintTop_toTopOf="@id/tv_best_label" />
@@ -207,7 +211,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/oval_primary5fill_nostroke"
+                    android:background="@drawable/oval_primary3fill_nostroke"
                     app:layout_constraintBottom_toBottomOf="@id/tv_best_label"
                     app:layout_constraintEnd_toStartOf="@id/iv_rank_two"
                     app:layout_constraintTop_toTopOf="@id/tv_best_label" />
@@ -217,7 +221,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/oval_primary5fill_nostroke"
+                    android:background="@drawable/oval_primary2fill_nostroke"
                     app:layout_constraintBottom_toBottomOf="@id/tv_best_label"
                     app:layout_constraintEnd_toStartOf="@id/iv_rank_three"
                     app:layout_constraintTop_toTopOf="@id/tv_best_label" />
@@ -227,7 +231,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/oval_primary5fill_nostroke"
+                    android:background="@drawable/oval_primary1fill_nostroke"
                     app:layout_constraintBottom_toBottomOf="@id/tv_best_label"
                     app:layout_constraintEnd_toStartOf="@id/iv_rank_four"
                     app:layout_constraintTop_toTopOf="@id/tv_best_label" />
@@ -236,7 +240,7 @@
                     android:id="@+id/rv_review"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="32dp"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="@id/cl_content"
@@ -260,6 +264,8 @@
             android:background="@drawable/rect_primary6fill_nostroke_8radius"
             android:text="@string/add_my_list_review"
             android:textColor="@color/white"
+            app:addRestaurantState="@{vm.uiState.isMy}"
+            android:onClick="@{() -> vm.onMyListClicked()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

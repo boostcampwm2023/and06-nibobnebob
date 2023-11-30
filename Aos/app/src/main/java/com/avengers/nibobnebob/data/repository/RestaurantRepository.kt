@@ -25,4 +25,12 @@ interface RestaurantRepository {
     fun myRestaurantList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
 
     fun myWishList(): Flow<BaseState<BaseResponse<List<FilterRestaurantResponse>>>>
+
+    fun addWishRestaurant(
+        restaurantId: Int
+    ): Flow<BaseState<BaseResponse<Unit>>>
+
+    fun deleteWishRestaurant(
+        restaurantId: Int
+    ): Flow<BaseState<BaseResponse<Unit>>>
 }
