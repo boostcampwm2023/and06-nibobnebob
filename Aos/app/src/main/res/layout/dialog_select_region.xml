@@ -9,7 +9,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
         android:background="@drawable/rect_dark7fill_nostroke_10radius"
         android:paddingBottom="20dp">
 
@@ -27,7 +26,7 @@
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/cg_region"
             style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="350dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="60dp"

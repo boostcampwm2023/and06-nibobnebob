@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.DialogSelectRegionBinding
 import com.google.android.material.chip.Chip
@@ -29,10 +30,16 @@ class SelectRegionDialog(
 
     private fun initView() = with(binding) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
         filterList.forEach {
             val chip = layoutInflater.inflate(R.layout.layout_filter_chip, cgRegion, false) as Chip
             chip.id = View.generateViewId()
             chip.text = it
+            chip.chipStrokeWidth = 0F
             chip.setChipBackgroundColorResource(R.color.selector_filter_background)
             cgRegion.addView(chip)
             if (it in curFilterList) cgRegion.check(chip.id)
