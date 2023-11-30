@@ -12,10 +12,9 @@ export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-  async createUser(userinfoDto: UserInfoDto): Promise<User> {
-    const newUser = this.create(userinfoDto);
+  async createUser(userentity: User): Promise<User> {
     try {
-      await this.save(newUser);
+      await this.save(userentity);
     } catch (err) {
       if (err.code === "23505") {
         throw new ConflictException("Duplicated Value");
@@ -39,17 +38,17 @@ export class UserRepository extends Repository<User> {
   }
   async getMypageUserInfo(id: number) {
     const userInfo = await this.findOne({
-      select: ["nickName", "birthdate", "isMale", "region"],
+      select: ["nickName", "birthdate", "isMale", "region", "profileImage"],
       where: { id: id },
     });
     return { userInfo: userInfo };
   }
   async getMypageTargetUserInfo(targetInfoId: number) {
-    const userInfo = await this.find({
-      select: ["nickName", "birthdate", "isMale", "region"],
+    const userInfo = await this.findOne({
+      select: ["nickName", "birthdate", "isMale", "region", "profileImage"],
       where: { id: targetInfoId },
     });
-    return { userInfo: userInfo };
+    return userInfo;
   }
   async getUsersInfo(targetInfoIds: number[]) {
     const userInfo = await this.find({
@@ -67,6 +66,7 @@ export class UserRepository extends Repository<User> {
         "region",
         "provider",
         "email",
+        "profileImage",
       ],
       where: { id: id },
     });
@@ -96,13 +96,13 @@ export class UserRepository extends Repository<User> {
     }
     return {};
   }
-  async updateMypageUserInfo(id: number, userInfoDto: UserInfoDto) {
+  async updateMypageUserInfo(id: number, userEntity: User) {
     const user = await this.findOne({ select: ["id"], where: { id: id } });
     const [emailUser, nickNameUser] = await Promise.all([
-      this.findOne({ select: ["id"], where: { email: userInfoDto["email"] } }),
+      this.findOne({ select: ["id"], where: { email: userEntity["email"] } }),
       this.findOne({
         select: ["id"],
-        where: { nickName: userInfoDto["nickName"] },
+        where: { nickName: userEntity["nickName"] },
       }),
     ]);
 
@@ -110,18 +110,19 @@ export class UserRepository extends Repository<User> {
     const isNickNameDuplicate = !!nickNameUser;
 
     let updateObject = {
-      birthdate: userInfoDto["birthdate"],
-      isMale: userInfoDto["isMale"],
-      region: userInfoDto["region"],
-      provider: userInfoDto["provider"],
-      password: userInfoDto["password"],
+      birthdate: userEntity["birthdate"],
+      isMale: userEntity["isMale"],
+      region: userEntity["region"],
+      provider: userEntity["provider"],
+      password: userEntity["password"],
+      profileImage : userEntity["profileImage"]
     };
 
     if (!isEmailDuplicate) {
-      updateObject["email"] = userInfoDto["email"];
+      updateObject["email"] =userEntity["email"];
     }
     if (!isNickNameDuplicate) {
-      updateObject["nickName"] = userInfoDto["nickName"];
+      updateObject["nickName"] = userEntity["nickName"];
     }
     await this.update(user.id, updateObject);
     return {

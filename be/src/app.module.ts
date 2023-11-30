@@ -8,6 +8,7 @@ import { ReviewModule } from "./review/review.module";
 import { CustomLoggerService } from "./custom.logger";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { LoggingInterceptor } from "./logger.interceptor";
+import { AwsModule } from './aws/aws.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { LoggingInterceptor } from "./logger.interceptor";
     AuthModule,
     RestaurantModule,
     ReviewModule,
+    AwsModule,
   ],
   providers: [
     CustomLoggerService,

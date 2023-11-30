@@ -11,8 +11,9 @@ import { Equal, In, Like, Not } from "typeorm";
 import { BadRequestException } from "@nestjs/common/exceptions";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 import { ReviewRepository } from "src/review/review.repository";
-import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
 import { UserWishRestaurantListRepository } from "./user.wishrestaurantList.repository";
+import { AwsService } from "src/aws/aws.service";
+import { v4 } from "uuid";
 import { User } from "./entities/user.entity";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
 
@@ -24,11 +25,25 @@ export class UserService {
     private userRestaurantListRepository: UserRestaurantListRepository,
     private userFollowListRepositoy: UserFollowListRepository,
     private reviewRepository: ReviewRepository,
-    private userWishRestaurantListRepository: UserWishRestaurantListRepository
-  ) { }
+    private userWishRestaurantListRepository: UserWishRestaurantListRepository,
+    private awsService: AwsService
+  ) {}
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
-    return await this.usersRepository.createUser(userInfoDto);
+    const user = {
+      ...userInfoDto,
+      profileImage: "profile/images/defaultprofile.png",
+    };
+
+    if (userInfoDto.profileImage) {
+      const uuid = v4();
+      user.profileImage = `profile/images/${uuid}.png`;
+    } 
+
+    const newUser = this.usersRepository.create(user);
+    await this.usersRepository.createUser(newUser);
+    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    return;
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);
@@ -37,7 +52,9 @@ export class UserService {
     return await this.usersRepository.getEmailAvailability(email);
   }
   async getMypageUserInfo(tokenInfo: TokenInfo) {
-    return await this.usersRepository.getMypageUserInfo(tokenInfo.id);
+    const result = await this.usersRepository.getMypageUserInfo(tokenInfo.id);
+    result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
+    return result;
   }
   async getMypageTargetUserInfo(tokenInfo: TokenInfo, nickName: string) {
     const targetInfo = await this.usersRepository.findOne({
@@ -45,17 +62,32 @@ export class UserService {
       where: { nickName: nickName },
     });
     try {
-      const result = await this.usersRepository.getMypageTargetUserInfo(targetInfo.id);
-      result.userInfo[0]["isFollow"] = await this.userFollowListRepositoy.getFollowState(tokenInfo.id, targetInfo.id) ? true : false;
-      const restaurantList = await this.userRestaurantListRepository.getTargetRestaurantListInfo(targetInfo.id, tokenInfo.id);
-      result.userInfo[0]["restaurants"] = restaurantList;
+      const result = await this.usersRepository.getMypageTargetUserInfo(
+        targetInfo.id
+      );
+      result["isFollow"] =
+        (await this.userFollowListRepositoy.getFollowState(
+          tokenInfo.id,
+          targetInfo.id
+        ))
+          ? true
+          : false;
+      const restaurantList =
+        await this.userRestaurantListRepository.getTargetRestaurantListInfo(
+          targetInfo.id,
+          tokenInfo.id
+        );
+      if ( restaurantList )result["restaurants"] = restaurantList;
+      result.profileImage = this.awsService.getImageURL(result.profileImage);
       return result;
     } catch (err) {
       throw new BadRequestException();
     }
   }
   async getMypageUserDetailInfo(tokenInfo: TokenInfo) {
-    return await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
+    const result = await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
+    result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
+    return result;
   }
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
@@ -265,9 +297,23 @@ export class UserService {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
   async updateMypageUserInfo(tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
-    return await this.usersRepository.updateMypageUserInfo(
+    userInfoDto.password = await hashPassword(userInfoDto.password);
+    const user = {
+      ...userInfoDto,
+      profileImage: "profile/images/defaultprofile.png",
+    };
+
+    if (userInfoDto.profileImage) {
+      const uuid = v4();
+      user.profileImage = `profile/images/${uuid}.png`;
+    } 
+
+    const newUser = this.usersRepository.create(user);
+    const result = await this.usersRepository.updateMypageUserInfo(
       tokenInfo.id,
-      userInfoDto
+      newUser
     );
+    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    return result;
   }
 }
