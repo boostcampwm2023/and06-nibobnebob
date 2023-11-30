@@ -4,6 +4,10 @@
 
     <data>
 
+        <variable
+            name="item"
+            type="com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyWishData" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="음식점 이름"
+            android:text="@{item.name}"
             app:layout_constraintStart_toEndOf="@id/iv_star"
             app:layout_constraintTop_toTopOf="@id/gl_top" />
 
@@ -65,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="서울특별시 용산구"
+            android:text="@{item.address}"
             android:textColor="@color/nn_primary5"
             app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintStart_toEndOf="@id/iv_star" />
