@@ -8,6 +8,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="pvm"
+            type="com.avengers.nibobnebob.presentation.ui.main.MainViewModel" />
+
+        <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchViewModel" />
 
