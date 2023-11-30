@@ -7,6 +7,7 @@ import {
   IsInt,
   MaxLength,
   IsOptional,
+  IsInstance,
 } from "class-validator";
 
 export class UserInfoDto {
@@ -56,4 +57,12 @@ export class UserInfoDto {
   @IsBoolean()
   @IsNotEmpty()
   isMale: boolean;
+
+  @ApiProperty({
+    example: "<Buffer 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52 00 00 02 d0 00 00 01 95 08 02 00 00 00 58 48 51 89 00 00 00 01 73 52 47 42 00 ae ce 1c e9 00 00 00 78 ... 134080 more bytes>",
+    description: "The profile image of the user",
+  })
+  @IsInstance(Buffer)
+  @IsOptional()
+  profileImage: Buffer;
 }
