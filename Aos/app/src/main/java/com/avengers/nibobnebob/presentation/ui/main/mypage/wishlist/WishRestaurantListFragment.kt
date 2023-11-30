@@ -76,7 +76,7 @@ class WishRestaurantListFragment :
             title = "삭제하시겠습니까?",
             description = "내 위시 맛집 리스트에서 삭제됩니다.",
             confirmBtnClickListener = {
-                viewModel.deleteMyList(id)
+                viewModel.deleteWishList(id)
             }
         )
     }

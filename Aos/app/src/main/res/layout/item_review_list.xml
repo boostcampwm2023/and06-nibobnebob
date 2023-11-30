@@ -8,7 +8,6 @@
         <variable
             name="item"
             type="com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +29,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="60dp"
-            android:text="@{item.nickName}"
+            android:layout_marginTop="0dp"
+            android:text="@{item.reviewer}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/nickname" />
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:text="@{item.visited}"
+            android:text="@{com.avengers.nibobnebob.presentation.util.TimeUtil.INSTANCE.formatTime(item.createdAt)}"
             app:layout_constraintBottom_toBottomOf="@id/tv_when_visited_label"
             app:layout_constraintStart_toEndOf="@id/tv_when_visited_label"
             app:layout_constraintTop_toTopOf="@id/tv_when_visited_label"
@@ -60,12 +60,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
+            android:onClick="@{() -> item.onThumbsUpClick.invoke(item.reviewId)}"
             android:src="@drawable/ic_thumbs_up_blank"
-            android:onClick="@{() -> item.onThumbsUpClick.invoke(item)}"
-            app:thumbsUpStatus="@{item.thumbsUp}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_up_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname"
+            app:thumbsUpStatus="@{item.thumbsUp}" />
+
 
         <TextView
             android:id="@+id/tv_thumbs_up_count"
@@ -84,12 +85,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
+            android:onClick="@{() -> item.onThumbsDownClick.invoke(item.reviewId)}"
             android:src="@drawable/ic_thumbs_down_blank"
-            android:onClick="@{() -> item.onThumbsDownClick.invoke(item)}"
-            app:thumbsDownStatus="@{item.thumbsDown}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_down_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname"
+            app:thumbsDownStatus="@{item.thumbsDown}" />
+
 
         <TextView
             android:id="@+id/tv_thumbs_down_count"
@@ -108,8 +110,8 @@
             style="@style/TextSmallRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/parking_convenience"
+            android:layout_marginTop="20dp"
+            android:text="@{item.isCarVisit ? @string/parking_convenience : @string/transportation_accessibility}"
             android:textColor="@color/nn_text_black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_when_visited" />
@@ -120,7 +122,7 @@
             android:layout_height="24dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/oval_primary1fill_nostroke"
-            app:filterRateBackground="@{item.parkingConvenience}"
+            app:filterRateBackground="@{item.isCarVisit ? item.parkingArea : item.transportationAccessibility}"
             app:layout_constraintEnd_toEndOf="@id/tv_parking_convenience_label"
             app:layout_constraintStart_toStartOf="@id/tv_parking_convenience_label"
             app:layout_constraintTop_toBottomOf="@id/tv_parking_convenience_label" />
@@ -131,11 +133,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="12dp"
             android:text="@string/taste"
             android:textColor="@color/nn_text_black"
             app:layout_constraintStart_toEndOf="@id/tv_parking_convenience_label"
-            app:layout_constraintTop_toBottomOf="@id/tv_when_visited" />
+            app:layout_constraintTop_toTopOf="@+id/tv_parking_convenience_label" />
 
         <ImageView
             android:id="@+id/iv_taste_rank"
@@ -154,11 +155,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="12dp"
             android:text="@string/service"
             android:textColor="@color/nn_text_black"
             app:layout_constraintStart_toEndOf="@id/tv_taste_label"
-            app:layout_constraintTop_toBottomOf="@id/tv_when_visited" />
+            app:layout_constraintTop_toTopOf="@+id/tv_taste_label" />
 
         <ImageView
             android:id="@+id/iv_service_rank"
@@ -177,11 +177,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="12dp"
             android:text="@string/cleanliness"
             android:textColor="@color/nn_text_black"
             app:layout_constraintStart_toEndOf="@id/tv_service_label"
-            app:layout_constraintTop_toBottomOf="@id/tv_when_visited" />
+            app:layout_constraintTop_toTopOf="@+id/tv_service_label" />
 
         <ImageView
             android:id="@+id/iv_cleanliness_rank"
@@ -199,8 +198,8 @@
             style="@style/TextSmallRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@{item.review}"
+            android:layout_marginTop="20dp"
+            android:text="@{item.overallExperience}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_cleanliness_rank"
             tools:text="@string/test_review" />
@@ -209,7 +208,7 @@
             android:id="@+id/divider"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginVertical="10dp"
+            android:layout_marginVertical="20dp"
             app:dividerColor="@color/nn_dark6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

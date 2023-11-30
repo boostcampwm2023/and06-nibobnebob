@@ -37,13 +37,14 @@ interface RestaurantApi {
     @GET("api/user/wish-restaurant")
     suspend fun myWishList(): Response<BaseResponse<List<FilterRestaurantResponse>>>
 
-    @POST("api/user/wish-restaurant/{restaurantid}")
-    suspend fun addWishList(
-        @Path("restaurantid") restaurantId: Int
-    ): Response<BaseResponse<Unit>>
+    @POST("api/user/wish-restaurant/{restaurantId}")
+    suspend fun addWishRestaurant(
+        @Path("restaurantId") restaurantId: Int
+    ) : Response<BaseResponse<Unit>>
 
-    @DELETE("api/user/wish-restaurant/{restaurantid}")
-    suspend fun deleteWishList(
-        @Path("restaurantid") restaurantId: Int
-    ): Response<BaseResponse<Unit>>
+    @DELETE("api/user/wish-restaurant/{restaurantId}")
+    suspend fun deleteWishRestaurant(
+        @Path("restaurantId") restaurantId: Int
+    ) : Response<BaseResponse<Unit>>
+
 }

@@ -308,15 +308,6 @@ class HomeViewModel @Inject constructor(
         getMarkerList()
     }
 
-    fun addWishTest(id: Int) {
-        restaurantRepository.addWishList(id).onEach {
-            when (it) {
-                is BaseState.Success -> Log.d("TEST", "success")
-                is BaseState.Error -> Log.d("TEST", "fail")
-            }
-        }.launchIn(viewModelScope)
-    }
-
     fun navigateToSearchRestaurant() {
         viewModelScope.launch {
             _events.emit(HomeEvents.NavigateToSearchRestaurant)
