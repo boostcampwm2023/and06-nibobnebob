@@ -79,6 +79,11 @@
         app:destination="@id/addMyRestaurantFragment"
         app:popUpTo="@id/homeFragment"
         app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/global_to_homeFragment"
+        app:destination="@id/homeFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="true"/>
 
     <fragment
         android:id="@+id/editProfileFragment"
@@ -96,11 +101,19 @@
         android:id="@+id/restaurantSearchFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchFragment"
         android:label="RestaurantSearchFragment" >
+        <argument
+            android:name="searchKeyword"
+            app:argType="string"
+            android:defaultValue=""/>
         <action
             android:id="@+id/action_restaurantSearchFragment_to_homeFragment"
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_restaurantSearchFragment_to_restaurantSearchMapFragment"
+            app:destination="@id/restaurantSearchMapFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/addMyRestaurantFragment"
@@ -124,5 +137,16 @@
             android:name="restaurantId"
             android:defaultValue="1"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/restaurantSearchMapFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchMapFragment"
+        android:label="RestaurantSearchMapFragment" >
+        <action
+            android:id="@+id/action_restaurantSearchMapFragment_to_restaurantSearchFragment"
+            app:destination="@id/restaurantSearchFragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@layout/fragment_restaurant_search_map">
+        </action>
     </fragment>
 </navigation>
