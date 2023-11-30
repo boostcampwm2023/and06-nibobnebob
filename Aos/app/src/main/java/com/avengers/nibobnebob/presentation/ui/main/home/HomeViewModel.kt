@@ -11,6 +11,7 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
+import com.naver.maps.map.overlay.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,7 +32,8 @@ data class HomeUiState(
     val markerList: List<UiRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
     val curLatitude: Double = 0.0,
-    val curLongitude: Double = 0.0
+    val curLongitude: Double = 0.0,
+    val curSelectedMarker: Marker? = null
 )
 
 sealed class TrackingState {
@@ -43,6 +45,11 @@ sealed class TrackingState {
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
     data object SetNewMarkers : HomeEvents()
+    data class SetSingleMarker(
+        val marker: Marker?,
+        val item: UiRestaurantData
+    ) : HomeEvents()
+
     data object RemoveMarkers : HomeEvents()
     data class ShowSnackMessage(
         val msg: String
@@ -193,9 +200,35 @@ class HomeViewModel @Inject constructor(
 
         }.await()
 
+
+
+        if (result) {
+            _uiState.update { state ->
+                state.copy(
+                    markerList = uiState.value.markerList.map {
+                        if (it.id == id) {
+                            it.copy(isInWishList = !curState)
+                        } else it
+                    }
+                )
+            }
+            _events.emit(
+                HomeEvents.SetSingleMarker(
+                    uiState.value.curSelectedMarker,
+                    uiState.value.markerList.find { it.id == id }!!
+                )
+            )
+        }
+
         return result
 
 
+    }
+
+    fun setSelectedMarker(marker: Marker) {
+        _uiState.update { state ->
+            state.copy(curSelectedMarker = marker)
+        }
     }
 
     private fun onFilterItemClicked(name: String) {

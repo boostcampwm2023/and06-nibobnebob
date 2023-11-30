@@ -2,6 +2,7 @@ package com.avengers.nibobnebob.presentation.customview
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.BottomSheetRestaurantBinding
@@ -42,8 +43,10 @@ class RestaurantBottomSheet(
 
                     if (isWishState) {
                         binding.btnAddWishRestaurant.setBackgroundResource(R.drawable.ic_star_full)
+                        Toast.makeText(context, "나의 위시 리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show()
                     } else {
                         binding.btnAddWishRestaurant.setBackgroundResource(R.drawable.ic_star_border)
+                        Toast.makeText(context, "나의 위시 리스트에서 삭제되었습니다.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

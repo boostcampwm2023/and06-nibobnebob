@@ -121,6 +121,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         }
                     }
 
+                    is HomeEvents.SetSingleMarker -> {
+                        setSingleMarker(it.marker, it.item)
+                    }
+
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
                     is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
@@ -185,12 +189,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
             )
+            viewModel.setSelectedMarker(marker)
             bottomSheet.show()
 
             true
         }
         markerList.add(marker)
     }
+
+    private fun setSingleMarker(marker: Marker?, item: UiRestaurantData) {
+
+        marker?.setOnClickListener {
+            val bottomSheet = RestaurantBottomSheet(
+                context = requireContext(),
+                data = item,
+                onClickAddWishRestaurant = ::addWishTest,
+                onClickAddMyRestaurant = ::addRestaurantTest,
+                onClickGoReview = ::goReviewTest
+            )
+            bottomSheet.show()
+
+            true
+        }
+
+    }
+
 
     // todo 모든 marker 데이터 markerList 에 저장해 놨다가, remove 다음 방식으로 진행
     private fun removeAllMarker() {
