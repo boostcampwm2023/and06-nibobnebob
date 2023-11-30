@@ -29,7 +29,7 @@
         <TextView
             android:id="@+id/tv_nick_name"
             style="@style/TextSmallBold"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:text="@{item.nickName}"
@@ -43,7 +43,7 @@
         <TextView
             android:id="@+id/tv_region"
             style="@style/TextSmallRegular"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{item.region}"
             android:textAlignment="center"

@@ -102,6 +102,8 @@ class FollowSearchViewModel @Inject constructor(
                 }
             )
         }
+
+        observeKeyword()
     }
 
     private fun changeFilterListener(newFilter: List<String>){
@@ -110,6 +112,8 @@ class FollowSearchViewModel @Inject constructor(
                 curRegionFilter = newFilter
             )
         }
+
+        observeKeyword()
     }
 
 }

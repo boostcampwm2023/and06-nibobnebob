@@ -18,22 +18,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class FollowSearchFragment: BaseFragment<FragmentFollowSearchBinding>(R.layout.fragment_follow_search) {
     override val parentViewModel: MainViewModel by activityViewModels()
     private val viewModel: FollowSearchViewModel by viewModels()
-    private val adapter = FollowSearchAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        binding.rvFollowSearch.adapter = adapter
-        initStateObserver()
+        binding.rvFollowSearch.adapter = FollowSearchAdapter()
+        binding.rvFollowSearch.itemAnimator = null
         initEventObserver()
-    }
-
-    private fun initStateObserver(){
-        repeatOnStarted {
-            viewModel.uiState.collect{
-                adapter.submitList(it.searchList)
-            }
-        }
     }
 
     private fun initEventObserver(){

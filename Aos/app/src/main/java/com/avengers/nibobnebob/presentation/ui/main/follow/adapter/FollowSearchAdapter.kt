@@ -1,19 +1,29 @@
 package com.avengers.nibobnebob.presentation.ui.main.follow.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.databinding.ItemFollowSearchBinding
 import com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowSearchData
 
-class FollowSearchAdapter() : RecyclerView.Adapter<FollowSearchViewHolder>() {
+class FollowSearchAdapter() : ListAdapter<UiFollowSearchData,FollowSearchViewHolder>(diffCallback) {
 
+    companion object{
+        val diffCallback = object : DiffUtil.ItemCallback<UiFollowSearchData>(){
+            override fun areItemsTheSame(oldItem: UiFollowSearchData, newItem: UiFollowSearchData): Boolean {
+                return oldItem.nickName == newItem.nickName
+            }
 
-    private var data : List<UiFollowSearchData> = emptyList()
+            override fun areContentsTheSame(oldItem: UiFollowSearchData, newItem: UiFollowSearchData): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 
     override fun onBindViewHolder(holder: FollowSearchViewHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(getItem(position))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowSearchViewHolder {
@@ -24,14 +34,6 @@ class FollowSearchAdapter() : RecyclerView.Adapter<FollowSearchViewHolder>() {
             )
         )
     }
-
-    override fun getItemCount(): Int = data.size
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun submitList(list : List<UiFollowSearchData>){
-        data = list
-        notifyDataSetChanged()
-    }
 }
 
 class FollowSearchViewHolder(private val binding: ItemFollowSearchBinding) :
@@ -40,5 +42,4 @@ class FollowSearchViewHolder(private val binding: ItemFollowSearchBinding) :
     fun bind(item: UiFollowSearchData) {
         binding.item = item
     }
-
 }
