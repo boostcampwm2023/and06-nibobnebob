@@ -37,7 +37,6 @@ data class HomeUiState(
     val cameraLatitude: Double = 0.0,
     val cameraLongitude: Double = 0.0,
     val cameraZoom: Double = 0.0,
-//    val cameraBound: LatLngBounds = LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0)),
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0
 )
@@ -189,7 +188,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // todo : 반경을 설정하고 그것을 기준으로 응집도 계산 + 모든 것이 멀리 있을 시 가장 가까운 곳으로 이동
     private fun calculateDensity(latitude: Double, longitude: Double, radius: Double): Int {
         var density = 0
 

@@ -95,7 +95,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
         }
 
-        // todo 화면이동 끝났을때 리스너
         naverMap.addOnCameraIdleListener {
             val cameraPosition = naverMap.cameraPosition
             viewModel.updateCamera(
@@ -105,7 +104,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             )
         }
 
-        // todo GPS 기반 위치변화 리스너
         naverMap.addOnLocationChangeListener {
             viewModel.updateLocation(
                 it.latitude,
@@ -183,7 +181,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         else viewModel.trackingOff()
     }
 
-    // todo markerData model을 정의하여, 파라미터로 해당 데이터를 삽입
     private fun setMarker(data: UiRestaurantData) {
         val marker = Marker()
 
@@ -206,7 +203,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         markerList.add(marker)
     }
 
-    // todo 모든 marker 데이터 markerList 에 저장해 놨다가, remove 다음 방식으로 진행
     private fun removeAllMarker() {
         markerList.forEach {
             it.map = null
