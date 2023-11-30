@@ -26,30 +26,55 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_search_bar"
+        <View
+            android:id="@+id/v_search"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginStart="20dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/rect_dark7fill_nostroke_10radius"
             android:onClick="@{() -> vm.navigateToSearchRestaurant()}"
-            android:text="지역을 검색하세요"
-            app:layout_constraintBottom_toBottomOf="@id/btn_recommend_menu"
             app:layout_constraintEnd_toStartOf="@id/btn_recommend_menu"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btn_recommend_menu" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/ic_search"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toEndOf="@id/v_search"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
+
+        <TextView
+            android:id="@+id/tiet_input_search"
+            style="@style/TextMediumRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:maxLines="1"
+            android:paddingHorizontal="16dp"
+            android:text="음식점 이름을 검색하세요."
+            android:textColor="@color/nn_dark5"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
+            app:layout_constraintEnd_toStartOf="@id/iv_search"
+            app:layout_constraintStart_toStartOf="@id/v_search"
+            app:layout_constraintTop_toTopOf="@id/v_search" />
 
         <ImageButton
             android:id="@+id/btn_recommend_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_logo_home"
+            app:layout_constraintBottom_toBottomOf="@id/v_search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/v_search" />
 
         <ImageButton
             android:id="@+id/btn_location"
@@ -71,11 +96,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:orientation="horizontal"
-            app:list="@{vm.uiState.filterList}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_search_bar"
+            app:layout_constraintTop_toBottomOf="@id/v_search"
+            app:list="@{vm.uiState.filterList}"
             tools:listitem="@layout/item_home_filter" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

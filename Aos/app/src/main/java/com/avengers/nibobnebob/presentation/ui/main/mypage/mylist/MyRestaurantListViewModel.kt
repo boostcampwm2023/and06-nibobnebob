@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
-import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyPageListData
-import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyPageListData
+import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyListData
+import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MyRestaurantUiState(
-    val myList: List<UiMyPageListData> = emptyList(),
+    val myList: List<UiMyListData> = emptyList(),
     val isEmpty: Boolean = false,
 )
 
@@ -53,7 +53,7 @@ class MyRestaurantListViewModel @Inject constructor(
             when (my) {
                 is BaseState.Success -> {
                     _uiState.update { state ->
-                        val list = my.data.body.map { it.toMyPageListData() }
+                        val list = my.data.body.map { it.toMyListData() }
                         state.copy(
                             myList = list,
                             isEmpty = list.isEmpty()
