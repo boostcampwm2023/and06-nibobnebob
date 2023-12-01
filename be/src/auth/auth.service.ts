@@ -65,7 +65,7 @@ export class AuthService {
         secret: "nibobnebob",
         expiresIn: "7d",
       });
-      await this.authRepository.upsert({ id: user.id, refreshToken: refreshToken }, ["id"]);
+      await this.authRepository.upsert({ id: user.id, accessToken: accessToken, refreshToken: refreshToken }, ["id"]);
       return { accessToken, refreshToken };
     } else {
       throw new NotFoundException(
@@ -83,6 +83,7 @@ export class AuthService {
       if (result) {
         const payload = { id: decoded.id };
         const accessToken = this.jwtService.sign(payload);
+        await this.authRepository.update(decoded.id, { accessToken: accessToken });
         return { accessToken };
       }
       throw new HttpException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
