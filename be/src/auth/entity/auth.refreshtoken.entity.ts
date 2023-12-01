@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity("AuthToken")
+@Entity("auth_token")
 export class AuthRefreshTokenEntity {
     @PrimaryColumn()
     id: number;

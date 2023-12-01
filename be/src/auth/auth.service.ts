@@ -31,6 +31,10 @@ export class AuthService {
     }
   }
 
+  async logout(id: number) {
+    await this.authRepository.delete({ id: id });
+  }
+
   async NaverAuth(authorization: string) {
     if (!authorization) {
       throw new HttpException(
