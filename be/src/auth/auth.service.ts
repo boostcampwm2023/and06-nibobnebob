@@ -83,8 +83,7 @@ export class AuthService {
       const decoded = this.jwtService.verify(refreshToken, {
         secret: "nibobnebob",
       });
-      const result = this.authRepository.findOne({ where: { id: decoded.id } })
-      if (result) {
+      if (await this.authRepository.findOne({ where: { id: decoded.id, refreshToken: refreshToken } })) {
         const payload = { id: decoded.id };
         const accessToken = this.jwtService.sign(payload);
         await this.authRepository.update(decoded.id, { accessToken: accessToken });
