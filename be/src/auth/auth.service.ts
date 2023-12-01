@@ -19,7 +19,6 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
   async login(loginInfoDto: LoginInfoDto) {
-    console.log(loginInfoDto);
     const data = await this.userRepository.findOne({ select: ["password"], where: { email: loginInfoDto.email, provider: "site" } })
     const result = await comparePasswords(loginInfoDto.password, data["password"]);
     if (result) return this.signin(loginInfoDto);
