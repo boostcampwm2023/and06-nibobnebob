@@ -11,18 +11,24 @@ import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 import { LoginInfoDto } from "./dto/loginInfo.dto";
 import { comparePasswords } from "src/utils/encryption.utils";
+import { AuthRepository } from "./auth.repository";
 
 @Injectable()
 export class AuthService {
   constructor(
     private userRepository: UserRepository,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private authRepository: AuthRepository
   ) { }
   async login(loginInfoDto: LoginInfoDto) {
     const data = await this.userRepository.findOne({ select: ["password"], where: { email: loginInfoDto.email, provider: "site" } })
-    const result = await comparePasswords(loginInfoDto.password, data["password"]);
-    if (result) return this.signin(loginInfoDto);
-    throw new UnauthorizedException();
+    try {
+      const result = await comparePasswords(loginInfoDto.password, data["password"]);
+      if (result) return this.signin(loginInfoDto);
+      else throw new UnauthorizedException();
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
   }
 
   async NaverAuth(authorization: string) {
@@ -55,12 +61,11 @@ export class AuthService {
     if (user) {
       const payload = { id: user.id };
       const accessToken = this.jwtService.sign(payload);
-
       const refreshToken = this.jwtService.sign(payload, {
         secret: "nibobnebob",
         expiresIn: "7d",
       });
-
+      await this.authRepository.upsert({ id: user.id, refreshToken: refreshToken }, ["id"]);
       return { accessToken, refreshToken };
     } else {
       throw new NotFoundException(
@@ -74,9 +79,13 @@ export class AuthService {
       const decoded = this.jwtService.verify(refreshToken, {
         secret: "nibobnebob",
       });
-      const payload = { id: decoded.id };
-      const accessToken = this.jwtService.sign(payload);
-      return { accessToken };
+      const result = this.authRepository.findOne({ where: { id: decoded.id } })
+      if (result) {
+        const payload = { id: decoded.id };
+        const accessToken = this.jwtService.sign(payload);
+        return { accessToken };
+      }
+      throw new HttpException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
     } catch (err) {
       throw new HttpException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
     }
