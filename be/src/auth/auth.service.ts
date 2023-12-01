@@ -3,17 +3,29 @@ import {
   NotFoundException,
   HttpException,
   HttpStatus,
+  BadRequestException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { UserRepository } from "../user/user.repository";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
+import { LoginInfoDto } from "./dto/loginInfo.dto";
+import { comparePasswords } from "src/utils/encryption.utils";
 
 @Injectable()
 export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JwtService
-  ) {}
+  ) { }
+  async login(loginInfoDto: LoginInfoDto) {
+    console.log(loginInfoDto);
+    const data = await this.userRepository.findOne({ select: ["password"], where: { email: loginInfoDto.email, provider: "site" } })
+    const result = await comparePasswords(loginInfoDto.password, data["password"]);
+    if (result) return this.signin(loginInfoDto);
+    throw new UnauthorizedException();
+  }
+
   async NaverAuth(authorization: string) {
     if (!authorization) {
       throw new HttpException(

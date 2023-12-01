@@ -4,6 +4,7 @@ import {
   Headers,
   Post,
   UseGuards,
+  UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
@@ -15,11 +16,23 @@ import {
   ApiBody,
 } from "@nestjs/swagger";
 import { RefreshTokenDto } from "./dto/refreshToken.dto";
+import { LoginInfoDto } from "./dto/loginInfo.dto";
 
 @ApiTags("Authentication")
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
+
+  @Post("login")
+  @ApiOperation({ summary: "일반 로그인" })
+  @ApiResponse({ status: 200, description: "성공적으로 로그인됨." })
+  @ApiResponse({ status: 401, description: "인증 오류" })
+  @ApiBearerAuth()
+  @UsePipes(new ValidationPipe)
+  login(@Body() loginInfoDto: LoginInfoDto) {
+    return this.authService.login(loginInfoDto);
+  }
+
 
   @Post("social-login")
   @ApiOperation({ summary: "네이버 소셜 로그인" })
