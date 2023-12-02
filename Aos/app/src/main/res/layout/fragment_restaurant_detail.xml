@@ -260,7 +260,6 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_add_my_restaurant"
             style="@style/TextSmallBold"
-            정
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
