@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="주소"
+            android:text="@string/bottom_address"
             android:textColor="@color/nn_primary6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_name" />
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="전화번호"
+            android:text="@string/bottom_phone"
             android:textColor="@color/nn_primary6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_address_label" />
@@ -92,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="리뷰수"
+            android:text="@string/bottom_review"
             android:textColor="@color/nn_primary6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_phone_number_label" />
@@ -117,11 +117,10 @@
             android:minHeight="0dp"
             android:paddingHorizontal="8dp"
             android:paddingVertical="4dp"
-            android:text="맛집리스트 추가"
+            android:text="@string/bottom_add_btn"
             android:visibility="@{item.inMyList ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintEnd_toStartOf="@id/btn_go_review"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_go_review"
             app:layout_constraintTop_toBottomOf="@id/tv_review_count_label" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -133,9 +132,8 @@
             android:minHeight="0dp"
             android:paddingHorizontal="8dp"
             android:paddingVertical="4dp"
-            android:text="리뷰 보기"
+            android:text="@string/bottom_review_btn"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_add_my_restaurant"
             app:layout_constraintTop_toTopOf="@id/btn_add_my_restaurant" />
 
 
