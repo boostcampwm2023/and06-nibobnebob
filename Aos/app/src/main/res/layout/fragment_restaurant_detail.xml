@@ -264,7 +264,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:background="@drawable/rect_primary6fill_nostroke_8radius"
-            android:text="@string/add_my_list_review"
             android:textColor="@color/white"
             app:addRestaurantState="@{vm.uiState.isMy}"
             android:onClick="@{() -> vm.onMyListClicked()}"

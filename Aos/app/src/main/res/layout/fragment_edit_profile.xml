@@ -76,7 +76,7 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tv_edit_done"
                 style="@style/TextMediumBold"
-                set_enabled="@{vm.uiState}"
+                app:setBtnEnable="@{vm.uiState}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
