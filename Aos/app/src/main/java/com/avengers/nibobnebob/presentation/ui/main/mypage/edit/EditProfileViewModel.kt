@@ -143,7 +143,7 @@ class EditProfileViewModel @Inject constructor(
                             nickName = EditInputState(
                                 helperText = Validation.VALID_NICK,
                                 isValid = true,
-                                isChanged = originalNickName != nickState.value
+                                isChanged = (originalNickName != nickState.value) && locationState.value != 0
                             )
                         )
                     }
@@ -160,8 +160,8 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(
                     location = EditInputState(
-                        isValid = (position != 0 || !locationEditMode.value),
-                        isChanged = (locationList.indexOf(originalLocation) != position && locationEditMode.value)
+                        isValid = true,
+                        isChanged = if (position == 0) false else locationEditMode.value
                     )
                 )
             }
@@ -188,7 +188,7 @@ class EditProfileViewModel @Inject constructor(
                     birth = EditInputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = originalBirth != birth
+                        isChanged = originalBirth != birth && locationState.value != 0
                     )
                 )
             }
