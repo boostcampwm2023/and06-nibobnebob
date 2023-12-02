@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
 
         <variable
             name="vm"
@@ -120,7 +121,7 @@
                     android:text="주차공간"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rg_visit_method"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}" />
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/sd_parking_space"
@@ -133,7 +134,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_parking_space_label"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}"
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}"
                     app:thumbColor="@color/nn_primary6"
                     app:trackColorActive="@color/nn_primary6" />
 
@@ -146,7 +147,7 @@
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_parking_space"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}" />
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}" />
 
                 <TextView
                     android:id="@+id/tv_parking_space_enough"
@@ -157,7 +158,7 @@
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_parking_space"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}" />
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}" />
 
                 <TextView
                     android:id="@+id/tv_traffic_label"
@@ -168,7 +169,7 @@
                     android:text="교통 편리 여부"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rg_visit_method"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/sd_traffic"
@@ -183,7 +184,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_traffic_label"
                     app:thumbColor="@color/nn_primary6"
                     app:trackColorActive="@color/nn_primary6"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}" />
 
                 <TextView
                     android:id="@+id/tv_traffic_not_enough"
@@ -194,7 +195,7 @@
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_traffic"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}" />
 
                 <TextView
                     android:id="@+id/tv_traffic_enough"
@@ -205,7 +206,7 @@
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_traffic"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}" />
 
                 <TextView
                     android:id="@+id/tv_taste_label"
@@ -369,7 +370,7 @@
                     app:commentHelperMessage="@{vm.uiState.commentState}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_text_length"
                     app:layout_constraintEnd_toStartOf="@id/tv_text_length"
-                    tools:text="20자 이상 작성하셔야 합니다!" />
+                    tools:text="20자 이상 작성해야 합니다." />
 
                 <EditText
                     android:id="@+id/et_comment"
