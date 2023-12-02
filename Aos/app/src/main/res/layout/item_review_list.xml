@@ -61,11 +61,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:onClick="@{() -> item.onThumbsUpClick.invoke(item.reviewId)}"
-            android:src="@drawable/ic_thumbs_up_blank"
+            android:src="@{item.thumbsUp? @drawable/ic_thumbs_up_fill : @drawable/ic_thumbs_up_blank}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_up_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname"
-            app:thumbsUpStatus="@{item.thumbsUp}" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
 
 
         <TextView
@@ -86,11 +85,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:onClick="@{() -> item.onThumbsDownClick.invoke(item.reviewId)}"
-            android:src="@drawable/ic_thumbs_down_blank"
+            android:src="@{item.thumbsDown? @drawable/ic_thumbs_down_fill : @drawable/ic_thumbs_down_blank}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_down_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname"
-            app:thumbsDownStatus="@{item.thumbsDown}" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
 
 
         <TextView
