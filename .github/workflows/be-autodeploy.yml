@@ -27,7 +27,7 @@ jobs:
       - name: build and push
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./be
           file: ./be/Dockerfile
           push: true
           tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob:latest
