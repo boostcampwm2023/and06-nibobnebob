@@ -24,15 +24,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class EditProfileUiState(
-    val nickName: InputState = InputState(),
+    val nickName: EditInputState = EditInputState(),
     val email: String = "",
     val provider: String = "",
-    val birth: InputState = InputState(),
-    val location: InputState = InputState()
+    val birth: EditInputState = EditInputState(),
+    val location: EditInputState = EditInputState()
 )
 
 
-data class InputState(
+data class EditInputState(
     val helperText: Validation = Validation.NONE,
     val isValid: Boolean = true,
     val isChanged: Boolean = false,
@@ -114,7 +114,7 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { state ->
 
                 state.copy(
-                    nickName = InputState(
+                    nickName = EditInputState(
                         helperText = Validation.NONE,
                         isValid = (originalNickName == nick && state.nickName.helperText == Validation.NONE),
                         isChanged = originalNickName != nick
@@ -132,7 +132,7 @@ class EditProfileViewModel @Inject constructor(
                     if (it.data.body.isExist) {
 
                         _uiState.value = uiState.value.copy(
-                            nickName = InputState(
+                            nickName = EditInputState(
                                 helperText = Validation.INVALID_NICK,
                                 isValid = false,
                                 isChanged = false
@@ -140,10 +140,10 @@ class EditProfileViewModel @Inject constructor(
                         )
                     } else {
                         _uiState.value = uiState.value.copy(
-                            nickName = InputState(
+                            nickName = EditInputState(
                                 helperText = Validation.VALID_NICK,
                                 isValid = true,
-                                isChanged = originalNickName != nickState.value
+                                isChanged = (originalNickName != nickState.value) && locationState.value != 0
                             )
                         )
                     }
@@ -159,9 +159,9 @@ class EditProfileViewModel @Inject constructor(
         locationState.onEach { position ->
             _uiState.update { state ->
                 state.copy(
-                    location = InputState(
-                        isValid = (position != 0 || !locationEditMode.value),
-                        isChanged = (locationList.indexOf(originalLocation) != position && locationEditMode.value)
+                    location = EditInputState(
+                        isValid = true,
+                        isChanged = if (position == 0) false else locationEditMode.value
                     )
                 )
             }
@@ -185,10 +185,10 @@ class EditProfileViewModel @Inject constructor(
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
                 state.copy(
-                    birth = InputState(
+                    birth = EditInputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = originalBirth != birth
+                        isChanged = originalBirth != birth && locationState.value != 0
                     )
                 )
             }

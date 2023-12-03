@@ -18,7 +18,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_toolbar"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:paddingVertical="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,11 +39,11 @@
 
             <TextView
                 android:id="@+id/tv_header"
-                style="@style/TextHeader"
+                style="@style/TextMediumBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="상세 정보 입력"
+                android:text="@string/info_toolbar"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_back"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="닉네임"
+                    android:text="@string/info_nick"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -80,7 +80,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_nickname_label"
-                    app:placeholderText="닉네임을 입력하세요."
+                    app:placeholderText="@string/info_nick_ph"
                     app:textLayoutColor="@{vm.uiState.nickState}">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -113,7 +113,7 @@
                     android:enabled="@{vm.uiState.isNickNotEmpty}"
                     android:minHeight="0dp"
                     android:onClick="@{() -> vm.checkNickDuplication()}"
-                    android:text="닉네임 중복확인"
+                    android:text="@string/my_edit_nick_check"
                     android:textColor="@color/selector_nick_check_text"
                     app:layout_constraintBottom_toBottomOf="@id/tv_nick_helper_text"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -125,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="성별"
+                    android:text="@string/info_gender"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/til_nick" />
 
@@ -142,14 +142,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="남자" />
+                        android:text="@string/gender_man" />
 
                     <RadioButton
                         android:id="@+id/rb_gender_female"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="40dp"
-                        android:text="여자" />
+                        android:text="@string/gender_woman" />
 
                 </RadioGroup>
 
@@ -159,8 +159,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="활동 지역"
-
+                    android:text="@string/my_edit_location"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rg_gender" />
 
@@ -181,7 +180,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusableInTouchMode="false"
-                        android:hint="지역을 선택하세요."
+                        android:hint="@string/info_location_hint"
                         android:text="@={vm.location}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -192,7 +191,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="생년월일"
+                    android:text="@string/my_edit_birth"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/til_location" />
 
@@ -206,7 +205,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_birth_label"
-                    app:placeholderText="YYYY/MM/DD"
+                    app:placeholderText="@string/my_edit_birth_ph"
                     app:textLayoutColor="@{vm.uiState.birthState}">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -245,7 +244,7 @@
             android:background="@drawable/selector_next_btn"
             android:enabled="@{vm.isDataReady()}"
             android:onClick="@{() -> vm.signup()}"
-            android:text="회원가입"
+            android:text="@string/info_register"
             android:textColor="@color/selector_next_btn_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -57,7 +57,7 @@
             android:background="@null"
             android:maxLines="1"
             android:paddingHorizontal="16dp"
-            android:text="음식점 이름을 검색하세요."
+            android:text="@string/search_restaurant_title"
             android:textColor="@color/nn_dark5"
             app:layout_constraintBottom_toBottomOf="@id/v_search"
             app:layout_constraintEnd_toStartOf="@id/iv_search"
