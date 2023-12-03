@@ -5,13 +5,13 @@ FROM node:20
 WORKDIR /usr/src/app
 
 # 종속성 파일 복사 (package.json 및 package-lock.json)
-COPY be/package*.json ./
+COPY package*.json ./
 
 # 종속성 설치
 RUN npm install
 
 # 애플리케이션 소스 코드 복사
-COPY be/ .
+COPY . .
 
 # TypeScript 컴파일
 RUN npm run build
