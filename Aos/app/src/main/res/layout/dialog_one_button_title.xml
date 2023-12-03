@@ -10,10 +10,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
         android:background="@drawable/rect_primary2fill_nostroke_28radius"
         android:paddingHorizontal="20dp"
-        android:paddingVertical="30dp">
+        android:paddingVertical="20dp">
 
         <TextView
             android:id="@+id/tv_title"
@@ -31,15 +30,16 @@
             android:id="@+id/tv_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
             android:padding="10dp"
-            android:text="확인"
+            android:text="@string/dialog_confirm"
             android:textColor="@color/nn_primary6"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

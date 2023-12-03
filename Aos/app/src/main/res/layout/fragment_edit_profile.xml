@@ -8,10 +8,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="ui_state"
-            type="com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditProfileUiState" />
-
-        <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditProfileViewModel" />
 
@@ -80,7 +76,7 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tv_edit_done"
                 style="@style/TextMediumBold"
-                set_enabled="@{vm.uiState}"
+                app:setBtnEnable="@{vm.uiState}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -129,13 +125,13 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_nick"
-                    set_nick_input_layout="@{ui_state.nickName}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_nickname_label"
+                    app:nickLayoutColor="@{vm.uiState.nickName}"
                     app:placeholderText="@string/my_edit_nick_warn">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -150,12 +146,12 @@
                 <TextView
                     android:id="@+id/tv_nick_helper_text"
                     style="@style/CaptionBold"
-                    set_nick_helper_text="@{ui_state.nickName}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/til_nick"
+                    app:setNickHelperText="@{vm.uiState.nickName}"
                     tools:text="이미 사용중인 닉네임 입니다" />
                 <!--                app:helperMessage="@{vm.uiState.nickState}"-->
 
@@ -165,7 +161,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:enabled="@{(!vm.nickState.empty &amp;&amp; ui_state.nickName.isChanged)? true : false}"
+                    android:enabled="@{(!vm.nickState.empty &amp;&amp; vm.uiState.nickName.isChanged)? true : false}"
                     android:minHeight="0dp"
                     android:onClick="@{() -> vm.checkNickValidation()}"
                     android:text="@string/my_edit_nick_check"
@@ -187,13 +183,13 @@
                 <TextView
                     android:id="@+id/tv_naver_label"
                     style="@style/TextMediumRegular"
-                    login_type="@{vm.uiState.provider}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:textColor="@color/nn_dark5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_email_label" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_email_label"
+                    app:loginType="@{vm.uiState.provider}" />
 
                 <TextView
                     android:id="@+id/tv_naver_email"
@@ -270,10 +266,10 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_birth"
-                    set_date_input_style="@{ui_state.birth}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    app:dateLayoutStyle="@{vm.uiState.birth}"
                     app:endIconDrawable="@drawable/ic_calendar"
                     app:endIconMode="custom"
                     app:layout_constraintEnd_toEndOf="parent"

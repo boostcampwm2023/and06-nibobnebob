@@ -14,7 +14,6 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class EditProfileFragment :
@@ -39,13 +38,6 @@ class EditProfileFragment :
         navController = Navigation.findNavController(view)
 
 
-        repeatOnStarted {
-            viewModel.uiState.collectLatest { state ->
-                binding.uiState = state
-            }
-        }
-
-
     }
 
     private fun initEventObserver() {
@@ -55,6 +47,7 @@ class EditProfileFragment :
                     is EditProfileUiEvent.EditProfileDone -> {
                         navController.navigate(EditProfileFragmentDirections.globalToMyPageFragment())
                     }
+
                     is EditProfileUiEvent.ShowToastMessage -> showToastMessage(event.msg)
                     is EditProfileUiEvent.ShowSnackMessage -> showSnackBar(event.msg)
                 }
@@ -77,7 +70,7 @@ class EditProfileFragment :
 
     private fun setDateBtnListener() {
         binding.tilBirth.setEndIconOnClickListener {
-            CalendarDatePicker{
+            CalendarDatePicker {
                 viewModel.setBirth(it)
             }.show(parentFragmentManager)
         }
