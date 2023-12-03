@@ -27,7 +27,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob:latest
-                    cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob:latest
+          cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob:latest
           cache-to: type=inline
 
   pull_from_registry:
