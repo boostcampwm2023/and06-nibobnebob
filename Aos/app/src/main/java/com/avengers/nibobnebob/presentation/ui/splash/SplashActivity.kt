@@ -16,9 +16,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
 
     override val viewModel: SplashViewModel by viewModels()
 
-    override fun initStateObserver() {}
-    override fun initNetworkView() {}
-
     override fun initView() {
         binding.vm = viewModel
     }
@@ -37,7 +34,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
             }
         }
     }
-
 
     private fun toMainActivity() {
         val intent = Intent(this, MainActivity::class.java)

@@ -17,8 +17,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     override val viewModel: MainViewModel by viewModels()
     override fun initEventObserver() {}
-    override fun initStateObserver() {}
-    override fun initNetworkView() {}
 
     override fun initView() {
         navHostFragment =

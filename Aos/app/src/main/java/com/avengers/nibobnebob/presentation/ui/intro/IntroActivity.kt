@@ -12,6 +12,4 @@ class IntroActivity : BaseActivity<ActivityIntroBinding>(ActivityIntroBinding::i
 
     override fun initView() {}
     override fun initEventObserver() {}
-    override fun initStateObserver() {}
-    override fun initNetworkView() {}
 }

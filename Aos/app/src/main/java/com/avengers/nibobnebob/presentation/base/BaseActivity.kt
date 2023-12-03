@@ -25,18 +25,12 @@ abstract class BaseActivity<B : ViewDataBinding>(
         binding.lifecycleOwner = this
         setContentView(binding.root)
         initView()
-        initNetworkView()
-        initStateObserver()
         initEventObserver()
     }
 
     abstract fun initView()
 
     abstract fun initEventObserver()
-
-    abstract fun initStateObserver()
-
-    abstract fun initNetworkView()
 
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         lifecycleScope.launch {
