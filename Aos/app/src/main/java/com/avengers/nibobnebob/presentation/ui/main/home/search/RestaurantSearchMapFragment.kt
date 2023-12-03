@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.Bundle
 import android.provider.Settings
-import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -49,22 +47,11 @@ class RestaurantSearchMapFragment :
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
+    override fun initEventObserver() {}
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun initView() {
         initMapView()
         initClickEvent()
-    }
-
-    private fun initMapView() {
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.search_map_fragment) as MapFragment?
-                ?: MapFragment.newInstance().also {
-                    childFragmentManager.beginTransaction().add(R.id.map_fragment, it).commit()
-                }
-
-        mapFragment.getMapAsync(this)
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
     private fun initStateObserver() {
@@ -85,6 +72,17 @@ class RestaurantSearchMapFragment :
 
             }
         }
+    }
+
+    private fun initMapView() {
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.search_map_fragment) as MapFragment?
+                ?: MapFragment.newInstance().also {
+                    childFragmentManager.beginTransaction().add(R.id.map_fragment, it).commit()
+                }
+
+        mapFragment.getMapAsync(this)
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
     private fun initClickEvent() = with(binding) {

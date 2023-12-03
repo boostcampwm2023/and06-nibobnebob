@@ -31,6 +31,8 @@ abstract class BaseFragment<B : ViewDataBinding>(
     private lateinit var twoButtonTitleDialog: TwoButtonTitleDialog
     private lateinit var oneButtonTitleDialog: OneButtonTitleDialog
 
+    private var currentSnackbar : Snackbar ?= null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,6 +46,9 @@ abstract class BaseFragment<B : ViewDataBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initView()
+        initEventObserver()
+
         repeatOnStarted {
             parentViewModel.networkState.collect {
                 when (it) {
@@ -52,7 +57,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
                     }
 
                     NetWorkState.NETWORK_CONNECTED -> {
-                        // todo initNetworkView 실행
+                        currentSnackbar?.dismiss()
                     }
 
                     else -> {}
@@ -60,6 +65,12 @@ abstract class BaseFragment<B : ViewDataBinding>(
             }
         }
     }
+
+    abstract fun initView()
+
+    abstract fun initEventObserver()
+
+//    abstract fun initNetworkView()
 
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -91,16 +102,21 @@ abstract class BaseFragment<B : ViewDataBinding>(
     }
 
     fun showSnackBar(text: String, action: String? = null) {
-        Snackbar.make(
+        currentSnackbar?.dismiss()
+
+        val snackbar = Snackbar.make(
             binding.root,
             text,
             Snackbar.LENGTH_INDEFINITE
         ).apply {
             action?.let {
-                setAction(it) {}
+                setAction(it) {
+                    dismiss()
+                }
             }
             show()
         }
+        currentSnackbar = snackbar
     }
 
     override fun onDestroyView() {

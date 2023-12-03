@@ -7,9 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -17,7 +15,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -25,7 +22,6 @@ import com.avengers.nibobnebob.presentation.ui.adjustKeyboard
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeSearchAdapter
-import com.avengers.nibobnebob.presentation.ui.toHome
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -40,29 +36,16 @@ class RestaurantSearchFragment :
         viewModel.onClickSearchItem(item)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initView()
-        collectEvent()
-        setFocus()
-        clearFocus(view)
-        fetchCurrentLocation()
-
-    }
-
-    private fun initView() {
+    override fun initView() {
         binding.vm = viewModel
         binding.rvSearch.adapter = adapter
-
-        repeatOnStarted {
-            viewModel.uiState.collectLatest {
-                adapter.setResultList(it.searchList, it.searchKeyword)
-            }
-        }
-
+        setFocus()
+        fetchCurrentLocation()
+        view?.let { clearFocus(it) }
+        initStateObserver()
     }
 
-    private fun collectEvent() {
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {
@@ -74,6 +57,14 @@ class RestaurantSearchFragment :
                     is RestaurantSearchEvent.NavigateToHome -> findNavController().popBackStack()
                 }
 
+            }
+        }
+    }
+
+    private fun initStateObserver() {
+        repeatOnStarted {
+            viewModel.uiState.collectLatest {
+                adapter.setResultList(it.searchList, it.searchKeyword)
             }
         }
     }

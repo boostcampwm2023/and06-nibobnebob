@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -23,24 +21,14 @@ class EditProfileFragment :
     override val parentViewModel: MainViewModel by activityViewModels()
     private lateinit var navController: NavController
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        initView(view)
-        initEventObserver()
+    override fun initView() {
+        binding.svm = sharedViewModel
+        binding.vm = viewModel
+        view?.let { navController = Navigation.findNavController(it) }
         setDateBtnListener()
     }
 
-    private fun initView(view: View) {
-        binding.svm = sharedViewModel
-        binding.vm = viewModel
-
-        navController = Navigation.findNavController(view)
-
-
-    }
-
-    private fun initEventObserver() {
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.event.collect { event ->
                 when (event) {

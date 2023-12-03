@@ -1,7 +1,7 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.userdetail
 
-import android.os.Bundle
-import android.view.View
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,16 +20,14 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
     private val args: UserDetailFragmentArgs by navArgs()
     private val nickName by lazy { args.nickName }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun initView() {
         binding.vm = viewModel
         viewModel.setNick(nickName)
         viewModel.getUserDetail()
-        initEventObserver()
     }
 
-    private fun initEventObserver() {
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {
