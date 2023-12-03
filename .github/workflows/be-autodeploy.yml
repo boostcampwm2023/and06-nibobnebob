@@ -26,7 +26,7 @@ jobs:
           password: ${{ secrets.NCP_SECRET_KEY }}
       - name: Create config file
         run: | 
-          echo "export const awsConfig = ${OBJECT_STORAGE_CONFIG}" > ./be/objectStorage.config.js
+          echo "export const awsConfig = ${OBJECT_STORAGE_CONFIG}" > ./be/objectStorage.config.ts
         env:
           OBJECT_STORAGE_CONFIG: ${{ secrets.OBJECT_STORAGE_CONFIG }}
 
