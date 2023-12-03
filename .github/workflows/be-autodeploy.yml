@@ -32,6 +32,7 @@ jobs:
 
       - name: Create TypeORM config
         run: |
+          mkdir -p ./be/src/configs
           echo "import { TypeOrmModuleOptions } from '@nestjs/typeorm';" > ./be/src/configs/typeorm.config.ts
           echo "export const typeORMConfig: TypeOrmModuleOptions = ${TYPEORM_CONFIG}" > ./be/src/configs/typeorm.config.ts
         env:
