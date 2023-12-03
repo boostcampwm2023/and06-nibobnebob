@@ -5,7 +5,7 @@ FROM node:20
 WORKDIR /usr/src/app
 
 # 종속성 파일 복사 (package.json 및 package-lock.json)
-COPY package*.json ./
+COPY package*.json ./be
 
 # 종속성 설치
 RUN npm install
