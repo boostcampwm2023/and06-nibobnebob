@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 8000
 
 # 애플리케이션 실행 명령어
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
