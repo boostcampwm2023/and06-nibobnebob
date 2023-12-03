@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main
 
-import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.navigation.NavController
@@ -17,14 +16,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private lateinit var navController: NavController
 
     override val viewModel: MainViewModel by viewModels()
+    override fun initEventObserver() {}
+    override fun initStateObserver() {}
+    override fun initNetworkView() {}
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        initView()
-    }
-
-    private fun initView() {
+    override fun initView() {
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController

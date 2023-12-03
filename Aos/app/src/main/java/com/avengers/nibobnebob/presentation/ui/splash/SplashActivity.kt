@@ -2,7 +2,6 @@ package com.avengers.nibobnebob.presentation.ui.splash
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Bundle
 import androidx.activity.viewModels
 import com.avengers.nibobnebob.databinding.ActivitySplashBinding
 import com.avengers.nibobnebob.presentation.base.BaseActivity
@@ -14,14 +13,17 @@ import kotlinx.coroutines.delay
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate) {
+
     override val viewModel: SplashViewModel by viewModels()
 
+    override fun initStateObserver() {}
+    override fun initNetworkView() {}
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun initView() {
         binding.vm = viewModel
+    }
 
+    override fun initEventObserver() {
         repeatOnStarted {
             delay(2000)
             viewModel.getAutoLogin()
@@ -35,6 +37,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
             }
         }
     }
+
 
     private fun toMainActivity() {
         val intent = Intent(this, MainActivity::class.java)

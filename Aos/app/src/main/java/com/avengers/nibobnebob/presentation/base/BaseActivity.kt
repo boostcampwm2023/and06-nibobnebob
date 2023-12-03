@@ -9,8 +9,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.avengers.nibobnebob.R
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -26,7 +24,19 @@ abstract class BaseActivity<B : ViewDataBinding>(
         binding = inflate(layoutInflater)
         binding.lifecycleOwner = this
         setContentView(binding.root)
+        initView()
+        initNetworkView()
+        initStateObserver()
+        initEventObserver()
     }
+
+    abstract fun initView()
+
+    abstract fun initEventObserver()
+
+    abstract fun initStateObserver()
+
+    abstract fun initNetworkView()
 
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         lifecycleScope.launch {
@@ -34,8 +44,8 @@ abstract class BaseActivity<B : ViewDataBinding>(
         }
     }
 
-    fun showToastMessage(message: String){
-        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
+    fun showToastMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
 }
