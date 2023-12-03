@@ -3,7 +3,11 @@ name: auto deploy
 on:
   push:
     branches:
-      - dev
+      - develop/be
+  pull_request:
+    branches:
+      - develop/be
+
 
 jobs:
   push_to_registry:
