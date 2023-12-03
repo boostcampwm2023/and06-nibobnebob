@@ -26,14 +26,14 @@ jobs:
           password: ${{ secrets.NCP_SECRET_KEY }}
       - name: Create config file
         run: | 
-          echo "export const awsConfig = ${OBJECT_STORAGE_CONFIG}" > objectStorage.config.js
+          echo "export const awsConfig = ${OBJECT_STORAGE_CONFIG}" > ./be/objectStorage.config.js
         env:
           OBJECT_STORAGE_CONFIG: ${{ secrets.OBJECT_STORAGE_CONFIG }}
 
       - name: Create TypeORM config
         run: |
-          echo "import { TypeOrmModuleOptions } from '@nestjs/typeorm';" > src/configs/typeorm.config.ts
-          echo "export const typeORMConfig: TypeOrmModuleOptions = ${TYPEORM_CONFIG}" > typeorm.config.ts
+          echo "import { TypeOrmModuleOptions } from '@nestjs/typeorm';" > ./be/src/configs/typeorm.config.ts
+          echo "export const typeORMConfig: TypeOrmModuleOptions = ${TYPEORM_CONFIG}" > ./be/src/configs/typeorm.config.ts
         env:
           TYPEORM_CONFIG: ${{ secrets.TYPEORM_CONFIG }}
     
