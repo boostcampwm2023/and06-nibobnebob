@@ -26,10 +26,11 @@ import { AuthGuard } from "@nestjs/passport";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { LocationDto } from "src/restaurant/dto/location.dto";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
+import { ParseArrayPipe } from "../utils/parsearraypipe";
 
 @Controller("user")
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @ApiTags("Mypage")
   @Get()
@@ -79,6 +80,13 @@ export class UserController {
   @ApiTags("Follow/Following")
   @Get("/autocomplete/:partialUsername")
   @UseGuards(AuthGuard("jwt"))
+  @ApiQuery({
+    name: 'region',
+    required: false,
+    type: String,
+    isArray: true,
+    description: '필터링할 지역 목록을 쉼표(,)로 구분하여 제공'
+  })
   @ApiBearerAuth()
   @ApiOperation({ summary: "다른 유저 검색 자동완성" })
   @ApiResponse({ status: 200, description: "다른 유저 검색 자동완성 완성" })
@@ -86,9 +94,10 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async searchTargetUser(
     @GetUser() tokenInfo: TokenInfo,
-    @Param("partialUsername") partialUsername: string
+    @Param("partialUsername") partialUsername: string,
+    @Query("region", ParseArrayPipe) region: string[]
   ) {
-    return await this.userService.searchTargetUser(tokenInfo, partialUsername);
+    return await this.userService.searchTargetUser(tokenInfo, partialUsername, region);
   }
 
   @ApiTags("Signup", "Mypage")
@@ -252,6 +261,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: "맛집리스트 등록 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @UsePipes(new ValidationPipe())
   async addRestaurantToNebob(
     @Body() reviewInfoDto: ReviewInfoDto,
     @GetUser() tokenInfo: TokenInfo,

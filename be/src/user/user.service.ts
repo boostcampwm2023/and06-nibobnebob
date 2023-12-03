@@ -14,6 +14,8 @@ import { ReviewRepository } from "src/review/review.repository";
 import { UserWishRestaurantListRepository } from "./user.wishrestaurantList.repository";
 import { AwsService } from "src/aws/aws.service";
 import { v4 } from "uuid";
+import { User } from "./entities/user.entity";
+import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
 
 @Injectable()
 export class UserService {
@@ -169,20 +171,24 @@ export class UserService {
       isFollow: false,
     }));
   }
-  async searchTargetUser(tokenInfo: TokenInfo, nickName: string) {
+  async searchTargetUser(tokenInfo: TokenInfo, nickName: string, region: string[]) {
+    const whereCondition: any = {
+      nickName: Like(`%${nickName}%`),
+      id: Not(Equal(tokenInfo.id)),
+    };
+    if (region) {
+      whereCondition.region = In(region);
+    }
     const users = await this.usersRepository.find({
       select: ["id"],
-      where: {
-        nickName: Like(`%${nickName}%`),
-        id: Not(Equal(tokenInfo.id)),
-      },
+      where: whereCondition,
       take: 20,
     });
     if (users.length) {
       const userIds = users.map((user) => user.id);
       const result = await this.usersRepository.getUsersInfo(userIds);
-      for (let i in result.userInfo) {
-        result.userInfo[i]["isFollow"] =
+      for (let i in result) {
+        result[i]["isFollow"] =
           (await this.userFollowListRepositoy.getFollowState(
             tokenInfo.id,
             userIds[i]
@@ -192,7 +198,7 @@ export class UserService {
       }
       return result;
     }
-    return null;
+    return [];
   }
 
   async followUser(tokenInfo: TokenInfo, nickName: string) {
@@ -232,6 +238,13 @@ export class UserService {
     restaurantId: number
   ) {
     const reviewEntity = this.reviewRepository.create(reviewInfoDto);
+    const userEntity = new User();
+    userEntity.id = tokenInfo["id"];
+    reviewEntity.user = userEntity;
+
+    const restaurantEntity = new RestaurantInfoEntity();
+    restaurantEntity.id = restaurantId;
+    reviewEntity.restaurant = restaurantEntity;
     try {
       await this.reviewRepository.save(reviewEntity);
       await this.userRestaurantListRepository.addRestaurantToNebob(
