@@ -120,7 +120,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
           "restaurant.category",
           "restaurant.phoneNumber",
           "restaurant.reviewCnt",
-          "user_restaurant_list.created_at",
+          "user_restaurant_lists.created_at",
           `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
         ])
         .where(
