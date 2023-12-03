@@ -24,6 +24,19 @@ jobs:
           registry: ${{ secrets.NCP_CONTAINER_REGISTRY }}
           username: ${{ secrets.NCP_ACCESS_KEY }}
           password: ${{ secrets.NCP_SECRET_KEY }}
+      - name: Create config file
+        run: | 
+          echo "export const awsConfig = ${OBJECT_STORAGE_CONFIG}" > objectStorage.config.js
+        env:
+          OBJECT_STORAGE_CONFIG: ${{ secrets.OBJECT_STORAGE_CONFIG }}
+
+      - name: Create TypeORM config
+        run: |
+          echo "import { TypeOrmModuleOptions } from '@nestjs/typeorm';" > src/configs/typeorm.config.ts
+          echo "export const typeORMConfig: TypeOrmModuleOptions = ${TYPEORM_CONFIG}" > typeorm.config.ts
+        env:
+          TYPEORM_CONFIG: ${{ secrets.TYPEORM_CONFIG }}
+    
       - name: build and push
         uses: docker/build-push-action@v3
         with:
@@ -33,6 +46,10 @@ jobs:
           tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob:latest
           cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob:latest
           cache-to: type=inline
+      
+
+
+            
 
   pull_from_registry:
     name: Connect server ssh and pull from container registry
