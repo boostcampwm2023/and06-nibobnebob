@@ -27,7 +27,7 @@ export class UserService {
     private reviewRepository: ReviewRepository,
     private userWishRestaurantListRepository: UserWishRestaurantListRepository,
     private awsService: AwsService
-  ) {}
+  ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
     const user = {
@@ -38,11 +38,11 @@ export class UserService {
     if (userInfoDto.profileImage) {
       const uuid = v4();
       user.profileImage = `profile/images/${uuid}.png`;
-    } 
+    }
 
     const newUser = this.usersRepository.create(user);
     await this.usersRepository.createUser(newUser);
-    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
     return;
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
@@ -77,7 +77,7 @@ export class UserService {
           targetInfo.id,
           tokenInfo.id
         );
-      if ( restaurantList )result["restaurants"] = restaurantList;
+      if (restaurantList) result["restaurants"] = restaurantList;
       result.profileImage = this.awsService.getImageURL(result.profileImage);
       return result;
     } catch (err) {
@@ -119,6 +119,11 @@ export class UserService {
         tokenInfo.id
       );
     return result;
+  }
+  async getStateIsWish(tokenInfo: TokenInfo, restaurantId: number) {
+    const result = await this.userWishRestaurantListRepository.findOne({ where: { restaurantId: restaurantId, userId: tokenInfo["id"] } });
+    if (result) return { isWish: true };
+    else return { isWish: false };
   }
   async getMyFollowListInfo(tokenInfo: TokenInfo) {
     const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(
@@ -306,14 +311,14 @@ export class UserService {
     if (userInfoDto.profileImage) {
       const uuid = v4();
       user.profileImage = `profile/images/${uuid}.png`;
-    } 
+    }
 
     const newUser = this.usersRepository.create(user);
     const result = await this.usersRepository.updateMypageUserInfo(
       tokenInfo.id,
       newUser
     );
-    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
     return result;
   }
 }
