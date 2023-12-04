@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -39,6 +40,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private val viewModel: HomeViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
+    private val args: HomeFragmentArgs by navArgs()
+    private val restaurantId by lazy { args.addRestaurantId }
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -57,7 +60,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         binding.vm = viewModel
         initMapView()
         binding.rvHomeFilter.adapter = HomeFilterAdapter()
-
+        viewModel.setAddRestaurantId(restaurantId)
     }
 
     override fun initNetworkView() {
@@ -147,7 +150,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private fun setMapListener() {
 
         // todo 화면 이동시 리스너
-        naverMap.addOnCameraChangeListener { reason, animated ->
+        naverMap.addOnCameraChangeListener { _, _ ->
 
         }
 

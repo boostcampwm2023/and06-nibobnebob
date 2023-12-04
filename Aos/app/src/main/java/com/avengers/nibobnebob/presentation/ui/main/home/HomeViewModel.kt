@@ -11,8 +11,8 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
-import com.naver.maps.map.overlay.Marker
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.overlay.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,7 +41,8 @@ data class HomeUiState(
     val cameraZoom: Double = 0.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0,
-    val curSelectedMarker: Marker? = null
+    val curSelectedMarker: Marker? = null,
+    val addRestaurantId: Int = -1
 )
 
 sealed class TrackingState {
@@ -281,6 +282,17 @@ class HomeViewModel @Inject constructor(
 
     private fun moveCamera() {
         if (_uiState.value.markerList.isEmpty()) return
+        if (uiState.value.addRestaurantId != 0) {
+            val restaurantItem: UiRestaurantData =
+                uiState.value.markerList.first { it.id == uiState.value.addRestaurantId }
+            _uiState.update { state ->
+                state.copy(
+                    cameraLongitude = restaurantItem.longitude,
+                    cameraLatitude = restaurantItem.latitude
+                )
+            }
+            return
+        }
 
         var closestPoint: LatLng? = null
         var maxDensityPoint: LatLng? = null
@@ -350,4 +362,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun setAddRestaurantId(restaurantId: Int) {
+        if (restaurantId != -1) {
+            _uiState.update { state ->
+                state.copy(
+                    addRestaurantId = restaurantId
+                )
+            }
+        }
+    }
 }
