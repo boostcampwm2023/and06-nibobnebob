@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,7 +40,6 @@ class LoginViewModel @Inject constructor(
     private val introRepository: IntroRepository,
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
-    private val TAG = "LoginViewModelDebug"
 
     private val _events = MutableSharedFlow<LoginEvent>()
     val events = _events.asSharedFlow()
@@ -58,12 +58,22 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun observeEmail(){
-        email.onEach { newEmail ->
+        email.onEach {
+            _uiState.update { state ->
+                state.copy(
+                    commonLoginState = InputState.Empty
+                )
+            }
         }.launchIn(viewModelScope)
     }
 
     private fun observePassword() {
-        password.onEach { newPassword ->
+        password.onEach {
+            _uiState.update { state ->
+                state.copy(
+                    commonLoginState = InputState.Empty
+                )
+            }
         }.launchIn(viewModelScope)
     }
 
@@ -72,16 +82,30 @@ class LoginViewModel @Inject constructor(
     }
 
     fun loginCommon(){
-        viewModelScope.launch {
-            introRepository.loginBasic(
-                BasicLoginRequest(email.value, password.value)
-            ).onEach {
-                when (it) {
-                    is BaseState.Success -> {}
-                    is BaseState.Error -> {}
+        introRepository.loginBasic(
+            BasicLoginRequest(email.value, password.value)
+        ).onEach { state ->
+            when (state) {
+                is BaseState.Success -> {
+                    loginSuccess(
+                        state.data.body.accessToken.toString(),
+                        state.data.body.refreshToken.toString()
+                    )
+                }
+                is BaseState.Error -> {
+                    when(state.statusCode){
+                        StatusCode.EXCEPTION -> _events.emit(LoginEvent.ShowSnackMessage(state.message))
+                        else -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    commonLoginState = InputState.Error("아이디/비밀번호가 일치하지 않습니다.")
+                                )
+                            }
+                        }
+                    }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun loginNaver(token : String){
@@ -89,10 +113,10 @@ class LoginViewModel @Inject constructor(
             introRepository.loginNaver(token).onEach { state ->
                 when(state){
                     is BaseState.Success -> {
-                        dataStoreManager.putAutoLogin(true)
-                        dataStoreManager.putAccessToken(state.data.body.accessToken.toString())
-                        dataStoreManager.putRefreshToken(state.data.body.refreshToken.toString())
-                        _events.emit(LoginEvent.NavigateToMain)
+                        loginSuccess(
+                            state.data.body.accessToken.toString(),
+                            state.data.body.refreshToken.toString()
+                        )
                     }
                     is BaseState.Error -> {
                         when(state.statusCode){
@@ -102,6 +126,15 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }.launchIn(viewModelScope)
+        }
+    }
+
+    private fun loginSuccess(access: String, refresh: String){
+        viewModelScope.launch {
+            dataStoreManager.putAutoLogin(true)
+            dataStoreManager.putAccessToken(access)
+            dataStoreManager.putRefreshToken(refresh)
+            _events.emit(LoginEvent.NavigateToMain)
         }
     }
 

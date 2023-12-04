@@ -35,8 +35,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
         }
     }
 
-
-
     override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
