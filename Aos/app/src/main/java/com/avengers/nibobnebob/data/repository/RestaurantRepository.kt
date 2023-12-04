@@ -5,6 +5,7 @@ import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -34,4 +35,8 @@ interface RestaurantRepository {
     fun deleteWishRestaurant(
         restaurantId: Int
     ): Flow<BaseState<BaseResponse<Unit>>>
+
+    fun getRestaurantIsWish(
+        id: Int
+    ): Flow<BaseState<BaseResponse<RestaurantIsWishResponse>>>
 }
