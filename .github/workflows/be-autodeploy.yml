@@ -62,7 +62,7 @@ jobs:
           password: ${{ secrets.NGINX_PASSWORD }}
           port: ${{ secrets.NGINX_PORT }}
           script: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_USERNAME }}@${{ secrets.DEV_HOST }} -p ${{ secrets.DEV_PORT }} <<- 'EOSSH'
+            ssh ${{ secrets.DEV_USERNAME }}@${{ secrets.DEV_HOST }} <<- 'EOSSH'
               docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
               docker stop $(docker ps -a -q)
               docker rm $(docker ps -a -q)
