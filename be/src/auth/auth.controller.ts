@@ -27,7 +27,6 @@ export class AuthController {
   @ApiOperation({ summary: "일반 로그인" })
   @ApiResponse({ status: 200, description: "성공적으로 로그인됨." })
   @ApiResponse({ status: 401, description: "인증 오류" })
-  @ApiBearerAuth()
   @UsePipes(new ValidationPipe)
   login(@Body() loginInfoDto: LoginInfoDto) {
     return this.authService.login(loginInfoDto);

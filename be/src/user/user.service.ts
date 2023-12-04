@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UploadedFile } from "@nestjs/common";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
@@ -8,7 +8,7 @@ import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
 import { Equal, In, Like, Not } from "typeorm";
-import { BadRequestException } from "@nestjs/common/exceptions";
+import { BadRequestException, ConflictException } from "@nestjs/common/exceptions";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 import { ReviewRepository } from "src/review/review.repository";
 import { UserWishRestaurantListRepository } from "./user.wishrestaurantList.repository";
@@ -30,22 +30,34 @@ export class UserService {
     private awsService: AwsService,
     private authService: AuthService
   ) { }
-  async signup(userInfoDto: UserInfoDto) {
-    userInfoDto.password = await hashPassword(userInfoDto.password);
-    const user = {
-      ...userInfoDto,
-      profileImage: "profile/images/defaultprofile.png",
-    };
+  async signup(@UploadedFile() file: Express.Multer.File, userInfoDto: UserInfoDto) {
+    if (userInfoDto.password) userInfoDto.password = await hashPassword(userInfoDto.password);
+    let profileImage;
 
-    if (userInfoDto.profileImage) {
+    if (file) {
       const uuid = v4();
-      user.profileImage = `profile/images/${uuid}.png`;
+      profileImage = `profile/images/${uuid}.png`;
+    } else {
+      profileImage = "profile/images/defaultprofile.png";
     }
 
-    const newUser = this.usersRepository.create(user);
-    await this.usersRepository.createUser(newUser);
-    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
-    return;
+    const user = {
+      ...userInfoDto,
+      profileImage: profileImage
+    };
+
+    try {
+      const newUser = this.usersRepository.create(user);
+      await this.usersRepository.createUser(newUser);
+      if (file) {
+        await this.awsService.uploadToS3(profileImage, file.buffer);
+      }
+      return;
+    } catch (error) {
+      if (error.code === "23505") {
+        throw new ConflictException("Duplicated Value");
+      }
+    }
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);
@@ -242,9 +254,16 @@ export class UserService {
   async addRestaurantToNebob(
     reviewInfoDto: ReviewInfoDto,
     tokenInfo: TokenInfo,
-    restaurantId: number
+    restaurantId: number,
+    file: Express.Multer.File
   ) {
     const reviewEntity = this.reviewRepository.create(reviewInfoDto);
+    let reviewImage;
+    if (file) {
+      const uuid = v4();
+      reviewImage = `profile/images/${uuid}.png`;
+      reviewEntity.reviewImage = reviewImage;
+    }
     const userEntity = new User();
     userEntity.id = tokenInfo["id"];
     reviewEntity.user = userEntity;
@@ -259,6 +278,7 @@ export class UserService {
         restaurantId,
         reviewEntity
       );
+      if (file) await this.awsService.uploadToS3(reviewImage, file.buffer);
     } catch (err) {
       throw new BadRequestException();
     }
@@ -303,24 +323,24 @@ export class UserService {
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
-  async updateMypageUserInfo(tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
+  async updateMypageUserInfo(file: Express.Multer.File, tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
+    let profileImage;
+    if (file) {
+      const uuid = v4();
+      profileImage = `profile/images/${uuid}.png`;
+    } else {
+      profileImage = "profile/images/defaultprofile.png";
+    }
     const user = {
       ...userInfoDto,
-      profileImage: "profile/images/defaultprofile.png",
+      profileImage: profileImage
     };
-
-    if (userInfoDto.profileImage) {
-      const uuid = v4();
-      user.profileImage = `profile/images/${uuid}.png`;
-    }
-
     const newUser = this.usersRepository.create(user);
-    const result = await this.usersRepository.updateMypageUserInfo(
-      tokenInfo.id,
-      newUser
-    );
-    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
-    return result;
+    const updatedUser = await this.usersRepository.updateMypageUserInfo(tokenInfo.id, newUser);
+    if (file) {
+      this.awsService.uploadToS3(profileImage, file.buffer);
+    }
+    return updatedUser;
   }
 }
