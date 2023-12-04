@@ -2,7 +2,8 @@ package com.avengers.nibobnebob.presentation.util
 
 object Constants {
     const val APP_NAME = "NibobNebob"
-    const val BASE_URL = "https://www.nibobnebob.site:8000/"
+    const val BASE_URL = "https://223.130.162.237:8000/"
+    //https://www.nibobnebob.site:8000/
 
     const val AUTO_LOGIN = "AUTOLOGIN"
     const val ACCESS = "Access"
