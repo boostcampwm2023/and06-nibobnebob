@@ -1,5 +1,7 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -26,6 +28,7 @@ class EditProfileFragment :
         binding.vm = viewModel
         view?.let { navController = Navigation.findNavController(it) }
         setDateBtnListener()
+        setPhotoPicker()
     }
 
     override fun initNetworkView() {
@@ -65,6 +68,22 @@ class EditProfileFragment :
             CalendarDatePicker {
                 viewModel.setBirth(it)
             }.show(parentFragmentManager)
+        }
+    }
+
+    private fun setPhotoPicker() {
+        val pickMedia =
+            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+                if (uri != null) {
+                    viewModel.updateProfileImage(uri.toString())
+                }
+            }
+
+        binding.ivProfile.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        binding.btnEdtProfile.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 

@@ -29,7 +29,7 @@ data class EditProfileUiState(
     val provider: String = "",
     val birth: EditInputState = EditInputState(),
     val location: EditInputState = EditInputState(),
-    val profileImage: String = ""
+    val profileImage: EditInputState = EditInputState()
 )
 
 
@@ -61,7 +61,7 @@ class EditProfileViewModel @Inject constructor(
     private var originalBirth: String = ""
     private var originalLocation: String = ""
     private var originalIsMale: Boolean = true
-    private var originalProfileImage : String = ""
+    private var originalProfileImage: String = ""
 
     val locationList = LocationArray.LOCATION_ARRAY
 
@@ -149,7 +149,7 @@ class EditProfileViewModel @Inject constructor(
                             nickName = EditInputState(
                                 helperText = Validation.VALID_NICK,
                                 isValid = true,
-                                isChanged = (originalNickName != nickState.value) && locationState.value != 0
+                                isChanged = (originalNickName != nickState.value)
                             )
                         )
                     }
@@ -167,7 +167,8 @@ class EditProfileViewModel @Inject constructor(
                 state.copy(
                     location = EditInputState(
                         isValid = true,
-                        isChanged = if (position == 0) false else locationEditMode.value
+                        isChanged = if (position == 0 || originalLocation == locationList[locationState.value]) false
+                        else locationEditMode.value
                     )
                 )
             }
@@ -194,19 +195,28 @@ class EditProfileViewModel @Inject constructor(
                     birth = EditInputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = originalBirth != birth && locationState.value != 0
+                        isChanged = originalBirth != birth
                     )
                 )
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun observeProfileImage(){
+    private fun observeProfileImage() {
         profileImageState.onEach { image ->
-            _uiState.update {state ->
-                state.copy( profileImage = image)
+            if (originalProfileImage.isEmpty()) return@onEach
+            _uiState.update { state ->
+                state.copy(
+                    profileImage = EditInputState(
+                        isChanged = (originalProfileImage != profileImageState.value)
+                    )
+                )
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun updateProfileImage(imageUri: String) {
+        profileImageState.update { imageUri }
     }
 
 
@@ -218,9 +228,10 @@ class EditProfileViewModel @Inject constructor(
                 email = uiState.value.email,
                 provider = uiState.value.provider,
                 birthdate = birthState.value,
-                region = locationList[locationState.value],
+                region = if (locationState.value == 0) originalLocation else locationList[locationState.value],
                 isMale = originalIsMale,
-                password = "1234"
+                password = "1234",
+                profileImage = profileImageState.value
             )
         ).onEach {
             when (it) {

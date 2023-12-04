@@ -11,5 +11,4 @@ fun MyDefaultInfoResponse.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
     location = userInfo.region,
     gender = userInfo.isMale,
     profileImage = userInfo.profileImage
-
 )
