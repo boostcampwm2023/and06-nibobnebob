@@ -16,6 +16,7 @@ import { AwsService } from "src/aws/aws.service";
 import { v4 } from "uuid";
 import { User } from "./entities/user.entity";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
+import { AuthService } from "src/auth/auth.service";
 
 @Injectable()
 export class UserService {
@@ -26,8 +27,9 @@ export class UserService {
     private userFollowListRepositoy: UserFollowListRepository,
     private reviewRepository: ReviewRepository,
     private userWishRestaurantListRepository: UserWishRestaurantListRepository,
-    private awsService: AwsService
-  ) {}
+    private awsService: AwsService,
+    private authService: AuthService
+  ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
     const user = {
@@ -38,11 +40,11 @@ export class UserService {
     if (userInfoDto.profileImage) {
       const uuid = v4();
       user.profileImage = `profile/images/${uuid}.png`;
-    } 
+    }
 
     const newUser = this.usersRepository.create(user);
     await this.usersRepository.createUser(newUser);
-    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
     return;
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
@@ -77,7 +79,7 @@ export class UserService {
           targetInfo.id,
           tokenInfo.id
         );
-      if ( restaurantList )result["restaurants"] = restaurantList;
+      if (restaurantList) result["restaurants"] = restaurantList;
       result.profileImage = this.awsService.getImageURL(result.profileImage);
       return result;
     } catch (err) {
@@ -290,7 +292,7 @@ export class UserService {
   }
 
   async logout(tokenInfo: TokenInfo) {
-    return await this.usersRepository.logout(tokenInfo.id);
+    return await this.authService.logout(tokenInfo.id);
   }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
@@ -306,14 +308,14 @@ export class UserService {
     if (userInfoDto.profileImage) {
       const uuid = v4();
       user.profileImage = `profile/images/${uuid}.png`;
-    } 
+    }
 
     const newUser = this.usersRepository.create(user);
     const result = await this.usersRepository.updateMypageUserInfo(
       tokenInfo.id,
       newUser
     );
-    if (userInfoDto.profileImage)this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
+    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
     return result;
   }
 }
