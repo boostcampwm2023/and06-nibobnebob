@@ -17,7 +17,7 @@ class BasicSignupFragment: BaseFragment<FragmentBasicSignupBinding>(R.layout.fra
     private val viewModel: BasicSignupViewModel by viewModels()
 
     override fun initView() {
-        TODO("Not yet implemented")
+
     }
 
     override fun initNetworkView() {
@@ -30,6 +30,7 @@ class BasicSignupFragment: BaseFragment<FragmentBasicSignupBinding>(R.layout.fra
                 when(it){
                     is BasicSignupEvents.NavigateToDetailSignup -> findNavController().toDetailSignup(it.provider, it.email, it.password)
                     is BasicSignupEvents.NavigateToBack -> findNavController().navigateUp()
+                    is BasicSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
             }
         }

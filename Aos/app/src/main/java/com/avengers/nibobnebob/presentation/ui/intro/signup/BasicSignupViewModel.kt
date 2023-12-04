@@ -69,8 +69,10 @@ class BasicSignupViewModel @Inject constructor(
     private fun observeEmail(){
         email.onEach {
             _uiState.update { state ->
+                emailValidation.value = false
                 state.copy(
-                    isEmailNotEmpty = it.isNotBlank()
+                    isEmailNotEmpty = it.isNotBlank(),
+                    emailState = InputState.Empty
                 )
             }
         }.launchIn(viewModelScope)
