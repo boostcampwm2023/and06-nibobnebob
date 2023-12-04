@@ -96,7 +96,7 @@ class IntroActivity : BaseActivity<ActivityIntroBinding>(ActivityIntroBinding::i
                 val uri = result.data?.data
 
                 uri?.let {
-                    // todo MultiPart로 변환
+                    viewModel.setUri(it)
                 }
             }
         }

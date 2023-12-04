@@ -29,6 +29,7 @@ class DetailSignupFragment :
     override fun initView() {
         binding.vm = viewModel
         viewModel.setDefaultData(email, password, provider)
+        initImageObserver()
         setGenderRadioListener()
         setDateBtnListener()
         setLocationInputListener()
@@ -51,6 +52,13 @@ class DetailSignupFragment :
         }
     }
 
+    private fun initImageObserver(){
+        repeatOnStarted {
+            parentViewModel.image.collect{
+                viewModel.setImage(it)
+            }
+        }
+    }
 
     private fun setGenderRadioListener() {
         binding.rgGender.setOnCheckedChangeListener { _, checkedId ->

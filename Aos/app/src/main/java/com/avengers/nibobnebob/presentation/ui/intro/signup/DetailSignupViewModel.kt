@@ -1,5 +1,7 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
+import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
@@ -28,6 +30,7 @@ data class DetailSignupUiState(
     val isNickNotEmpty: Boolean = false,
     val nickState: InputState = InputState.Empty,
     val birthState: InputState = InputState.Empty,
+    val profileImg: String = ""
 )
 
 sealed class InputState {
@@ -148,7 +151,7 @@ class DetailSignupViewModel @Inject constructor(
                 nickName = nick.value,
                 birthdate = birth.value,
                 region = location.value,
-                isMale = isMale.value
+                isMale = isMale.value,
             )
         ).onEach {
             when (it) {
@@ -191,6 +194,14 @@ class DetailSignupViewModel @Inject constructor(
     fun openGallery(){
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.OpenGallery)
+        }
+    }
+
+    fun setImage(uri: Uri){
+        _uiState.update { state ->
+            state.copy(
+                profileImg = uri.toString()
+            )
         }
     }
 }
