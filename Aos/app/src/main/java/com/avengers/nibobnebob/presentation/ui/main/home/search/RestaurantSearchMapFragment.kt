@@ -30,6 +30,7 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
@@ -40,6 +41,7 @@ class RestaurantSearchMapFragment :
     private val viewModel: RestaurantSearchMapViewModel by viewModels()
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+    private var isWish = false
 
 
     private val locationPermissionList = arrayOf(
@@ -47,7 +49,15 @@ class RestaurantSearchMapFragment :
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
-    override fun initEventObserver() {}
+    override fun initEventObserver() {
+        repeatOnStarted {
+            viewModel.events.collect {
+                when (it) {
+                    is SearchMapEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                }
+            }
+        }
+    }
 
     override fun initView() {
         initMapView()
@@ -63,16 +73,24 @@ class RestaurantSearchMapFragment :
             parentViewModel.selectedItem.collectLatest {
                 if (it.id < 0) return@collectLatest
 
-                setSearchResultMarker(it)
                 binding.tvSearchKeyword.text = it.name
+                isWish = it.isInWishList
 
-                RestaurantBottomSheet(
-                    context = requireContext(),
-                    data = it,
-                    onClickAddWishRestaurant = ::addWishTest,
-                    onClickAddMyRestaurant = ::addRestaurantTest,
-                    onClickGoReview = ::goReviewTest
-                ).show()
+                viewModel.getRestaurantIsWish(it.id, it.isInWishList)
+                viewModel.wishChanged.collectLatest { changed ->
+                    if (changed == WishStatus.INIT) return@collectLatest
+
+                    val data = it.copy(isInWishList = !it.isInWishList)
+                    if (changed == WishStatus.CHANGED) isWish = !it.isInWishList
+                    setSearchResultMarker(if (changed == WishStatus.CHANGED) data else it)
+                    RestaurantBottomSheet(
+                        context = requireContext(),
+                        data = if (changed == WishStatus.CHANGED) data else it,
+                        onClickAddWishRestaurant = ::addWishTest,
+                        onClickAddMyRestaurant = ::addRestaurantTest,
+                        onClickGoReview = ::goReviewTest
+                    ).show()
+                }
 
             }
         }
@@ -110,15 +128,15 @@ class RestaurantSearchMapFragment :
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(data.latitude, data.longitude))
         naverMap.moveCamera(cameraUpdate)
 
+
         marker.setOnClickListener {
             RestaurantBottomSheet(
                 context = requireContext(),
-                data = data,
+                data = data.copy(isInWishList = isWish),
                 onClickAddWishRestaurant = ::addWishTest,
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
             ).show()
-
             true
         }
     }
@@ -136,6 +154,7 @@ class RestaurantSearchMapFragment :
 
     private suspend fun addWishTest(id: Int, curState: Boolean): Boolean {
         return lifecycleScope.async {
+            isWish = !curState
             viewModel.updateWish(id, curState)
         }.await()
     }
