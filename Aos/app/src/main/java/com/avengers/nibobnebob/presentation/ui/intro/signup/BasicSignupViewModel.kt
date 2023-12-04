@@ -81,5 +81,4 @@ class BasicSignupViewModel @Inject constructor() : ViewModel(){
             ))
         }
     }
-
 }

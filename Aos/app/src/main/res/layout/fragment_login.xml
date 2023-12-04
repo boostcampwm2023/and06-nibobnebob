@@ -114,6 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="20dp"
+            android:onClick="@{() -> vm.navigateToBasicSignup()}"
             android:text="@string/do_signup_text"
             android:textColor="@color/nn_rainbow_green"
             android:textStyle="bold"

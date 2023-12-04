@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 sealed class LoginEvent {
     data object NavigateToMain : LoginEvent()
+    data object NavigateToBasicSignup : LoginEvent()
     data object NavigateToDetailSignup : LoginEvent()
     data object NavigateToDialog : LoginEvent()
     data class ShowSnackMessage(
@@ -93,6 +94,12 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }.launchIn(viewModelScope)
+        }
+    }
+
+    fun navigateToBasicSignup(){
+        viewModelScope.launch {
+            _events.emit(LoginEvent.NavigateToBasicSignup)
         }
     }
 
