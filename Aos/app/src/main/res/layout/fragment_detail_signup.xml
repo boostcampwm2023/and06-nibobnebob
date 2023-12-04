@@ -68,11 +68,12 @@
                     android:layout_height="100dp"
                     android:layout_marginTop="20dp"
                     android:onClick="@{() -> vm.openGallery()}"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_mypage"
-                    app:profileImgUri="@{vm.uiState.profileImg}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:profileImgUri="@{vm.uiState.profileImg}"
                     app:shapeAppearanceOverlay="@style/All50RadiusImageView" />
 
                 <TextView
