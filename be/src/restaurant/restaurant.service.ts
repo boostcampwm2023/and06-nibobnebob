@@ -8,6 +8,7 @@ import { TokenInfo } from "src/user/user.decorator";
 import { UserRepository } from "src/user/user.repository";
 import { ReviewRepository } from "src/review/review.repository";
 import { LocationDto } from "./dto/location.dto";
+import { AwsService } from "src/aws/aws.service";
 
 const key = process.env.API_KEY;
 
@@ -26,7 +27,8 @@ export class RestaurantService implements OnModuleInit {
   constructor(
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
-    private reviewRepository: ReviewRepository
+    private reviewRepository: ReviewRepository,
+    private awsService: AwsService
   ) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
@@ -68,7 +70,8 @@ export class RestaurantService implements OnModuleInit {
         "review.restroomCleanliness",
         "review.overallExperience",
         "user.nickName as reviewer",
-        "review.createdAt"
+        "review.createdAt",
+        "review.reviewImage"
       ])
       .where("review.restaurant_id = :restaurantId", {
         restaurantId: restaurant.restaurant_id,
@@ -76,9 +79,11 @@ export class RestaurantService implements OnModuleInit {
       .getRawMany();
 
     restaurant.restaurant_reviewCnt = reviews.length;
-    restaurant.reviews = reviews.slice(0, 3);
-
-
+    const reviewList = reviews.slice(0, 3);
+    reviewList.forEach((element) => {
+      if (element.review_reviewImage) element.review_reviewImage = this.awsService.getImageURL(element.review_reviewImage);
+    })
+    restaurant.reviews = reviewList;
     return restaurant;
   }
 
