@@ -1,14 +1,10 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
-import android.net.Uri
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
-import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -149,15 +145,14 @@ class DetailSignupViewModel @Inject constructor(
     fun signup() {
         // todo MultiPart -> url API를 따로 만들기 or signup Request 자체를 MultiPart로 묶기
         introRepository.signup(
-            DetailSignupRequest(
-                email = email.value,
-                provider = provider.value,
-                nickName = nick.value,
-                birthdate = birth.value,
-                region = location.value,
-                isMale = isMale.value,
-                profileImage = profileFile
-            )
+            email = email.value,
+            provider = provider.value,
+            password = password.value,
+            nickName = nick.value,
+            birthdate = birth.value,
+            region = location.value,
+            isMale = isMale.value,
+            profileImage = profileFile
         ).onEach {
             when (it) {
                 is BaseState.Success -> navigateToLoginFragment()
