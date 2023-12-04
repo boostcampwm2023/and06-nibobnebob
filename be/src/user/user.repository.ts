@@ -12,15 +12,8 @@ export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-  async createUser(userentity: User): Promise<User> {
-    try {
-      await this.save(userentity);
-    } catch (err) {
-      if (err.code === "23505") {
-        throw new ConflictException("Duplicated Value");
-      }
-    }
-    return;
+  async createUser(userentity: User) {
+    await this.save(userentity);
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     const user = await this.findOne({
@@ -115,11 +108,11 @@ export class UserRepository extends Repository<User> {
       region: userEntity["region"],
       provider: userEntity["provider"],
       password: userEntity["password"],
-      profileImage : userEntity["profileImage"]
+      profileImage: userEntity["profileImage"]
     };
 
     if (!isEmailDuplicate) {
-      updateObject["email"] =userEntity["email"];
+      updateObject["email"] = userEntity["email"];
     }
     if (!isNickNameDuplicate) {
       updateObject["nickName"] = userEntity["nickName"];

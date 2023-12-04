@@ -12,9 +12,11 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -31,6 +33,8 @@ import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 import { ParseArrayPipe } from "../utils/parsearraypipe";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { memoryStorage } from 'multer';
+import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
 
 const multerOptions = {
   storage: memoryStorage(),
@@ -241,8 +245,11 @@ export class UserController {
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  @UsePipes(new ValidationPipe())
-  async singup(@UploadedFile() file: Express.Multer.File, @Body() userInfoDto: UserInfoDto) {
+  @ApiConsumes('multipart/form-data')
+  async singup(@Body() body, @UploadedFile() file: Express.Multer.File) {
+    const userInfoDto = plainToClass(UserInfoDto, body);
+    const errors = await validate(userInfoDto);
+    if (errors.length > 0) throw new BadRequestException(errors);
     return await this.userService.signup(file, userInfoDto);
   }
 
@@ -410,12 +417,15 @@ export class UserController {
   @ApiResponse({ status: 200, description: "회원정보 수정 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  @UsePipes(new ValidationPipe())
+  @ApiConsumes('multipart/form-data')
   async updateMypageUserInfo(
     @UploadedFile() file: Express.Multer.File,
     @GetUser() tokenInfo: TokenInfo,
-    @Body() userInfoDto: UserInfoDto
+    @Body() body
   ) {
+    const userInfoDto = plainToClass(UserInfoDto, body);
+    const errors = await validate(userInfoDto);
+    if (errors.length > 0) throw new BadRequestException(errors);
     return await this.userService.updateMypageUserInfo(file, tokenInfo, userInfoDto);
   }
 }

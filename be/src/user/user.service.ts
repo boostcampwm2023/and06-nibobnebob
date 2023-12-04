@@ -8,7 +8,7 @@ import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
 import { Equal, In, Like, Not } from "typeorm";
-import { BadRequestException } from "@nestjs/common/exceptions";
+import { BadRequestException, ConflictException } from "@nestjs/common/exceptions";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 import { ReviewRepository } from "src/review/review.repository";
 import { UserWishRestaurantListRepository } from "./user.wishrestaurantList.repository";
@@ -31,22 +31,33 @@ export class UserService {
     private authService: AuthService
   ) { }
   async signup(@UploadedFile() file: Express.Multer.File, userInfoDto: UserInfoDto) {
-    userInfoDto.password = await hashPassword(userInfoDto.password);
+    if (userInfoDto.password) userInfoDto.password = await hashPassword(userInfoDto.password);
     let profileImage;
+
     if (file) {
       const uuid = v4();
       profileImage = `profile/images/${uuid}.png`;
-      await this.awsService.uploadToS3(profileImage, file.buffer);
     } else {
       profileImage = "profile/images/defaultprofile.png";
     }
+
     const user = {
       ...userInfoDto,
       profileImage: profileImage
     };
 
-    const newUser = this.usersRepository.create(user);
-    await this.usersRepository.createUser(newUser);
+    try {
+      const newUser = this.usersRepository.create(user);
+      await this.usersRepository.createUser(newUser);
+      if (file) {
+        await this.awsService.uploadToS3(profileImage, file.buffer);
+      }
+      return;
+    } catch (error) {
+      if (error.code === "23505") {
+        throw new ConflictException("Duplicated Value");
+      }
+    }
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);
