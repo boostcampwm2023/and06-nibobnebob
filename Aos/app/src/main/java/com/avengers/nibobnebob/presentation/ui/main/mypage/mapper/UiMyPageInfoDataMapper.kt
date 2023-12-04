@@ -11,5 +11,6 @@ internal fun MyInfoResponse.toUiMyPageInfoData() = UiMyPageInfoData(
     nickName = userInfo.nickName,
     age = userInfo.birthdate.toAgeString(),
     location = userInfo.region,
-    gender = if (userInfo.isMale) "남" else "여"
+    gender = if (userInfo.isMale) "남" else "여",
+    profileImage = userInfo.profileImage
 )
