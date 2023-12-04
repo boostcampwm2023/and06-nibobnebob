@@ -2,6 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentBasicSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -23,8 +25,23 @@ class BasicSignupFragment: BaseFragment<FragmentBasicSignupBinding>(R.layout.fra
     }
 
     override fun initEventObserver() {
-        TODO("Not yet implemented")
+        repeatOnStarted {
+            viewModel.events.collect{
+                when(it){
+                    is BasicSignupEvents.NavigateToDetailSignup -> findNavController().toDetailSignup(it.provider, it.email, it.password)
+                    is BasicSignupEvents.NavigateToBack -> findNavController().navigateUp()
+                }
+            }
+        }
     }
 
+    private fun NavController.toDetailSignup(
+        provider: String,
+        email: String,
+        password: String,
+    ){
+        val action = BasicSignupFragmentDirections.actionBasicSignupFragmentToDetailSignupFragment(email, password, provider)
+        navigate(action)
+    }
 
 }

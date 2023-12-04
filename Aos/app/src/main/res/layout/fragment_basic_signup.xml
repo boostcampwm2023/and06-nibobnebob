@@ -29,6 +29,7 @@
                 android:id="@+id/btn_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="@{() -> vm.navigateToBack()}"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_back"
@@ -74,7 +75,8 @@
                 style="@style/TextSmallRegular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="이메일" />
+                android:hint="이메일"
+                android:text="@={vm.email}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,7 +129,8 @@
                 style="@style/TextSmallRegular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="비밀번호" />
+                android:hint="비밀번호"
+                android:text="@={vm.password}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -146,7 +149,8 @@
                 style="@style/TextSmallRegular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="비밀번호 확인" />
+                android:hint="비밀번호 확인"
+                android:text="@={vm.passwordCheck}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -157,6 +161,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="20dp"
+            android:onClick="@{() -> vm.navigateToDetailSignup()}"
             android:background="@drawable/selector_next_btn"
             android:text="다음"
             android:textColor="@color/selector_next_btn_text"
