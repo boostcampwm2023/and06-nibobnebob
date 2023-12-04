@@ -16,6 +16,7 @@ import { AwsService } from "src/aws/aws.service";
 import { v4 } from "uuid";
 import { User } from "./entities/user.entity";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
+import { AuthService } from "src/auth/auth.service";
 
 @Injectable()
 export class UserService {
@@ -26,7 +27,8 @@ export class UserService {
     private userFollowListRepositoy: UserFollowListRepository,
     private reviewRepository: ReviewRepository,
     private userWishRestaurantListRepository: UserWishRestaurantListRepository,
-    private awsService: AwsService
+    private awsService: AwsService,
+    private authService: AuthService
   ) { }
   async signup(userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
@@ -295,7 +297,7 @@ export class UserService {
   }
 
   async logout(tokenInfo: TokenInfo) {
-    return await this.usersRepository.logout(tokenInfo.id);
+    return await this.authService.logout(tokenInfo.id);
   }
 
   async deleteUserAccount(tokenInfo: TokenInfo) {
