@@ -295,6 +295,7 @@ export class UserController {
 
   @ApiTags("RestaurantList")
   @Post("/restaurant/:restaurantid")
+  @UseInterceptors(FileInterceptor('reviewImage', multerOptions))
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 맛집 리스트에 등록하기" })
@@ -304,19 +305,76 @@ export class UserController {
     description: "음식점 id",
     type: Number,
   })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      description: "리뷰 등록하기",
+      required: ['isCarVisit', 'taste', 'service', 'restroomCleanliness', 'overallExperience'],
+      properties: {
+        isCarVisit: { type: 'boolean', example: true, description: 'The transportation for visiting' },
+        transportationAccessibility: {
+          type: 'integer',
+          example: 0,
+          description: 'Transportation accessibility for visiting',
+          minimum: 0,
+          maximum: 4
+        },
+        parkingArea: {
+          type: 'integer',
+          example: 0,
+          description: "Condition of the restaurant's parking area",
+          minimum: 0,
+          maximum: 4
+        },
+        taste: {
+          type: 'integer',
+          example: 0,
+          description: 'The taste of the food',
+          minimum: 0,
+          maximum: 4
+        },
+        service: {
+          type: 'integer',
+          example: 0,
+          description: 'The service of the restaurant',
+          minimum: 0,
+          maximum: 4
+        },
+        restroomCleanliness: {
+          type: 'integer',
+          example: 0,
+          description: "The condition of the restaurant's restroom",
+          minimum: 0,
+          maximum: 4
+        },
+        overallExperience: {
+          type: 'string',
+          example: '20자 이상 작성하기',
+          description: 'The overall experience about the restaurant',
+          minLength: 20
+        },
+        reviewImage: { type: 'string', format: 'binary', description: 'The image of food' },
+      },
+    },
+  })
   @ApiResponse({ status: 200, description: "맛집리스트 등록 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  @UsePipes(new ValidationPipe())
+  @ApiConsumes('multipart/form-data')
   async addRestaurantToNebob(
-    @Body() reviewInfoDto: ReviewInfoDto,
+    @Body() body,
     @GetUser() tokenInfo: TokenInfo,
-    @Param("restaurantid") restaurantid: number
+    @Param("restaurantid") restaurantid: number,
+    @UploadedFile() file: Express.Multer.File
   ) {
+    const reviewInfoDto = plainToClass(ReviewInfoDto, body);
+    const errors = await validate(reviewInfoDto);
+    if (errors.length > 0) throw new BadRequestException(errors);
     return await this.userService.addRestaurantToNebob(
       reviewInfoDto,
       tokenInfo,
-      restaurantid
+      restaurantid,
+      file
     );
   }
 

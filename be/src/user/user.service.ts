@@ -254,9 +254,16 @@ export class UserService {
   async addRestaurantToNebob(
     reviewInfoDto: ReviewInfoDto,
     tokenInfo: TokenInfo,
-    restaurantId: number
+    restaurantId: number,
+    file: Express.Multer.File
   ) {
     const reviewEntity = this.reviewRepository.create(reviewInfoDto);
+    let reviewImage;
+    if (file) {
+      const uuid = v4();
+      reviewImage = `profile/images/${uuid}.png`;
+      reviewEntity.reviewImage = reviewImage;
+    }
     const userEntity = new User();
     userEntity.id = tokenInfo["id"];
     reviewEntity.user = userEntity;
@@ -271,6 +278,7 @@ export class UserService {
         restaurantId,
         reviewEntity
       );
+      if (file) await this.awsService.uploadToS3(reviewImage, file.buffer);
     } catch (err) {
       throw new BadRequestException();
     }
@@ -321,7 +329,6 @@ export class UserService {
     if (file) {
       const uuid = v4();
       profileImage = `profile/images/${uuid}.png`;
-      await this.awsService.uploadToS3(profileImage, file.buffer);
     } else {
       profileImage = "profile/images/defaultprofile.png";
     }
@@ -332,7 +339,7 @@ export class UserService {
     const newUser = this.usersRepository.create(user);
     const updatedUser = await this.usersRepository.updateMypageUserInfo(tokenInfo.id, newUser);
     if (file) {
-      this.awsService.uploadToS3(`profile/images/${file.filename}`, file.buffer);
+      this.awsService.uploadToS3(profileImage, file.buffer);
     }
     return updatedUser;
   }
