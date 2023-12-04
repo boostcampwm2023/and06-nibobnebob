@@ -10,9 +10,14 @@ import {
   ValidationPipe,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -27,6 +32,15 @@ import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { LocationDto } from "src/restaurant/dto/location.dto";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 import { ParseArrayPipe } from "../utils/parsearraypipe";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { memoryStorage } from 'multer';
+import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
+
+const multerOptions = {
+  storage: memoryStorage(),
+};
+
 
 @Controller("user")
 export class UserController {
@@ -228,12 +242,33 @@ export class UserController {
 
   @ApiTags("Signup")
   @Post()
+  @UseInterceptors(FileInterceptor('profileImage', multerOptions))
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  @UsePipes(new ValidationPipe())
-  async singup(@Body() userInfoDto: UserInfoDto) {
-    return await this.userService.signup(userInfoDto);
+  @ApiBody({
+    schema: {
+      type: 'object',
+      description: "회원가입",
+      required: ['email', 'provider', 'nickName', 'region', 'birthdate', 'isMale'],
+      properties: {
+        email: { type: 'string', example: 'user@example.com', description: 'The email of the user' },
+        password: { type: 'string', example: '1234', description: 'The password of the user' },
+        provider: { type: 'string', example: 'naver', description: 'The provider of the user' },
+        nickName: { type: 'string', example: 'test', description: 'The nickname of the user' },
+        region: { type: 'string', example: '강동구', description: 'The region of the user' },
+        birthdate: { type: 'string', example: '1234/56/78', description: 'The birth of the user' },
+        isMale: { type: 'boolean', example: true, description: 'The gender of the user. true is male, false is female' },
+        profileImage: { type: 'string', format: 'binary', description: 'The profile image of the user' },
+      },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
+  async singup(@Body() body, @UploadedFile() file: Express.Multer.File) {
+    const userInfoDto = plainToClass(UserInfoDto, body);
+    const errors = await validate(userInfoDto);
+    if (errors.length > 0) throw new BadRequestException(errors);
+    return await this.userService.signup(file, userInfoDto);
   }
 
   @ApiTags("Follow/Following")
@@ -260,6 +295,7 @@ export class UserController {
 
   @ApiTags("RestaurantList")
   @Post("/restaurant/:restaurantid")
+  @UseInterceptors(FileInterceptor('reviewImage', multerOptions))
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 맛집 리스트에 등록하기" })
@@ -269,19 +305,76 @@ export class UserController {
     description: "음식점 id",
     type: Number,
   })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      description: "리뷰 등록하기",
+      required: ['isCarVisit', 'taste', 'service', 'restroomCleanliness', 'overallExperience'],
+      properties: {
+        isCarVisit: { type: 'boolean', example: true, description: 'The transportation for visiting' },
+        transportationAccessibility: {
+          type: 'integer',
+          example: 0,
+          description: 'Transportation accessibility for visiting',
+          minimum: 0,
+          maximum: 4
+        },
+        parkingArea: {
+          type: 'integer',
+          example: 0,
+          description: "Condition of the restaurant's parking area",
+          minimum: 0,
+          maximum: 4
+        },
+        taste: {
+          type: 'integer',
+          example: 0,
+          description: 'The taste of the food',
+          minimum: 0,
+          maximum: 4
+        },
+        service: {
+          type: 'integer',
+          example: 0,
+          description: 'The service of the restaurant',
+          minimum: 0,
+          maximum: 4
+        },
+        restroomCleanliness: {
+          type: 'integer',
+          example: 0,
+          description: "The condition of the restaurant's restroom",
+          minimum: 0,
+          maximum: 4
+        },
+        overallExperience: {
+          type: 'string',
+          example: '20자 이상 작성하기',
+          description: 'The overall experience about the restaurant',
+          minLength: 20
+        },
+        reviewImage: { type: 'string', format: 'binary', description: 'The image of food' },
+      },
+    },
+  })
   @ApiResponse({ status: 200, description: "맛집리스트 등록 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  @UsePipes(new ValidationPipe())
+  @ApiConsumes('multipart/form-data')
   async addRestaurantToNebob(
-    @Body() reviewInfoDto: ReviewInfoDto,
+    @Body() body,
     @GetUser() tokenInfo: TokenInfo,
-    @Param("restaurantid") restaurantid: number
+    @Param("restaurantid") restaurantid: number,
+    @UploadedFile() file: Express.Multer.File
   ) {
+    const reviewInfoDto = plainToClass(ReviewInfoDto, body);
+    const errors = await validate(reviewInfoDto);
+    if (errors.length > 0) throw new BadRequestException(errors);
     return await this.userService.addRestaurantToNebob(
       reviewInfoDto,
       tokenInfo,
-      restaurantid
+      restaurantid,
+      file
     );
   }
 
@@ -393,17 +486,39 @@ export class UserController {
 
   @ApiTags("Mypage")
   @Put()
+  @UseInterceptors(FileInterceptor('profileImage', multerOptions))
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      description: "회원정보 수정",
+      required: ['email', 'provider', 'nickName', 'region', 'birthdate', 'isMale'],
+      properties: {
+        email: { type: 'string', example: 'user@example.com', description: 'The email of the user' },
+        password: { type: 'string', example: '1234', description: 'The password of the user' },
+        provider: { type: 'string', example: 'naver', description: 'The provider of the user' },
+        nickName: { type: 'string', example: 'test', description: 'The nickname of the user' },
+        region: { type: 'string', example: '강동구', description: 'The region of the user' },
+        birthdate: { type: 'string', example: '1234/56/78', description: 'The birth of the user' },
+        isMale: { type: 'boolean', example: true, description: 'The gender of the user. true is male, false is female' },
+        profileImage: { type: 'string', format: 'binary', description: 'The profile image of the user' },
+      },
+    },
+  })
   @ApiOperation({ summary: "유저 회원정보 수정" })
   @ApiResponse({ status: 200, description: "회원정보 수정 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
-  @UsePipes(new ValidationPipe())
+  @ApiConsumes('multipart/form-data')
   async updateMypageUserInfo(
+    @UploadedFile() file: Express.Multer.File,
     @GetUser() tokenInfo: TokenInfo,
-    @Body() userInfoDto: UserInfoDto
+    @Body() body
   ) {
-    return await this.userService.updateMypageUserInfo(tokenInfo, userInfoDto);
+    const userInfoDto = plainToClass(UserInfoDto, body);
+    const errors = await validate(userInfoDto);
+    if (errors.length > 0) throw new BadRequestException(errors);
+    return await this.userService.updateMypageUserInfo(file, tokenInfo, userInfoDto);
   }
 }
