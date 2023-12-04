@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -28,18 +26,19 @@ class DetailSignupFragment :
     private val password by lazy { args.password }
     private val provider by lazy { args.provider }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         viewModel.setDefaultData(email, password, provider)
-        initEventsObserver()
         setGenderRadioListener()
         setDateBtnListener()
         setLocationInputListener()
     }
 
-    private fun initEventsObserver() {
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {
@@ -50,6 +49,7 @@ class DetailSignupFragment :
             }
         }
     }
+
 
     private fun setGenderRadioListener() {
         binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
@@ -62,7 +62,7 @@ class DetailSignupFragment :
 
     private fun setDateBtnListener() {
         binding.tilBirth.setEndIconOnClickListener {
-            CalendarDatePicker{
+            CalendarDatePicker {
                 viewModel.setBirth(it)
             }.show(parentFragmentManager)
         }
@@ -76,7 +76,7 @@ class DetailSignupFragment :
         }
     }
 
-    private fun NavController.toLoginFragment(){
+    private fun NavController.toLoginFragment() {
         val action = DetailSignupFragmentDirections.actionDetailSignupFragmentToLoginFragment()
         this.navigate(action)
     }

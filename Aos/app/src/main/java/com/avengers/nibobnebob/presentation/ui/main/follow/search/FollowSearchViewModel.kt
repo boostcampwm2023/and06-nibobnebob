@@ -26,20 +26,21 @@ data class FollowSearchUiState(
     val searchCount: String = ""
 )
 
-sealed class FollowSearchEvents{
-    data class ShowSnackMessage(val msg: String): FollowSearchEvents()
-    data class NavigateToUserDetail(val nickName: String): FollowSearchEvents()
+sealed class FollowSearchEvents {
+    data class ShowSnackMessage(val msg: String) : FollowSearchEvents()
+    data class NavigateToUserDetail(val nickName: String) : FollowSearchEvents()
     data class ShowFilterDialog(
         val curRegion: List<String>,
         val changeFilterListener: (List<String>) -> Unit
-    ): FollowSearchEvents()
-    data object NavigateToBack: FollowSearchEvents()
+    ) : FollowSearchEvents()
+
+    data object NavigateToBack : FollowSearchEvents()
 }
 
 @HiltViewModel
 class FollowSearchViewModel @Inject constructor(
     private val followRepository: FollowRepository
-): ViewModel(), RemoveChipInterface {
+) : ViewModel(), RemoveChipInterface {
 
     private val _uiState = MutableStateFlow(FollowSearchUiState())
     val uiState: StateFlow<FollowSearchUiState> = _uiState.asStateFlow()
@@ -49,33 +50,31 @@ class FollowSearchViewModel @Inject constructor(
 
     val keyword = MutableStateFlow("")
 
-    init{
-        observeKeyword()
-    }
-
-    private fun observeKeyword(){
+    fun observeKeyword() {
         keyword.onEach {
-            if(it.isNotBlank()){
+            if (it.isNotBlank()) {
 
-                followRepository.searchFollow(it, _uiState.value.curRegionFilter).onEach { response ->
-                    when(response){
-                        is BaseState.Success -> {
-                            response.data.body.let{ data ->
-                                _uiState.update { state ->
-                                    state.copy(
-                                        searchList = data.map { data ->
-                                            data.toUiFollowSearchData(::navigateToUserDetail)
-                                        },
-                                        searchCount = "검색결과 ${data.size}건"
-                                    )
+                followRepository.searchFollow(it, _uiState.value.curRegionFilter)
+                    .onEach { response ->
+                        when (response) {
+                            is BaseState.Success -> {
+                                response.data.body.let { data ->
+                                    _uiState.update { state ->
+                                        state.copy(
+                                            searchList = data.map { data ->
+                                                data.toUiFollowSearchData(::navigateToUserDetail)
+                                            },
+                                            searchCount = "검색결과 ${data.size}건"
+                                        )
+                                    }
                                 }
                             }
+
+                            is BaseState.Error -> {
+                                _events.emit(FollowSearchEvents.ShowSnackMessage(response.message))
+                            }
                         }
-                        is BaseState.Error -> {
-                            _events.emit(FollowSearchEvents.ShowSnackMessage(response.message))
-                        }
-                    }
-                }.launchIn(viewModelScope)
+                    }.launchIn(viewModelScope)
             }
         }.launchIn(viewModelScope)
     }
@@ -86,12 +85,14 @@ class FollowSearchViewModel @Inject constructor(
         }
     }
 
-    fun showFilterDialog(){
+    fun showFilterDialog() {
         viewModelScope.launch {
-            _events.emit(FollowSearchEvents.ShowFilterDialog(
-                _uiState.value.curRegionFilter,
-                ::changeFilterListener
-            ))
+            _events.emit(
+                FollowSearchEvents.ShowFilterDialog(
+                    _uiState.value.curRegionFilter,
+                    ::changeFilterListener
+                )
+            )
         }
     }
 
@@ -107,7 +108,7 @@ class FollowSearchViewModel @Inject constructor(
         observeKeyword()
     }
 
-    private fun changeFilterListener(newFilter: List<String>){
+    private fun changeFilterListener(newFilter: List<String>) {
         _uiState.update { state ->
             state.copy(
                 curRegionFilter = newFilter
@@ -117,7 +118,7 @@ class FollowSearchViewModel @Inject constructor(
         observeKeyword()
     }
 
-    fun navigateToBack(){
+    fun navigateToBack() {
         viewModelScope.launch {
             _events.emit(FollowSearchEvents.NavigateToBack)
         }

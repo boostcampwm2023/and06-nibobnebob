@@ -1,8 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
-import android.os.Bundle
-import android.view.View
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.BindingAdapter
@@ -55,14 +53,70 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         initMapView()
-        initEventObserver()
         binding.rvHomeFilter.adapter = HomeFilterAdapter()
+
+    }
+
+    override fun initNetworkView() {
         viewModel.getFilterList()
+    }
+
+    private fun initStateObserver() {
+        repeatOnStarted {
+            viewModel.uiState.collect {
+                when (it.locationTrackingState) {
+                    is TrackingState.TryOn -> {
+                        requireContext().requestLocationPermission(
+                            locationPermissionList,
+                            ::startPermissionLauncher,
+                            ::onTrackingChangeListener
+                        )
+                    }
+
+                    is TrackingState.On -> {
+                        naverMap.locationTrackingMode =
+                            LocationTrackingMode.Follow
+                    }
+
+                    is TrackingState.Off -> naverMap.locationTrackingMode =
+                        LocationTrackingMode.None
+                }
+            }
+        }
+    }
+
+    override fun initEventObserver() {
+        repeatOnStarted {
+            viewModel.events.collect {
+                when (it) {
+                    is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
+                    is HomeEvents.SetNewMarkers -> {
+                        viewModel.trackingOff()
+                        val lat = viewModel.uiState.value.cameraLatitude
+                        val lng = viewModel.uiState.value.cameraLongitude
+                        val zoom = viewModel.uiState.value.cameraZoom
+                        val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
+                        val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
+                            .apply { animate(CameraAnimation.Linear, 500) }
+
+                        naverMap.moveCamera(cameraUpdate)
+                        viewModel.uiState.value.markerList.forEach { data ->
+                            setMarker(data)
+                        }
+                    }
+
+                    is HomeEvents.SetSingleMarker -> {
+                        setSingleMarker(it.marker, it.item)
+                    }
+
+                    is HomeEvents.RemoveMarkers -> removeAllMarker()
+                    is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                }
+            }
+        }
     }
 
     private fun initMapView() {
@@ -111,62 +165,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 it.latitude,
                 it.longitude
             )
-        }
-    }
-
-    private fun initEventObserver() {
-        repeatOnStarted {
-            viewModel.events.collect {
-                when (it) {
-                    is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
-                    is HomeEvents.SetNewMarkers -> {
-                        viewModel.trackingOff()
-                        val lat = viewModel.uiState.value.cameraLatitude
-                        val lng = viewModel.uiState.value.cameraLongitude
-                        val zoom = viewModel.uiState.value.cameraZoom
-                        val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
-                        val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
-                            .apply { animate(CameraAnimation.Linear, 500) }
-
-                        naverMap.moveCamera(cameraUpdate)
-                        viewModel.uiState.value.markerList.forEach { data ->
-                            setMarker(data)
-                        }
-                    }
-
-                    is HomeEvents.SetSingleMarker -> {
-                        setSingleMarker(it.marker, it.item)
-                    }
-
-                    is HomeEvents.RemoveMarkers -> removeAllMarker()
-                    is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
-                }
-            }
-        }
-    }
-
-
-    private fun initStateObserver() {
-        repeatOnStarted {
-            viewModel.uiState.collect {
-                when (it.locationTrackingState) {
-                    is TrackingState.TryOn -> {
-                        requireContext().requestLocationPermission(
-                            locationPermissionList,
-                            ::startPermissionLauncher,
-                            ::onTrackingChangeListener
-                        )
-                    }
-
-                    is TrackingState.On -> {
-                        naverMap.locationTrackingMode =
-                            LocationTrackingMode.Follow
-                    }
-
-                    is TrackingState.Off -> naverMap.locationTrackingMode =
-                        LocationTrackingMode.None
-                }
-            }
         }
     }
 

@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,17 +21,18 @@ class AddMyRestaurantFragment :
     private val restaurantName by lazy { args.restaurantName }
     private val restaurantId by lazy { args.restaurantId }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         viewModel.setDefaultValue(restaurantName, restaurantId)
-        initEventObserver()
         setSliderListener()
         setVisitMethodRadioListener()
     }
 
-    private fun initEventObserver() {
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {

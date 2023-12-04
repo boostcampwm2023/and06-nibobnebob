@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.mylist
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -25,20 +23,18 @@ class MyRestaurantListFragment :
     private val adapter = MyRestaurantAdapter({ id -> viewModel.showDetail(id) },
         { id -> showDeleteCheckDialog(id) })
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        initView(view)
-        viewModel.myRestaurantList()
-    }
-
-    private fun initView(view: View) {
+    override fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
         binding.rvMyRestaurant.adapter = adapter
         binding.rvMyRestaurant.animation = null
+    }
 
+    override fun initNetworkView() {
+        viewModel.myRestaurantList()
+    }
 
+    override fun initEventObserver() {
         repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
@@ -61,8 +57,8 @@ class MyRestaurantListFragment :
                 }
             }
         }
-
     }
+
 
     private fun showDeleteCheckDialog(id: Int) {
         showTwoButtonTitleDialog(

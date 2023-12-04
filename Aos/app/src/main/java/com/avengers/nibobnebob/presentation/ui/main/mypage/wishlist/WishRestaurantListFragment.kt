@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -26,19 +24,19 @@ class WishRestaurantListFragment :
         MyWishAdapter({ id -> showDeleteCheckDialog(id) }, { id -> viewModel.showDetail(id) },
             { item -> viewModel.addMyList(item) })
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        initView()
-        viewModel.myWishList()
-    }
-
-    private fun initView() {
+    override fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
         binding.rvWishRestaurant.adapter = adapter
         binding.rvWishRestaurant.animation = null
+    }
 
+    override fun initNetworkView() {
+        viewModel.myWishList()
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
@@ -68,8 +66,8 @@ class WishRestaurantListFragment :
                 }
             }
         }
-
     }
+
 
     private fun showDeleteCheckDialog(id: Int) {
         showTwoButtonTitleDialog(
