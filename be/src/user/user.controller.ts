@@ -16,6 +16,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiOperation,
   ApiParam,
@@ -245,6 +246,10 @@ export class UserController {
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @ApiBody({
+    description: '회원가입 정보',
+    type: UserInfoDto,
+  })
   @ApiConsumes('multipart/form-data')
   async singup(@Body() body, @UploadedFile() file: Express.Multer.File) {
     const userInfoDto = plainToClass(UserInfoDto, body);
@@ -413,6 +418,10 @@ export class UserController {
   @UseInterceptors(FileInterceptor('profileImage', multerOptions))
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
+  @ApiBody({
+    description: '회원가입 정보',
+    type: UserInfoDto,
+  })
   @ApiOperation({ summary: "유저 회원정보 수정" })
   @ApiResponse({ status: 200, description: "회원정보 수정 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
