@@ -28,7 +28,8 @@ data class EditProfileUiState(
     val email: String = "",
     val provider: String = "",
     val birth: EditInputState = EditInputState(),
-    val location: EditInputState = EditInputState()
+    val location: EditInputState = EditInputState(),
+    val profileImage: String = ""
 )
 
 
@@ -60,6 +61,7 @@ class EditProfileViewModel @Inject constructor(
     private var originalBirth: String = ""
     private var originalLocation: String = ""
     private var originalIsMale: Boolean = true
+    private var originalProfileImage : String = ""
 
     val locationList = LocationArray.LOCATION_ARRAY
 
@@ -68,6 +70,7 @@ class EditProfileViewModel @Inject constructor(
     val locationState = MutableStateFlow(0)
     val locationTextState = MutableStateFlow("")
     val locationEditMode = MutableStateFlow(false)
+    val profileImageState = MutableStateFlow("")
 
 
     init {
@@ -75,6 +78,7 @@ class EditProfileViewModel @Inject constructor(
         observeNickName()
         observeLocation()
         observeBirth()
+        observeProfileImage()
     }
 
     private fun getOriginalData() {
@@ -88,11 +92,13 @@ class EditProfileViewModel @Inject constructor(
                         locationState.emit(location.indexOf(location))
                         locationTextState.emit(location)
                         birthState.emit(birth)
+                        profileImageState.emit(profileImage)
 
                         originalNickName = nickName
                         originalLocation = location
                         originalBirth = birth
                         originalIsMale = gender
+                        originalProfileImage = profileImage
 
                         _uiState.update { state ->
                             state.copy(
@@ -195,6 +201,14 @@ class EditProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun observeProfileImage(){
+        profileImageState.onEach { image ->
+            _uiState.update {state ->
+                state.copy( profileImage = image)
+            }
+        }.launchIn(viewModelScope)
+    }
+
 
     fun doneEditProfile() {
 
@@ -215,6 +229,7 @@ class EditProfileViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
+
 
     companion object {
         val BIRTH_REGEX = Regex("""^\d{4}/\d{2}/\d{2}${'$'}""")

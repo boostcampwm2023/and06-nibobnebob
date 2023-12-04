@@ -105,13 +105,24 @@
 
                 <ImageView
                     android:id="@+id/iv_profile"
-                    android:layout_width="122dp"
-                    android:layout_height="116dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:layout_marginTop="50dp"
-                    android:background="@drawable/ic_mypage"
+                    android:src="@drawable/ic_mypage"
+                    app:profileImageUrl="@{vm.uiState.profileImage}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/btn_edt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:src="@drawable/ic_edit"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_profile"
+                    app:layout_constraintEnd_toEndOf="@id/iv_profile" />
 
                 <TextView
                     android:id="@+id/tv_nickname_label"
