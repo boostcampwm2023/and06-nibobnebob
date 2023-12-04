@@ -2,6 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.repository.ValidationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 data class BasicSignupUiState(
     val emailState: InputState = InputState.Empty,
-    val passwordCheckState: InputState = InputState.Empty
+    val passwordCheckState: InputState = InputState.Empty,
+    val isEmailNotEmpty: Boolean = true
 )
 
 sealed class BasicSignupEvents{
@@ -27,10 +30,13 @@ sealed class BasicSignupEvents{
         val email: String,
         val password: String,
     ) : BasicSignupEvents()
+    data class ShowSnackMessage(val msg: String): BasicSignupEvents()
 }
 
 @HiltViewModel
-class BasicSignupViewModel @Inject constructor() : ViewModel(){
+class BasicSignupViewModel @Inject constructor(
+    private val validationRepository: ValidationRepository
+) : ViewModel(){
 
     private val _uiState = MutableStateFlow(BasicSignupUiState())
     val uiState: StateFlow<BasicSignupUiState> = _uiState.asStateFlow()
@@ -43,7 +49,18 @@ class BasicSignupViewModel @Inject constructor() : ViewModel(){
     val passwordCheck = MutableStateFlow("")
 
     init{
+        observeEmail()
         observePasswordCheck()
+    }
+
+    private fun observeEmail(){
+        email.onEach {
+            _uiState.update { state ->
+                state.copy(
+                    isEmailNotEmpty = it.isNotBlank()
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun observePasswordCheck(){
@@ -61,6 +78,31 @@ class BasicSignupViewModel @Inject constructor() : ViewModel(){
                             passwordCheckState = InputState.Error("비밀번호가 일치하지 않습니다.")
                         )
                     }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun checkEmail(){
+        validationRepository.emailValidation(email.value).onEach {
+            when(it){
+                is BaseState.Success -> {
+                    if(it.data.body.isExist){
+                        _uiState.update { state ->
+                            state.copy(
+                                emailState = InputState.Error("사용할 수 없는 이메일 입니다")
+                            )
+                        }
+                    } else {
+                        _uiState.update { state ->
+                            state.copy(
+                                emailState = InputState.Success("사용 가능한 이메일 입니다")
+                            )
+                        }
+                    }
+                }
+                is BaseState.Error -> {
+                    _events.emit(BasicSignupEvents.ShowSnackMessage(it.message))
                 }
             }
         }.launchIn(viewModelScope)

@@ -29,8 +29,8 @@
                 android:id="@+id/btn_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="@{() -> vm.navigateToBack()}"
                 android:background="@android:color/transparent"
+                android:onClick="@{() -> vm.navigateToBack()}"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_back"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -68,7 +68,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_email_label"
-            app:placeholderText="이메일을 입력하세요">
+            app:placeholderText="이메일을 입력하세요"
+            app:textLayoutColor="@{vm.uiState.emailState}">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_email"
@@ -87,6 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
+            app:helperMessage="@{vm.uiState.emailState}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_email"
             tools:text="이미 사용중인 닉네임 입니다" />
@@ -97,7 +99,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:enabled="@{vm.uiState.isEmailNotEmpty}"
             android:minHeight="0dp"
+            android:onClick="@{() -> vm.checkEmail()}"
             android:text="이메일 중복확인"
             android:textColor="@color/selector_nick_check_text"
             app:layout_constraintBottom_toBottomOf="@id/tv_email_helper_text"
@@ -161,8 +165,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="20dp"
-            android:onClick="@{() -> vm.navigateToDetailSignup()}"
             android:background="@drawable/selector_next_btn"
+            android:onClick="@{() -> vm.navigateToDetailSignup()}"
             android:text="다음"
             android:textColor="@color/selector_next_btn_text"
             app:layout_constraintBottom_toBottomOf="parent"
