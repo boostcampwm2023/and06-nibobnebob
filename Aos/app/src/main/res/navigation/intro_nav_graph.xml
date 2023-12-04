@@ -7,9 +7,21 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.intro.login.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_detailSignupFragment"
+            app:destination="@id/detailSignupFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_basicSignupFragment"
+            app:destination="@id/basicSignupFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/basicSignupFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.intro.signup.BasicSignupFragment"
+        android:label="BasicSignupFragment" >
+        <action
+            android:id="@+id/action_basicSignupFragment_to_detailSignupFragment"
             app:destination="@id/detailSignupFragment" />
     </fragment>
 
@@ -20,12 +32,12 @@
 
         <argument
             android:name="provider"
-            android:defaultValue="naver"
+            android:defaultValue=""
             app:argType="string" />
 
         <argument
             android:name="email"
-            android:defaultValue="qkrwlstjd2@naver.com"
+            android:defaultValue=""
             app:argType="string" />
 
         <argument

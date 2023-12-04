@@ -5,6 +5,10 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.intro.signup.BasicSignupViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
