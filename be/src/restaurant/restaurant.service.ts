@@ -9,12 +9,12 @@ import { UserRepository } from "src/user/user.repository";
 import { ReviewRepository } from "src/review/review.repository";
 import { LocationDto } from "./dto/location.dto";
 
-const key = "api키 입력하세요";
+const key = process.env.API_KEY;
 
 @Injectable()
 export class RestaurantService implements OnModuleInit {
   onModuleInit() {
-    //this.updateRestaurantsFromSeoulData();
+    this.updateRestaurantsFromSeoulData();
     setInterval(
       () => {
         this.updateRestaurantsFromSeoulData();

@@ -122,6 +122,11 @@ export class UserService {
       );
     return result;
   }
+  async getStateIsWish(tokenInfo: TokenInfo, restaurantId: number) {
+    const result = await this.userWishRestaurantListRepository.findOne({ where: { restaurantId: restaurantId, userId: tokenInfo["id"] } });
+    if (result) return { isWish: true };
+    else return { isWish: false };
+  }
   async getMyFollowListInfo(tokenInfo: TokenInfo) {
     const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(
       tokenInfo.id
