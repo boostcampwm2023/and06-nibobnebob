@@ -1,9 +1,7 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
-import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -97,13 +95,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                 when (it) {
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
                     is HomeEvents.SetNewMarkers -> {
+                        removeAllMarker()
                         viewModel.trackingOff()
                         val lat = viewModel.uiState.value.cameraLatitude
                         val lng = viewModel.uiState.value.cameraLongitude
                         val zoom = viewModel.uiState.value.cameraZoom
                         val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
                         val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
-                            .apply { animate(CameraAnimation.Linear, 500) }
+                            .apply { animate(CameraAnimation.Fly, 500) }
 
                         naverMap.moveCamera(cameraUpdate)
                         viewModel.uiState.value.markerList.forEach { data ->
@@ -260,12 +259,4 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 }
 
 
-@BindingAdapter("trackingBtnDrawable")
-fun bindTrackingBtnDrawable(btn: ImageButton, state: TrackingState) {
-    when (state) {
-        is TrackingState.On -> btn.setImageResource(R.drawable.ic_location_on)
-        is TrackingState.Off -> btn.setImageResource(R.drawable.ic_location_off)
-        else -> {}
-    }
-}
 

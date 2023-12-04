@@ -38,7 +38,7 @@ data class HomeUiState(
     val curFilter: String = MY_LIST,
     val cameraLatitude: Double = 0.0,
     val cameraLongitude: Double = 0.0,
-    val cameraZoom: Double = 0.0,
+    val cameraZoom: Double = 14.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0,
     val curSelectedMarker: Marker? = null,
@@ -77,6 +77,14 @@ class HomeViewModel @Inject constructor(
     private val _events = MutableSharedFlow<HomeEvents>()
     val events: SharedFlow<HomeEvents> = _events.asSharedFlow()
 
+    init {
+        _uiState.update { state ->
+            state.copy(
+                filterList = listOf(UiFilterData(MY_LIST, true, ::onFilterItemClicked))
+            )
+        }
+    }
+
     fun updateLocation(latitude: Double, longitude: Double) {
         _uiState.update { state ->
             state.copy(
@@ -95,6 +103,7 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
+
 
     fun locationBtnClicked() {
         _uiState.update { state ->
@@ -151,7 +160,21 @@ class HomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun resetMarkerList() {
+        viewModelScope.launch {
+            _uiState.update { state ->
+                state.copy(markerList = emptyList())
+            }
+            _events.emit(HomeEvents.SetNewMarkers)
+        }
+    }
+
     fun getMarkerList() {
+        if (uiState.value.filterList.all { !it.isSelected }) {
+            resetMarkerList()
+            return
+        }
+
         when (_uiState.value.curFilter) {
             MY_LIST -> {
                 restaurantRepository.myRestaurantList().onEach {
@@ -268,7 +291,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val radius = 6371
+        val radius = 6371000 // 지구 반지름(미터 단위)
         val distanceLatitude = Math.toRadians(lat2 - lat1)
         val distanceLongitude = Math.toRadians(lon2 - lon1)
 
@@ -287,6 +310,7 @@ class HomeViewModel @Inject constructor(
                 uiState.value.markerList.first { it.id == uiState.value.addRestaurantId }
             _uiState.update { state ->
                 state.copy(
+                    addRestaurantId = 0,
                     cameraLongitude = restaurantItem.longitude,
                     cameraLatitude = restaurantItem.latitude
                 )
@@ -298,7 +322,7 @@ class HomeViewModel @Inject constructor(
         var maxDensityPoint: LatLng? = null
         var minDistance = Double.MAX_VALUE
         var maxDensity = 0
-        val radius = 5.0
+        val radius = 3000.0
 
         for (point in _uiState.value.markerList) {
             val distance = haversineDistance(
@@ -307,7 +331,11 @@ class HomeViewModel @Inject constructor(
                 point.latitude,
                 point.longitude
             )
-            val density = calculateDensity(point.latitude, point.longitude, radius)
+            val density = calculateDensity(
+                _uiState.value.cameraLatitude,
+                _uiState.value.cameraLatitude,
+                radius
+            )
 
             if (distance < minDistance) {
                 minDistance = distance
@@ -337,13 +365,13 @@ class HomeViewModel @Inject constructor(
             state.copy(
                 curFilter = name,
                 filterList = state.filterList.map {
-                    if (it.name == name) {
-                        it.copy(
-                            isSelected = true
-                        )
-                    } else if (it.isSelected) {
+                    if (it.isSelected) {
                         it.copy(
                             isSelected = false
+                        )
+                    } else if (it.name == name) {
+                        it.copy(
+                            isSelected = true
                         )
                     } else {
                         it
