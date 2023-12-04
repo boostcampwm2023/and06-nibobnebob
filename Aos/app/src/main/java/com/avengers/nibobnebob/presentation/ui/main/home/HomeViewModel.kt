@@ -38,7 +38,7 @@ data class HomeUiState(
     val curFilter: String = MY_LIST,
     val cameraLatitude: Double = 0.0,
     val cameraLongitude: Double = 0.0,
-    val cameraZoom: Double = 14.0,
+    val cameraZoom: Double = 0.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0,
     val curSelectedMarker: Marker? = null,
@@ -54,6 +54,7 @@ sealed class TrackingState {
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
     data object SetNewMarkers : HomeEvents()
+    data object NearMarkers : HomeEvents()
     data class SetSingleMarker(
         val marker: Marker?,
         val item: UiRestaurantData
@@ -160,6 +161,36 @@ class HomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    fun nearRestaurantList() {
+        homeRepository.nearRestaurantList(
+            //todo : 반경 임시처리 -> 추후에 반경을 넓힐때 갯수를 제한해서 보내주던지 설정
+            // 반경은 300m로 그리고 zoom레벨은 16으로 임시 설정을 했음 이에 따라 나중에 수정해야함
+            radius = "300",
+            longitude = uiState.value.cameraLongitude.toString(),
+            latitude = uiState.value.cameraLatitude.toString()
+        ).onEach {
+            resetFilterClicked()
+            resetMarkerList()
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            markerList = it.data.body.map { data ->
+                                data.toUiRestaurantData()
+                            }
+                        )
+                    }
+                }
+
+                is BaseState.Error -> {
+                    _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
+                }
+            }
+            _events.emit(HomeEvents.NearMarkers)
+        }.launchIn(viewModelScope)
+
+    }
+
     private fun resetMarkerList() {
         viewModelScope.launch {
             _uiState.update { state ->
@@ -168,6 +199,17 @@ class HomeViewModel @Inject constructor(
             _events.emit(HomeEvents.SetNewMarkers)
         }
     }
+
+
+    private fun resetFilterClicked() {
+        viewModelScope.launch {
+            _uiState.update { state ->
+                val updatedFilterList = state.filterList.map { it.copy(isSelected = false) }
+                state.copy(filterList = updatedFilterList)
+            }
+        }
+    }
+
 
     fun getMarkerList() {
         if (uiState.value.filterList.all { !it.isSelected }) {
@@ -397,6 +439,12 @@ class HomeViewModel @Inject constructor(
                     addRestaurantId = restaurantId
                 )
             }
+        }
+    }
+
+    fun setCameraZoom(zoom : Double){
+        _uiState.update { state ->
+            state.copy( cameraZoom = zoom)
         }
     }
 }
