@@ -49,21 +49,23 @@ jobs:
 
             
 
-  pull_from_registry:
-    name: Connect server ssh and pull from container registry
-    needs: push_to_registry
-    runs-on: ubuntu-latest
-    steps:
-      - name: connect ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DEV_HOST }}
-          username: ${{ secrets.DEV_USERNAME }}
-          password: ${{ secrets.DEV_PASSWORD }}
-          port: ${{ secrets.DEV_PORT }}
-          script: |
+pull_from_registry:
+  name: Connect server ssh and pull from container registry
+  needs: push_to_registry
+  runs-on: ubuntu-latest
+  steps:
+    - name: connect ssh to Nginx server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.NGINX_HOST }}
+        username: ${{ secrets.NGINX_USERNAME }}
+        password: ${{ secrets.NGINX_PASSWORD }}
+        port: ${{ secrets.NGINX_PORT }}
+        script: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_USERNAME }}@${{ secrets.DEV_HOST }} -p ${{ secrets.DEV_PORT }} <<- 'EOSSH'
             docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker stop $(docker ps -a -q)
             docker rm $(docker ps -a -q)
             docker run -d -p 8000:8000 -e API_KEY=${{ secrets.DEV_APIKEY }} -e NODE_ENV="PROD" ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker image prune -f
+          EOSSH
