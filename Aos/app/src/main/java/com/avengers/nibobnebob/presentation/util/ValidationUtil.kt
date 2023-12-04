@@ -3,7 +3,7 @@ package com.avengers.nibobnebob.presentation.util
 object ValidationUtil {
 
     private val birthRegex = Regex("""^\d{4}/\d{2}/\d{2}${'$'}""")
-    private val emailRegex = Regex(""".+@.+""")
+    private val emailRegex = Regex(".+@.+\\..+")
 
     fun checkBirth(birth: String): Boolean {
         return birth.matches(birthRegex)
