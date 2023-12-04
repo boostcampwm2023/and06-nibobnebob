@@ -138,6 +138,7 @@ class DetailSignupViewModel @Inject constructor(
             DetailSignupRequest(
                 email = email.value,
                 provider = provider.value,
+                password = password.value,
                 nickName = nick.value,
                 birthdate = birth.value,
                 region = location.value,

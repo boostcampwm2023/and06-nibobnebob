@@ -11,7 +11,8 @@ import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BasicSignupFragment: BaseFragment<FragmentBasicSignupBinding>(R.layout.fragment_basic_signup) {
+class BasicSignupFragment :
+    BaseFragment<FragmentBasicSignupBinding>(R.layout.fragment_basic_signup) {
 
     override val parentViewModel: IntroViewModel by activityViewModels()
     private val viewModel: BasicSignupViewModel by viewModels()
@@ -26,9 +27,14 @@ class BasicSignupFragment: BaseFragment<FragmentBasicSignupBinding>(R.layout.fra
 
     override fun initEventObserver() {
         repeatOnStarted {
-            viewModel.events.collect{
-                when(it){
-                    is BasicSignupEvents.NavigateToDetailSignup -> findNavController().toDetailSignup(it.provider, it.email, it.password)
+            viewModel.events.collect {
+                when (it) {
+                    is BasicSignupEvents.NavigateToDetailSignup -> findNavController().toDetailSignup(
+                        it.provider,
+                        it.email,
+                        it.password
+                    )
+
                     is BasicSignupEvents.NavigateToBack -> findNavController().navigateUp()
                     is BasicSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
                 }
@@ -40,8 +46,12 @@ class BasicSignupFragment: BaseFragment<FragmentBasicSignupBinding>(R.layout.fra
         provider: String,
         email: String,
         password: String,
-    ){
-        val action = BasicSignupFragmentDirections.actionBasicSignupFragmentToDetailSignupFragment(email, password, provider)
+    ) {
+        val action = BasicSignupFragmentDirections.actionBasicSignupFragmentToDetailSignupFragment(
+            provider,
+            email,
+            password
+        )
         navigate(action)
     }
 
