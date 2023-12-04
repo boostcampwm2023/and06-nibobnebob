@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class NetworkManager @Inject constructor(private val connectivityManager: ConnectivityManager) {
 
-    private val _isNetworkConnected = MutableStateFlow(true)
+    private val _isNetworkConnected = MutableStateFlow(false)
     val isNetworkConnected: StateFlow<Boolean> = _isNetworkConnected
 
     private val networkRequest = NetworkRequest.Builder()

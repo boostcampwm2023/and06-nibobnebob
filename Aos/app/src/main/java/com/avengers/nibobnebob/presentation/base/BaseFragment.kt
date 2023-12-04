@@ -18,6 +18,7 @@ import com.avengers.nibobnebob.presentation.customview.OneButtonTitleDialog
 import com.avengers.nibobnebob.presentation.customview.TwoButtonTitleDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 abstract class BaseFragment<B : ViewDataBinding>(
@@ -50,7 +51,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
         initEventObserver()
 
         repeatOnStarted {
-            parentViewModel.networkState.collect {
+            parentViewModel.networkState.collectLatest {
                 when (it) {
                     NetWorkState.NETWORK_DISCONNECTED -> {
                         showSnackBar(resources.getString(R.string.no_network_text), "재시도")
@@ -58,6 +59,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
                     NetWorkState.NETWORK_CONNECTED -> {
                         currentSnackbar?.dismiss()
+                        initNetworkView()
                     }
 
                     else -> {}
@@ -70,7 +72,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     abstract fun initEventObserver()
 
-//    abstract fun initNetworkView()
+    abstract fun initNetworkView()
 
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -102,12 +104,11 @@ abstract class BaseFragment<B : ViewDataBinding>(
     }
 
     fun showSnackBar(text: String, action: String? = null) {
-        currentSnackbar?.dismiss()
 
-        val snackbar = Snackbar.make(
+        currentSnackbar = Snackbar.make(
             binding.root,
             text,
-            Snackbar.LENGTH_INDEFINITE
+            Snackbar.LENGTH_LONG
         ).apply {
             action?.let {
                 setAction(it) {
@@ -116,7 +117,6 @@ abstract class BaseFragment<B : ViewDataBinding>(
             }
             show()
         }
-        currentSnackbar = snackbar
     }
 
     override fun onDestroyView() {

@@ -57,6 +57,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         binding.vm = viewModel
         initMapView()
         binding.rvHomeFilter.adapter = HomeFilterAdapter()
+
+    }
+
+    override fun initNetworkView() {
         viewModel.getFilterList()
     }
 

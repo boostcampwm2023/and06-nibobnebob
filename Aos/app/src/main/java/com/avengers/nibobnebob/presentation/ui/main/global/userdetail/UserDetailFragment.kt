@@ -20,10 +20,13 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
     private val args: UserDetailFragmentArgs by navArgs()
     private val nickName by lazy { args.nickName }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
         binding.vm = viewModel
         viewModel.setNick(nickName)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun initNetworkView() {
         viewModel.getUserDetail()
     }
 

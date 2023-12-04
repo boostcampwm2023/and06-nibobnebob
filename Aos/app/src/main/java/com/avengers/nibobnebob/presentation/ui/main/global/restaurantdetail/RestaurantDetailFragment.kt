@@ -27,6 +27,9 @@ class RestaurantDetailFragment :
         binding.vm = viewModel
         viewModel.setRestaurantId(restaurantId)
         binding.rvReview.adapter = RestaurantReviewAdapter()
+    }
+
+    override fun initNetworkView() {
         viewModel.restaurantDetail()
     }
 

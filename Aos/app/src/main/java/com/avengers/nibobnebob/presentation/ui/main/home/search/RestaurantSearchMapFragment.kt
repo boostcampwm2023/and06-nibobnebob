@@ -54,6 +54,10 @@ class RestaurantSearchMapFragment :
         initClickEvent()
     }
 
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
     private fun initStateObserver() {
         repeatOnStarted {
             parentViewModel.selectedItem.collectLatest {

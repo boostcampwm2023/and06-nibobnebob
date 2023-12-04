@@ -28,6 +28,9 @@ class MyRestaurantListFragment :
         binding.vm = viewModel
         binding.rvMyRestaurant.adapter = adapter
         binding.rvMyRestaurant.animation = null
+    }
+
+    override fun initNetworkView() {
         viewModel.myRestaurantList()
     }
 

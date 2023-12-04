@@ -27,6 +27,10 @@ class FollowSearchFragment :
         viewModel.observeKeyword()
     }
 
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
     override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {

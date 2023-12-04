@@ -28,6 +28,10 @@ class EditProfileFragment :
         setDateBtnListener()
     }
 
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
     override fun initEventObserver() {
         repeatOnStarted {
             viewModel.event.collect { event ->

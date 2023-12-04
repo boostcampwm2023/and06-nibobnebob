@@ -23,11 +23,10 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
-        viewModel.getUserInfo()
+
 
 
         binding.tvWithdraw.setOnClickListener {
@@ -43,6 +42,11 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
                 .create()
                 .show()
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun initNetworkView() {
+        viewModel.getUserInfo()
     }
 
     override fun initEventObserver() {

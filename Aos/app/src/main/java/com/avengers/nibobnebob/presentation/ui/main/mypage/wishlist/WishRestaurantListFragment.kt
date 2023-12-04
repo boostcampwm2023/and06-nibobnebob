@@ -30,6 +30,9 @@ class WishRestaurantListFragment :
         binding.vm = viewModel
         binding.rvWishRestaurant.adapter = adapter
         binding.rvWishRestaurant.animation = null
+    }
+
+    override fun initNetworkView() {
         viewModel.myWishList()
     }
 

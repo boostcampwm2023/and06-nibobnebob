@@ -26,12 +26,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
     private val viewModel: LoginViewModel by viewModels()
     override val parentViewModel: IntroViewModel by activityViewModels()
 
+    override fun initNetworkView() {}
+
     override fun initView() {
         binding.vm = viewModel
         binding.btnNaver.setOnClickListener {
             naverLogin()
         }
     }
+
+
 
     override fun initEventObserver() {
         repeatOnStarted {

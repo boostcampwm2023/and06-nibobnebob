@@ -28,6 +28,9 @@ class AddMyRestaurantFragment :
         setVisitMethodRadioListener()
     }
 
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
 
     override fun initEventObserver() {
         repeatOnStarted {
