@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.data.remote
 
+import com.avengers.nibobnebob.data.model.request.BasicLoginRequest
 import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
@@ -19,4 +20,9 @@ interface IntroApi {
     suspend fun loginNaver(
         @Header("Authorization")token : String
     ): Response<BaseResponse<NaverLoginResponse>>
+
+    @POST("api/auth/login")
+    suspend fun loginBasic(
+        @Body params: BasicLoginRequest
+    ): Response<Unit>
 }
