@@ -31,6 +31,7 @@ export class UserService {
     private authService: AuthService
   ) { }
   async signup(@UploadedFile() file: Express.Multer.File, userInfoDto: UserInfoDto) {
+    userInfoDto.password = await hashPassword(userInfoDto.password);
     let profileImage;
     if (file) {
       const uuid = v4();
@@ -303,24 +304,25 @@ export class UserService {
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
-  async updateMypageUserInfo(tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
+  async updateMypageUserInfo(file: Express.Multer.File, tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
     userInfoDto.password = await hashPassword(userInfoDto.password);
+    let profileImage;
+    if (file) {
+      const uuid = v4();
+      profileImage = `profile/images/${uuid}.png`;
+      await this.awsService.uploadToS3(profileImage, file.buffer);
+    } else {
+      profileImage = "profile/images/defaultprofile.png";
+    }
     const user = {
       ...userInfoDto,
-      profileImage: "profile/images/defaultprofile.png",
+      profileImage: profileImage
     };
-
-    if (userInfoDto.profileImage) {
-      const uuid = v4();
-      user.profileImage = `profile/images/${uuid}.png`;
-    }
-
     const newUser = this.usersRepository.create(user);
-    const result = await this.usersRepository.updateMypageUserInfo(
-      tokenInfo.id,
-      newUser
-    );
-    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
-    return result;
+    const updatedUser = await this.usersRepository.updateMypageUserInfo(tokenInfo.id, newUser);
+    if (file) {
+      this.awsService.uploadToS3(`profile/images/${file.filename}`, file.buffer);
+    }
+    return updatedUser;
   }
 }

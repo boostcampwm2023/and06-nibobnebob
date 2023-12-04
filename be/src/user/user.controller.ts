@@ -403,6 +403,7 @@ export class UserController {
 
   @ApiTags("Mypage")
   @Put()
+  @UseInterceptors(FileInterceptor('profileImage', multerOptions))
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "유저 회원정보 수정" })
@@ -411,9 +412,10 @@ export class UserController {
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @UsePipes(new ValidationPipe())
   async updateMypageUserInfo(
+    @UploadedFile() file: Express.Multer.File,
     @GetUser() tokenInfo: TokenInfo,
     @Body() userInfoDto: UserInfoDto
   ) {
-    return await this.userService.updateMypageUserInfo(tokenInfo, userInfoDto);
+    return await this.userService.updateMypageUserInfo(file, tokenInfo, userInfoDto);
   }
 }
