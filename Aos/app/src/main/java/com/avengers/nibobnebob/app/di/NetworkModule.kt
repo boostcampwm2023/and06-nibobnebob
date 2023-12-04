@@ -27,7 +27,6 @@ object NetworkModule {
     ): OkHttpClient {
 
         return OkHttpClient.Builder()
-            .hostnameVerifier {_,_ -> true}
             .readTimeout(3000, TimeUnit.MILLISECONDS)
             .connectTimeout(3000, TimeUnit.MILLISECONDS)
             .addInterceptor(httpLoggingInterceptor)
