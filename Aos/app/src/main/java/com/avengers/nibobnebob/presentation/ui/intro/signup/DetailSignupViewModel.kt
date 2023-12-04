@@ -40,6 +40,7 @@ sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
     data object NavigateToLoginFragment : DetailSignupEvents()
     data class ShowSnackMessage(val msg: String) : DetailSignupEvents()
+    data object OpenGallery : DetailSignupEvents()
 }
 
 @HiltViewModel
@@ -184,6 +185,12 @@ class DetailSignupViewModel @Inject constructor(
     private fun navigateToLoginFragment() {
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.NavigateToLoginFragment)
+        }
+    }
+
+    fun openGallery(){
+        viewModelScope.launch {
+            _events.emit(DetailSignupEvents.OpenGallery)
         }
     }
 }

@@ -45,6 +45,7 @@ class DetailSignupFragment :
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
                     is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
                     is DetailSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                    is DetailSignupEvents.OpenGallery -> parentViewModel.openGallery()
                 }
             }
         }
