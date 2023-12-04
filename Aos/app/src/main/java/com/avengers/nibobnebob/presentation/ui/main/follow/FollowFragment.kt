@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.follow
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -21,22 +19,22 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
     override val parentViewModel: MainViewModel by activityViewModels()
     private val viewModel: FollowViewModel by viewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         binding.rvFollowList.adapter = FollowAdapter()
         binding.rvRecommendFriend.adapter = FollowAdapter()
-        initEventObserver()
         setTabSelectedListener()
-        viewModel.getMyRecommendFollow()
-        viewModel.getMyFollower()
     }
 
-    private fun initEventObserver(){
+    override fun initNetworkView() {
+        viewModel.getMyFollower()
+        viewModel.getMyRecommendFollow()
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
-            viewModel.events.collect{
-                when(it){
+            viewModel.events.collect {
+                when (it) {
                     is FollowEvents.NavigateToFollowSearch -> findNavController().toFollowSearch()
                     is FollowEvents.NavigateToUserDetail -> findNavController().toUserDetail(it.nickName)
                     is FollowEvents.ShowToastMessage -> showToastMessage(it.msg)
@@ -46,20 +44,21 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
         }
     }
 
-    private fun setTabSelectedListener(){
-        binding.tbFollowingTabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+    private fun setTabSelectedListener() {
+        binding.tbFollowingTabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when(tab?.position){
+                when (tab?.position) {
                     0 -> viewModel.getMyFollower()
                     1 -> viewModel.getMyFollowing()
                 }
             }
+
             override fun onTabReselected(tab: TabLayout.Tab?) {}
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
         })
     }
 
-    private fun NavController.toFollowSearch(){
+    private fun NavController.toFollowSearch() {
         val action = FollowFragmentDirections.actionFollowFragmentToFollowSearchFragment()
         navigate(action)
     }
