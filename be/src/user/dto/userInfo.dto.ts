@@ -59,13 +59,4 @@ export class UserInfoDto {
   @IsBoolean()
   @IsNotEmpty()
   isMale: boolean;
-
-  @ApiProperty({
-    description: "The profile image of the user",
-    type: 'string',
-    format: 'binary',
-    required: false,
-  })
-  @IsOptional()
-  profileImage?: Buffer;
 }

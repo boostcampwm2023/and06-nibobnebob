@@ -247,8 +247,21 @@ export class UserController {
   @ApiResponse({ status: 200, description: "회원가입 성공" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @ApiBody({
-    description: '회원가입 정보',
-    type: UserInfoDto,
+    schema: {
+      type: 'object',
+      description: "회원가입",
+      required: ['email', 'provider', 'nickName', 'region', 'birthdate', 'isMale'],
+      properties: {
+        email: { type: 'string', example: 'user@example.com', description: 'The email of the user' },
+        password: { type: 'string', example: '1234', description: 'The password of the user' },
+        provider: { type: 'string', example: 'naver', description: 'The provider of the user' },
+        nickName: { type: 'string', example: 'test', description: 'The nickname of the user' },
+        region: { type: 'string', example: '강동구', description: 'The region of the user' },
+        birthdate: { type: 'string', example: '1234/56/78', description: 'The birth of the user' },
+        isMale: { type: 'boolean', example: true, description: 'The gender of the user. true is male, false is female' },
+        profileImage: { type: 'string', format: 'binary', description: 'The profile image of the user' },
+      },
+    },
   })
   @ApiConsumes('multipart/form-data')
   async singup(@Body() body, @UploadedFile() file: Express.Multer.File) {
@@ -419,8 +432,21 @@ export class UserController {
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiBody({
-    description: '회원가입 정보',
-    type: UserInfoDto,
+    schema: {
+      type: 'object',
+      description: "회원정보 수정",
+      required: ['email', 'provider', 'nickName', 'region', 'birthdate', 'isMale'],
+      properties: {
+        email: { type: 'string', example: 'user@example.com', description: 'The email of the user' },
+        password: { type: 'string', example: '1234', description: 'The password of the user' },
+        provider: { type: 'string', example: 'naver', description: 'The provider of the user' },
+        nickName: { type: 'string', example: 'test', description: 'The nickname of the user' },
+        region: { type: 'string', example: '강동구', description: 'The region of the user' },
+        birthdate: { type: 'string', example: '1234/56/78', description: 'The birth of the user' },
+        isMale: { type: 'boolean', example: true, description: 'The gender of the user. true is male, false is female' },
+        profileImage: { type: 'string', format: 'binary', description: 'The profile image of the user' },
+      },
+    },
   })
   @ApiOperation({ summary: "유저 회원정보 수정" })
   @ApiResponse({ status: 200, description: "회원정보 수정 성공" })
