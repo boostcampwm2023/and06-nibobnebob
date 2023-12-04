@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.StatusCode
+import com.avengers.nibobnebob.data.model.request.BasicLoginRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
-import com.avengers.nibobnebob.presentation.ui.intro.login.model.UiLoginData
+import com.avengers.nibobnebob.presentation.ui.intro.signup.InputState
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,9 +16,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+
+data class LoginUiState(
+    val commonLoginState: InputState = InputState.Empty
+)
 
 sealed class LoginEvent {
     data object NavigateToMain : LoginEvent()
@@ -39,7 +44,7 @@ class LoginViewModel @Inject constructor(
     private val _events = MutableSharedFlow<LoginEvent>()
     val events = _events.asSharedFlow()
 
-    private val _uiState = MutableStateFlow(UiLoginData())
+    private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
     val email = MutableStateFlow("")
@@ -54,17 +59,11 @@ class LoginViewModel @Inject constructor(
 
     private fun observeEmail(){
         email.onEach { newEmail ->
-            _uiState.update { state ->
-                state.copy(email = newEmail)
-            }
         }.launchIn(viewModelScope)
     }
 
     private fun observePassword() {
         password.onEach { newPassword ->
-            _uiState.update { state ->
-                state.copy(password = newPassword)
-            }
         }.launchIn(viewModelScope)
     }
 
@@ -73,7 +72,16 @@ class LoginViewModel @Inject constructor(
     }
 
     fun loginCommon(){
-        //TODO : 일반로그인
+        viewModelScope.launch {
+            introRepository.loginBasic(
+                BasicLoginRequest(email.value, password.value)
+            ).onEach {
+                when (it) {
+                    is BaseState.Success -> {}
+                    is BaseState.Error -> {}
+                }
+            }
+        }
     }
 
     fun loginNaver(token : String){
