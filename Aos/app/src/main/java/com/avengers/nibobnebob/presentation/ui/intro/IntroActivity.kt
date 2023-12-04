@@ -96,7 +96,7 @@ class IntroActivity : BaseActivity<ActivityIntroBinding>(ActivityIntroBinding::i
                 val uri = result.data?.data
 
                 uri?.let {
-                    viewModel.setUri(it)
+                    viewModel.setUriString(it.toString())
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -42,8 +43,9 @@ internal fun String.toAgeString(): String {
     }
 }
 
-internal fun Uri.toMultiPart(context: Context): MultipartBody.Part {
-    val file = File(getRealPathFromUri(this, context) ?: "")
+internal fun String.toMultiPart(context: Context): MultipartBody.Part {
+    val uri = this.toUri()
+    val file = File(getRealPathFromUri(uri, context) ?: "")
     val requestFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData("image", file.name, requestFile)
 }

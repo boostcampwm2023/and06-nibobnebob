@@ -1,5 +1,7 @@
 package com.avengers.nibobnebob.data.model.request
 
+import okhttp3.MultipartBody
+
 data class DetailSignupRequest(
     val email: String,
     val password: String? = "",
@@ -7,5 +9,6 @@ data class DetailSignupRequest(
     val nickName: String,
     val region: String,
     val birthdate: String,
-    val isMale: Boolean
+    val isMale: Boolean,
+    val profileImage: MultipartBody.Part
 )

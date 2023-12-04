@@ -29,8 +29,8 @@ class IntroViewModel @Inject constructor(
     private val _events = MutableSharedFlow<IntroEvents>()
     val events: SharedFlow<IntroEvents> = _events.asSharedFlow()
 
-    private val _image = MutableStateFlow("".toUri())
-    val image: StateFlow<Uri> = _image.asStateFlow()
+    private val _image = MutableStateFlow("")
+    val image: StateFlow<String> = _image.asStateFlow()
 
 
     fun openGallery(){
@@ -39,7 +39,7 @@ class IntroViewModel @Inject constructor(
         }
     }
 
-    fun setUri(uri : Uri){
+    fun setUriString(uri : String){
         _image.value = uri
     }
 }

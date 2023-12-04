@@ -11,6 +11,7 @@ import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
+import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -55,7 +56,7 @@ class DetailSignupFragment :
     private fun initImageObserver(){
         repeatOnStarted {
             parentViewModel.image.collect{
-                viewModel.setImage(it)
+                viewModel.setImage(it, it.toMultiPart(requireContext()))
             }
         }
     }
