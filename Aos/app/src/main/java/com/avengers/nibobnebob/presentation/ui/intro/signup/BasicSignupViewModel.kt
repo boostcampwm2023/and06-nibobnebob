@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.repository.ValidationRepository
+import com.avengers.nibobnebob.presentation.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,12 +69,22 @@ class BasicSignupViewModel @Inject constructor(
 
     private fun observeEmail(){
         email.onEach {
-            _uiState.update { state ->
-                emailValidation.value = false
-                state.copy(
-                    isEmailNotEmpty = it.isNotBlank(),
-                    emailState = InputState.Empty
-                )
+            if(ValidationUtil.checkEmail(it)){
+                _uiState.update { state ->
+                    emailValidation.value = false
+                    state.copy(
+                        isEmailNotEmpty = it.isNotBlank(),
+                        emailState = InputState.Empty
+                    )
+                }
+            } else {
+                _uiState.update { state ->
+                    emailValidation.value = false
+                    state.copy(
+                        isEmailNotEmpty = false,
+                        emailState = InputState.Error("올바른 이메일 형식이 아닙니다")
+                    )
+                }
             }
         }.launchIn(viewModelScope)
     }
