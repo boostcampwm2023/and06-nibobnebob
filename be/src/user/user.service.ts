@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UploadedFile } from "@nestjs/common";
 import { UserInfoDto } from "./dto/userInfo.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
@@ -30,22 +30,22 @@ export class UserService {
     private awsService: AwsService,
     private authService: AuthService
   ) { }
-  async signup(userInfoDto: UserInfoDto) {
-    userInfoDto.password = await hashPassword(userInfoDto.password);
+  async signup(@UploadedFile() file: Express.Multer.File, userInfoDto: UserInfoDto) {
+    let profileImage;
+    if (file) {
+      const uuid = v4();
+      profileImage = `profile/images/${uuid}.png`;
+      await this.awsService.uploadToS3(profileImage, file.buffer);
+    } else {
+      profileImage = "profile/images/defaultprofile.png";
+    }
     const user = {
       ...userInfoDto,
-      profileImage: "profile/images/defaultprofile.png",
+      profileImage: profileImage
     };
-
-    if (userInfoDto.profileImage) {
-      const uuid = v4();
-      user.profileImage = `profile/images/${uuid}.png`;
-    }
 
     const newUser = this.usersRepository.create(user);
     await this.usersRepository.createUser(newUser);
-    if (userInfoDto.profileImage) this.awsService.uploadToS3(user.profileImage, userInfoDto.profileImage);
-    return;
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);

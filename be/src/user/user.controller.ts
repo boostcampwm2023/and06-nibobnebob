@@ -10,6 +10,8 @@ import {
   ValidationPipe,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
@@ -27,6 +29,13 @@ import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
 import { LocationDto } from "src/restaurant/dto/location.dto";
 import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
 import { ParseArrayPipe } from "../utils/parsearraypipe";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { memoryStorage } from 'multer';
+
+const multerOptions = {
+  storage: memoryStorage(),
+};
+
 
 @Controller("user")
 export class UserController {
@@ -228,12 +237,13 @@ export class UserController {
 
   @ApiTags("Signup")
   @Post()
+  @UseInterceptors(FileInterceptor('profileImage', multerOptions))
   @ApiOperation({ summary: "유저 회원가입" })
   @ApiResponse({ status: 200, description: "회원가입 성공" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   @UsePipes(new ValidationPipe())
-  async singup(@Body() userInfoDto: UserInfoDto) {
-    return await this.userService.signup(userInfoDto);
+  async singup(@UploadedFile() file: Express.Multer.File, @Body() userInfoDto: UserInfoDto) {
+    return await this.userService.signup(file, userInfoDto);
   }
 
   @ApiTags("Follow/Following")
