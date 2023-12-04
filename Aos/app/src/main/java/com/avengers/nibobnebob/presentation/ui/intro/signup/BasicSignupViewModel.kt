@@ -8,11 +8,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,6 +50,16 @@ class BasicSignupViewModel @Inject constructor(
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
     val passwordCheck = MutableStateFlow("")
+    private val emailValidation = MutableStateFlow(false)
+    private val passwordValidation = MutableStateFlow(false)
+
+    val isDataReady = combine(emailValidation, passwordValidation){ emailValidation, passwordValidation ->
+        emailValidation && passwordValidation
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        false
+    )
 
     init{
         observeEmail()
@@ -67,12 +80,14 @@ class BasicSignupViewModel @Inject constructor(
         passwordCheck.onEach {
             if(it.isNotBlank()){
                 if(it == password.value){
+                    passwordValidation.value = true
                     _uiState.update { state ->
                         state.copy(
                             passwordCheckState = InputState.Success("비밀번호가 일치합니다.")
                         )
                     }
                 } else {
+                    passwordValidation.value = false
                     _uiState.update { state ->
                         state.copy(
                             passwordCheckState = InputState.Error("비밀번호가 일치하지 않습니다.")
@@ -88,12 +103,14 @@ class BasicSignupViewModel @Inject constructor(
             when(it){
                 is BaseState.Success -> {
                     if(it.data.body.isExist){
+                        emailValidation.value = false
                         _uiState.update { state ->
                             state.copy(
                                 emailState = InputState.Error("사용할 수 없는 이메일 입니다")
                             )
                         }
                     } else {
+                        emailValidation.value = true
                         _uiState.update { state ->
                             state.copy(
                                 emailState = InputState.Success("사용 가능한 이메일 입니다")
@@ -102,6 +119,7 @@ class BasicSignupViewModel @Inject constructor(
                     }
                 }
                 is BaseState.Error -> {
+                    emailValidation.value = false
                     _events.emit(BasicSignupEvents.ShowSnackMessage(it.message))
                 }
             }
