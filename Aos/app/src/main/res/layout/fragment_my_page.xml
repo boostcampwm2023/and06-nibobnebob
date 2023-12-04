@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="svm"
             type="com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel" />
+
         <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.mypage.MyPageViewModel" />
@@ -47,10 +49,10 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="@id/gl_start"
+            app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintEnd_toEndOf="@id/gl_end"
-            app:layout_constraintTop_toTopOf="@id/gl_top"
-            app:layout_constraintBottom_toBottomOf="@id/gl_bottom">
+            app:layout_constraintStart_toStartOf="@id/gl_start"
+            app:layout_constraintTop_toTopOf="@id/gl_top">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -71,10 +73,20 @@
                     android:layout_height="120dp"
                     android:layout_marginTop="50dp"
                     android:src="@drawable/ic_mypage"
-                    app:imageUrl="@{vm.uiState.profileImage}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_mypage_title" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_mypage_title"
+                    app:profileImageUrl="@{vm.uiState.profileImage}" />
+
+                <ImageView
+                    android:id="@+id/btn_edt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:src="@drawable/ic_edit"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_profile"
+                    app:layout_constraintEnd_toEndOf="@id/iv_profile" />
 
                 <TextView
                     android:id="@+id/tv_nickname"
@@ -158,10 +170,10 @@
                     android:layout_width="0dp"
                     android:layout_height="56dp"
                     android:layout_marginTop="42dp"
+                    android:onClickListener="@{()->svm.navigateToMenu(0)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_area_title"
-                    android:onClickListener="@{()->svm.navigateToMenu(0)}" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_area_title" />
 
                 <TextView
                     android:id="@+id/tv_edit_profile"
@@ -194,10 +206,10 @@
                     android:id="@+id/v_my_list"
                     android:layout_width="0dp"
                     android:layout_height="56dp"
+                    android:onClick="@{()->svm.navigateToMenu(1)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/md_edit_my_list"
-                    android:onClick="@{()->svm.navigateToMenu(1)}"/>
+                    app:layout_constraintTop_toBottomOf="@id/md_edit_my_list" />
 
                 <TextView
                     android:id="@+id/tv_my_list"
@@ -230,10 +242,10 @@
                     android:id="@+id/v_wish_list"
                     android:layout_width="0dp"
                     android:layout_height="56dp"
+                    android:onClick="@{()->svm.navigateToMenu(2)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/md_my_list_wish_list"
-                    android:onClick="@{()->svm.navigateToMenu(2)}"/>
+                    app:layout_constraintTop_toBottomOf="@id/md_my_list_wish_list" />
 
                 <TextView
                     android:id="@+id/tv_wish_list"
@@ -268,8 +280,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
-                    android:text="@string/my_main_logout_title"
                     android:onClick="@{() -> vm.logout()}"
+                    android:text="@string/my_main_logout_title"
                     android:textColor="@color/nn_rainbow_red"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/md_wish" />

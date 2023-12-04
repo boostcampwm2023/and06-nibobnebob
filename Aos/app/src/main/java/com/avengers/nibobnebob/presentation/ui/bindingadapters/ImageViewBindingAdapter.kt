@@ -43,12 +43,14 @@ fun bindWishStatus(iv: ImageView, isWish: Boolean) {
     )
 }
 
-@BindingAdapter("imageUrl")
+@BindingAdapter("profileImageUrl")
 fun bindLoadImage(view : ImageView, imageUrl : String?){
     imageUrl?.let {
         Glide.with(view.context)
             .load(imageUrl)
             .apply(RequestOptions.circleCropTransform())
+            .error(R.drawable.ic_mypage)
+            .placeholder(R.drawable.ic_mypage)
             .into(view)
     }
 }
