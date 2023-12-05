@@ -2,8 +2,9 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.mylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -35,7 +36,8 @@ sealed class MyRestaurantEvent {
 
 @HiltViewModel
 class MyRestaurantListViewModel @Inject constructor(
-    private val restaurantRepository: RestaurantRepository
+    private val getMyRestaurantListUseCase: GetMyRestaurantListUseCase,
+    private val deleteRestaurantUseCase: DeleteRestaurantUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MyRestaurantUiState())
     val uiState: StateFlow<MyRestaurantUiState> = _uiState.asStateFlow()
@@ -49,11 +51,11 @@ class MyRestaurantListViewModel @Inject constructor(
 
 
     fun myRestaurantList() {
-        restaurantRepository.myRestaurantList().onEach { my ->
+        getMyRestaurantListUseCase().onEach { my ->
             when (my) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
-                        val list = my.data.body.map { it.toMyListData() }
+                        val list = my.data.map { it.toMyListData() }
                         state.copy(
                             myList = list,
                             isEmpty = list.isEmpty()
@@ -72,14 +74,14 @@ class MyRestaurantListViewModel @Inject constructor(
     }
 
     fun deleteMyList(id: Int) {
-        restaurantRepository.deleteRestaurant(id).onEach {
+        deleteRestaurantUseCase(id).onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _events.emit(MyRestaurantEvent.ShowToastMessage("삭제 되었습니다."))
                     myRestaurantList()
                 }
 
-                is OldBaseState.Error -> {
+                is BaseState.Error -> {
                     _events.emit(MyRestaurantEvent.ShowSnackMessage(ERROR_MSG))
                 }
             }

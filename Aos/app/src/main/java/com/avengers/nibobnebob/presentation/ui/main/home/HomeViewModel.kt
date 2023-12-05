@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.HomeRepository
-import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.restaurant.AddWishRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteMyWishRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
 import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
@@ -69,7 +72,9 @@ sealed class HomeEvents {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    private val restaurantRepository: RestaurantRepository,
+    private val myRestaurantListUseCase: GetMyRestaurantListUseCase,
+    private val addWishRestaurantUseCase: AddWishRestaurantUseCase,
+    private val deleteMyWishRestaurantUseCase: DeleteMyWishRestaurantUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -219,19 +224,19 @@ class HomeViewModel @Inject constructor(
 
         when (_uiState.value.curFilter) {
             MY_LIST -> {
-                restaurantRepository.myRestaurantList().onEach {
+                myRestaurantListUseCase().onEach {
                     _events.emit(HomeEvents.RemoveMarkers)
                     when (it) {
-                        is OldBaseState.Success -> {
+                        is BaseState.Success -> {
                             _uiState.update { state ->
-                                state.copy(markerList = it.data.body.map { data ->
+                                state.copy(markerList = it.data.map { data ->
                                     data.toUiRestaurantData()
                                 })
                             }
                             moveCamera()
                         }
 
-                        is OldBaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
+                        is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
                     }
                     _events.emit(HomeEvents.SetNewMarkers)
                 }.launchIn(viewModelScope)
@@ -267,17 +272,17 @@ class HomeViewModel @Inject constructor(
         val result: Boolean = viewModelScope.async {
             var flag = true
             if (curState) {
-                restaurantRepository.deleteWishRestaurant(id).onEach {
+                deleteMyWishRestaurantUseCase(id).onEach {
                     flag = when (it) {
-                        is OldBaseState.Success -> true
+                        is BaseState.Success -> true
                         else -> false
                     }
                 }.launchIn(viewModelScope)
                 flag
             } else {
-                restaurantRepository.addWishRestaurant(id).onEach {
+                addWishRestaurantUseCase(id).onEach {
                     flag = when (it) {
-                        is OldBaseState.Success -> true
+                        is BaseState.Success -> true
                         else -> false
                     }
                 }.launchIn(viewModelScope)
@@ -442,9 +447,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun setCameraZoom(zoom : Double){
+    fun setCameraZoom(zoom: Double) {
         _uiState.update { state ->
-            state.copy( cameraZoom = zoom)
+            state.copy(cameraZoom = zoom)
         }
     }
 }
