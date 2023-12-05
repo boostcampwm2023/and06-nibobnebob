@@ -5,6 +5,7 @@ import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RestaurantApi
@@ -57,6 +58,12 @@ class RestaurantRepositoryImpl @Inject constructor(
     override fun deleteWishRestaurant(restaurantId: Int): Flow<BaseState<BaseResponse<Unit>>> =
         flow {
             val result = runRemote { api.deleteWishRestaurant(restaurantId) }
+            emit(result)
+        }
+
+    override fun getRestaurantIsWish(id: Int): Flow<BaseState<BaseResponse<RestaurantIsWishResponse>>> =
+        flow {
+            val result = runRemote { api.getRestaurantIsWish(id) }
             emit(result)
         }
 }
