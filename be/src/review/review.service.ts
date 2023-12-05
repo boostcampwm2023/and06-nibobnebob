@@ -39,28 +39,45 @@ export class ReviewService {
     }
 
     async reviewLike(tokenInfo: TokenInfo, reviewId: number) {
-        const entity = this.reviewLikeRepository.create({
-            userId: tokenInfo.id,
-            reviewId: reviewId,
-            isLike: true,
+        const existingLike = await this.reviewLikeRepository.findOne({
+            where: { userId: tokenInfo.id, reviewId: reviewId }
         });
-        try {
-            await this.reviewLikeRepository.upsert(entity, ['userId', 'reviewId']);
-        } catch (err) {
-            throw new BadRequestException();
+
+        if (existingLike && existingLike.isLike) {
+            await this.reviewLikeRepository.remove(existingLike);
+        } else {
+            const entity = this.reviewLikeRepository.create({
+                userId: tokenInfo.id,
+                reviewId: reviewId,
+                isLike: true,
+            });
+            try {
+                await this.reviewLikeRepository.upsert(entity, ['userId', 'reviewId']);
+            } catch (err) {
+                throw new BadRequestException();
+            }
         }
     }
 
     async reviewUnLike(tokenInfo: TokenInfo, reviewId: number) {
-        const entity = this.reviewLikeRepository.create({
-            userId: tokenInfo.id,
-            reviewId: reviewId,
-            isLike: false,
+        const existingLike = await this.reviewLikeRepository.findOne({
+            where: { userId: tokenInfo.id, reviewId: reviewId }
         });
-        try {
-            await this.reviewLikeRepository.upsert(entity, ['userId', 'reviewId']);
-        } catch (err) {
-            throw new BadRequestException();
+
+        if (existingLike && !existingLike.isLike) {
+            await this.reviewLikeRepository.remove(existingLike);
+        } else {
+            const entity = this.reviewLikeRepository.create({
+                userId: tokenInfo.id,
+                reviewId: reviewId,
+                isLike: false,
+            });
+            try {
+                await this.reviewLikeRepository.upsert(entity, ['userId', 'reviewId']);
+            } catch (err) {
+                throw new BadRequestException();
+            }
         }
     }
+
 }

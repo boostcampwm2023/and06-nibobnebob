@@ -52,7 +52,7 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
           "user.nickName as reviewer",
           "review.createdAt",
           "review.reviewImage",
-          "reviewLike.isLike",
+          "reviewLike.isLike as isLike",
         ])
         .where("review.restaurant_id = :restaurantId", {
           restaurantId: restaurantId,
@@ -83,7 +83,7 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
           "user.nickName as reviewer",
           "review.createdAt",
           "review.reviewImage",
-          "reviewLike.isLike",
+          "reviewLike.isLike as isLike",
         ])
         .where("review.restaurant_id = :restaurantId", {
           restaurantId: restaurantId,
@@ -115,7 +115,7 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
             "user.nickName as reviewer",
             "review.createdAt",
             "review.reviewImage",
-            "reviewLike.isLike",
+            "reviewLike.isLike as isLike",
           ])
           .where("review.id IN (:...sortedReviewIds)", { sortedReviewIds })
           .andWhere("review.restaurant_id = :restaurantId", { restaurantId: restaurantId })
