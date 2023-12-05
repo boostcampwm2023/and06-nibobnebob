@@ -36,6 +36,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { memoryStorage } from 'multer';
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
+import { SortInfoDto } from "src/utils/sortInfo.dto";
 
 const multerOptions = {
   storage: memoryStorage(),
@@ -169,16 +170,27 @@ export class UserController {
     type: String,
     description: "검색 반경",
   })
+  @ApiQuery({
+    name: "sort",
+    required: false,
+    type: String,
+    description: "선택된 필터",
+  })
+  @ApiQuery({ name: 'page', required: false, description: '페이지 번호' })
+  @ApiQuery({ name: 'limit', required: false, description: '페이지 당 항목 수' })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
+  @UsePipes(new ValidationPipe())
   async getMyRestaurantListInfo(
     @Query() locationDto: LocationDto,
+    @Query() sortInfoDto: SortInfoDto,
     @GetUser() tokenInfo: TokenInfo
   ) {
     const searchInfoDto = new SearchInfoDto("", locationDto);
     return await this.userService.getMyRestaurantListInfo(
       searchInfoDto,
+      sortInfoDto,
       tokenInfo
     );
   }
@@ -188,10 +200,18 @@ export class UserController {
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 위시 맛집 리스트 정보 가져오기" })
+  @ApiQuery({
+    name: "sort",
+    required: false,
+    type: String,
+    description: "선택된 필터",
+  })
+  @ApiQuery({ name: 'page', required: false, description: '페이지 번호' })
+  @ApiQuery({ name: 'limit', required: false, description: '페이지 당 항목 수' })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
-  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo) {
-    return await this.userService.getMyWishRestaurantListInfo(tokenInfo);
+  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo,  @Query() sortInfoDto: SortInfoDto) {
+    return await this.userService.getMyWishRestaurantListInfo(tokenInfo,sortInfoDto);
   }
 
   @ApiTags("Home")
@@ -268,7 +288,6 @@ export class UserController {
     const userInfoDto = plainToClass(UserInfoDto, body);
     const errors = await validate(userInfoDto);
     if (errors.length > 0) {
-      console.log(errors);
       throw new BadRequestException(errors);
     }
     return await this.userService.signup(file, userInfoDto);
