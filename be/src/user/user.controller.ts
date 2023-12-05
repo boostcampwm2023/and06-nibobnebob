@@ -267,7 +267,10 @@ export class UserController {
   async singup(@Body() body, @UploadedFile() file: Express.Multer.File) {
     const userInfoDto = plainToClass(UserInfoDto, body);
     const errors = await validate(userInfoDto);
-    if (errors.length > 0) throw new BadRequestException(errors);
+    if (errors.length > 0) {
+      console.log(errors);
+      throw new BadRequestException(errors);
+    }
     return await this.userService.signup(file, userInfoDto);
   }
 
