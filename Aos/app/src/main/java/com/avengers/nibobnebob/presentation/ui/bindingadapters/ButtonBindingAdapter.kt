@@ -12,7 +12,7 @@ fun bindDoneButtonEnable(btn: AppCompatButton, state: EditProfileUiState?) = wit
     state ?: return
 
     val allValid = state.nickName.isValid && state.location.isValid && state.birth.isValid
-    val isChanged = state.nickName.isChanged || state.location.isChanged || state.birth.isChanged
+    val isChanged = state.nickName.isChanged || state.location.isChanged || state.birth.isChanged || state.profileImage.isChanged
 
     isEnabled = allValid && isChanged
 }

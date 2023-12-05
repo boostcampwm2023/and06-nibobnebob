@@ -6,6 +6,7 @@ import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import com.avengers.nibobnebob.R
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 @BindingAdapter("filterRateBackground")
 fun bindFilterBackground(iv: ImageView, rate: Int) = with(iv) {
@@ -42,6 +43,18 @@ fun bindWishStatus(iv: ImageView, isWish: Boolean) {
     iv.setBackgroundResource(
         if (isWish) R.drawable.ic_star_full else R.drawable.ic_star_border
     )
+}
+
+@BindingAdapter("profileImageUrl")
+fun bindLoadImage(view : ImageView, imageUrl : String?){
+    imageUrl?.let {
+        Glide.with(view.context)
+            .load(imageUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .error(R.drawable.ic_mypage)
+            .placeholder(R.drawable.ic_mypage)
+            .into(view)
+    }
 }
 
 @BindingAdapter("profileImgUri")

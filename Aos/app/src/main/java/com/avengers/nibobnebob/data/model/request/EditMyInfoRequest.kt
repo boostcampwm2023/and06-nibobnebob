@@ -8,4 +8,5 @@ data class EditMyInfoRequest(
     val region: String,
     val isMale: Boolean,
     val password : String,
+    val profileImage : String // TODO : 잠시보류
 )

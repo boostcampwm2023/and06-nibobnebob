@@ -1,14 +1,17 @@
 package com.avengers.nibobnebob.data.model.response
 
+import com.google.gson.annotations.SerializedName
+
 
 data class MyInfoResponse(
-    val userInfo: UserInfo
+    @SerializedName("userInfo") val userInfo: UserInfo
 )
 
 data class UserInfo(
-    val nickName: String,
-    val birthdate: String,
-    val region: String,
-    val isMale: Boolean
+    @SerializedName("nickName") val nickName: String,
+    @SerializedName("birthdate") val birthdate: String,
+    @SerializedName("region") val region: String,
+    @SerializedName("isMale") val isMale: Boolean,
+    @SerializedName("profileImage") val profileImage: String
 )
 
