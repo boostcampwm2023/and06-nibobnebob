@@ -1,9 +1,9 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.mapper
 
-import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse
+import com.avengers.nibobnebob.domain.model.MyDefaultInfoData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyPageEditInfoData
 
-fun MyDefaultInfoResponse.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
+fun MyDefaultInfoData.toUiMyPageEditInfoData() = UiMyPageEditInfoData(
     nickName = userInfo.nickName,
     email = userInfo.email,
     provider = userInfo.provider,
