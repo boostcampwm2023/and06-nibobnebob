@@ -130,4 +130,52 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         .getRawMany();
     }
   }
+  async getMyFavoriteFoodCategory(id: TokenInfo['id'], region) {
+    const categoryCounts = await this.createQueryBuilder("userRestaurantList")
+      .select("restaurant.category", "category")
+      .addSelect("COUNT(restaurant.category)", "count")
+      .innerJoin("userRestaurantList.restaurant", "restaurant")
+      .where("userRestaurantList.userId = :id", { id })
+      .groupBy("restaurant.category")
+      .getRawMany();
+
+    if (categoryCounts.length) {
+      const favoriteCategory = categoryCounts.reduce((a, b) => a.count > b.count ? a : b).category;
+
+      const subQuery = await this.createQueryBuilder()
+        .select("DISTINCT(userRestaurantListSub.restaurantId)", "restaurantId")
+        .from(UserRestaurantListEntity, "userRestaurantListSub")
+        .where("userRestaurantListSub.userId = :id", { id })
+        .getRawMany();
+
+      const restaurantIds = subQuery.map(item => item.restaurantId);
+
+      const result = await this
+        .createQueryBuilder("userRestaurantList")
+        .leftJoinAndSelect("userRestaurantList.restaurant", "restaurant")
+        .select(["restaurant.id", "restaurant.name", "restaurant.category"])
+        .where("restaurant.category = :category", { category: favoriteCategory })
+        .andWhere("restaurant.address LIKE :region", { region: `%${region.region}%` })
+        .andWhere("userRestaurantList.restaurantId NOT IN (:...restaurantIds)", { restaurantIds: restaurantIds })
+        .getRawMany();
+
+      if (result.length > 0) {
+        const recommendedRestaurant = result[Math.floor(Math.random() * result.length)];
+        return recommendedRestaurant;
+      }
+    }
+    else {
+      const result = await this
+        .createQueryBuilder("userRestaurantList")
+        .leftJoinAndSelect("userRestaurantList.restaurant", "restaurant")
+        .select(["restaurant.id", "restaurant.name", "restaurant.category"])
+        .andWhere("restaurant.address LIKE :region", { region: `%${region.region}%` })
+        .getRawMany();
+
+      if (result.length > 0) {
+        const recommendedRestaurant = result[Math.floor(Math.random() * result.length)];
+        return recommendedRestaurant;
+      }
+    }
+  }
 }

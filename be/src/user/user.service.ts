@@ -190,6 +190,10 @@ export class UserService {
       isFollow: false,
     }));
   }
+  async getRecommendFood(tokenInfo: TokenInfo) {
+    const region = await this.usersRepository.findOne({ select: ["region"], where: { id: tokenInfo.id } });
+    return await this.userRestaurantListRepository.getMyFavoriteFoodCategory(tokenInfo.id, region);
+  }
   async searchTargetUser(tokenInfo: TokenInfo, nickName: string, region: string[]) {
     const whereCondition: any = {
       nickName: Like(`%${nickName}%`),

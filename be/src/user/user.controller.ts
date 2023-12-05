@@ -205,6 +205,17 @@ export class UserController {
     return await this.userService.getStateIsWish(tokenInfo, restaurantid);
   }
 
+  @ApiTags("Home")
+  @Get("/recommend-food")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "추천 음식 정보 가져오기" })
+  @ApiResponse({ status: 200, description: "추천 음식 정보 요청 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async getRecommendFood(@GetUser() tokenInfo: TokenInfo) {
+    return await this.userService.getRecommendFood(tokenInfo);
+  }
+
   @ApiTags("Follow/Following", "Home")
   @Get("follow-list")
   @UseGuards(AuthGuard("jwt"))
