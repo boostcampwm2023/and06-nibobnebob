@@ -1,14 +1,13 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
-import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.databinding.BindingAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -39,6 +38,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     private val viewModel: HomeViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
+    private val args: HomeFragmentArgs by navArgs()
+    private val restaurantId by lazy { args.addRestaurantId }
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -57,7 +58,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         binding.vm = viewModel
         initMapView()
         binding.rvHomeFilter.adapter = HomeFilterAdapter()
-
+        viewModel.setAddRestaurantId(restaurantId)
     }
 
     override fun initNetworkView() {
@@ -90,32 +91,45 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
     override fun initEventObserver() {
         repeatOnStarted {
-            viewModel.events.collect {
-                when (it) {
+            viewModel.events.collect { event ->
+                when (event) {
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
-                    is HomeEvents.SetNewMarkers -> {
-                        viewModel.trackingOff()
-                        val lat = viewModel.uiState.value.cameraLatitude
-                        val lng = viewModel.uiState.value.cameraLongitude
-                        val zoom = viewModel.uiState.value.cameraZoom
-                        val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
-                        val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
-                            .apply { animate(CameraAnimation.Linear, 500) }
-
-                        naverMap.moveCamera(cameraUpdate)
-                        viewModel.uiState.value.markerList.forEach { data ->
-                            setMarker(data)
-                        }
+                    is HomeEvents.SetNewMarkers, is HomeEvents.NearMarkers -> {
+                        handleMarkersEvent(event)
                     }
 
                     is HomeEvents.SetSingleMarker -> {
-                        setSingleMarker(it.marker, it.item)
+                        setSingleMarker(event.marker, event.item)
                     }
 
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
-                    is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                    is HomeEvents.ShowSnackMessage -> showSnackBar(event.msg)
                 }
             }
+        }
+    }
+
+    private fun handleMarkersEvent(event: HomeEvents) {
+        removeAllMarker()
+        viewModel.trackingOff()
+
+        val lat = viewModel.uiState.value.cameraLatitude
+        val lng = viewModel.uiState.value.cameraLongitude
+
+        if (event is HomeEvents.NearMarkers) {
+            //todo 줌 임시 처리 서버 논의 후 추후 수정 예정
+            viewModel.setCameraZoom(16.0)
+        }
+
+        val zoom = viewModel.uiState.value.cameraZoom
+        val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
+        val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
+            .apply { animate(CameraAnimation.Fly, 500) }
+
+        naverMap.moveCamera(cameraUpdate)
+
+        viewModel.uiState.value.markerList.forEach { data ->
+            setMarker(data)
         }
     }
 
@@ -147,7 +161,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private fun setMapListener() {
 
         // todo 화면 이동시 리스너
-        naverMap.addOnCameraChangeListener { reason, animated ->
+        naverMap.addOnCameraChangeListener { _, _ ->
 
         }
 
@@ -257,12 +271,4 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 }
 
 
-@BindingAdapter("trackingBtnDrawable")
-fun bindTrackingBtnDrawable(btn: ImageButton, state: TrackingState) {
-    when (state) {
-        is TrackingState.On -> btn.setImageResource(R.drawable.ic_location_on)
-        is TrackingState.Off -> btn.setImageResource(R.drawable.ic_location_off)
-        else -> {}
-    }
-}
 
