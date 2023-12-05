@@ -105,11 +105,13 @@ export class UserService {
   }
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
+    sort: string,
     tokenInfo: TokenInfo
   ) {
     const results =
       await this.userRestaurantListRepository.getMyRestaurantListInfo(
         searchInfoDto,
+        sort,
         tokenInfo.id
       );
 

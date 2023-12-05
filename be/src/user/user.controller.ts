@@ -169,16 +169,24 @@ export class UserController {
     type: String,
     description: "검색 반경",
   })
+  @ApiQuery({
+    name: "sort",
+    required: false,
+    type: String,
+    description: "선택된 필터",
+  })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMyRestaurantListInfo(
     @Query() locationDto: LocationDto,
+    @Query('sort') sort: string,
     @GetUser() tokenInfo: TokenInfo
   ) {
     const searchInfoDto = new SearchInfoDto("", locationDto);
     return await this.userService.getMyRestaurantListInfo(
       searchInfoDto,
+      sort,
       tokenInfo
     );
   }
