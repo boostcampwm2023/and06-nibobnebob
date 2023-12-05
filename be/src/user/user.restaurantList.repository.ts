@@ -132,7 +132,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         { userId: id }
       );
     
-    if (sortInfoDto.sort === 'TIME ASC') {
+    if (sortInfoDto.sort === 'TIME_ASC') {
       query = query.orderBy("user_restaurant_lists.created_at", "ASC");
     } else {
       query = query.orderBy("user_restaurant_lists.created_at", "DESC");

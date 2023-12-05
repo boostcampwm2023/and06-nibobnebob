@@ -58,7 +58,7 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
         { userId: id }
       )
 
-    if (sortInfoDto.sort === 'TIME ASC') {
+    if (sortInfoDto.sort === 'TIME_ASC') {
       query = query.orderBy("user_wishrestaurant_lists.created_at", "ASC");
     } else {
       query = query.orderBy("user_wishrestaurant_lists.created_at", "DESC");
