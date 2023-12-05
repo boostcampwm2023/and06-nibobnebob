@@ -13,10 +13,6 @@
         <action
             android:id="@+id/action_homeFragment_to_restaurantSearchFragment"
             app:destination="@id/restaurantSearchFragment" />
-        <argument
-            android:name="addRestaurantId"
-            android:defaultValue="0"
-            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/followFragment"
@@ -84,8 +80,7 @@
         android:id="@+id/global_to_homeFragment"
         app:destination="@id/homeFragment"
         app:popUpTo="@id/homeFragment"
-        app:popUpToInclusive="true">
-    </action>
+        app:popUpToInclusive="true"/>
     <action
         android:id="@+id/global_to_userDetailFragment"
         app:destination="@id/userDetailFragment"/>

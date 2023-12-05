@@ -8,7 +8,6 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentAddMyRestaurantBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
-import com.avengers.nibobnebob.presentation.ui.toHome
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,7 +48,7 @@ class AddMyRestaurantFragment :
 
                     is AddMyRestaurantEvents.ShowSuccessDialog -> {
                         showOneButtonTitleDialog("리뷰 등록을 완료했습니다!") {
-                            findNavController().toHome(restaurantId)
+                            findNavController().navigateUp()
                         }
                     }
 
