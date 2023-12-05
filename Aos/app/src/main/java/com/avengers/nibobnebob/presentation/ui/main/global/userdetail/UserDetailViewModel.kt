@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.FollowRepository
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiUserDetailData
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiUserDetailData
@@ -51,7 +51,7 @@ class UserDetailViewModel @Inject constructor(
         followRepository.getUserDetail(nickName).onEach {
 
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             userDetail = it.data.body.toUiUserDetailData()
@@ -59,7 +59,7 @@ class UserDetailViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> {
+                is OldBaseState.Error -> {
                     _events.emit(UserDetailEvents.ShowSnackMessage(it.message))
                 }
             }
@@ -75,7 +75,7 @@ class UserDetailViewModel @Inject constructor(
     private fun follow() {
         followRepository.follow(nickName).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             userDetail = _uiState.value.userDetail.copy(isFollow = true)
@@ -84,7 +84,7 @@ class UserDetailViewModel @Inject constructor(
                     _events.emit(UserDetailEvents.ShowToastMessage("팔로우 성공"))
                 }
 
-                is BaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
+                is OldBaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -93,7 +93,7 @@ class UserDetailViewModel @Inject constructor(
     private fun unFollow() {
         followRepository.unFollow(nickName).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             userDetail = _uiState.value.userDetail.copy(isFollow = false)
@@ -102,7 +102,7 @@ class UserDetailViewModel @Inject constructor(
                     _events.emit(UserDetailEvents.ShowToastMessage("언팔로우 성공"))
                 }
 
-                is BaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
+                is OldBaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)

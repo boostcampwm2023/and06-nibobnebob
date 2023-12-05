@@ -1,8 +1,8 @@
 package com.avengers.nibobnebob.data.repository
 
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.response.FollowingResponse
+import com.avengers.nibobnebob.data.model.response.OldBaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import kotlinx.coroutines.flow.Flow
@@ -14,19 +14,19 @@ interface HomeRepository {
         radius: String?,
         longitude: String?,
         latitude: String?
-    ): Flow<BaseState<BaseResponse<List<SearchRestaurantResponse>>>>
+    ): Flow<OldBaseState<OldBaseResponse<List<SearchRestaurantResponse>>>>
 
-    fun followList(): Flow<BaseState<BaseResponse<List<FollowingResponse>>>>
+    fun followList(): Flow<OldBaseState<OldBaseResponse<List<FollowingResponse>>>>
 
     fun filterRestaurantList(
         filter: String,
         location: String,
         radius: Int
-    ): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
+    ): Flow<OldBaseState<OldBaseResponse<List<RestaurantResponse>>>>
 
     fun nearRestaurantList(
         radius: String,
         longitude: String,
         latitude: String,
-    ): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
+    ): Flow<OldBaseState<OldBaseResponse<List<RestaurantResponse>>>>
 }

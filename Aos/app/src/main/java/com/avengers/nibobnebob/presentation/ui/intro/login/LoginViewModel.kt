@@ -3,8 +3,8 @@ package com.avengers.nibobnebob.presentation.ui.intro.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.StatusCode
+import com.avengers.nibobnebob.data.model.OldBaseState
+import com.avengers.nibobnebob.data.model.StatusDataCode
 import com.avengers.nibobnebob.data.model.request.BasicLoginRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.presentation.ui.intro.signup.InputState
@@ -86,15 +86,15 @@ class LoginViewModel @Inject constructor(
             BasicLoginRequest(email.value, password.value)
         ).onEach { state ->
             when (state) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     loginSuccess(
                         state.data.body.accessToken.toString(),
                         state.data.body.refreshToken.toString()
                     )
                 }
-                is BaseState.Error -> {
-                    when(state.statusCode){
-                        StatusCode.EXCEPTION -> _events.emit(LoginEvent.ShowSnackMessage(state.message))
+                is OldBaseState.Error -> {
+                    when(state.statusDataCode){
+                        StatusDataCode.EXCEPTION -> _events.emit(LoginEvent.ShowSnackMessage(state.message))
                         else -> {
                             _uiState.update { state ->
                                 state.copy(
@@ -112,15 +112,15 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             introRepository.loginNaver(token).onEach { state ->
                 when(state){
-                    is BaseState.Success -> {
+                    is OldBaseState.Success -> {
                         loginSuccess(
                             state.data.body.accessToken.toString(),
                             state.data.body.refreshToken.toString()
                         )
                     }
-                    is BaseState.Error -> {
-                        when(state.statusCode){
-                            StatusCode.ERROR_NONE -> _events.emit(LoginEvent.NavigateToDetailSignup)
+                    is OldBaseState.Error -> {
+                        when(state.statusDataCode){
+                            StatusDataCode.ERROR_NONE -> _events.emit(LoginEvent.NavigateToDetailSignup)
                             else -> _events.emit(LoginEvent.ShowSnackMessage(ERROR_MSG))
                         }
                     }

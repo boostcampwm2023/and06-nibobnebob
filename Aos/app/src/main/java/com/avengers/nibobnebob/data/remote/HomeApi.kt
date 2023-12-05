@@ -1,6 +1,7 @@
 package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.response.OldBaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.FollowingResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
@@ -16,10 +17,10 @@ interface HomeApi {
         @Query("radius") radius: String?,
         @Query("longitude") longitude: String?,
         @Query("latitude") latitude: String?
-    ): Response<BaseResponse<List<SearchRestaurantResponse>>>
+    ): Response<OldBaseResponse<List<SearchRestaurantResponse>>>
 
     @GET("api/user/follow-list")
-    suspend fun followList(): Response<BaseResponse<List<FollowingResponse>>>
+    suspend fun followList(): Response<OldBaseResponse<List<FollowingResponse>>>
 
     //filter 맛집 리스트
     @GET("api/restaurant")
@@ -27,7 +28,7 @@ interface HomeApi {
         @Query("filter") filter: String,
         @Query("location") location: String,
         @Query("radius") radius: Int
-    ): Response<BaseResponse<List<RestaurantResponse>>>
+    ): Response<OldBaseResponse<List<RestaurantResponse>>>
 
     //위치기반 맛집 리스트
     @GET("api/restaurant/all")
@@ -35,5 +36,5 @@ interface HomeApi {
         @Query("radius") radius: String,
         @Query("longitude") longitude: String,
         @Query("latitude") latitude: String
-    ): Response<BaseResponse<List<RestaurantResponse>>>
+    ): Response<OldBaseResponse<List<RestaurantResponse>>>
 }

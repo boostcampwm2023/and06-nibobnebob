@@ -2,8 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.repository.ValidationRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.GetEmailValidationUseCase
 import com.avengers.nibobnebob.presentation.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -39,7 +39,7 @@ sealed class BasicSignupEvents{
 
 @HiltViewModel
 class BasicSignupViewModel @Inject constructor(
-    private val validationRepository: ValidationRepository
+    private val getEmailValidationUseCase: GetEmailValidationUseCase
 ) : ViewModel(){
 
     private val _uiState = MutableStateFlow(BasicSignupUiState())
@@ -112,10 +112,10 @@ class BasicSignupViewModel @Inject constructor(
     }
 
     fun checkEmail(){
-        validationRepository.emailValidation(email.value).onEach {
+        getEmailValidationUseCase(email.value).onEach {
             when(it){
                 is BaseState.Success -> {
-                    if(it.data.body.isExist){
+                    if(it.data.isExist){
                         emailValidation.value = false
                         _uiState.update { state ->
                             state.copy(

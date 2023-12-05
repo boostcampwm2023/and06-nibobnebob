@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyWishListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyWishData
@@ -51,7 +51,7 @@ class MyWishListViewModel @Inject constructor(
     fun myWishList() {
         restaurantRepository.myWishList().onEach { wish ->
             when (wish) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         val list = wish.data.body.map { it.toMyWishListData() }
                         state.copy(
@@ -83,12 +83,12 @@ class MyWishListViewModel @Inject constructor(
     fun deleteWishList(id: Int) {
         restaurantRepository.deleteWishRestaurant(id).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))
                     myWishList()
                 }
 
-                is BaseState.Error -> {
+                is OldBaseState.Error -> {
                     _events.emit(MyWishEvent.ShowSnackMessage(ERROR_MSG))
                 }
             }

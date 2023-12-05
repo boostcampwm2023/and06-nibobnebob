@@ -1,10 +1,12 @@
 package com.avengers.nibobnebob.data.repository
 
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.response.BaseResponse
-import com.avengers.nibobnebob.data.model.response.ValidateResponse
+import com.avengers.nibobnebob.data.model.response.ValidateResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.ValidationApi
+import com.avengers.nibobnebob.domain.model.ValidateData
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.model.base.StatusCode
+import com.avengers.nibobnebob.domain.repository.ValidationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -13,13 +15,35 @@ class ValidationRepositoryImpl @Inject constructor(
     private val api: ValidationApi
 ) : ValidationRepository {
 
-    override fun nickValidation(nickName: String): Flow<BaseState<BaseResponse<ValidateResponse>>> = flow {
-        val result = runRemote { api.nickValidation(nickName) }
-        emit(result)
+    override fun nickValidation(nickName: String): Flow<BaseState<ValidateData>> = flow {
+        when (val result = runRemote { api.nickValidation(nickName) }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.toDomainModel()))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
     }
 
-    override fun emailValidation(email: String): Flow<BaseState<BaseResponse<ValidateResponse>>> = flow {
-        val result = runRemote { api.nickValidation(email) }
-        emit(result)
+    override fun emailValidation(email: String): Flow<BaseState<ValidateData>> = flow {
+        when (val result = runRemote { api.emailValidation(email) }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.toDomainModel()))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
     }
 }

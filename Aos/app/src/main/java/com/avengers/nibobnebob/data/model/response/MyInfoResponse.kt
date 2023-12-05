@@ -1,5 +1,7 @@
 package com.avengers.nibobnebob.data.model.response
 
+import com.avengers.nibobnebob.data.model.base.BaseDataModel
+import com.avengers.nibobnebob.data.model.mapper.DomainMapper
 import com.google.gson.annotations.SerializedName
 
 

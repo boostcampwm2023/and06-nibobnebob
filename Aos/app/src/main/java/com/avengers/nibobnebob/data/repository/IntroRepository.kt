@@ -1,8 +1,8 @@
 package com.avengers.nibobnebob.data.repository
 
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.BasicLoginRequest
-import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.response.OldBaseResponse
 import com.avengers.nibobnebob.data.model.response.LoginResponse
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -19,13 +19,13 @@ interface IntroRepository {
         birthdate: RequestBody,
         isMale: Boolean,
         profileImage: MultipartBody.Part
-    ): Flow<BaseState<Unit>>
+    ): Flow<OldBaseState<Unit>>
 
     fun loginNaver(
         token: String
-    ): Flow<BaseState<BaseResponse<LoginResponse>>>
+    ): Flow<OldBaseState<OldBaseResponse<LoginResponse>>>
 
     fun loginBasic(
         body: BasicLoginRequest
-    ): Flow<BaseState<BaseResponse<LoginResponse>>>
+    ): Flow<OldBaseState<OldBaseResponse<LoginResponse>>>
 }
