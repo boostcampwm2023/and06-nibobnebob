@@ -5,6 +5,7 @@ import { TokenInfo } from "./user.decorator";
 import { SearchInfoDto } from "src/restaurant/dto/seachInfo.dto";
 import { ReviewInfoEntity } from "src/review/entities/review.entity";
 import { UserWishRestaurantListEntity } from "./entities/user.wishrestaurantlist.entity";
+import { SortInfoDto } from "src/utils/sortInfo.dto";
 
 @Injectable()
 export class UserRestaurantListRepository extends Repository<UserRestaurantListEntity> {
@@ -74,7 +75,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
 
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
-    sort: string,
+    sortInfoDto: SortInfoDto,
     id: TokenInfo["id"]
   ) {
     if (searchInfoDto.latitude && searchInfoDto.longitude) {
@@ -129,7 +130,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         { userId: id }
       );
     
-    if (sort === '등록순') {
+    if (sortInfoDto.sort === '등록순') {
       query = query.orderBy("user_restaurant_lists.created_at", "ASC");
     } else {
       query = query.orderBy("user_restaurant_lists.created_at", "DESC");

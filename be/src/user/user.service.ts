@@ -17,6 +17,7 @@ import { v4 } from "uuid";
 import { User } from "./entities/user.entity";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
 import { AuthService } from "src/auth/auth.service";
+import { SortInfoDto } from "src/utils/sortInfo.dto";
 
 @Injectable()
 export class UserService {
@@ -105,13 +106,13 @@ export class UserService {
   }
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
-    sort: string,
+    sortInfoDto: SortInfoDto,
     tokenInfo: TokenInfo
   ) {
     const results =
       await this.userRestaurantListRepository.getMyRestaurantListInfo(
         searchInfoDto,
-        sort,
+        sortInfoDto,
         tokenInfo.id
       );
 
@@ -129,11 +130,11 @@ export class UserService {
 
     return results;
   }
-  async getMyWishRestaurantListInfo(tokenInfo: TokenInfo, sort: string) {
+  async getMyWishRestaurantListInfo(tokenInfo: TokenInfo, sortInfoDto: SortInfoDto) {
     const result =
       await this.userWishRestaurantListRepository.getMyWishRestaurantListInfo(
         tokenInfo.id,
-        sort
+        sortInfoDto
       );
     return result;
   }

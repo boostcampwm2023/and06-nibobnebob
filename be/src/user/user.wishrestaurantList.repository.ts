@@ -4,6 +4,7 @@ import { UserWishRestaurantListEntity } from "./entities/user.wishrestaurantlist
 import { TokenInfo } from "./user.decorator";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
 import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
+import { SortInfoDto } from "src/utils/sortInfo.dto";
 @Injectable()
 export class UserWishRestaurantListRepository extends Repository<UserWishRestaurantListEntity> {
   constructor(private dataSource: DataSource) {
@@ -32,7 +33,7 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
     );
     return null;
   }
-  async getMyWishRestaurantListInfo(id: TokenInfo["id"], sort: string) {
+  async getMyWishRestaurantListInfo(id: TokenInfo["id"], sortInfoDto: SortInfoDto) {
     let query = this.createQueryBuilder("user_wishrestaurant_lists")
       .leftJoinAndSelect("user_wishrestaurant_lists.restaurant", "restaurant")
       .leftJoin(
@@ -57,7 +58,7 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
         { userId: id }
       )
 
-    if (sort === '등록순') {
+    if (sortInfoDto.sort === '등록순') {
       query = query.orderBy("user_wishrestaurant_lists.created_at", "ASC");
     } else {
       query = query.orderBy("user_wishrestaurant_lists.created_at", "DESC");
