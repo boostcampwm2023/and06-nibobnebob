@@ -1,6 +1,8 @@
 package com.avengers.nibobnebob.presentation.ui.bindingadapters
 
+import android.net.Uri
 import android.widget.ImageView
+import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import com.avengers.nibobnebob.R
 import com.bumptech.glide.Glide
@@ -52,5 +54,12 @@ fun bindLoadImage(view : ImageView, imageUrl : String?){
             .error(R.drawable.ic_mypage)
             .placeholder(R.drawable.ic_mypage)
             .into(view)
+    }
+}
+
+@BindingAdapter("profileImgUri")
+fun bindProfileImgUri(iv: ImageView, uri: String){
+    if(uri.isNotBlank()){
+        iv.setImageURI(uri.toUri())
     }
 }

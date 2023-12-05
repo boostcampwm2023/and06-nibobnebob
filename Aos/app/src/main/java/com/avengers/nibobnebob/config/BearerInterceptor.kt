@@ -7,7 +7,7 @@ import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.RefreshTokenRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
-import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
+import com.avengers.nibobnebob.data.model.response.LoginResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RefreshApi
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
@@ -71,7 +71,7 @@ class BearerInterceptor @Inject constructor(
     }
 
 
-    private suspend fun getNewAccessToken(refreshToken: String?): BaseState<BaseResponse<NaverLoginResponse>> {
+    private suspend fun getNewAccessToken(refreshToken: String?): BaseState<BaseResponse<LoginResponse>> {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
