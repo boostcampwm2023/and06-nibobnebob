@@ -106,9 +106,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         )
         .getRawMany();
 
-      return {
-        items
-      }
+      return items
     } else {
       let query = this.createQueryBuilder("user_restaurant_lists")
       .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
