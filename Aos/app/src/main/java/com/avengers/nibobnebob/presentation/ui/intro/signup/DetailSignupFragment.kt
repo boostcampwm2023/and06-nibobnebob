@@ -11,12 +11,14 @@ import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
+import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DetailSignupFragment :
     BaseFragment<FragmentDetailSignupBinding>(R.layout.fragment_detail_signup) {
+
 
     private val viewModel: DetailSignupViewModel by viewModels()
     override val parentViewModel: IntroViewModel by activityViewModels()
@@ -29,6 +31,7 @@ class DetailSignupFragment :
     override fun initView() {
         binding.vm = viewModel
         viewModel.setDefaultData(email, password, provider)
+        initImageObserver()
         setGenderRadioListener()
         setDateBtnListener()
         setLocationInputListener()
@@ -45,11 +48,19 @@ class DetailSignupFragment :
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
                     is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
                     is DetailSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                    is DetailSignupEvents.OpenGallery -> parentViewModel.openGallery()
                 }
             }
         }
     }
 
+    private fun initImageObserver(){
+        repeatOnStarted {
+            parentViewModel.image.collect{
+                viewModel.setImage(it, it.toMultiPart(requireContext()))
+            }
+        }
+    }
 
     private fun setGenderRadioListener() {
         binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
