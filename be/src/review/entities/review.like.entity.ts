@@ -1,6 +1,6 @@
 import {
     Entity,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
     Column,
     CreateDateColumn,
     ManyToOne,
@@ -12,8 +12,11 @@ import { ReviewInfoEntity } from "./review.entity";
 
 @Entity("reviewLike")
 export class ReviewLikeEntity {
-    @PrimaryGeneratedColumn("increment")
-    id: number;
+    @PrimaryColumn({ name: "review_id" })
+    reviewId: number;
+
+    @PrimaryColumn({ name: "user_id" })
+    userId: number;
 
     @Column({ name: "is_like" })
     isLike: boolean;
@@ -25,10 +28,10 @@ export class ReviewLikeEntity {
     deletedAt: Date | null;
 
     @ManyToOne(() => ReviewInfoEntity)
-    @JoinColumn({ name: "review_id" })
-    reviewId: ReviewInfoEntity;
+    @JoinColumn({ name: "review_id", referencedColumnName: "id" })
+    review: ReviewInfoEntity;
 
     @ManyToOne(() => User)
-    @JoinColumn({ name: "user_id" })
-    userId: User;
+    @JoinColumn({ name: "user_id", referencedColumnName: "id" })
+    user: User;
 }

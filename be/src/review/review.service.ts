@@ -13,12 +13,26 @@ export class ReviewService {
 
     async reviewLike(tokenInfo: TokenInfo, reviewId: number) {
         const entity = this.reviewLikeRepository.create({
-            userId: { id: tokenInfo.id },
-            reviewId: { id: reviewId },
+            userId: tokenInfo.id,
+            reviewId: reviewId,
             isLike: true,
         });
         try {
-            await this.reviewLikeRepository.save(entity);
+            await this.reviewLikeRepository.upsert(entity, ['userId', 'reviewId']);
+        } catch (err) {
+            throw new BadRequestException();
+        }
+    }
+
+
+    async reviewUnLike(tokenInfo: TokenInfo, reviewId: number) {
+        const entity = this.reviewLikeRepository.create({
+            userId: tokenInfo.id,
+            reviewId: reviewId,
+            isLike: false,
+        });
+        try {
+            await this.reviewLikeRepository.upsert(entity, ['userId', 'reviewId']);
         } catch (err) {
             throw new BadRequestException();
         }
