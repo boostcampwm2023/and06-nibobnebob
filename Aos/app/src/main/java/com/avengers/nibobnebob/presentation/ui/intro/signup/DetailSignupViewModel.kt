@@ -32,12 +32,6 @@ data class DetailSignupUiState(
     val birthState: InputState = InputState.Empty,
 )
 
-sealed class InputState {
-    data object Empty : InputState()
-    data class Success(val msg: String) : InputState()
-    data class Error(val msg: String) : InputState()
-}
-
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
     data object NavigateToLoginFragment : DetailSignupEvents()
