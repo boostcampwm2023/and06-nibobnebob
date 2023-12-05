@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class DetailSignupFragment :
     BaseFragment<FragmentDetailSignupBinding>(R.layout.fragment_detail_signup) {
 
+
     private val viewModel: DetailSignupViewModel by viewModels()
     override val parentViewModel: IntroViewModel by activityViewModels()
 

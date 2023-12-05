@@ -47,7 +47,7 @@ internal fun String.toMultiPart(context: Context): MultipartBody.Part {
     val uri = this.toUri()
     val file = File(getRealPathFromUri(uri, context) ?: "")
     val requestFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
-    return MultipartBody.Part.createFormData("image", file.name, requestFile)
+    return MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
 }
 
 

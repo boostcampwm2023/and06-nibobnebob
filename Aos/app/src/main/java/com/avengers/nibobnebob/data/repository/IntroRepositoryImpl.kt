@@ -9,6 +9,7 @@ import com.avengers.nibobnebob.presentation.util.Constants.ACCESS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class IntroRepositoryImpl @Inject constructor(
@@ -16,12 +17,12 @@ class IntroRepositoryImpl @Inject constructor(
 ) : IntroRepository {
 
     override fun signup(
-        email: String,
-        password: String,
-        provider: String,
-        nickName: String,
-        region: String,
-        birthdate: String,
+        email: RequestBody,
+        password: RequestBody,
+        provider: RequestBody,
+        nickName: RequestBody,
+        region: RequestBody,
+        birthdate: RequestBody,
         isMale: Boolean,
         profileImage: MultipartBody.Part
     ): Flow<BaseState<Unit>> = flow {

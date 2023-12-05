@@ -21,7 +21,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 data class DetailSignupUiState(
@@ -145,12 +147,12 @@ class DetailSignupViewModel @Inject constructor(
     fun signup() {
         // todo MultiPart -> url API를 따로 만들기 or signup Request 자체를 MultiPart로 묶기
         introRepository.signup(
-            email = email.value,
-            provider = provider.value,
-            password = password.value,
-            nickName = nick.value,
-            birthdate = birth.value,
-            region = location.value,
+            email = email.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            provider = provider.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            password = password.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            nickName = nick.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            birthdate = birth.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            region = location.value.toRequestBody("text/plain".toMediaTypeOrNull()),
             isMale = isMale.value,
             profileImage = profileFile
         ).onEach {
