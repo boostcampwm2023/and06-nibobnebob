@@ -28,14 +28,14 @@ class HomeRepositoryImpl @Inject constructor(private val api: HomeApi) : HomeRep
     }
 
 
-    override fun filterRestaurantList(
-        filter: String,
-        location: String,
-        radius: Int
-    ): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>> = flow {
-        val result = runRemote { api.filterRestaurantList(filter, location, radius) }
-        emit(result)
-    }
+//    override fun filterRestaurantList(
+//        filter: String,
+//        location: String,
+//        radius: Int
+//    ): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>> = flow {
+//        val result = runRemote { api.filterRestaurantList(filter, location, radius) }
+//        emit(result)
+//    }
 
     override fun nearRestaurantList(
         radius: String,

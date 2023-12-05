@@ -18,11 +18,11 @@ interface HomeRepository {
 
     fun followList(): Flow<BaseState<BaseResponse<List<FollowingResponse>>>>
 
-    fun filterRestaurantList(
-        filter: String,
-        location: String,
-        radius: Int
-    ): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
+//    fun filterRestaurantList(
+//        filter: String,
+//        location: String,
+//        radius: Int
+//    ): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
 
     fun nearRestaurantList(
         radius: String,

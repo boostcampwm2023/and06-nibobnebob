@@ -48,7 +48,7 @@ class MyPageRepositoryImpl @Inject constructor(
                 dataStoreManager.deleteAccessToken()
                 dataStoreManager.deleteRefreshToken()
 
-                NidOAuthLogin().callDeleteTokenApi(object : OAuthLoginCallback{
+                NidOAuthLogin().callDeleteTokenApi(object : OAuthLoginCallback {
                     override fun onError(errorCode: Int, message: String) {}
 
                     override fun onFailure(httpStatus: Int, message: String) {}
