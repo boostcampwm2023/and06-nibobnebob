@@ -4,6 +4,7 @@ import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -11,6 +12,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RestaurantApi {
 
@@ -41,11 +43,16 @@ interface RestaurantApi {
     @POST("api/user/wish-restaurant/{restaurantId}")
     suspend fun addWishRestaurant(
         @Path("restaurantId") restaurantId: Int
-    ) : Response<BaseResponse<Unit>>
+    ): Response<BaseResponse<Unit>>
 
     @DELETE("api/user/wish-restaurant/{restaurantId}")
     suspend fun deleteWishRestaurant(
         @Path("restaurantId") restaurantId: Int
-    ) : Response<BaseResponse<Unit>>
+    ): Response<BaseResponse<Unit>>
+
+    @GET("api/user/state/wish-restaurant")
+    suspend fun getRestaurantIsWish(
+        @Query("restaurantid") id: Int
+    ): Response<BaseResponse<RestaurantIsWishResponse>>
 
 }
