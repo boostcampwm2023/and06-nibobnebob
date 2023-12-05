@@ -14,16 +14,16 @@ export class ReviewService {
     async getSortedReviews(tokenInfo: TokenInfo, restaurantId: number, getSortedReviewsDto: SortInfoDto) {
         let sortedReviewIds;
         if (getSortedReviewsDto.sort === "REVIEW ASC") {
-            const getReviewIdsWithLikes = await this.reviewLikeRepository.getReviewIdsWithLikes("ASC");
+            const getReviewIdsWithLikes = await this.reviewRepository.getReviewIdsWithLikes("ASC");
             sortedReviewIds = getReviewIdsWithLikes.map(rl => rl.reviewId);
         }
         else {
-            const getReviewIdsWithLikes = await this.reviewLikeRepository.getReviewIdsWithLikes("DESC");
+            const getReviewIdsWithLikes = await this.reviewRepository.getReviewIdsWithLikes("DESC");
             sortedReviewIds = getReviewIdsWithLikes.map(rl => rl.reviewId);
         }
 
         const reviews = await this.reviewRepository.getSortedReviews(getSortedReviewsDto, restaurantId, tokenInfo.id, sortedReviewIds);
-        for (const review of reviews) {
+        for (const review of reviews.items) {
             const likeCounts = await this.reviewLikeRepository.createQueryBuilder("reviewLike")
                 .select("reviewLike.isLike", "status")
                 .addSelect("COUNT(*)", "count")
