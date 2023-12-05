@@ -63,7 +63,21 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
     } else {
       query = query.orderBy("user_wishrestaurant_lists.created_at", "DESC");
     }
-    
-    return await query.getRawMany();
+
+    sortInfoDto.page = sortInfoDto.page || 1;
+    sortInfoDto.limit = sortInfoDto.limit || 10;
+
+    const offset = (sortInfoDto.page - 1) * sortInfoDto.limit;
+    query = query.skip(offset).take(sortInfoDto.limit + 1);
+  
+    const items = await query.getRawMany();
+  
+    const hasNext = items.length > sortInfoDto.limit;
+    const resultItems = hasNext ? items.slice(0, -1) : items;
+  
+    return {
+      hasNext,
+      items : resultItems,
+    }
   }
 }

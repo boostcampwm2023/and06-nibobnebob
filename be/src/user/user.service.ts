@@ -116,7 +116,7 @@ export class UserService {
         tokenInfo.id
       );
 
-    for (const restaurant of results) {
+    for (const restaurant of results.items) {
       const reviewCount = await this.reviewRepository
         .createQueryBuilder("review")
         .where("review.restaurant_id = :restaurantId", {

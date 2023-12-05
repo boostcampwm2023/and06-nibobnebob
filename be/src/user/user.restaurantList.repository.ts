@@ -79,7 +79,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
     id: TokenInfo["id"]
   ) {
     if (searchInfoDto.latitude && searchInfoDto.longitude) {
-      return await this.createQueryBuilder("user_restaurant_lists")
+      const items = await this.createQueryBuilder("user_restaurant_lists")
         .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
         .leftJoin(
           UserWishRestaurantListEntity,
@@ -105,6 +105,10 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
           { userId: id }
         )
         .getRawMany();
+
+      return {
+        items
+      }
     } else {
       let query = this.createQueryBuilder("user_restaurant_lists")
       .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
@@ -135,8 +139,22 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
     } else {
       query = query.orderBy("user_restaurant_lists.created_at", "DESC");
     }
-    
-    return await query.getRawMany();
+    sortInfoDto.page = sortInfoDto.page || 1;
+    sortInfoDto.limit = sortInfoDto.limit || 10;
+
+    const offset = (sortInfoDto.page - 1) * sortInfoDto.limit;
+    query = query.skip(offset).take(sortInfoDto.limit + 1);
+  
+    const items = await query.getRawMany();
+  
+    const hasNext = items.length > sortInfoDto.limit;
+    const resultItems = hasNext ? items.slice(0, -1) : items;
+  
+    return {
+      hasNext,
+      items : resultItems,
+    }
+  
     }
   }
 }
