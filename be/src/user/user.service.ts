@@ -269,7 +269,7 @@ export class UserService {
     let reviewImage;
     if (file) {
       const uuid = v4();
-      reviewImage = `profile/images/${uuid}.png`;
+      reviewImage = `review/images/${uuid}.png`;
       reviewEntity.reviewImage = reviewImage;
     }
     const userEntity = new User();
