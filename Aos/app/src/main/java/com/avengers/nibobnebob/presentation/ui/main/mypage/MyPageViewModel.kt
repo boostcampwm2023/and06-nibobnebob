@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MyPageUiState(
@@ -27,6 +26,7 @@ data class MyPageUiState(
     val age: String = "",
     val location: String = "",
     val gender: String = "",
+    val profileImage: String = ""
 )
 
 sealed class MyEditPageEvent {
@@ -60,7 +60,8 @@ class MyPageViewModel @Inject constructor(
                                 nickName = nickName,
                                 age = age,
                                 location = location,
-                                gender = gender
+                                gender = gender,
+                                profileImage = profileImage
                             )
                         }
                     }

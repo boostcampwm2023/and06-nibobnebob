@@ -35,8 +35,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
         }
     }
 
-
-
     override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
@@ -46,6 +44,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
                         // TODO : FINAL -> 다이얼로그
                     }
 
+                    is LoginEvent.NavigateToBasicSignup -> findNavController().toBasicSignup()
                     is LoginEvent.NavigateToDetailSignup -> findNavController().toDetailSignup()
                     is LoginEvent.ShowSnackMessage -> showSnackBar(it.msg)
                 }
@@ -94,6 +93,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
             email = viewModel.naverEmail.value
         )
         this.navigate(action)
+    }
+
+    private fun NavController.toBasicSignup(){
+        val action = LoginFragmentDirections.actionLoginFragmentToBasicSignupFragment()
+        navigate(action)
     }
 
     private fun NavController.toMainActivity() {

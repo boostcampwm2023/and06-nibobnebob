@@ -90,6 +90,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:trackingBtnDrawable="@{vm.uiState.locationTrackingState}" />
 
+        <ImageView
+            android:id="@+id/btn_camear_restaurant"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="20dp"
+            android:onClick="@{() -> vm.nearRestaurantList()}"
+            android:src="@drawable/ic_app_logo"
+            app:layout_constraintBottom_toTopOf="@id/btn_location"
+            app:layout_constraintEnd_toEndOf="@id/btn_location" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_home_filter"
             android:layout_width="0dp"

@@ -28,4 +28,12 @@ interface HomeApi {
         @Query("location") location: String,
         @Query("radius") radius: Int
     ): Response<BaseResponse<List<RestaurantResponse>>>
+
+    //위치기반 맛집 리스트
+    @GET("api/restaurant/all")
+    suspend fun nearRestaurantList(
+        @Query("radius") radius: String,
+        @Query("longitude") longitude: String,
+        @Query("latitude") latitude: String
+    ): Response<BaseResponse<List<RestaurantResponse>>>
 }
