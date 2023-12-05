@@ -1,11 +1,13 @@
 package com.avengers.nibobnebob.data.repository
 
-import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.BasicLoginRequest
-import com.avengers.nibobnebob.data.model.response.OldBaseResponse
-import com.avengers.nibobnebob.data.model.response.LoginResponse
-import com.avengers.nibobnebob.data.model.oldRunRemote
+import com.avengers.nibobnebob.data.model.response.LoginResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.IntroApi
+import com.avengers.nibobnebob.domain.model.LoginData
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.model.base.StatusCode
+import com.avengers.nibobnebob.domain.repository.IntroRepository
 import com.avengers.nibobnebob.presentation.util.Constants.ACCESS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -26,18 +28,48 @@ class IntroRepositoryImpl @Inject constructor(
         birthdate: RequestBody,
         isMale: Boolean,
         profileImage: MultipartBody.Part
-    ): Flow<OldBaseState<Unit>> = flow {
-        val result = oldRunRemote { api.signup(email, password, provider, nickName, region, birthdate, isMale, profileImage) }
+    ): Flow<BaseState<Unit>> = flow {
+        val result = runRemote {
+            api.signup(
+                email,
+                password,
+                provider,
+                nickName,
+                region,
+                birthdate,
+                isMale,
+                profileImage
+            )
+        }
         emit(result)
     }
 
-    override fun loginNaver(token : String): Flow<OldBaseState<OldBaseResponse<LoginResponse>>> = flow {
-        val result = oldRunRemote { api.loginNaver("$ACCESS $token") }
-        emit(result)
+    override fun loginNaver(token: String): Flow<BaseState<LoginData>> = flow {
+        when (val result = runRemote { api.loginNaver("$ACCESS $token") }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.toDomainModel()))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> emit(result)
+
+        }
     }
 
-    override fun loginBasic(body: BasicLoginRequest): Flow<OldBaseState<OldBaseResponse<LoginResponse>>> = flow {
-        val result = oldRunRemote { api.loginBasic(body) }
-        emit(result)
+    override fun loginBasic(email: String, password: String): Flow<BaseState<LoginData>> = flow {
+        when (val result = runRemote { api.loginBasic(BasicLoginRequest(email, password)) }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.toDomainModel()))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> emit(result)
+        }
     }
 }
