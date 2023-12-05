@@ -45,8 +45,8 @@ export class ReviewInfoEntity {
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @OneToMany(() => ReviewLikeEntity, (review) => review.reviewId)
-  review: ReviewLikeEntity[];
+  @OneToMany(() => ReviewLikeEntity, reviewLike => reviewLike.review)
+  reviewLikes: ReviewLikeEntity[];
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "user_id" })
