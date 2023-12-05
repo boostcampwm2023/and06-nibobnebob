@@ -9,5 +9,5 @@ import javax.inject.Inject
 class GetMyRestaurantListUseCase @Inject constructor(
     private val repository: RestaurantRepository
 ) {
-    operator fun invoke(): Flow<BaseState<List<RestaurantData>>> = repository.myRestaurantList()
+    operator fun invoke(): Flow<BaseState<RestaurantData>> = repository.myRestaurantList()
 }

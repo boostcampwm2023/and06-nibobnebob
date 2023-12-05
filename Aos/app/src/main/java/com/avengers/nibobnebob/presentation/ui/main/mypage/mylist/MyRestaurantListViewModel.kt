@@ -54,12 +54,16 @@ class MyRestaurantListViewModel @Inject constructor(
         getMyRestaurantListUseCase().onEach { my ->
             when (my) {
                 is BaseState.Success -> {
-                    _uiState.update { state ->
-                        val list = my.data.map { it.toMyListData() }
-                        state.copy(
-                            myList = list,
-                            isEmpty = list.isEmpty()
-                        )
+                    my.data.restaurantItemsData?.let {
+                        _uiState.update { state ->
+                            val list = it.map { restaurant ->
+                                restaurant.toMyListData()
+                            }
+                            state.copy(
+                                myList = list,
+                                isEmpty = list.isEmpty()
+                            )
+                        }
                     }
                 }
 

@@ -9,5 +9,5 @@ import javax.inject.Inject
 class GetMyWishListUseCase @Inject constructor(
     private val repository: RestaurantRepository
 ) {
-    operator fun invoke(): Flow<BaseState<List<WishRestaurantData>>> = repository.myWishList()
+    operator fun invoke(): Flow<BaseState<WishRestaurantData>> = repository.myWishList()
 }

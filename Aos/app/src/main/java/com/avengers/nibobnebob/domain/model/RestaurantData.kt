@@ -4,6 +4,11 @@ import com.avengers.nibobnebob.data.model.response.Location
 import com.avengers.nibobnebob.domain.model.base.BaseDomainModel
 
 data class RestaurantData(
+    val hasNext : Boolean,
+    val restaurantItemsData: List<RestaurantItemsData>?
+) : BaseDomainModel
+
+data class RestaurantItemsData(
     val isMy: Boolean,
     val isWish: Boolean,
     val reviewCnt: Int,
@@ -13,4 +18,4 @@ data class RestaurantData(
     val location: Location,
     val name: String,
     val phoneNumber: String
-) : BaseDomainModel
+)

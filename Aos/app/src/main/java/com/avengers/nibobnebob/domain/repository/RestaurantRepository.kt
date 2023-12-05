@@ -1,9 +1,6 @@
 package com.avengers.nibobnebob.domain.repository
 
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
-import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
-import com.avengers.nibobnebob.data.model.response.RestaurantResponse
-import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import com.avengers.nibobnebob.domain.model.RestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
@@ -26,9 +23,9 @@ interface RestaurantRepository {
         restaurantId: Int,
     ): Flow<BaseState<Unit>>
 
-    fun myRestaurantList(): Flow<BaseState<List<RestaurantData>>>
+    fun myRestaurantList(): Flow<BaseState<RestaurantData>>
 
-    fun myWishList(): Flow<BaseState<List<WishRestaurantData>>>
+    fun myWishList(): Flow<BaseState<WishRestaurantData>>
 
     fun addWishRestaurant(
         restaurantId: Int

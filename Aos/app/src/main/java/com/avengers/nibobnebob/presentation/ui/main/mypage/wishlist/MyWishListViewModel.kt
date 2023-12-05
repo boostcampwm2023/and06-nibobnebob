@@ -54,12 +54,16 @@ class MyWishListViewModel @Inject constructor(
         getMyWishListUseCase().onEach { wish ->
             when (wish) {
                 is BaseState.Success -> {
-                    _uiState.update { state ->
-                        val list = wish.data.map { it.toMyWishListData() }
-                        state.copy(
-                            wishList = list,
-                            isEmpty = list.isEmpty()
-                        )
+                    wish.data.wishRestaurantItemsData?.let {
+                        _uiState.update { state ->
+                            val wishList = it.map { restaurant ->
+                                restaurant.toMyWishListData()
+                            }
+                            state.copy(
+                                wishList = wishList,
+                                isEmpty = wishList.isEmpty()
+                            )
+                        }
                     }
                 }
 

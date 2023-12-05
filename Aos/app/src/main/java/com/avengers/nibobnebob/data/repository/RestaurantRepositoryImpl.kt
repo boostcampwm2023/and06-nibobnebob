@@ -67,40 +67,40 @@ class RestaurantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun myRestaurantList(): Flow<BaseState<List<RestaurantData>>> =
+    override fun myRestaurantList(): Flow<BaseState<RestaurantData>> =
         flow {
             when (val result = runRemote { api.myRestaurantList() }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
-                        emit(BaseState.Success(body.map { it.toDomainModel() }))
+                        emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test","널 체크")
+                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test","에러 체크")
+                    Log.d("test", "에러 체크")
                 }
             }
         }
 
-    override fun myWishList(): Flow<BaseState<List<WishRestaurantData>>> =
+    override fun myWishList(): Flow<BaseState<WishRestaurantData>> =
         flow {
             when (val result = runRemote { api.myWishList() }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
-                        emit(BaseState.Success(body.map { it.toDomainModel() }))
+                        emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test","널 체크")
+                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test","에러")
+                    Log.d("test", "에러")
                 }
             }
         }
@@ -118,7 +118,7 @@ class RestaurantRepositoryImpl @Inject constructor(
     }
 
     override fun deleteWishRestaurant(restaurantId: Int): Flow<BaseState<Unit>> = flow {
-        when (val result = runRemote { api.deleteRestaurant(restaurantId) }) {
+        when (val result = runRemote { api.deleteWishRestaurant(restaurantId) }) {
             is BaseState.Success -> {
                 emit(BaseState.Success(Unit))
             }
@@ -137,13 +137,13 @@ class RestaurantRepositoryImpl @Inject constructor(
                         emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test","널 체크")
+                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test","에러 체크")
+                    Log.d("test", "에러 체크")
                 }
             }
         }
