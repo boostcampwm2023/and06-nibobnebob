@@ -32,8 +32,8 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
     );
     return null;
   }
-  async getMyWishRestaurantListInfo(id: TokenInfo["id"]) {
-    return await this.createQueryBuilder("user_wishrestaurant_lists")
+  async getMyWishRestaurantListInfo(id: TokenInfo["id"], sort: string) {
+    let query = this.createQueryBuilder("user_wishrestaurant_lists")
       .leftJoinAndSelect("user_wishrestaurant_lists.restaurant", "restaurant")
       .leftJoin(
         UserRestaurantListEntity,
@@ -48,6 +48,7 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
         "restaurant.address",
         "restaurant.category",
         "restaurant.phoneNumber",
+        "user_wishrestaurant_lists.created_at",
         'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
         'CASE WHEN user_wishrestaurant_lists.user_id IS NOT NULL THEN true ELSE false END AS "isWish"',
       ])
@@ -55,6 +56,13 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
         `user_wishrestaurant_lists.user_id = :userId and user_wishrestaurant_lists.deleted_at IS NULL`,
         { userId: id }
       )
-      .getRawMany();
+
+    if (sort === '등록순') {
+      query = query.orderBy("user_wishrestaurant_lists.created_at", "ASC");
+    } else {
+      query = query.orderBy("user_wishrestaurant_lists.created_at", "DESC");
+    }
+    
+    return await query.getRawMany();
   }
 }

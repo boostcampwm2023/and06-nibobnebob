@@ -129,10 +129,11 @@ export class UserService {
 
     return results;
   }
-  async getMyWishRestaurantListInfo(tokenInfo: TokenInfo) {
+  async getMyWishRestaurantListInfo(tokenInfo: TokenInfo, sort: string) {
     const result =
       await this.userWishRestaurantListRepository.getMyWishRestaurantListInfo(
-        tokenInfo.id
+        tokenInfo.id,
+        sort
       );
     return result;
   }

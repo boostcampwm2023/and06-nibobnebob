@@ -196,10 +196,16 @@ export class UserController {
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
   @ApiOperation({ summary: "내 위시 맛집 리스트 정보 가져오기" })
+  @ApiQuery({
+    name: "sort",
+    required: false,
+    type: String,
+    description: "선택된 필터",
+  })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
-  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo) {
-    return await this.userService.getMyWishRestaurantListInfo(tokenInfo);
+  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo,  @Query('sort') sort: string,) {
+    return await this.userService.getMyWishRestaurantListInfo(tokenInfo,sort);
   }
 
   @ApiTags("Home")
@@ -276,7 +282,6 @@ export class UserController {
     const userInfoDto = plainToClass(UserInfoDto, body);
     const errors = await validate(userInfoDto);
     if (errors.length > 0) {
-      console.log(errors);
       throw new BadRequestException(errors);
     }
     return await this.userService.signup(file, userInfoDto);
