@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.mylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
@@ -51,7 +51,7 @@ class MyRestaurantListViewModel @Inject constructor(
     fun myRestaurantList() {
         restaurantRepository.myRestaurantList().onEach { my ->
             when (my) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         val list = my.data.body.map { it.toMyListData() }
                         state.copy(
@@ -74,12 +74,12 @@ class MyRestaurantListViewModel @Inject constructor(
     fun deleteMyList(id: Int) {
         restaurantRepository.deleteRestaurant(id).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _events.emit(MyRestaurantEvent.ShowToastMessage("삭제 되었습니다."))
                     myRestaurantList()
                 }
 
-                is BaseState.Error -> {
+                is OldBaseState.Error -> {
                     _events.emit(MyRestaurantEvent.ShowSnackMessage(ERROR_MSG))
                 }
             }

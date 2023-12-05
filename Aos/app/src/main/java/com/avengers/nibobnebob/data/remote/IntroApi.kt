@@ -1,7 +1,7 @@
 package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.request.BasicLoginRequest
-import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.response.OldBaseResponse
 import com.avengers.nibobnebob.data.model.response.LoginResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -30,10 +30,10 @@ interface IntroApi {
     @POST("api/auth/social-login")
     suspend fun loginNaver(
         @Header("Authorization")token : String
-    ): Response<BaseResponse<LoginResponse>>
+    ): Response<OldBaseResponse<LoginResponse>>
 
     @POST("api/auth/login")
     suspend fun loginBasic(
         @Body params : BasicLoginRequest
-    ): Response<BaseResponse<LoginResponse>>
+    ): Response<OldBaseResponse<LoginResponse>>
 }

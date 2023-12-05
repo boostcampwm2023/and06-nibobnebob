@@ -4,11 +4,11 @@ package com.avengers.nibobnebob.config
 import android.content.Intent
 import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.RefreshTokenRequest
-import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.response.OldBaseResponse
 import com.avengers.nibobnebob.data.model.response.LoginResponse
-import com.avengers.nibobnebob.data.model.runRemote
+import com.avengers.nibobnebob.data.model.oldRunRemote
 import com.avengers.nibobnebob.data.remote.RefreshApi
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.util.Constants
@@ -40,7 +40,7 @@ class BearerInterceptor @Inject constructor(
                 val refreshToken = dataStoreManager.getRefreshToken().first()
                 refreshToken?.let { token ->
                     when (val result = getNewAccessToken(token)) {
-                        is BaseState.Success -> {
+                        is OldBaseState.Success -> {
                             response.close()
                             newAccessToken = result.data.body.accessToken
                             newAccessToken?.let {
@@ -71,7 +71,7 @@ class BearerInterceptor @Inject constructor(
     }
 
 
-    private suspend fun getNewAccessToken(refreshToken: String?): BaseState<BaseResponse<LoginResponse>> {
+    private suspend fun getNewAccessToken(refreshToken: String?): OldBaseState<OldBaseResponse<LoginResponse>> {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
@@ -82,7 +82,7 @@ class BearerInterceptor @Inject constructor(
             .client(okHttpClient)
             .build()
         val api = retrofit.create(RefreshApi::class.java)
-        return runRemote { api.refreshToken(RefreshTokenRequest(refreshToken)) }
+        return oldRunRemote { api.refreshToken(RefreshTokenRequest(refreshToken)) }
     }
 
     companion object {

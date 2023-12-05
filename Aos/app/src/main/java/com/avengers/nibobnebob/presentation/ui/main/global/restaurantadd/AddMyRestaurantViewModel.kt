@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -155,12 +155,12 @@ class AddMyRestaurantViewModel @Inject constructor(
                 )
             ).onEach { state ->
                 when (state) {
-                    is BaseState.Success -> {
+                    is OldBaseState.Success -> {
                         _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
                         _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
                     }
 
-                    is BaseState.Error -> _events.emit(
+                    is OldBaseState.Error -> _events.emit(
                         AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
                     )
                 }

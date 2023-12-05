@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantDetailInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantReviewDataInfo
@@ -65,7 +65,7 @@ class RestaurantDetailViewModel @Inject constructor(
     fun restaurantDetail() {
         restaurantRepository.restaurantDetail(restaurantId = restaurantId.value).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     it.data.body.toUiRestaurantDetailInfo(
                         ::onWishClicked
                     ).apply {
@@ -97,7 +97,7 @@ class RestaurantDetailViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> {
+                is OldBaseState.Error -> {
                     _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
@@ -107,7 +107,7 @@ class RestaurantDetailViewModel @Inject constructor(
     fun deleteMyList() {
         restaurantRepository.deleteRestaurant(restaurantId.value).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _events.emit(RestaurantDetailEvents.ShowToastMessage("삭제 되었습니다."))
                     _uiState.update { state ->
                         state.copy(
@@ -116,7 +116,7 @@ class RestaurantDetailViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> {
+                is OldBaseState.Error -> {
                     _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
@@ -127,7 +127,7 @@ class RestaurantDetailViewModel @Inject constructor(
         if (_uiState.value.isWish) {
             restaurantRepository.deleteWishRestaurant(restaurantId.value).onEach {
                 when (it) {
-                    is BaseState.Success -> {
+                    is OldBaseState.Success -> {
                         _uiState.update { state ->
                             state.copy(
                                 isWish = false
@@ -135,7 +135,7 @@ class RestaurantDetailViewModel @Inject constructor(
                         }
                     }
 
-                    is BaseState.Error -> {
+                    is OldBaseState.Error -> {
                         _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                     }
                 }
@@ -143,7 +143,7 @@ class RestaurantDetailViewModel @Inject constructor(
         } else {
             restaurantRepository.addWishRestaurant(restaurantId.value).onEach {
                 when (it) {
-                    is BaseState.Success -> {
+                    is OldBaseState.Success -> {
                         _uiState.update { state ->
                             state.copy(
                                 isWish = true
@@ -151,7 +151,7 @@ class RestaurantDetailViewModel @Inject constructor(
                         }
                     }
 
-                    is BaseState.Error -> {
+                    is OldBaseState.Error -> {
                         _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                     }
                 }

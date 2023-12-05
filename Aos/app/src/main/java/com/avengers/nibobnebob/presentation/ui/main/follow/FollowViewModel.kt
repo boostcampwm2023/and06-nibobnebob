@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.follow
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.FollowRepository
 import com.avengers.nibobnebob.presentation.ui.main.follow.mapper.toUiFollowData
 import com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowData
@@ -54,7 +54,7 @@ class FollowViewModel @Inject constructor(
 
         followRepository.getMyRecommendFollow().onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             recommendFollowList = it.data.body.map { data ->
@@ -66,7 +66,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
 
@@ -82,7 +82,7 @@ class FollowViewModel @Inject constructor(
 
         followRepository.getMyFollower().onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             followList = it.data.body.map { data ->
@@ -94,7 +94,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -109,7 +109,7 @@ class FollowViewModel @Inject constructor(
 
         followRepository.getMyFollowing().onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             followList = it.data.body.map { data ->
@@ -121,7 +121,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -130,7 +130,7 @@ class FollowViewModel @Inject constructor(
     private fun follow(nickName: String) {
         followRepository.follow(nickName).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             followList = when (_uiState.value.curListState) {
@@ -165,7 +165,7 @@ class FollowViewModel @Inject constructor(
                     _events.emit(FollowEvents.ShowToastMessage("팔로우 성공"))
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -174,7 +174,7 @@ class FollowViewModel @Inject constructor(
     private fun unFollow(nickName: String) {
         followRepository.unFollow(nickName).onEach {
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             followList = when (_uiState.value.curListState) {
@@ -202,7 +202,7 @@ class FollowViewModel @Inject constructor(
                     _events.emit(FollowEvents.ShowToastMessage("언팔로우 성공"))
                 }
 
-                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)

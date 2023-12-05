@@ -2,10 +2,11 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
 import com.avengers.nibobnebob.data.repository.MyPageRepository
-import com.avengers.nibobnebob.data.repository.ValidationRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.GetNickValidationUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -49,7 +50,7 @@ sealed class EditProfileUiEvent {
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository,
-    private val validationRepository: ValidationRepository
+    private val getNickValidationUseCase: GetNickValidationUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
@@ -85,7 +86,7 @@ class EditProfileViewModel @Inject constructor(
         myPageRepository.getMyDefaultInfo().onEach {
 
             when (it) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
 
                     it.data.body.toUiMyPageEditInfoData().apply {
                         nickState.emit(nickName)
@@ -132,10 +133,10 @@ class EditProfileViewModel @Inject constructor(
     }
 
     fun checkNickValidation() {
-        validationRepository.nickValidation(nickState.value).onEach {
+        getNickValidationUseCase(nickState.value).onEach {
             when (it) {
                 is BaseState.Success -> {
-                    if (it.data.body.isExist) {
+                    if (it.data.isExist) {
 
                         _uiState.value = uiState.value.copy(
                             nickName = EditInputState(
@@ -235,7 +236,7 @@ class EditProfileViewModel @Inject constructor(
             )
         ).onEach {
             when (it) {
-                is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
+                is OldBaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
                 else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)

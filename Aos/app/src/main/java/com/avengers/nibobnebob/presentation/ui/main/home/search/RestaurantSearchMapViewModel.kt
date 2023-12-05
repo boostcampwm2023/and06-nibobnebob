@@ -2,11 +2,9 @@ package com.avengers.nibobnebob.presentation.ui.main.home.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.RestaurantRepository
-import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
-import com.naver.maps.map.overlay.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
@@ -50,7 +48,7 @@ class RestaurantSearchMapViewModel @Inject constructor(
             if (curState) {
                 restaurantRepository.deleteWishRestaurant(id).onEach {
                     flag = when (it) {
-                        is BaseState.Success -> true
+                        is OldBaseState.Success -> true
                         else -> false
                     }
                 }.launchIn(viewModelScope)
@@ -58,7 +56,7 @@ class RestaurantSearchMapViewModel @Inject constructor(
             } else {
                 restaurantRepository.addWishRestaurant(id).onEach {
                     flag = when (it) {
-                        is BaseState.Success -> true
+                        is OldBaseState.Success -> true
                         else -> false
                     }
                 }.launchIn(viewModelScope)
@@ -73,7 +71,7 @@ class RestaurantSearchMapViewModel @Inject constructor(
     fun getRestaurantIsWish(id: Int, inMyWish: Boolean) {
         restaurantRepository.getRestaurantIsWish(id).onEach { state ->
             when (state) {
-                is BaseState.Success -> {
+                is OldBaseState.Success -> {
                     wishChanged.emit(if (inMyWish != state.data.body.isWish) WishStatus.CHANGED else WishStatus.SAME)
                 }
 

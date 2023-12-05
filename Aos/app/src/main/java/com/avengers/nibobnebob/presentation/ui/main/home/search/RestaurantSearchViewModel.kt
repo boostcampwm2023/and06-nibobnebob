@@ -2,7 +2,7 @@ package com.avengers.nibobnebob.presentation.ui.main.home.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.HomeRepository
 import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
@@ -85,7 +85,7 @@ class RestaurantSearchViewModel @Inject constructor(
         homeRepository.searchRestaurant(keyword.toString(), tempRadius, longitude, latitude)
             .onEach { state ->
                 when (state) {
-                    is BaseState.Success -> {
+                    is OldBaseState.Success -> {
                         val item = state.data.body
                         _uiState.update { ui ->
                             ui.copy(

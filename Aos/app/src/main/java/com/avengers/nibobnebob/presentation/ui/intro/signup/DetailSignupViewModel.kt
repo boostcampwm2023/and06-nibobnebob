@@ -2,9 +2,10 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.repository.IntroRepository
-import com.avengers.nibobnebob.data.repository.ValidationRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.GetNickValidationUseCase
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,7 +43,7 @@ sealed class DetailSignupEvents {
 @HiltViewModel
 class DetailSignupViewModel @Inject constructor(
     private val introRepository: IntroRepository,
-    private val validationRepository: ValidationRepository
+    private val getNickValidationUseCase: GetNickValidationUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailSignupUiState())
@@ -112,11 +113,10 @@ class DetailSignupViewModel @Inject constructor(
     }
 
     fun checkNickDuplication() {
-        validationRepository.nickValidation(nick.value).onEach {
-
+        getNickValidationUseCase(nick.value).onEach {
             when (it) {
                 is BaseState.Success -> {
-                    if (it.data.body.isExist) {
+                    if (it.data.isExist) {
                         nickValidation.value = false
                         _uiState.update { state ->
                             state.copy(
@@ -151,8 +151,8 @@ class DetailSignupViewModel @Inject constructor(
             profileImage = profileFile
         ).onEach {
             when (it) {
-                is BaseState.Success -> navigateToLoginFragment()
-                is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
+                is OldBaseState.Success -> navigateToLoginFragment()
+                is OldBaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }

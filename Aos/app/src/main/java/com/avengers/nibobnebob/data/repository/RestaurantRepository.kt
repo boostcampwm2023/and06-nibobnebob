@@ -1,8 +1,8 @@
 package com.avengers.nibobnebob.data.repository
 
-import com.avengers.nibobnebob.data.model.BaseState
+import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
-import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.response.OldBaseResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
@@ -13,30 +13,30 @@ interface RestaurantRepository {
 
     fun restaurantDetail(
         restaurantId: Int
-    ): Flow<BaseState<BaseResponse<RestaurantDetailResponse>>>
+    ): Flow<OldBaseState<OldBaseResponse<RestaurantDetailResponse>>>
 
     fun addRestaurant(
         restaurantId: Int,
         body: AddRestaurantRequest
-    ): Flow<BaseState<BaseResponse<Unit>>>
+    ): Flow<OldBaseState<OldBaseResponse<Unit>>>
 
     fun deleteRestaurant(
         restaurantId: Int,
-    ): Flow<BaseState<BaseResponse<Unit>>>
+    ): Flow<OldBaseState<OldBaseResponse<Unit>>>
 
-    fun myRestaurantList(): Flow<BaseState<BaseResponse<List<RestaurantResponse>>>>
+    fun myRestaurantList(): Flow<OldBaseState<OldBaseResponse<List<RestaurantResponse>>>>
 
-    fun myWishList(): Flow<BaseState<BaseResponse<List<WishRestaurantResponse>>>>
+    fun myWishList(): Flow<OldBaseState<OldBaseResponse<List<WishRestaurantResponse>>>>
 
     fun addWishRestaurant(
         restaurantId: Int
-    ): Flow<BaseState<BaseResponse<Unit>>>
+    ): Flow<OldBaseState<OldBaseResponse<Unit>>>
 
     fun deleteWishRestaurant(
         restaurantId: Int
-    ): Flow<BaseState<BaseResponse<Unit>>>
+    ): Flow<OldBaseState<OldBaseResponse<Unit>>>
 
     fun getRestaurantIsWish(
         id: Int
-    ): Flow<BaseState<BaseResponse<RestaurantIsWishResponse>>>
+    ): Flow<OldBaseState<OldBaseResponse<RestaurantIsWishResponse>>>
 }
