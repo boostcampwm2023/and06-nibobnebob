@@ -13,7 +13,7 @@ export class ReviewService {
 
     async getSortedReviews(tokenInfo: TokenInfo, restaurantId: number, getSortedReviewsDto: SortInfoDto) {
         let sortedReviewIds;
-        if (getSortedReviewsDto.sort === "REVIEW ASC") {
+        if (getSortedReviewsDto.sort === "REVIEW_ASC") {
             const getReviewIdsWithLikes = await this.reviewRepository.getReviewIdsWithLikes("ASC");
             sortedReviewIds = getReviewIdsWithLikes.map(rl => rl.reviewId);
         }

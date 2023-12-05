@@ -17,9 +17,8 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
         .leftJoin("review.reviewLikes", "reviewLike")
         .select("review.id", "reviewId")
         .addSelect("COUNT(reviewLike.isLike)", "likeCount")
-        .where("reviewLike.isLike = :isLike OR reviewLike.isLike IS NULL", { isLike: false })
         .groupBy("review.id")
-        .orderBy("COUNT(reviewLike.isLike)", "DESC")
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = false THEN 1 ELSE NULL END)", "DESC")
         .getRawMany();
     }
     else {
@@ -28,9 +27,8 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
         .leftJoin("review.reviewLikes", "reviewLike")
         .select("review.id", "reviewId")
         .addSelect("COUNT(reviewLike.isLike)", "likeCount")
-        .where("reviewLike.isLike = :isLike OR reviewLike.isLike IS NULL", { isLike: true })
         .groupBy("review.id")
-        .orderBy("COUNT(reviewLike.isLike)", "DESC")
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
         .getRawMany();
     }
   }
