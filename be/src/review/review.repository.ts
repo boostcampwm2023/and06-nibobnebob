@@ -23,7 +23,6 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
         .getRawMany();
     }
     else {
-      console.log(1);
       return await this
         .createQueryBuilder("review")
         .leftJoin("review.reviewLikes", "reviewLike")
