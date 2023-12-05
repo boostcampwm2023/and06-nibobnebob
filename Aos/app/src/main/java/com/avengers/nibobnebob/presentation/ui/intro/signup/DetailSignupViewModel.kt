@@ -3,7 +3,6 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.request.DetailSignupRequest
 import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.data.repository.ValidationRepository
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -22,6 +21,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 data class DetailSignupUiState(
@@ -30,10 +32,17 @@ data class DetailSignupUiState(
     val birthState: InputState = InputState.Empty,
 )
 
+sealed class InputState {
+    data object Empty : InputState()
+    data class Success(val msg: String) : InputState()
+    data class Error(val msg: String) : InputState()
+}
+
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
     data object NavigateToLoginFragment : DetailSignupEvents()
     data class ShowSnackMessage(val msg: String) : DetailSignupEvents()
+    data object OpenGallery : DetailSignupEvents()
 }
 
 @HiltViewModel
@@ -57,11 +66,13 @@ class DetailSignupViewModel @Inject constructor(
     private val isMale = MutableStateFlow(true)
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
+    val profileImg = MutableStateFlow("")
+    private lateinit var profileFile: MultipartBody.Part
 
     val isDataReady =
-        combine(nick, birth, location, nickValidation) { nick, birth, location, nickValidation ->
+        combine(nick, birth, location, nickValidation, profileImg) { nick, birth, location, nickValidation, profileImg->
             nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
-                    nickValidation
+                    nickValidation && profileImg.isNotBlank()
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
@@ -134,16 +145,16 @@ class DetailSignupViewModel @Inject constructor(
     }
 
     fun signup() {
+        // todo MultiPart -> url API를 따로 만들기 or signup Request 자체를 MultiPart로 묶기
         introRepository.signup(
-            DetailSignupRequest(
-                email = email.value,
-                provider = provider.value,
-                password = password.value,
-                nickName = nick.value,
-                birthdate = birth.value,
-                region = location.value,
-                isMale = isMale.value
-            )
+            email = email.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            provider = provider.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            password = password.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            nickName = nick.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            birthdate = birth.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            region = location.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            isMale = isMale.value,
+            profileImage = profileFile
         ).onEach {
             when (it) {
                 is BaseState.Success -> navigateToLoginFragment()
@@ -180,5 +191,16 @@ class DetailSignupViewModel @Inject constructor(
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.NavigateToLoginFragment)
         }
+    }
+
+    fun openGallery(){
+        viewModelScope.launch {
+            _events.emit(DetailSignupEvents.OpenGallery)
+        }
+    }
+
+    fun setImage(uri: String, file: MultipartBody.Part){
+        profileImg.value = uri
+        profileFile = file
     }
 }
