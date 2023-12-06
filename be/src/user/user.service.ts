@@ -389,22 +389,30 @@ export class UserService {
   async deleteUserAccount(tokenInfo: TokenInfo) {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
-  async updateMypageUserInfo(file: Express.Multer.File, tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
+  async updateMypageUserInfo(file: Express.Multer.File, tokenInfo: TokenInfo, userInfoDto: UserInfoDto, isChanged: Boolean) {
+    const existedInfo = await this.usersRepository.findOne({ select: ["profileImage", "password"], where: { id: tokenInfo.id } })
+
     if (userInfoDto.password) userInfoDto.password = await hashPassword(userInfoDto.password);
-    let profileImage;
-    if (file) {
-      const uuid = v4();
-      profileImage = `profile/images/${uuid}.png`;
-    } else {
-      profileImage = "profile/images/defaultprofile.png";
+    else userInfoDto.password = existedInfo.password;
+
+    let profileImage = existedInfo.profileImage;
+    if (isChanged) {
+      if (file) {
+        const uuid = v4();
+        profileImage = `profile/images/${uuid}.png`;
+      } else {
+        profileImage = "profile/images/defaultprofile.png";
+      }
     }
-    const user = {
+
+    let user = {
       ...userInfoDto,
-      profileImage: profileImage
+      profileImage
     };
+
     const newUser = this.usersRepository.create(user);
     const updatedUser = await this.usersRepository.updateMypageUserInfo(tokenInfo.id, newUser);
-    if (file) {
+    if (file && isChanged) {
       this.awsService.uploadToS3(profileImage, file.buffer);
     }
     return updatedUser;
