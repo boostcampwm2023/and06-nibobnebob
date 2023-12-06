@@ -7,6 +7,7 @@ import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
+import com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist.MyWishListViewModel
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
@@ -27,7 +28,10 @@ import javax.inject.Inject
 data class MyRestaurantUiState(
     val myList: List<UiMyListData> = emptyList(),
     val filterOption: String = "",
+    val listPage: Int = 1,
+    val lastPage: Boolean = false,
     val isEmpty: Boolean = false,
+    val isLoading: Boolean = false,
 )
 
 sealed class MyRestaurantEvent {
@@ -54,20 +58,55 @@ class MyRestaurantListViewModel @Inject constructor(
 
 
     fun myRestaurantList(
-        limit: Int? = null,
-        page: Int? = null,
         sort: String? = null,
     ) {
-        getMyRestaurantListUseCase(sort = sort).onEach { my ->
+        getMyRestaurantListUseCase(
+            limit = ITEM_LIMIT, page = FIRST_PAGE, sort = sort
+                ?: uiState.value.filterOption
+        ).onEach { my ->
             when (my) {
                 is BaseState.Success -> {
                     my.data.restaurantItemsData?.let {
                         _uiState.update { state ->
-                            val list = my.data.restaurantItemsData.map { it.toUiMyListData() }
+                            val list = it.map { restaurant -> restaurant.toUiMyListData() }
                             state.copy(
                                 myList = list,
                                 filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
+                                listPage = 2,
+                                lastPage = my.data.hasNext,
                                 isEmpty = list.isEmpty()
+                            )
+                        }
+                    }
+                }
+
+                else -> _events.emit(MyRestaurantEvent.ShowSnackMessage(ERROR_MSG))
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun loadNextPage() {
+        _uiState.update { it.copy(isLoading = true) }
+        getMyRestaurantListUseCase(
+            limit = MyWishListViewModel.ITEM_LIMIT,
+            page = uiState.value.listPage,
+            sort = uiState.value.filterOption
+        ).onEach { wish ->
+            when (wish) {
+                is BaseState.Success -> {
+                    wish.data.restaurantItemsData?.let {
+
+                        _uiState.update { state ->
+                            val updateList = uiState.value.myList.toMutableList().apply {
+                                addAll(it.map { restaurant ->
+                                    restaurant.toUiMyListData()
+                                })
+                            }
+                            state.copy(
+                                myList = updateList,
+                                listPage = uiState.value.listPage + 1,
+                                lastPage = wish.data.hasNext,
+                                isLoading = false
                             )
                         }
                     }
@@ -88,7 +127,7 @@ class MyRestaurantListViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyRestaurantEvent.ShowToastMessage("삭제 되었습니다."))
-                    myRestaurantList(sort = uiState.value.filterOption)
+                    updateList(id)
                 }
 
                 is BaseState.Error -> {
@@ -98,12 +137,17 @@ class MyRestaurantListViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-//    private fun updateList(deleteId : Int){
-//        _uiState.update { state ->
-//            state.copy(
-//                myList = state.myList.filter { it.id != deleteId }.map { it }
-//            )
-//        }
-//    }
+    private fun updateList(deleteId: Int) {
+        _uiState.update { state ->
+            state.copy(
+                myList = state.myList.filter { it.id != deleteId }.map { it }
+            )
+        }
+    }
+
+    companion object {
+        const val FIRST_PAGE = 1
+        const val ITEM_LIMIT = 10
+    }
 
 }

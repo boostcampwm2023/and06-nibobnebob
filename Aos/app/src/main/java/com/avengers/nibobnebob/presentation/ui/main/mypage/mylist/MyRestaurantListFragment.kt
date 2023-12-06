@@ -4,6 +4,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -29,6 +30,15 @@ class MyRestaurantListFragment :
         binding.vm = viewModel
         binding.rvMyRestaurant.adapter = adapter
         binding.rvMyRestaurant.animation = null
+        binding.rvMyRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (!binding.rvMyRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
+                    viewModel.loadNextPage()
+                }
+            }
+        })
         setFilterMenu()
     }
 
@@ -78,10 +88,14 @@ class MyRestaurantListFragment :
             PopupMenu(requireContext(), binding.ivFilter).apply {
                 menuInflater.inflate(R.menu.my_page_filter_menu, menu)
                 setOnMenuItemClickListener {
-                    when (it.itemId) {
-                        R.id.menu_new -> viewModel.myRestaurantList(sort = "TIME_DESC")
-                        R.id.menu_old -> viewModel.myRestaurantList(sort = "TIME_ASC")
-                    }
+                    adapter.submitList(emptyList())
+                    viewModel.myRestaurantList(
+                        sort = when (it.itemId) {
+                            R.id.menu_new -> "TIME_DESC"
+                            R.id.menu_old -> "TIME_ASC"
+                            else -> null
+                        }
+                    )
                     true
                 }
                 show()
