@@ -4,8 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.MyPageRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.MyPageRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageInfoData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,8 +53,8 @@ class MyPageViewModel @Inject constructor(
     fun getUserInfo() {
         myPageRepository.getMyInfo().onEach {
             when (it) {
-                is OldBaseState.Success -> {
-                    it.data.body.toUiMyPageInfoData().apply {
+                is BaseState.Success -> {
+                    it.data.toUiMyPageInfoData().apply {
                         _uiState.update { state ->
                             state.copy(
                                 nickName = nickName,
@@ -67,7 +67,7 @@ class MyPageViewModel @Inject constructor(
                     }
                 }
 
-                is OldBaseState.Error -> _events.emit(MyEditPageEvent.ShowSnackMessage(ERROR_MSG))
+                is BaseState.Error -> _events.emit(MyEditPageEvent.ShowSnackMessage(ERROR_MSG))
             }
 
         }.launchIn(viewModelScope)
