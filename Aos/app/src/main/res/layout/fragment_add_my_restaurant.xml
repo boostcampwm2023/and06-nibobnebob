@@ -344,6 +344,27 @@
                     app:layout_constraintTop_toBottomOf="@id/sd_toilet" />
 
                 <TextView
+                    android:id="@+id/tv_photo_label"
+                    style="@style/TextMediumBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="(선택) 사진 등록"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_toilet_enough" />
+
+                <ImageView
+                    android:id="@+id/iv_add_photo"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/ic_add_review_photo"
+                    app:layout_constraintDimensionRatio="314:174"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_photo_label" />
+
+                <TextView
                     android:id="@+id/tv_comment"
                     style="@style/TextMediumBold"
                     android:layout_width="wrap_content"
@@ -351,7 +372,7 @@
                     android:layout_marginTop="30dp"
                     android:text="@string/add_total"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_toilet_enough" />
+                    app:layout_constraintTop_toBottomOf="@id/iv_add_photo" />
 
                 <TextView
                     android:id="@+id/tv_text_length"
