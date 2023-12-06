@@ -63,7 +63,7 @@ class EditProfileViewModel @Inject constructor(
     private var originalNickName: String = ""
     private var originalBirth: String = ""
     private var originalLocation: String = ""
-    private var originalIsMale: Boolean = true
+    private var originalIsMale: Boolean = false
     private var originalProfileImage: String = ""
 
     val locationList = LocationArray.LOCATION_ARRAY
@@ -98,6 +98,7 @@ class EditProfileViewModel @Inject constructor(
                         locationTextState.emit(location)
                         birthState.emit(birth)
                         profileImageState.emit(profileImage)
+                        isMaleState.emit(gender)
 
                         originalNickName = nickName
                         originalLocation = location
@@ -209,8 +210,18 @@ class EditProfileViewModel @Inject constructor(
 
     private fun observeIsMale(){
         isMaleState.onEach { isMale ->
+            _uiState.update { state ->
+                state.copy(
+                    isMale = EditInputState(
+                        isChanged = originalIsMale != isMale
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
 
-        }
+    fun setIsMale(data: Boolean) {
+        isMaleState.value = data
     }
 
     private fun observeProfileImage() {
@@ -245,7 +256,7 @@ class EditProfileViewModel @Inject constructor(
                 provider = uiState.value.provider,
                 birthdate = birthState.value,
                 region = if (locationState.value == 0) originalLocation else locationList[locationState.value],
-                isMale = originalIsMale,
+                isMale = isMaleState.value,
             ).onEach {
                 when (it) {
                     is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
@@ -260,7 +271,7 @@ class EditProfileViewModel @Inject constructor(
                 birthdate = birthState.value.toRequestBody("text/plain".toMediaTypeOrNull()),
                 region = if (locationState.value == 0) originalLocation.toRequestBody("text/plain".toMediaTypeOrNull())
                 else locationList[locationState.value].toRequestBody("text/plain".toMediaTypeOrNull()),
-                isMale = originalIsMale,
+                isMale = isMaleState.value,
                 profileImage = profileImageFile,
                 isImageChanged = true
             ).onEach {

@@ -28,6 +28,7 @@ class EditProfileFragment :
         view?.let { navController = Navigation.findNavController(it) }
         setDateBtnListener()
         initImageObserver()
+        setGenderRadioListener()
     }
 
     override fun initNetworkView() {
@@ -78,6 +79,15 @@ class EditProfileFragment :
         repeatOnStarted {
             parentViewModel.image.collect {
                 viewModel.setImage(it, it.toMultiPart((requireContext())))
+            }
+        }
+    }
+
+    private fun setGenderRadioListener() {
+        binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rb_gender_female -> viewModel.setIsMale(false)
+                R.id.rb_gender_male -> viewModel.setIsMale(true)
             }
         }
     }
