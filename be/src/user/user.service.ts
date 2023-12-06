@@ -18,6 +18,7 @@ import { User } from "./entities/user.entity";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
 import { AuthService } from "src/auth/auth.service";
 import { SortInfoDto } from "src/utils/sortInfo.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class UserService {
@@ -29,7 +30,7 @@ export class UserService {
     private reviewRepository: ReviewRepository,
     private userWishRestaurantListRepository: UserWishRestaurantListRepository,
     private awsService: AwsService,
-    private authService: AuthService
+    private authService: AuthService,
   ) { }
   async signup(@UploadedFile() file: Express.Multer.File, userInfoDto: UserInfoDto) {
     if (userInfoDto.password) userInfoDto.password = await hashPassword(userInfoDto.password);
@@ -49,16 +50,18 @@ export class UserService {
 
     try {
       const newUser = this.usersRepository.create(user);
-      await this.usersRepository.createUser(newUser);
+      const result = await this.usersRepository.createUser(newUser);
       if (file) {
         await this.awsService.uploadToS3(profileImage, file.buffer);
       }
-      return;
+      return this.authService.createTokens(result.id);
     } catch (error) {
       if (error.code === "23505") {
         throw new ConflictException("Duplicated Value");
       }
     }
+
+
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     return await this.usersRepository.getNickNameAvailability(nickName);
@@ -209,15 +212,15 @@ export class UserService {
     );
     const userIdValues = userIds.map((user) => user.followingUserId);
     userIdValues.push(tokenInfo.id);
-    const result = await this.usersRepository.getRecommendUserListInfo( userIdValues ,tokenInfo.id);
+    const result = await this.usersRepository.getRecommendUserListInfo(userIdValues, tokenInfo.id);
 
     function getRandomInts(min: number, max: number, count: number): number[] {
       const ints = new Set<number>();
       while (ints.size < count) {
-          const rand = Math.floor(Math.random() * (max - min + 1)) + min;
-          ints.add(rand);
+        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+        ints.add(rand);
       }
-      return [...ints].sort((a,b) => a - b);
+      return [...ints].sort((a, b) => a - b);
     }
 
     const randomIndexes = getRandomInts(0, result.length - 1, 2);
@@ -387,7 +390,7 @@ export class UserService {
     return await this.usersRepository.deleteUserAccount(tokenInfo.id);
   }
   async updateMypageUserInfo(file: Express.Multer.File, tokenInfo: TokenInfo, userInfoDto: UserInfoDto) {
-    userInfoDto.password = await hashPassword(userInfoDto.password);
+    if (userInfoDto.password) userInfoDto.password = await hashPassword(userInfoDto.password);
     let profileImage;
     if (file) {
       const uuid = v4();
