@@ -10,7 +10,7 @@ data class UserDetailResponse(
     val region: String,
     val isMale: Boolean,
     val isFollow: Boolean
-): BaseDataModel{
+) : BaseDataModel {
     companion object : DomainMapper<UserDetailResponse, UserDetailData> {
         override fun UserDetailResponse.toDomainModel(): UserDetailData = UserDetailData(
             nickName = nickName,
