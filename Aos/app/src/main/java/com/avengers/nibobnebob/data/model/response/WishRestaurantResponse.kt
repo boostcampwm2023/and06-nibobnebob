@@ -2,6 +2,8 @@ package com.avengers.nibobnebob.data.model.response
 
 import com.avengers.nibobnebob.data.model.base.BaseDataModel
 import com.avengers.nibobnebob.data.model.mapper.DomainMapper
+import com.avengers.nibobnebob.data.model.response.Location.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.WishRestaurantItems.Companion.toDomainModel
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantItemsData
 import com.google.gson.annotations.SerializedName
@@ -28,17 +30,18 @@ data class WishRestaurantItems(
     @SerializedName("restaurant_location") val location: Location,
     @SerializedName("restaurant_name") val name: String,
     @SerializedName("restaurant_phoneNumber") val phoneNumber: String
-) : BaseDataModel
-
-fun WishRestaurantItems.toDomainModel(): WishRestaurantItemsData {
-    return WishRestaurantItemsData(
-        isMy = isMy,
-        isWish = isWish,
-        address = address,
-        category = category,
-        id = id,
-        location = location,
-        name = name,
-        phoneNumber = phoneNumber
-    )
+) : BaseDataModel {
+    companion object : DomainMapper<WishRestaurantItems, WishRestaurantItemsData> {
+        override fun WishRestaurantItems.toDomainModel(): WishRestaurantItemsData =
+            WishRestaurantItemsData(
+                isMy = isMy,
+                isWish = isWish,
+                address = address,
+                category = category,
+                id = id,
+                location = location.toDomainModel(),
+                name = name,
+                phoneNumber = phoneNumber
+            )
+    }
 }

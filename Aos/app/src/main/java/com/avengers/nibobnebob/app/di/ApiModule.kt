@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.app.di
 
 import com.avengers.nibobnebob.data.remote.FollowApi
-import com.avengers.nibobnebob.data.remote.HomeApi
 import com.avengers.nibobnebob.data.remote.IntroApi
 import com.avengers.nibobnebob.data.remote.MyPageApi
 import com.avengers.nibobnebob.data.remote.RefreshApi
@@ -30,12 +29,10 @@ object ApiModule {
     fun provideValidationService(retrofit: Retrofit): ValidationApi =
         retrofit.create(ValidationApi::class.java)
 
-
     @Singleton
     @Provides
     fun provideRefreshService(retrofit: Retrofit): RefreshApi =
         retrofit.create(RefreshApi::class.java)
-
 
     @Singleton
     @Provides
@@ -47,11 +44,6 @@ object ApiModule {
     fun provideRestaurantService(retrofit: Retrofit): RestaurantApi {
         return retrofit.create(RestaurantApi::class.java)
     }
-
-
-    @Singleton
-    @Provides
-    fun provideHomeService(retrofit: Retrofit): HomeApi = retrofit.create(HomeApi::class.java)
 
     @Singleton
     @Provides

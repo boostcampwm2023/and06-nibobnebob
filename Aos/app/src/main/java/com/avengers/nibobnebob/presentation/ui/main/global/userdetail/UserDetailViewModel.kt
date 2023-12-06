@@ -4,8 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.FollowRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.FollowRepository
+import com.avengers.nibobnebob.domain.usecase.FollowFriendUseCase
+import com.avengers.nibobnebob.domain.usecase.UnFollowFriendUseCase
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiUserDetailData
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiUserDetailData
 import com.avengers.nibobnebob.presentation.util.Constants
@@ -35,7 +37,9 @@ sealed class UserDetailEvents {
 
 @HiltViewModel
 class UserDetailViewModel @Inject constructor(
-    private val followRepository: FollowRepository
+    private val followRepository: FollowRepository,
+    private val followFriendUseCase: FollowFriendUseCase,
+    private val unFollowFriendUseCase: UnFollowFriendUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserDetailUiState())
@@ -51,15 +55,15 @@ class UserDetailViewModel @Inject constructor(
         followRepository.getUserDetail(nickName).onEach {
 
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            userDetail = it.data.body.toUiUserDetailData()
+                            userDetail = it.data.toUiUserDetailData()
                         )
                     }
                 }
 
-                is OldBaseState.Error -> {
+                is BaseState.Error -> {
                     _events.emit(UserDetailEvents.ShowSnackMessage(it.message))
                 }
             }
@@ -67,15 +71,15 @@ class UserDetailViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun tryFollowUnFollow(){
-        if(_uiState.value.userDetail.isFollow) unFollow()
+    fun tryFollowUnFollow() {
+        if (_uiState.value.userDetail.isFollow) unFollow()
         else follow()
     }
 
     private fun follow() {
-        followRepository.follow(nickName).onEach {
+        followFriendUseCase(nickName).onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             userDetail = _uiState.value.userDetail.copy(isFollow = true)
@@ -84,16 +88,15 @@ class UserDetailViewModel @Inject constructor(
                     _events.emit(UserDetailEvents.ShowToastMessage("팔로우 성공"))
                 }
 
-                is OldBaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
-                else -> {}
+                is BaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
 
     private fun unFollow() {
-        followRepository.unFollow(nickName).onEach {
+        unFollowFriendUseCase(nickName).onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             userDetail = _uiState.value.userDetail.copy(isFollow = false)
@@ -102,8 +105,7 @@ class UserDetailViewModel @Inject constructor(
                     _events.emit(UserDetailEvents.ShowToastMessage("언팔로우 성공"))
                 }
 
-                is OldBaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
-                else -> {}
+                is BaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }

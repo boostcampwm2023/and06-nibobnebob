@@ -2,7 +2,8 @@ package com.avengers.nibobnebob.data.model.response
 
 import com.avengers.nibobnebob.data.model.base.BaseDataModel
 import com.avengers.nibobnebob.data.model.mapper.DomainMapper
-import com.avengers.nibobnebob.domain.model.LocationData
+import com.avengers.nibobnebob.data.model.response.Location.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.Reviews.Companion.toDomainModel
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.ReviewsData
 import com.google.gson.annotations.SerializedName
@@ -36,28 +37,6 @@ data class RestaurantDetailResponse(
     }
 }
 
-fun Location.toDomainModel(): LocationData {
-    return LocationData(
-        coordinates = coordinates,
-        type = type
-    )
-}
-
-fun Reviews.toDomainModel(): ReviewsData {
-    return ReviewsData(
-        id = id,
-        createdAt = createdAt,
-        isCarVisit = isCarVisit,
-        overallExperience = overallExperience,
-        parkingArea = parkingArea,
-        restroomCleanliness = restroomCleanliness,
-        service = service,
-        taste = taste,
-        transportationAccessibility = transportationAccessibility,
-        reviewer = reviewer
-    )
-}
-
 data class Reviews(
     @SerializedName("review_id") val id: Int,
     @SerializedName("review_created_at") val createdAt: String,
@@ -69,4 +48,19 @@ data class Reviews(
     @SerializedName("review_taste") val taste: Int,
     @SerializedName("review_transportationAccessibility") val transportationAccessibility: Int,
     @SerializedName("reviewer") val reviewer: String,
-)
+) : BaseDataModel {
+    companion object : DomainMapper<Reviews, ReviewsData> {
+        override fun Reviews.toDomainModel(): ReviewsData = ReviewsData(
+            id = id,
+            createdAt = createdAt,
+            isCarVisit = isCarVisit,
+            overallExperience = overallExperience,
+            parkingArea = parkingArea,
+            restroomCleanliness = restroomCleanliness,
+            service = service,
+            taste = taste,
+            transportationAccessibility = transportationAccessibility,
+            reviewer = reviewer
+        )
+    }
+}
