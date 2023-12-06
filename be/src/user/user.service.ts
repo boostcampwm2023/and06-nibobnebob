@@ -198,6 +198,28 @@ export class UserService {
       isFollow: false,
     }));
   }
+  async getRecommendFood(tokenInfo: TokenInfo) {
+    const region = await this.usersRepository.findOne({ select: ["region"], where: { id: tokenInfo.id } });
+    const restaurants = await this.userRestaurantListRepository.getMyFavoriteFoodCategory(tokenInfo.id, region);
+
+    for (const restaurant of restaurants) {
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
+    }
+    return restaurants;
+  }
   async searchTargetUser(tokenInfo: TokenInfo, nickName: string, region: string[]) {
     const whereCondition: any = {
       nickName: Like(`%${nickName}%`),
