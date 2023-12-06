@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MyPageUiState(
@@ -31,6 +32,7 @@ data class MyPageUiState(
 
 sealed class MyEditPageEvent {
     data object NavigateToIntro : MyEditPageEvent()
+    data class ProfileClicked(val profileImage : String) : MyEditPageEvent()
     data class ShowToastMessage(val msg: String) : MyEditPageEvent()
     data class ShowSnackMessage(val msg: String) : MyEditPageEvent()
 }
@@ -72,6 +74,12 @@ class MyPageViewModel @Inject constructor(
 
         }.launchIn(viewModelScope)
 
+    }
+
+    fun profileClicked() {
+        viewModelScope.launch {
+            _events.emit(MyEditPageEvent.ProfileClicked(uiState.value.profileImage))
+        }
     }
 
     fun logout() {
