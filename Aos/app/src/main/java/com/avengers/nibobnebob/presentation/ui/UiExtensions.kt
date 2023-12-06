@@ -20,11 +20,10 @@ internal fun Context.adjustKeyboard(view: View, show: Boolean) {
 }
 
 
-internal fun Context.requestPermission(
+internal fun Context.requestLocationPermission(
     permissionList: Array<String>,
     onLauncherStart: () -> Unit,
-    onTrackingChangeListener: (Boolean) -> Unit,
-    toastText: String
+    onTrackingChangeListener: (Boolean) -> Unit
 ) {
     var permissionFlag = false
     permissionList.forEach { permission ->
@@ -40,7 +39,7 @@ internal fun Context.requestPermission(
         }
     } else {
         onLauncherStart()
-        Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "위치권한을 허용해주세요", Toast.LENGTH_SHORT).show()
     }
 }
 
