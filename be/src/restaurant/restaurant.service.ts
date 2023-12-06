@@ -60,6 +60,7 @@ export class RestaurantService implements OnModuleInit {
     const reviews = await this.reviewRepository
       .createQueryBuilder("review")
       .leftJoinAndSelect("review.user", "user")
+      .leftJoin("review.reviewLikes", "reviewLike", "reviewLike.userId = :userId", { userId: tokenInfo.id })
       .select([
         "review.id",
         "review.isCarVisit",
@@ -71,7 +72,8 @@ export class RestaurantService implements OnModuleInit {
         "review.overallExperience",
         "user.nickName as reviewer",
         "review.createdAt",
-        "review.reviewImage"
+        "review.reviewImage",
+        "reviewLike.isLike as isLike"
       ])
       .where("review.restaurant_id = :restaurantId", {
         restaurantId: restaurant.restaurant_id,
