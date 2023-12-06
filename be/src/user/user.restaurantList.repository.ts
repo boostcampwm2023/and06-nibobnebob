@@ -157,11 +157,23 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         .where("restaurant.category = :category", { category: favoriteCategory })
         .andWhere("restaurant.address LIKE :region", { region: `%${region.region}%` })
         .andWhere("userRestaurantList.restaurantId NOT IN (:...restaurantIds)", { restaurantIds: restaurantIds })
+        .groupBy("restaurant.id")
         .getRawMany();
 
       if (result.length > 0) {
-        const recommendedRestaurant = result[Math.floor(Math.random() * result.length)];
-        return recommendedRestaurant;
+        let recommendedRestaurants = [];
+        let usedIndexes = new Set();
+
+        for (let i = 0; i < Math.min(3, result.length); i++) {
+          let randomIndex;
+          do {
+            randomIndex = Math.floor(Math.random() * result.length);
+          } while (usedIndexes.has(randomIndex));
+
+          usedIndexes.add(randomIndex);
+          recommendedRestaurants.push(result[randomIndex]);
+        }
+        return recommendedRestaurants;
       }
     }
     else {
@@ -170,6 +182,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         .leftJoinAndSelect("userRestaurantList.restaurant", "restaurant")
         .select(["restaurant.id", "restaurant.name", "restaurant.category"])
         .andWhere("restaurant.address LIKE :region", { region: `%${region.region}%` })
+        .groupBy("restaurant.id")
         .getRawMany();
 
       if (result.length > 0) {
