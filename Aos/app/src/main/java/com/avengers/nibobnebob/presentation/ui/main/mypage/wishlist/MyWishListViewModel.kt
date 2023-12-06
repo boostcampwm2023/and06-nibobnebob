@@ -2,8 +2,9 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteMyWishRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyWishListUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyWishListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyWishData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -35,7 +36,8 @@ sealed class MyWishEvent {
 
 @HiltViewModel
 class MyWishListViewModel @Inject constructor(
-    private val restaurantRepository: RestaurantRepository
+    private val getMyWishListUseCase: GetMyWishListUseCase,
+    private val deleteMyWishRestaurantUseCase: DeleteMyWishRestaurantUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MyWishUiState())
     val uiState: StateFlow<MyWishUiState> = _uiState.asStateFlow()
@@ -49,15 +51,19 @@ class MyWishListViewModel @Inject constructor(
 
 
     fun myWishList() {
-        restaurantRepository.myWishList().onEach { wish ->
+        getMyWishListUseCase().onEach { wish ->
             when (wish) {
-                is OldBaseState.Success -> {
-                    _uiState.update { state ->
-                        val list = wish.data.body.map { it.toMyWishListData() }
-                        state.copy(
-                            wishList = list,
-                            isEmpty = list.isEmpty()
-                        )
+                is BaseState.Success -> {
+                    wish.data.wishRestaurantItemsData?.let {
+                        _uiState.update { state ->
+                            val wishList = it.map { restaurant ->
+                                restaurant.toMyWishListData()
+                            }
+                            state.copy(
+                                wishList = wishList,
+                                isEmpty = wishList.isEmpty()
+                            )
+                        }
                     }
                 }
 
@@ -81,14 +87,14 @@ class MyWishListViewModel @Inject constructor(
     }
 
     fun deleteWishList(id: Int) {
-        restaurantRepository.deleteWishRestaurant(id).onEach {
+        deleteMyWishRestaurantUseCase(id).onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))
                     myWishList()
                 }
 
-                is OldBaseState.Error -> {
+                is BaseState.Error -> {
                     _events.emit(MyWishEvent.ShowSnackMessage(ERROR_MSG))
                 }
             }

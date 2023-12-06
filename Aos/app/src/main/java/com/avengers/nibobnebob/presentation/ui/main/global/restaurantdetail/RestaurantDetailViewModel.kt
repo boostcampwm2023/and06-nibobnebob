@@ -2,8 +2,11 @@ package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.restaurant.AddWishRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteMyWishRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.GetRestaurantDetailUseCase
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantDetailInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantReviewDataInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
@@ -47,7 +50,10 @@ data class RestaurantDetailUiState(
 
 @HiltViewModel
 class RestaurantDetailViewModel @Inject constructor(
-    private val restaurantRepository: RestaurantRepository
+    private val getRestaurantDetailUseCase: GetRestaurantDetailUseCase,
+    private val deleteRestaurantUseCase: DeleteRestaurantUseCase,
+    private val deleteMyWishRestaurantUseCase: DeleteMyWishRestaurantUseCase,
+    private val addWishRestaurantUseCase: AddWishRestaurantUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantDetailUiState())
@@ -63,10 +69,10 @@ class RestaurantDetailViewModel @Inject constructor(
     val restaurantId = MutableStateFlow<Int>(0)
 
     fun restaurantDetail() {
-        restaurantRepository.restaurantDetail(restaurantId = restaurantId.value).onEach {
+        getRestaurantDetailUseCase(restaurantId = restaurantId.value).onEach {
             when (it) {
-                is OldBaseState.Success -> {
-                    it.data.body.toUiRestaurantDetailInfo(
+                is BaseState.Success -> {
+                    it.data.toUiRestaurantDetailInfo(
                         ::onWishClicked
                     ).apply {
                         _uiState.update { state ->
@@ -81,7 +87,7 @@ class RestaurantDetailViewModel @Inject constructor(
                             )
                         }
                     }
-                    it.data.body.reviews?.let { reviews ->
+                    it.data.reviews?.let { reviews ->
                         val reviewList = reviews.map {
                             it.toUiRestaurantReviewDataInfo(
                                 ::onThumbsUpItemClicked,
@@ -97,7 +103,7 @@ class RestaurantDetailViewModel @Inject constructor(
                     }
                 }
 
-                is OldBaseState.Error -> {
+                is BaseState.Error -> {
                     _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
@@ -105,9 +111,9 @@ class RestaurantDetailViewModel @Inject constructor(
     }
 
     fun deleteMyList() {
-        restaurantRepository.deleteRestaurant(restaurantId.value).onEach {
+        deleteRestaurantUseCase(restaurantId.value).onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _events.emit(RestaurantDetailEvents.ShowToastMessage("삭제 되었습니다."))
                     _uiState.update { state ->
                         state.copy(
@@ -116,7 +122,7 @@ class RestaurantDetailViewModel @Inject constructor(
                     }
                 }
 
-                is OldBaseState.Error -> {
+                is BaseState.Error -> {
                     _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
@@ -125,9 +131,9 @@ class RestaurantDetailViewModel @Inject constructor(
 
     fun onWishClicked() {
         if (_uiState.value.isWish) {
-            restaurantRepository.deleteWishRestaurant(restaurantId.value).onEach {
+            deleteMyWishRestaurantUseCase(restaurantId.value).onEach {
                 when (it) {
-                    is OldBaseState.Success -> {
+                    is BaseState.Success -> {
                         _uiState.update { state ->
                             state.copy(
                                 isWish = false
@@ -135,15 +141,15 @@ class RestaurantDetailViewModel @Inject constructor(
                         }
                     }
 
-                    is OldBaseState.Error -> {
+                    is BaseState.Error -> {
                         _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                     }
                 }
             }.launchIn(viewModelScope)
         } else {
-            restaurantRepository.addWishRestaurant(restaurantId.value).onEach {
+            addWishRestaurantUseCase(restaurantId.value).onEach {
                 when (it) {
-                    is OldBaseState.Success -> {
+                    is BaseState.Success -> {
                         _uiState.update { state ->
                             state.copy(
                                 isWish = true
@@ -151,7 +157,7 @@ class RestaurantDetailViewModel @Inject constructor(
                         }
                     }
 
-                    is OldBaseState.Error -> {
+                    is BaseState.Error -> {
                         _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                     }
                 }

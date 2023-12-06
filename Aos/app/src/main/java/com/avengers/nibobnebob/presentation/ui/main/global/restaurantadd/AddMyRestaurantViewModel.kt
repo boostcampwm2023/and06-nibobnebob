@@ -2,9 +2,9 @@ package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
-import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.restaurant.AddRestaurantUseCase
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,7 +47,7 @@ sealed class AddMyRestaurantEvents {
 
 @HiltViewModel
 class AddMyRestaurantViewModel @Inject constructor(
-    private val restaurantRepository: RestaurantRepository
+    private val addRestaurantUseCase: AddRestaurantUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddMyRestaurantUiState())
@@ -143,7 +143,7 @@ class AddMyRestaurantViewModel @Inject constructor(
 
     fun addReview() {
         viewModelScope.launch {
-            restaurantRepository.addRestaurant(
+            addRestaurantUseCase(
                 restaurantId, AddRestaurantRequest(
                     isCarVisit = _uiState.value.visitWithCar,
                     transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
@@ -155,12 +155,12 @@ class AddMyRestaurantViewModel @Inject constructor(
                 )
             ).onEach { state ->
                 when (state) {
-                    is OldBaseState.Success -> {
+                    is BaseState.Success -> {
                         _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
                         _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
                     }
 
-                    is OldBaseState.Error -> _events.emit(
+                    is BaseState.Error -> _events.emit(
                         AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
                     )
                 }
