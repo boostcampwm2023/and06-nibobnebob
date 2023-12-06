@@ -3,9 +3,9 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.HomeRepository
 import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.FollowRepository
+import com.avengers.nibobnebob.domain.repository.RestaurantRepository
 import com.avengers.nibobnebob.domain.usecase.restaurant.AddWishRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteMyWishRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
@@ -71,7 +71,8 @@ sealed class HomeEvents {
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository,
+    private val followRepository: FollowRepository,
+    private val restaurantRepository: RestaurantRepository,
     private val myRestaurantListUseCase: GetMyRestaurantListUseCase,
     private val addWishRestaurantUseCase: AddWishRestaurantUseCase,
     private val deleteMyWishRestaurantUseCase: DeleteMyWishRestaurantUseCase
@@ -137,11 +138,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getFilterList() {
-        homeRepository.followList().onEach { it ->
+        followRepository.getMyFollowing().onEach { it ->
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     val initialFilterData = UiFilterData(MY_LIST, true, ::onFilterItemClicked)
-                    val filterList = listOf(initialFilterData) + it.data.body.map {
+                    val filterList = listOf(initialFilterData) + it.data.map {
                         UiFilterData(it.nickName, false, ::onFilterItemClicked)
                     }
                     _uiState.update { state ->
@@ -152,7 +153,7 @@ class HomeViewModel @Inject constructor(
                     }
                 }
 
-                is OldBaseState.Error -> {
+                is BaseState.Error -> {
                     _uiState.update { state ->
                         state.copy(
                             filterList = listOf(UiFilterData(MY_LIST, true, ::onFilterItemClicked)),
@@ -162,37 +163,37 @@ class HomeViewModel @Inject constructor(
                     _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
-
         }.launchIn(viewModelScope)
     }
 
     fun nearRestaurantList() {
-//        homeRepository.nearRestaurantList(
-//            //todo : 반경 임시처리 -> 추후에 반경을 넓힐때 갯수를 제한해서 보내주던지 설정
-//            // 반경은 300m로 그리고 zoom레벨은 16으로 임시 설정을 했음 이에 따라 나중에 수정해야함
-//            radius = "300",
-//            longitude = uiState.value.cameraLongitude.toString(),
-//            latitude = uiState.value.cameraLatitude.toString()
-//        ).onEach {
-//            resetFilterClicked()
-//            resetMarkerList()
-//            when (it) {
-//                is OldBaseState.Success -> {
-//                    _uiState.update { state ->
-//                        state.copy(
-//                            markerList = it.data.body.map { data ->
-//                                data.toUiRestaurantData()
-//                            }
-//                        )
-//                    }
-//                }
-//
-//                is OldBaseState.Error -> {
-//                    _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
-//                }
-//            }
-//            _events.emit(HomeEvents.NearMarkers)
-//        }.launchIn(viewModelScope)
+        restaurantRepository.nearRestaurantList(
+            //todo : 반경 임시처리 -> 추후에 반경을 넓힐때 갯수를 제한해서 보내주던지 설정
+            // 반경은 300m로 그리고 zoom레벨은 16으로 임시 설정을 했음 이에 따라 나중에 수정해야함
+            radius = "300",
+            longitude = uiState.value.cameraLongitude.toString(),
+            latitude = uiState.value.cameraLatitude.toString()
+        ).onEach {
+            resetFilterClicked()
+            resetMarkerList()
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            markerList = it.data.map{ restaurants ->
+                                restaurants.toUiRestaurantData()
+                            }
+                        )
+                    }
+                    moveCamera()
+                }
+
+                is BaseState.Error -> {
+                    _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
+                }
+            }
+            _events.emit(HomeEvents.NearMarkers)
+        }.launchIn(viewModelScope)
 
     }
 
@@ -229,8 +230,8 @@ class HomeViewModel @Inject constructor(
                     when (it) {
                         is BaseState.Success -> {
                             it.data.restaurantItemsData?.let { restaurants ->
-                                val restaurantsList = restaurants.map {
-                                    it.toUiRestaurantData()
+                                val restaurantsList = restaurants.map { data ->
+                                    data.toUiRestaurantData()
                                 }
                                 _uiState.update { state ->
                                     state.copy(
@@ -248,26 +249,28 @@ class HomeViewModel @Inject constructor(
             }
 
             else -> {
-//                homeRepository.filterRestaurantList(
-//                    _uiState.value.curFilter,
-//                    "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
-//                    50000
-//                ).onEach {
-//                    _events.emit(HomeEvents.RemoveMarkers)
-//                    when (it) {
-//                        is OldBaseState.Success -> {
-//                            _uiState.update { state ->
-//                                state.copy(markerList = it.data.body.map { data ->
-//                                    data.toUiRestaurantData()
-//                                })
-//                            }
-//                            moveCamera()
-//                        }
-//
-//                        is OldBaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
-//                    }
-//                    _events.emit(HomeEvents.SetNewMarkers)
-//                }.launchIn(viewModelScope)
+                restaurantRepository.filterRestaurantList(
+                    _uiState.value.curFilter,
+                    "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
+                    50000
+                ).onEach {
+                    _events.emit(HomeEvents.RemoveMarkers)
+                    when (it) {
+                        is BaseState.Success -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    markerList = it.data.map{ restaurants ->
+                                        restaurants.toUiRestaurantData()
+                                    }
+                                )
+                            }
+                            moveCamera()
+                        }
+
+                        is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
+                    }
+                    _events.emit(HomeEvents.SetNewMarkers)
+                }.launchIn(viewModelScope)
             }
         }
     }

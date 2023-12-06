@@ -2,8 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.main.follow.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.FollowRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.FollowRepository
 import com.avengers.nibobnebob.presentation.ui.main.follow.mapper.toUiFollowSearchData
 import com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowSearchData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,8 +57,8 @@ class FollowSearchViewModel @Inject constructor(
                 followRepository.searchFollow(it, _uiState.value.curRegionFilter)
                     .onEach { response ->
                         when (response) {
-                            is OldBaseState.Success -> {
-                                response.data.body.let { data ->
+                            is BaseState.Success -> {
+                                response.data.let { data ->
                                     _uiState.update { state ->
                                         state.copy(
                                             searchList = data.map { data ->
@@ -70,7 +70,7 @@ class FollowSearchViewModel @Inject constructor(
                                 }
                             }
 
-                            is OldBaseState.Error -> {
+                            is BaseState.Error -> {
                                 _events.emit(FollowSearchEvents.ShowSnackMessage(response.message))
                             }
                         }

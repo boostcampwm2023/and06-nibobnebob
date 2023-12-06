@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 data class ValidateResponse(
     @SerializedName("isexist")
     val isExist: Boolean
-): BaseDataModel {
+) : BaseDataModel {
     companion object : DomainMapper<ValidateResponse, ValidateData> {
         override fun ValidateResponse.toDomainModel(): ValidateData = ValidateData(
             isExist = isExist

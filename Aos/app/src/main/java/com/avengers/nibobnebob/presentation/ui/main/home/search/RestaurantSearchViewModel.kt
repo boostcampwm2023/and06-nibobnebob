@@ -2,8 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.main.home.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.HomeRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.RestaurantRepository
 import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +36,7 @@ sealed class RestaurantSearchEvent {
 
 @HiltViewModel
 class RestaurantSearchViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val restaurantRepository: RestaurantRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantSearchUiState())
@@ -81,12 +81,11 @@ class RestaurantSearchViewModel @Inject constructor(
         val longitude = curLongitude.value.ifEmpty { null }
         val latitude = curLatitude.value.ifEmpty { null }
 
-
-        homeRepository.searchRestaurant(keyword.toString(), tempRadius, longitude, latitude)
+        restaurantRepository.searchRestaurant(keyword.toString(), tempRadius, longitude, latitude)
             .onEach { state ->
                 when (state) {
-                    is OldBaseState.Success -> {
-                        val item = state.data.body
+                    is BaseState.Success -> {
+                        val item = state.data
                         _uiState.update { ui ->
                             ui.copy(
                                 searchList = item.map { it.toUiRestaurantData() },

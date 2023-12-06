@@ -40,10 +40,11 @@ data class RestaurantItems(
             category = category,
             id = id,
             createdAt = createdAt,
-            location = location,
+            location = location.toDomainModel(),
             name = name,
             phoneNumber = phoneNumber
         )
     }
 }
+
 

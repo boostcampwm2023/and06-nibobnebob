@@ -2,8 +2,10 @@ package com.avengers.nibobnebob.presentation.ui.main.follow
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.FollowRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.FollowRepository
+import com.avengers.nibobnebob.domain.usecase.FollowFriendUseCase
+import com.avengers.nibobnebob.domain.usecase.UnFollowFriendUseCase
 import com.avengers.nibobnebob.presentation.ui.main.follow.mapper.toUiFollowData
 import com.avengers.nibobnebob.presentation.ui.main.follow.model.UiFollowData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -41,7 +43,9 @@ enum class CurListState {
 
 @HiltViewModel
 class FollowViewModel @Inject constructor(
-    private val followRepository: FollowRepository
+    private val followRepository: FollowRepository,
+    private val followFriendUseCase: FollowFriendUseCase,
+    private val unFollowFriendUseCase: UnFollowFriendUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FollowUiState())
@@ -54,10 +58,10 @@ class FollowViewModel @Inject constructor(
 
         followRepository.getMyRecommendFollow().onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            recommendFollowList = it.data.body.map { data ->
+                            recommendFollowList = it.data.map { data ->
                                 data.toUiFollowData(
                                     ::follow, ::unFollow, ::navigateToUserDetail
                                 )
@@ -66,7 +70,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
 
@@ -82,10 +86,10 @@ class FollowViewModel @Inject constructor(
 
         followRepository.getMyFollower().onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            followList = it.data.body.map { data ->
+                            followList = it.data.map { data ->
                                 data.toUiFollowData(
                                     ::follow, ::unFollow, ::navigateToUserDetail
                                 )
@@ -94,7 +98,7 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
@@ -109,10 +113,10 @@ class FollowViewModel @Inject constructor(
 
         followRepository.getMyFollowing().onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            followList = it.data.body.map { data ->
+                            followList = it.data.map { data ->
                                 data.toUiFollowData(
                                     ::follow, ::unFollow, ::navigateToUserDetail
                                 )
@@ -121,16 +125,16 @@ class FollowViewModel @Inject constructor(
                     }
                 }
 
-                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
                 else -> {}
             }
         }.launchIn(viewModelScope)
     }
 
     private fun follow(nickName: String) {
-        followRepository.follow(nickName).onEach {
+        followFriendUseCase(nickName).onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             followList = when (_uiState.value.curListState) {
@@ -165,16 +169,15 @@ class FollowViewModel @Inject constructor(
                     _events.emit(FollowEvents.ShowToastMessage("팔로우 성공"))
                 }
 
-                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
-                else -> {}
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
 
     private fun unFollow(nickName: String) {
-        followRepository.unFollow(nickName).onEach {
+        unFollowFriendUseCase(nickName).onEach {
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             followList = when (_uiState.value.curListState) {
@@ -202,8 +205,7 @@ class FollowViewModel @Inject constructor(
                     _events.emit(FollowEvents.ShowToastMessage("언팔로우 성공"))
                 }
 
-                is OldBaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
-                else -> {}
+                is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }

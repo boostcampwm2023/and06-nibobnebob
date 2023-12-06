@@ -144,15 +144,14 @@ class AddMyRestaurantViewModel @Inject constructor(
     fun addReview() {
         viewModelScope.launch {
             addRestaurantUseCase(
-                restaurantId, AddRestaurantRequest(
-                    isCarVisit = _uiState.value.visitWithCar,
-                    transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
-                    parkingArea = if (_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
-                    taste = _uiState.value.taste,
-                    service = _uiState.value.taste,
-                    restroomCleanliness = _uiState.value.toilet,
-                    overallExperience = comment.value
-                )
+                restaurantId = restaurantId,
+                isCarVisit = _uiState.value.visitWithCar,
+                transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
+                parkingArea = if (_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
+                taste = _uiState.value.taste,
+                service = _uiState.value.taste,
+                restroomCleanliness = _uiState.value.toilet,
+                overallExperience = comment.value
             ).onEach { state ->
                 when (state) {
                     is BaseState.Success -> {
