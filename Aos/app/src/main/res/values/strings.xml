@@ -109,6 +109,9 @@
     <string name="follow_search_location">지역\t</string>
     <string name="search_restaurant_title">음식점 이름을 검색하세요.</string>
     <string name="search_none">검색 결과가 없습니다.</string>
+    <string name="filter_old">오래된순</string>
+    <string name="filter_new">최신순</string>
+    <string name="mylist_empty">추가한 내 맛집이 없습니다.</string>
 
     <string-array name="location_list">
         <item>용산구</item>

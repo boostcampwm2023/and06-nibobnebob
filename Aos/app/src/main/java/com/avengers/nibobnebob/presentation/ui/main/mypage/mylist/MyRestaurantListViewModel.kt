@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
+import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -24,6 +25,7 @@ import javax.inject.Inject
 
 data class MyRestaurantUiState(
     val myList: List<UiMyListData> = emptyList(),
+    val filterOption : String = "최신순",
     val isEmpty: Boolean = false,
 )
 
@@ -50,8 +52,12 @@ class MyRestaurantListViewModel @Inject constructor(
     val events: SharedFlow<MyRestaurantEvent> = _events.asSharedFlow()
 
 
-    fun myRestaurantList() {
-        getMyRestaurantListUseCase().onEach { my ->
+    fun myRestaurantList(
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null,
+    ) {
+        getMyRestaurantListUseCase(sort = sort).onEach { my ->
             when (my) {
                 is BaseState.Success -> {
                     my.data.restaurantItemsData?.let {
@@ -59,6 +65,7 @@ class MyRestaurantListViewModel @Inject constructor(
                             val list = my.data.restaurantItemsData.map { it.toUiMyListData() }
                             state.copy(
                                 myList = list,
+                                filterOption = if(sort == "TIME_ASC") "오래된순" else "최신순",
                                 isEmpty = list.isEmpty()
                             )
                         }
