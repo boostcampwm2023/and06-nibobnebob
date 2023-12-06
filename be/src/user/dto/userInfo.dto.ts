@@ -55,7 +55,7 @@ export class UserInfoDto {
     example: true,
     description: "The gender of the user. true is male, false is female",
   })
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === true)
   @IsBoolean()
   @IsNotEmpty()
   isMale: boolean;
