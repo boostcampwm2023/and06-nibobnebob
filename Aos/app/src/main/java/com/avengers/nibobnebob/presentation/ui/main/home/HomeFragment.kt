@@ -16,7 +16,7 @@ import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeFilterAdapter
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
-import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
+import com.avengers.nibobnebob.presentation.ui.requestPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.naver.maps.geometry.LatLng
@@ -70,10 +70,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             viewModel.uiState.collect {
                 when (it.locationTrackingState) {
                     is TrackingState.TryOn -> {
-                        requireContext().requestLocationPermission(
+                        requireContext().requestPermission(
                             locationPermissionList,
                             ::startPermissionLauncher,
-                            ::onTrackingChangeListener
+                            ::onTrackingChangeListener,
+                            "위치권한을 허용해주세요"
                         )
                     }
 
