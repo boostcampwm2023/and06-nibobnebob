@@ -63,8 +63,8 @@ class MyPageRepositoryImpl @Inject constructor(
         birthdate: RequestBody,
         region: RequestBody,
         isMale: Boolean,
-        password: RequestBody?,
-        profileImage: MultipartBody.Part?
+        profileImage: MultipartBody.Part?,
+        isImageChanged : Boolean
     ): Flow<BaseState<Unit>> = flow {
         val result = runRemote {
             api.editMyInfo(
@@ -74,8 +74,8 @@ class MyPageRepositoryImpl @Inject constructor(
                 birthdate = birthdate,
                 region = region,
                 isMale = isMale,
-                password = password,
-                profileImage = profileImage
+                profileImage = profileImage,
+                isImageChanged = isImageChanged
             )
         }
         emit(result)

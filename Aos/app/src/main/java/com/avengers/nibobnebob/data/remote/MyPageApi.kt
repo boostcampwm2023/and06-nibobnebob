@@ -31,8 +31,8 @@ interface MyPageApi {
         @Part("region") region: RequestBody,
         @Part("birthdate") birthdate: RequestBody,
         @Part("isMale") isMale: Boolean,
-        @Part("password") password: RequestBody?,
-        @Part profileImage: MultipartBody.Part?
+        @Part profileImage: MultipartBody.Part?,
+        @Part("isImageChanged") isImageChanged : Boolean
     ): Response<Unit>
 
     @PUT("api/user")

@@ -7,5 +7,7 @@ data class EditMyInfoNoImageRequest(
     val provider: String,
     val birthdate: String,
     val region: String,
-    val isMale: Boolean
+    val isMale: Boolean,
+    val profileImage : String = "",
+    val isImageChanged :Boolean = false
 )

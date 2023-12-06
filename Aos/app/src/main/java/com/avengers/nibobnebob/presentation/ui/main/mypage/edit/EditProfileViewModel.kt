@@ -32,6 +32,7 @@ data class EditProfileUiState(
     val birth: EditInputState = EditInputState(),
     val location: EditInputState = EditInputState(),
     val profileImage: EditInputState = EditInputState(),
+    val isMale : EditInputState = EditInputState()
 )
 
 
@@ -73,6 +74,7 @@ class EditProfileViewModel @Inject constructor(
     val locationTextState = MutableStateFlow("")
     val locationEditMode = MutableStateFlow(false)
     val profileImageState = MutableStateFlow("")
+    val isMaleState = MutableStateFlow(false)
     private var profileImageFile: MultipartBody.Part? = null
 
     init {
@@ -81,6 +83,7 @@ class EditProfileViewModel @Inject constructor(
         observeLocation()
         observeBirth()
         observeProfileImage()
+        observeIsMale()
     }
 
     private fun getOriginalData() {
@@ -204,6 +207,12 @@ class EditProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun observeIsMale(){
+        isMaleState.onEach { isMale ->
+
+        }
+    }
+
     private fun observeProfileImage() {
         profileImageState.onEach { image ->
             if (originalProfileImage.isEmpty()) return@onEach
@@ -252,8 +261,8 @@ class EditProfileViewModel @Inject constructor(
                 region = if (locationState.value == 0) originalLocation.toRequestBody("text/plain".toMediaTypeOrNull())
                 else locationList[locationState.value].toRequestBody("text/plain".toMediaTypeOrNull()),
                 isMale = originalIsMale,
-                password = "1234".toRequestBody("text/plain".toMediaTypeOrNull()),
-                profileImage = profileImageFile
+                profileImage = profileImageFile,
+                isImageChanged = true
             ).onEach {
                 when (it) {
                     is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)

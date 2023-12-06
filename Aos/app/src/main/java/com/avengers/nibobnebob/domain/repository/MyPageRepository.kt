@@ -19,8 +19,8 @@ interface MyPageRepository {
         birthdate: RequestBody,
         region: RequestBody,
         isMale: Boolean,
-        password: RequestBody?,
-        profileImage: MultipartBody.Part?
+        profileImage: MultipartBody.Part?,
+        isImageChanged : Boolean
     ): Flow<BaseState<Unit>>
 
     fun editMyInfoNoImage(
@@ -29,7 +29,7 @@ interface MyPageRepository {
         provider : String,
         birthdate : String,
         region : String,
-        isMale : Boolean
+        isMale : Boolean,
     ) : Flow<BaseState<Unit>>
 
 
