@@ -44,6 +44,10 @@ class MainViewModel @Inject constructor(
         _image.value = uri
     }
 
+    fun uriCollected(){
+        _image.value = ""
+    }
+
     fun markSearchRestaurant(item: UiRestaurantData) {
         viewModelScope.launch { selectedItem.emit(item) }
     }

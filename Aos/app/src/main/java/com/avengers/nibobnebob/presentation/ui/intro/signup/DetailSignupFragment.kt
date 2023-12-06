@@ -59,6 +59,7 @@ class DetailSignupFragment :
             parentViewModel.image.collect {
                 if (it.isNotBlank()) {
                     viewModel.setImage(it, it.toMultiPart(requireContext(), "profileImage"))
+                    parentViewModel.uriCollected()
                 }
             }
         }

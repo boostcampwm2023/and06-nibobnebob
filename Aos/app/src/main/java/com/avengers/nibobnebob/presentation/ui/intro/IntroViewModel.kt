@@ -40,4 +40,8 @@ class IntroViewModel @Inject constructor(
     fun setUriString(uri : String){
         _image.value = uri
     }
+
+    fun uriCollected(){
+        _image.value = ""
+    }
 }
