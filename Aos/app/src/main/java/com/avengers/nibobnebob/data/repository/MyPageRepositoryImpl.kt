@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
 import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.MyInfoResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
@@ -15,6 +14,8 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class MyPageRepositoryImpl @Inject constructor(
@@ -55,20 +56,25 @@ class MyPageRepositoryImpl @Inject constructor(
     }
 
     override fun editMyInfo(
-        nickName: String,
-        email: String,
-        provider: String,
-        birthdate: String,
-        region: String,
+        nickName: RequestBody,
+        email: RequestBody,
+        provider: RequestBody,
+        birthdate: RequestBody,
+        region: RequestBody,
         isMale: Boolean,
-        password: String,
-        profileImage: String
+        password: RequestBody?,
+        profileImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>> = flow {
         val result = runRemote {
             api.editMyInfo(
-                EditMyInfoRequest(
-                    nickName, email, provider, birthdate, region, isMale, password, profileImage
-                )
+                nickName = nickName,
+                email = email,
+                provider = provider,
+                birthdate = birthdate,
+                region = region,
+                isMale = isMale,
+                password = password,
+                profileImage = profileImage
             )
         }
         emit(result)
