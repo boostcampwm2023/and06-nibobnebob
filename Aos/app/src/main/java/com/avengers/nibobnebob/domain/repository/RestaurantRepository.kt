@@ -15,8 +15,13 @@ interface RestaurantRepository {
     ): Flow<BaseState<RestaurantDetailData>>
 
     fun addRestaurant(
-        restaurantId: Int,
-        body: AddRestaurantRequest
+        restaurantId: Int, isCarVisit: Boolean,
+        transportationAccessibility: Int?,
+        parkingArea: Int?,
+        taste: Int,
+        service: Int,
+        restroomCleanliness: Int,
+        overallExperience: String
     ): Flow<BaseState<Unit>>
 
     fun deleteRestaurant(

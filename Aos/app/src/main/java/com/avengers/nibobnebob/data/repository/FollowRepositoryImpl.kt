@@ -72,11 +72,7 @@ class FollowRepositoryImpl @Inject constructor(
 
         when (val result = runRemote { api.follow(nickName) }) {
             is BaseState.Success -> {
-                result.data.body?.let { body ->
-                    emit(BaseState.Success(body))
-                } ?: run {
-                    emit(BaseState.Success(Unit))
-                }
+                emit(BaseState.Success(Unit))
             }
 
             is BaseState.Error -> {
@@ -89,11 +85,7 @@ class FollowRepositoryImpl @Inject constructor(
 
         when (val result = runRemote { api.unFollow(nickName) }) {
             is BaseState.Success -> {
-                result.data.body?.let { body ->
-                    emit(BaseState.Success(body))
-                } ?: run {
-                    emit(BaseState.Success(Unit))
-                }
+                emit(BaseState.Success(Unit))
             }
 
             is BaseState.Error -> {

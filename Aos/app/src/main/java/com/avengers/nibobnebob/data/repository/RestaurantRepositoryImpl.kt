@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.data.repository
 
-import android.util.Log
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
@@ -42,9 +41,27 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override fun addRestaurant(
         restaurantId: Int,
-        body: AddRestaurantRequest
+        isCarVisit: Boolean,
+        transportationAccessibility: Int?,
+        parkingArea: Int?,
+        taste: Int,
+        service: Int,
+        restroomCleanliness: Int,
+        overallExperience: String
     ): Flow<BaseState<Unit>> = flow {
-        when (val result = runRemote { api.addRestaurant(restaurantId, body) }) {
+        when (val result = runRemote {
+            api.addRestaurant(
+                restaurantId, AddRestaurantRequest(
+                    isCarVisit,
+                    transportationAccessibility,
+                    parkingArea,
+                    taste,
+                    service,
+                    restroomCleanliness,
+                    overallExperience
+                )
+            )
+        }) {
             is BaseState.Success -> {
                 emit(BaseState.Success(Unit))
             }
@@ -75,13 +92,11 @@ class RestaurantRepositoryImpl @Inject constructor(
                         emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test", "에러 체크")
                 }
             }
         }
@@ -94,13 +109,11 @@ class RestaurantRepositoryImpl @Inject constructor(
                         emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test", "에러")
                 }
             }
         }
@@ -137,13 +150,11 @@ class RestaurantRepositoryImpl @Inject constructor(
                         emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test", "에러 체크")
                 }
             }
         }
