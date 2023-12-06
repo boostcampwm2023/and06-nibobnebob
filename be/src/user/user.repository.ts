@@ -13,7 +13,7 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
   async createUser(userentity: User) {
-    await this.save(userentity);
+    return await this.save(userentity);
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     const user = await this.findOne({
@@ -93,7 +93,7 @@ export class UserRepository extends Repository<User> {
       .where("user.id NOT IN (:...idList)", { idList })
       .andWhere("user.region = :yourRegion", { yourRegion: curUser.region })
       .groupBy("user.id")
-      .orderBy("\"commonRestaurant\"","DESC")
+      .orderBy("\"commonRestaurant\"", "DESC")
       .limit(10)
       .getRawMany();
 
