@@ -178,7 +178,9 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
     }
   }
 
-  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo, limit: string = "40") {
+    const limitNum = parseInt(limit);
+
     return this.createQueryBuilder("restaurant")
       .leftJoin(
         UserRestaurantListEntity,
@@ -208,6 +210,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         location, 
         ST_GeomFromText('POINT(${locationDto.longitude} ${locationDto.latitude})', 4326)) < ${locationDto.radius}`
       )
+      .limit(limitNum)
       .getRawMany();
   }
 

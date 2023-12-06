@@ -25,7 +25,7 @@ import { LocationDto } from "./dto/location.dto";
 @ApiTags("Home")
 @Controller("restaurant")
 export class RestaurantController {
-  constructor(private restaurantService: RestaurantService) {}
+  constructor(private restaurantService: RestaurantService) { }
   @Get("autocomplete/:partialRestaurantName")
   @UseGuards(AuthGuard("jwt"))
   @ApiBearerAuth()
@@ -162,6 +162,12 @@ export class RestaurantController {
     type: String,
     description: "검색 반경",
   })
+  @ApiQuery({
+    name: "limit",
+    required: false,
+    type: String,
+    description: "응답 개수",
+  })
   @ApiResponse({
     status: 200,
     description: "전체 음식점 리스트 요청 성공",
@@ -174,8 +180,9 @@ export class RestaurantController {
   @UsePipes(new ValidationPipe())
   entireRestaurantList(
     @GetUser() tokenInfo: TokenInfo,
-    @Query() locationDto: LocationDto
+    @Query() locationDto: LocationDto,
+    @Query("limit") limit: string
   ) {
-    return this.restaurantService.entireRestaurantList(locationDto, tokenInfo);
+    return this.restaurantService.entireRestaurantList(locationDto, tokenInfo, limit);
   }
 }

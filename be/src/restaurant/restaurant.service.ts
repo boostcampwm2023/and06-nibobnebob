@@ -152,10 +152,11 @@ export class RestaurantService implements OnModuleInit {
     return restaurants;
   }
 
-  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo, limit: string) {
     const restaurants = await this.restaurantRepository.entireRestaurantList(
       locationDto,
-      tokenInfo
+      tokenInfo,
+      limit
     );
 
     for (const restaurant of restaurants) {
