@@ -55,7 +55,7 @@ export class User {
   @OneToMany(() => FollowEntity, (follow) => follow.followedUserId)
   follower: FollowEntity[];
 
-  @OneToMany(() => UserRestaurantListEntity, (list) => list.userId)
+  @OneToMany(() => UserRestaurantListEntity, (list) => list.user)
   restaurant: UserRestaurantListEntity[];
 
   @OneToMany(() => ReviewInfoEntity, (review) => review.user)

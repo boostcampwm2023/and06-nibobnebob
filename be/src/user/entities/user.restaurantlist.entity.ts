@@ -30,7 +30,7 @@ export class UserRestaurantListEntity {
   user: User;
 
   @ManyToOne(() => RestaurantInfoEntity)
-  @JoinColumn({ name: "restaurant_id" })
+  @JoinColumn({ name: "id" })
   restaurant: RestaurantInfoEntity;
 
   @ManyToOne(() => ReviewInfoEntity)
