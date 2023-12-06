@@ -4,13 +4,17 @@ import android.util.Log
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.RestaurantItems.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RestaurantApi
 import com.avengers.nibobnebob.domain.model.RestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
+import com.avengers.nibobnebob.domain.model.RestaurantItemsData
+import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.model.base.StatusCode
@@ -42,9 +46,27 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override fun addRestaurant(
         restaurantId: Int,
-        body: AddRestaurantRequest
+        isCarVisit: Boolean,
+        transportationAccessibility: Int?,
+        parkingArea: Int?,
+        taste: Int,
+        service: Int,
+        restroomCleanliness: Int,
+        overallExperience: String
     ): Flow<BaseState<Unit>> = flow {
-        when (val result = runRemote { api.addRestaurant(restaurantId, body) }) {
+        when (val result = runRemote {
+            api.addRestaurant(
+                restaurantId, AddRestaurantRequest(
+                    isCarVisit,
+                    transportationAccessibility,
+                    parkingArea,
+                    taste,
+                    service,
+                    restroomCleanliness,
+                    overallExperience
+                )
+            )
+        }) {
             is BaseState.Success -> {
                 emit(BaseState.Success(Unit))
             }
@@ -75,13 +97,11 @@ class RestaurantRepositoryImpl @Inject constructor(
                         emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test", "에러 체크")
                 }
             }
         }
@@ -94,13 +114,11 @@ class RestaurantRepositoryImpl @Inject constructor(
                         emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test", "에러")
                 }
             }
         }
@@ -137,14 +155,79 @@ class RestaurantRepositoryImpl @Inject constructor(
                         emit(BaseState.Success(body.toDomainModel()))
                     } ?: run {
                         emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
-                        Log.d("test", "널 체크")
                     }
                 }
 
                 is BaseState.Error -> {
                     emit(result)
-                    Log.d("test", "에러 체크")
                 }
             }
         }
+
+
+    override fun searchRestaurant(
+        name: String,
+        radius: String?,
+        longitude: String?,
+        latitude: String?
+    ): Flow<BaseState<List<SearchRestaurantData>>> = flow {
+        when (val result = runRemote { api.searchRestaurant(name, radius, longitude, latitude) }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.map { it.toDomainModel() }))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
+
+    override fun filterRestaurantList(
+        filter: String,
+        location: String,
+        radius: Int
+    ): Flow<BaseState<List<RestaurantItemsData>>> = flow {
+
+        when (val result = runRemote { api.filterRestaurantList(filter, location, radius) }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    Log.d("test", "success")
+                    emit(BaseState.Success(body.map { it.toDomainModel() }))
+                } ?: run {
+                    Log.d("test", "fail")
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> {
+                Log.d("test", "error")
+                emit(result)
+            }
+        }
+    }
+
+    override fun nearRestaurantList(
+        radius: String,
+        longitude: String,
+        latitude: String
+    ): Flow<BaseState<List<RestaurantItemsData>>> = flow {
+
+        when (val result = runRemote { api.nearRestaurantList(radius, longitude, latitude) }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.map { it.toDomainModel() }))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
 }

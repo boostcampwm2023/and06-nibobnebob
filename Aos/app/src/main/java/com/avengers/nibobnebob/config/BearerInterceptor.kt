@@ -4,11 +4,8 @@ package com.avengers.nibobnebob.config
 import android.content.Intent
 import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.RefreshTokenRequest
-import com.avengers.nibobnebob.data.model.response.OldBaseResponse
 import com.avengers.nibobnebob.data.model.response.LoginResponse
-import com.avengers.nibobnebob.data.model.oldRunRemote
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RefreshApi

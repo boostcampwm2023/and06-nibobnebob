@@ -26,5 +26,5 @@ data class ReviewsData(
     val taste: Int,
     val transportationAccessibility: Int,
     val reviewer: String,
-)
+): BaseDomainModel
 
