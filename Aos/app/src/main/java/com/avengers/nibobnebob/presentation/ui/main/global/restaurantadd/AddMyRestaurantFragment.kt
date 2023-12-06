@@ -100,7 +100,9 @@ class AddMyRestaurantFragment :
     private fun initImageObserver(){
         repeatOnStarted {
             parentViewModel.image.collect{
-                viewModel.setImage(it, it.toMultiPart(requireContext()))
+                if(it.isNotBlank()){
+                    viewModel.setImage(it, it.toMultiPart(requireContext(),"reviewImage"))
+                }
             }
         }
     }

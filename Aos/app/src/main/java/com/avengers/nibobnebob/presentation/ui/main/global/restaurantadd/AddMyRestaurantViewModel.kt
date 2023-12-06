@@ -1,8 +1,8 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.usecase.restaurant.AddRestaurantUseCase
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 data class AddMyRestaurantUiState(
@@ -61,9 +63,8 @@ class AddMyRestaurantViewModel @Inject constructor(
     val comment = MutableStateFlow("")
     val isDataReady = MutableStateFlow(false)
 
-    val profileImg = MutableStateFlow("")
-    private lateinit var profileFile: MultipartBody.Part
-
+    val reviewImg = MutableStateFlow("")
+    private var reviewImgFile: MultipartBody.Part? = null
     private var restaurantId = -1
 
     init {
@@ -147,29 +148,29 @@ class AddMyRestaurantViewModel @Inject constructor(
     }
 
     fun addReview() {
-        viewModelScope.launch {
-            addRestaurantUseCase(
-                restaurantId = restaurantId,
-                isCarVisit = _uiState.value.visitWithCar,
-                transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
-                parkingArea = if (_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
-                taste = _uiState.value.taste,
-                service = _uiState.value.taste,
-                restroomCleanliness = _uiState.value.toilet,
-                overallExperience = comment.value
-            ).onEach { state ->
-                when (state) {
-                    is BaseState.Success -> {
-                        _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
-                        _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
-                    }
-
-                    is BaseState.Error -> _events.emit(
-                        AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
-                    )
+        Log.d("debugging", reviewImgFile.toString())
+        addRestaurantUseCase(
+            restaurantId = restaurantId,
+            isCarVisit = _uiState.value.visitWithCar,
+            transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
+            parkingArea = if (_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
+            taste = _uiState.value.taste,
+            service = _uiState.value.taste,
+            restroomCleanliness = _uiState.value.toilet,
+            overallExperience = comment.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            reviewImage = reviewImgFile
+        ).onEach { state ->
+            when (state) {
+                is BaseState.Success -> {
+                    _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
+                    _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
                 }
-            }.launchIn(viewModelScope)
-        }
+
+                is BaseState.Error -> _events.emit(
+                    AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
 
@@ -183,7 +184,7 @@ class AddMyRestaurantViewModel @Inject constructor(
         restaurantId = id
     }
 
-    fun openGallery(){
+    fun openGallery() {
         viewModelScope.launch {
             _events.emit(AddMyRestaurantEvents.OpenGallery)
         }
@@ -196,8 +197,8 @@ class AddMyRestaurantViewModel @Inject constructor(
     }
 
     fun setImage(uri: String, file: MultipartBody.Part) {
-        profileImg.value = uri
-        profileFile = file
+        reviewImg.value = uri
+        reviewImgFile = file
     }
 }
 
