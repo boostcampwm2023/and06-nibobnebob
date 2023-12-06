@@ -89,4 +89,13 @@ interface RestaurantApi {
         @Query("latitude") latitude: String
     ): Response<BaseResponse<List<RestaurantItems>>>
 
+    @POST("api/review/{reviewId}/like")
+    suspend fun likeReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<BaseResponse<Unit>>
+
+    @POST("api/review/{reviewId}/unlike")
+    suspend fun unlikeReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<BaseResponse<Unit>>
 }

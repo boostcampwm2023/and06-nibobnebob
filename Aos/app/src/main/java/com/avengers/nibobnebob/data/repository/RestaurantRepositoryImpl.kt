@@ -249,4 +249,28 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override fun likeReview(reviewId: Int): Flow<BaseState<Unit>> = flow {
+        when (val result = runRemote { api.likeReview(reviewId) }) {
+            is BaseState.Success -> {
+                emit(BaseState.Success(Unit))
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
+
+    override fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>> = flow{
+        when (val result = runRemote { api.unlikeReview(reviewId) }) {
+            is BaseState.Success -> {
+                emit(BaseState.Success(Unit))
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
 }

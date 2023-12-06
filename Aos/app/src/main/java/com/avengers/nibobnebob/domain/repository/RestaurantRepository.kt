@@ -69,4 +69,8 @@ interface RestaurantRepository {
         longitude: String,
         latitude: String,
     ): Flow<BaseState<List<RestaurantItemsData>>>
+
+    fun likeReview(reviewId : Int) : Flow<BaseState<Unit>>
+
+    fun unlikeReview(reviewId : Int) : Flow<BaseState<Unit>>
 }
