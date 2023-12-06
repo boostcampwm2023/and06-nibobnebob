@@ -30,6 +30,7 @@ data class MyWishUiState(
     val listPage: Int = 1,
     val lastPage: Boolean = false,
     val isEmpty: Boolean = false,
+    val isLoading: Boolean = false,
 )
 
 sealed class MyWishEvent {
@@ -59,7 +60,7 @@ class MyWishListViewModel @Inject constructor(
         sort: String? = null,
     ) {
         getMyWishListUseCase(
-            limit = 9, page = 1, sort = sort
+            limit = ITEM_LIMIT, page = FIRST_PAGE, sort = sort
                 ?: uiState.value.filterOption
         ).onEach { wish ->
             when (wish) {
@@ -85,12 +86,10 @@ class MyWishListViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun loadNextPage(
-        sort: String? = null,
-    ) {
+    fun loadNextPage() {
+        _uiState.update { it.copy(isLoading = true) }
         getMyWishListUseCase(
-            limit = 9, page = uiState.value.listPage, sort = sort
-                ?: uiState.value.filterOption
+            limit = ITEM_LIMIT, page = uiState.value.listPage, sort = uiState.value.filterOption
         ).onEach { wish ->
             when (wish) {
                 is BaseState.Success -> {
@@ -104,9 +103,9 @@ class MyWishListViewModel @Inject constructor(
                             }
                             state.copy(
                                 wishList = updateList,
-                                filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
                                 listPage = uiState.value.listPage + 1,
                                 lastPage = wish.data.hasNext,
+                                isLoading = false
                             )
                         }
                     }
@@ -152,6 +151,11 @@ class MyWishListViewModel @Inject constructor(
                 wishList = state.wishList.filter { it.id != deleteId }.map { it }
             )
         }
+    }
+
+    companion object {
+        const val FIRST_PAGE = 1
+        const val ITEM_LIMIT = 10
     }
 
 }

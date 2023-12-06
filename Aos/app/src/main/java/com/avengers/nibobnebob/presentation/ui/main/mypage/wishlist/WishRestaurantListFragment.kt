@@ -37,7 +37,7 @@ class WishRestaurantListFragment :
                 super.onScrolled(recyclerView, dx, dy)
 
                 if (!binding.rvWishRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
-                    viewModel.loadNextPage(sort = viewModel.uiState.value.filterOption)
+                    viewModel.loadNextPage()
                 }
             }
         })
