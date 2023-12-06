@@ -64,11 +64,11 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
       query = query.orderBy("user_wishrestaurant_lists.created_at", "DESC");
     }
 
-    sortInfoDto.page = sortInfoDto.page || 1;
-    sortInfoDto.limit = sortInfoDto.limit || 10;
+    sortInfoDto.page = parseInt(sortInfoDto.page as unknown as string) || 1;
+    sortInfoDto.limit = parseInt(sortInfoDto.limit as unknown as string) || 10;
 
     const offset = (sortInfoDto.page - 1) * sortInfoDto.limit;
-    query = query.skip(offset).take(sortInfoDto.limit + 1);
+    query = query.offset(offset).limit(sortInfoDto.limit + 1);
   
     const items = await query.getRawMany();
   

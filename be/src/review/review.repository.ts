@@ -33,8 +33,8 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
     }
   }
   async getSortedReviews(getSortedReviewsDto: SortInfoDto, restaurantId: number, id: TokenInfo["id"], sortedReviewIds: number[]) {
-    const pageNumber = getSortedReviewsDto.page || 1;
-    const limitNumber = getSortedReviewsDto.limit || 10;
+    const pageNumber = parseInt(getSortedReviewsDto.page as unknown as string)|| 1;
+    const limitNumber = parseInt(getSortedReviewsDto.limit as unknown as string) || 10;
     const skipNumber = (pageNumber - 1) * limitNumber;
     if (getSortedReviewsDto && getSortedReviewsDto.sort === "TIME_DESC") {
       const items = await this.createQueryBuilder("review")
@@ -59,8 +59,8 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
           restaurantId: restaurantId,
         })
         .orderBy("review.createdAt", "DESC")
-        .skip(skipNumber)
-        .take(limitNumber + 1)
+        .offset(skipNumber)
+        .limit(limitNumber + 1)
         .getRawMany();
 
       const hasNext = items.length > limitNumber;
@@ -91,8 +91,8 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
           restaurantId: restaurantId,
         })
         .orderBy("review.createdAt", "ASC")
-        .skip(skipNumber)
-        .take(limitNumber + 1)
+        .offset(skipNumber)
+        .limit(limitNumber + 1)
         .getRawMany();
 
       const hasNext = items.length > limitNumber;
@@ -122,8 +122,8 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
           ])
           .where("review.id IN (:...sortedReviewIds)", { sortedReviewIds })
           .andWhere("review.restaurant_id = :restaurantId", { restaurantId: restaurantId })
-          .skip(skipNumber)
-          .take(limitNumber + 1)
+          .offset(skipNumber)
+          .limit(limitNumber + 1)
           .getRawMany();
         const sortedItems = sortedReviewIds
           .map(id => items.find(item => item.review_id === id))
