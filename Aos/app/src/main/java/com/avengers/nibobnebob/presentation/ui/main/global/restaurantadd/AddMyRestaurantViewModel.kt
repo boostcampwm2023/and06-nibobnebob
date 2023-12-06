@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 data class AddMyRestaurantUiState(
@@ -43,6 +44,7 @@ sealed class AddMyRestaurantEvents {
     data object ShowSuccessDialog : AddMyRestaurantEvents()
     data class ShowToastMessage(val msg: String) : AddMyRestaurantEvents()
     data class ShowSnackMessage(val msg: String) : AddMyRestaurantEvents()
+    data object OpenGallery : AddMyRestaurantEvents()
 }
 
 @HiltViewModel
@@ -58,6 +60,9 @@ class AddMyRestaurantViewModel @Inject constructor(
 
     val comment = MutableStateFlow("")
     val isDataReady = MutableStateFlow(false)
+
+    val profileImg = MutableStateFlow("")
+    private lateinit var profileFile: MultipartBody.Part
 
     private var restaurantId = -1
 
@@ -178,10 +183,21 @@ class AddMyRestaurantViewModel @Inject constructor(
         restaurantId = id
     }
 
+    fun openGallery(){
+        viewModelScope.launch {
+            _events.emit(AddMyRestaurantEvents.OpenGallery)
+        }
+    }
+
     fun navigateToBack() {
         viewModelScope.launch {
             _events.emit(AddMyRestaurantEvents.NavigateToBack)
         }
+    }
+
+    fun setImage(uri: String, file: MultipartBody.Part) {
+        profileImg.value = uri
+        profileFile = file
     }
 }
 

@@ -9,6 +9,7 @@ import com.avengers.nibobnebob.databinding.FragmentAddMyRestaurantBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.toHome
+import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,6 +28,7 @@ class AddMyRestaurantFragment :
         viewModel.setDefaultValue(restaurantName, restaurantId)
         setSliderListener()
         setVisitMethodRadioListener()
+        initImageObserver()
     }
 
     override fun initNetworkView() {
@@ -55,6 +57,7 @@ class AddMyRestaurantFragment :
 
                     is AddMyRestaurantEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is AddMyRestaurantEvents.ShowToastMessage -> showToastMessage(it.msg)
+                    is AddMyRestaurantEvents.OpenGallery -> parentViewModel.openGallery()
                 }
             }
         }
@@ -92,6 +95,13 @@ class AddMyRestaurantFragment :
                 R.id.rb_visit_car -> viewModel.setIsVisitWithCar(true)
             }
         }
+    }
 
+    private fun initImageObserver(){
+        repeatOnStarted {
+            parentViewModel.image.collect{
+                viewModel.setImage(it, it.toMultiPart(requireContext()))
+            }
+        }
     }
 }

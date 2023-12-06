@@ -1,8 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro
 
 
-import android.net.Uri
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.NetworkManager
 import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
