@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.lang.Math.pow
 import javax.inject.Inject
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -43,6 +44,7 @@ data class HomeUiState(
     val cameraLatitude: Double = 0.0,
     val cameraLongitude: Double = 0.0,
     val cameraZoom: Double = 0.0,
+    val cameraRadius : Double = 0.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0,
     val curSelectedMarker: Marker? = null,
@@ -58,7 +60,8 @@ sealed class TrackingState {
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
     data object SetNewMarkers : HomeEvents()
-    data object NearMarkers : HomeEvents()
+
+    //    data object NearMarkers : HomeEvents()
     data class SetSingleMarker(
         val marker: Marker?,
         val item: UiRestaurantData
@@ -105,6 +108,7 @@ class HomeViewModel @Inject constructor(
     fun updateCamera(latitude: Double, longitude: Double, zoom: Double) {
         _uiState.update { state ->
             state.copy(
+                cameraRadius = pow(2.0, 14.0 - uiState.value.cameraZoom) * 1000,
                 cameraLatitude = latitude,
                 cameraLongitude = longitude,
                 cameraZoom = zoom
@@ -211,9 +215,7 @@ class HomeViewModel @Inject constructor(
 
     private fun nearRestaurantList() {
         restaurantRepository.nearRestaurantList(
-            //todo : 반경 임시처리 -> 추후에 반경을 넓힐때 갯수를 제한해서 보내주던지 설정
-            // 반경은 300m로 그리고 zoom레벨은 16으로 임시 설정을 했음 이에 따라 나중에 수정해야함
-            radius = "300",
+            radius = uiState.value.cameraRadius.toString(),
             longitude = uiState.value.cameraLongitude.toString(),
             latitude = uiState.value.cameraLatitude.toString()
         ).onEach {
@@ -233,7 +235,7 @@ class HomeViewModel @Inject constructor(
                     _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
                 }
             }
-            _events.emit(HomeEvents.NearMarkers)
+            _events.emit(HomeEvents.SetNewMarkers)
         }.launchIn(viewModelScope)
 
     }
@@ -342,12 +344,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun calculateDensity(latitude: Double, longitude: Double, radius: Double): Int {
+    private fun calculateDensity(latitude: Double, longitude: Double): Int {
         var density = 0
 
-        for (point in _uiState.value.markerList) {
+        for (point in uiState.value.markerList) {
             val distance = haversineDistance(latitude, longitude, point.latitude, point.longitude)
-            if (distance <= radius) {
+            if (distance <= uiState.value.cameraRadius) {
                 density++
             } else {
                 break
@@ -389,7 +391,6 @@ class HomeViewModel @Inject constructor(
         var maxDensityPoint: LatLng? = null
         var minDistance = Double.MAX_VALUE
         var maxDensity = 0
-        val radius = 3000.0
 
         for (point in _uiState.value.markerList) {
             val distance = haversineDistance(
@@ -401,7 +402,6 @@ class HomeViewModel @Inject constructor(
             val density = calculateDensity(
                 _uiState.value.cameraLatitude,
                 _uiState.value.cameraLatitude,
-                radius
             )
 
             if (distance < minDistance) {
@@ -437,7 +437,7 @@ class HomeViewModel @Inject constructor(
                             isSelected = true
                         )
                     } else {
-                        it.copy (
+                        it.copy(
                             isSelected = false
                         )
                     }
@@ -470,4 +470,5 @@ class HomeViewModel @Inject constructor(
             state.copy(cameraZoom = zoom)
         }
     }
+
 }
