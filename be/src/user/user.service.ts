@@ -200,15 +200,30 @@ export class UserService {
       };
     });
   }
+
+
+
   async getRecommendUserListInfo(tokenInfo: TokenInfo) {
     const userIds = await this.userFollowListRepositoy.getMyFollowListInfo(
       tokenInfo.id
     );
     const userIdValues = userIds.map((user) => user.followingUserId);
     userIdValues.push(tokenInfo.id);
-    const result =
-      await this.usersRepository.getRecommendUserListInfo(userIdValues);
-    return result.map((user) => ({
+    const result = await this.usersRepository.getRecommendUserListInfo( userIdValues ,tokenInfo.id);
+
+    function getRandomInts(min: number, max: number, count: number): number[] {
+      const ints = new Set<number>();
+      while (ints.size < count) {
+          const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+          ints.add(rand);
+      }
+      return [...ints].sort((a,b) => a - b);
+    }
+
+    const randomIndexes = getRandomInts(0, result.length - 1, 2);
+    const selectedUsers = randomIndexes.map(index => result[index]);
+
+    return selectedUsers.map((user) => ({
       ...user,
       isFollow: false,
     }));
