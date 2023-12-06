@@ -27,16 +27,17 @@ class WishRestaurantListFragment :
             { item -> viewModel.addMyList(item) })
 
 
-    override fun initView() {
-        binding.svm = sharedViewModel
-        binding.vm = viewModel
-        binding.rvWishRestaurant.adapter = adapter
-        binding.rvWishRestaurant.animation = null
-        binding.rvWishRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+    override fun initView() = with(binding) {
+        svm = sharedViewModel
+        vm = viewModel
+
+        rvWishRestaurant.adapter = adapter
+        rvWishRestaurant.animation = null
+        rvWishRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if (!binding.rvWishRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
+                if (!rvWishRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
                     viewModel.loadNextPage()
                 }
             }

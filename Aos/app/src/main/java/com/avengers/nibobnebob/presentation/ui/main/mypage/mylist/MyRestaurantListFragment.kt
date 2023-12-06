@@ -25,16 +25,17 @@ class MyRestaurantListFragment :
     private val adapter = MyRestaurantAdapter({ id -> viewModel.showDetail(id) },
         { id -> showDeleteCheckDialog(id) })
 
-    override fun initView() {
-        binding.svm = sharedViewModel
-        binding.vm = viewModel
-        binding.rvMyRestaurant.adapter = adapter
-        binding.rvMyRestaurant.animation = null
-        binding.rvMyRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+    override fun initView() = with(binding) {
+        svm = sharedViewModel
+        vm = viewModel
+
+        rvMyRestaurant.adapter = adapter
+        rvMyRestaurant.animation = null
+        rvMyRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if (!binding.rvMyRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
+                if (!rvMyRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
                     viewModel.loadNextPage()
                 }
             }
