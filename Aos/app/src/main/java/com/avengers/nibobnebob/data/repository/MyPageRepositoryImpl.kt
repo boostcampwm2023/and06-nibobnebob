@@ -1,6 +1,7 @@
 package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.app.DataStoreManager
+import com.avengers.nibobnebob.data.model.request.EditMyInfoNoImageRequest
 import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.MyInfoResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
@@ -75,6 +76,22 @@ class MyPageRepositoryImpl @Inject constructor(
                 isMale = isMale,
                 password = password,
                 profileImage = profileImage
+            )
+        }
+        emit(result)
+    }
+
+    override fun editMyInfoNoImage(
+        nickName: String,
+        email: String,
+        provider: String,
+        birthdate: String,
+        region: String,
+        isMale: Boolean,
+    ): Flow<BaseState<Unit>> = flow {
+        val result = runRemote {
+            api.editMyInfoNoImage(
+                EditMyInfoNoImageRequest(nickName,email,provider,birthdate,region,isMale)
             )
         }
         emit(result)

@@ -1,11 +1,13 @@
 package com.avengers.nibobnebob.data.remote
 
+import com.avengers.nibobnebob.data.model.request.EditMyInfoNoImageRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse
 import com.avengers.nibobnebob.data.model.response.MyInfoResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -31,6 +33,11 @@ interface MyPageApi {
         @Part("isMale") isMale: Boolean,
         @Part("password") password: RequestBody?,
         @Part profileImage: MultipartBody.Part?
+    ): Response<Unit>
+
+    @PUT("api/user")
+    suspend fun editMyInfoNoImage(
+        @Body data: EditMyInfoNoImageRequest
     ): Response<Unit>
 
     @POST("api/user/logout")

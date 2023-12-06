@@ -23,6 +23,15 @@ interface MyPageRepository {
         profileImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>>
 
+    fun editMyInfoNoImage(
+        nickName : String,
+        email : String,
+        provider : String,
+        birthdate : String,
+        region : String,
+        isMale : Boolean
+    ) : Flow<BaseState<Unit>>
+
 
     fun logout(): Flow<BaseState<Unit>>
 
