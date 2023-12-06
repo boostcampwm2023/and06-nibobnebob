@@ -72,7 +72,7 @@ class MyWishListViewModel @Inject constructor(
                             state.copy(
                                 wishList = wishList,
                                 filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
-                                listPage = uiState.value.listPage + 1,
+                                listPage = 2,
                                 lastPage = wish.data.hasNext,
                                 isEmpty = wishList.isEmpty()
                             )
@@ -86,7 +86,6 @@ class MyWishListViewModel @Inject constructor(
     }
 
     fun loadNextPage(
-        page: Int? = null,
         sort: String? = null,
     ) {
         getMyWishListUseCase(

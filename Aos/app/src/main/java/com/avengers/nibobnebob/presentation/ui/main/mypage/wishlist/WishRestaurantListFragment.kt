@@ -97,10 +97,15 @@ class WishRestaurantListFragment :
             PopupMenu(requireContext(), binding.ivFilter).apply {
                 menuInflater.inflate(R.menu.my_page_filter_menu, menu)
                 setOnMenuItemClickListener {
-                    when (it.itemId) {
-                        R.id.menu_new -> viewModel.myWishList(sort = "TIME_DESC")
-                        R.id.menu_old -> viewModel.myWishList(sort = "TIME_ASC")
-                    }
+                    adapter.submitList(emptyList())
+                    viewModel.myWishList(
+                        sort = when (it.itemId) {
+                            R.id.menu_new -> "TIME_DESC"
+                            R.id.menu_old -> "TIME_ASC"
+                            else -> null
+                        }
+                    )
+
                     true
                 }
                 show()
