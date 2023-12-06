@@ -287,6 +287,9 @@ export class UserService {
       reviewImage = `review/images/${uuid}.png`;
       reviewEntity.reviewImage = reviewImage;
     }
+    else {
+      reviewEntity.reviewImage = `review/images/defaultImage.png`;
+    }
     const userEntity = new User();
     userEntity.id = tokenInfo["id"];
     reviewEntity.user = userEntity;
