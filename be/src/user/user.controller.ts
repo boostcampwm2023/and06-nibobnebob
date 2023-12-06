@@ -210,8 +210,8 @@ export class UserController {
   @ApiQuery({ name: 'limit', required: false, description: '페이지 당 항목 수' })
   @ApiResponse({ status: 200, description: "내 맛집 리스트 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
-  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo,  @Query() sortInfoDto: SortInfoDto) {
-    return await this.userService.getMyWishRestaurantListInfo(tokenInfo,sortInfoDto);
+  async getMyWishRestaurantListInfo(@GetUser() tokenInfo: TokenInfo, @Query() sortInfoDto: SortInfoDto) {
+    return await this.userService.getMyWishRestaurantListInfo(tokenInfo, sortInfoDto);
   }
 
   @ApiTags("Home")
@@ -536,6 +536,7 @@ export class UserController {
         birthdate: { type: 'string', example: '1234/56/78', description: 'The birth of the user' },
         isMale: { type: 'boolean', example: true, description: 'The gender of the user. true is male, false is female' },
         profileImage: { type: 'string', format: 'binary', description: 'The profile image of the user' },
+        isImageChanged: { type: 'boolean', example: true, description: 'The Boolean Value of ProfileImageChanged' }
       },
     },
   })
@@ -550,8 +551,17 @@ export class UserController {
     @Body() body
   ) {
     const userInfoDto = plainToClass(UserInfoDto, body);
+    if (body.isImageChanged === "true" || body.isImageChanged === true) {
+      body.isImageChanged = true;
+    } else if (body.isImageChanged === "false" || body.isImageChanged === false) {
+      body.isImageChanged = false;
+    } else {
+      throw new BadRequestException();
+    }
+
+
     const errors = await validate(userInfoDto);
     if (errors.length > 0) throw new BadRequestException(errors);
-    return await this.userService.updateMypageUserInfo(file, tokenInfo, userInfoDto);
+    return await this.userService.updateMypageUserInfo(file, tokenInfo, userInfoDto, body.isImageChanged);
   }
 }

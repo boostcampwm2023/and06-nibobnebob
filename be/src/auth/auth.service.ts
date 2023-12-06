@@ -57,20 +57,24 @@ export class AuthService {
     }
   }
 
+  async createTokens(id: number) {
+    const payload = { id: id };
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: "nibobnebob",
+      expiresIn: "7d",
+    });
+    await this.authRepository.upsert({ id: id, accessToken: accessToken, refreshToken: refreshToken }, ["id"]);
+    return { accessToken, refreshToken };
+  }
+
   async signin(loginRequestUser: any) {
     const user = await this.userRepository.findOneBy({
       email: loginRequestUser.email,
     });
 
     if (user) {
-      const payload = { id: user.id };
-      const accessToken = this.jwtService.sign(payload);
-      const refreshToken = this.jwtService.sign(payload, {
-        secret: "nibobnebob",
-        expiresIn: "7d",
-      });
-      await this.authRepository.upsert({ id: user.id, accessToken: accessToken, refreshToken: refreshToken }, ["id"]);
-      return { accessToken, refreshToken };
+      return await this.createTokens(user.id);
     } else {
       throw new NotFoundException(
         "사용자가 등록되어 있지 않습니다. 회원가입을 진행해주세요"
