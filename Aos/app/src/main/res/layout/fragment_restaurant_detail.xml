@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.RestaurantDetailViewModel" />
@@ -174,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/best"
                     app:layout_constraintBottom_toBottomOf="@id/tv_review_label"
-                    app:layout_constraintEnd_toEndOf="@id/cl_content"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_review_label" />
 
                 <TextView
@@ -238,16 +240,38 @@
                     app:layout_constraintEnd_toStartOf="@id/iv_rank_four"
                     app:layout_constraintTop_toTopOf="@id/tv_best_label" />
 
+                <TextView
+                    android:id="@+id/tv_filter"
+                    style="@style/TextSmallRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="@{vm.uiState.reviewList.empty? View.GONE : View.VISIBLE}"
+                    app:filterType="@{vm.uiState.reviewFilter}"
+                    app:layout_constraintEnd_toStartOf="@id/iv_filter"
+                    app:layout_constraintTop_toBottomOf="@id/tv_best_label" />
+
+                <ImageView
+                    android:id="@+id/iv_filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_filter"
+                    android:visibility="@{vm.uiState.reviewList.empty? View.GONE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_filter"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_filter" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_review"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="18dp"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="@id/cl_content"
                     app:layout_constraintStart_toStartOf="@id/cl_content"
-                    app:layout_constraintTop_toBottomOf="@id/tv_review_label"
+                    app:layout_constraintTop_toBottomOf="@id/tv_filter"
                     app:list="@{vm.uiState.reviewList}"
                     tools:listitem="@layout/item_review_list" />
 
