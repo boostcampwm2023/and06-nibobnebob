@@ -56,12 +56,10 @@ class MyWishListViewModel @Inject constructor(
 
 
     fun myWishList(
-        limit: Int? = null,
-        page: Int? = null,
         sort: String? = null,
     ) {
         getMyWishListUseCase(
-            limit = 3, page = 1, sort = sort
+            limit = 9, page = 1, sort = sort
                 ?: uiState.value.filterOption
         ).onEach { wish ->
             when (wish) {
@@ -77,6 +75,39 @@ class MyWishListViewModel @Inject constructor(
                                 listPage = uiState.value.listPage + 1,
                                 lastPage = wish.data.hasNext,
                                 isEmpty = wishList.isEmpty()
+                            )
+                        }
+                    }
+                }
+
+                else -> _events.emit(MyWishEvent.ShowSnackMessage(ERROR_MSG))
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun loadNextPage(
+        page: Int? = null,
+        sort: String? = null,
+    ) {
+        getMyWishListUseCase(
+            limit = 9, page = uiState.value.listPage, sort = sort
+                ?: uiState.value.filterOption
+        ).onEach { wish ->
+            when (wish) {
+                is BaseState.Success -> {
+                    wish.data.wishRestaurantItemsData?.let {
+
+                        _uiState.update { state ->
+                            val updateList = uiState.value.wishList.toMutableList().apply {
+                                addAll(it.map { restaurant ->
+                                    restaurant.toMyWishListData()
+                                })
+                            }
+                            state.copy(
+                                wishList = updateList,
+                                filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
+                                listPage = uiState.value.listPage + 1,
+                                lastPage = wish.data.hasNext,
                             )
                         }
                     }
@@ -106,7 +137,7 @@ class MyWishListViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))
-                    myWishList(page = uiState.value.listPage, sort = uiState.value.filterOption)
+                    updateList(id)
                 }
 
                 is BaseState.Error -> {
@@ -116,12 +147,12 @@ class MyWishListViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-//    private fun updateList(deleteId : Int){
-//        _uiState.update { state ->
-//            state.copy(
-//                myList = state.myList.filter { it.id != deleteId }.map { it }
-//            )
-//        }
-//    }
+    private fun updateList(deleteId: Int) {
+        _uiState.update { state ->
+            state.copy(
+                wishList = state.wishList.filter { it.id != deleteId }.map { it }
+            )
+        }
+    }
 
 }

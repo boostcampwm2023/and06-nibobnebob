@@ -35,8 +35,9 @@ class WishRestaurantListFragment :
         binding.rvWishRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if(!binding.rvWishRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage){
-                    viewModel.myWishList(sort = viewModel.uiState.value.filterOption)
+
+                if (!binding.rvWishRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
+                    viewModel.loadNextPage(sort = viewModel.uiState.value.filterOption)
                 }
             }
         })
