@@ -74,7 +74,7 @@ class MyRestaurantListFragment :
 
     private fun setFilterMenu() {
 
-        binding.ivFilter.setOnClickListener {
+        binding.tvFilter.setOnClickListener {
             PopupMenu(requireContext(), binding.ivFilter).apply {
                 menuInflater.inflate(R.menu.my_page_filter_menu, menu)
                 setOnMenuItemClickListener {

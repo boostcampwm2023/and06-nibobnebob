@@ -30,12 +30,16 @@ interface RestaurantRepository {
     ): Flow<BaseState<Unit>>
 
     fun myRestaurantList(
-        limit : Int? = null,
-        page : Int? = null,
-        sort : String? = null
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null
     ): Flow<BaseState<MyRestaurantData>>
 
-    fun myWishList(): Flow<BaseState<WishRestaurantData>>
+    fun myWishList(
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null
+    ): Flow<BaseState<WishRestaurantData>>
 
     fun addWishRestaurant(
         restaurantId: Int

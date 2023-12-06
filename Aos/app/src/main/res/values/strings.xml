@@ -112,6 +112,7 @@
     <string name="filter_old">오래된순</string>
     <string name="filter_new">최신순</string>
     <string name="mylist_empty">추가한 내 맛집이 없습니다.</string>
+    <string name="wishlist_empty">추가한 위시 맛집이 없습니다.</string>
 
     <string-array name="location_list">
         <item>용산구</item>

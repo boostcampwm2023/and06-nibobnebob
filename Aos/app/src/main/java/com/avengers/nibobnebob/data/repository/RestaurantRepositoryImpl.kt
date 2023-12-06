@@ -90,9 +90,9 @@ class RestaurantRepositoryImpl @Inject constructor(
     }
 
     override fun myRestaurantList(
-        limit : Int?,
-        page : Int?,
-        sort : String?
+        limit: Int?,
+        page: Int?,
+        sort: String?
     ): Flow<BaseState<MyRestaurantData>> =
         flow {
             when (val result = runRemote { api.myRestaurantList(limit, page, sort) }) {
@@ -110,9 +110,13 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun myWishList(): Flow<BaseState<WishRestaurantData>> =
+    override fun myWishList(
+        limit: Int?,
+        page: Int?,
+        sort: String?
+    ): Flow<BaseState<WishRestaurantData>> =
         flow {
-            when (val result = runRemote { api.myWishList() }) {
+            when (val result = runRemote { api.myWishList(limit, page, sort) }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
                         emit(BaseState.Success(body.toDomainModel()))

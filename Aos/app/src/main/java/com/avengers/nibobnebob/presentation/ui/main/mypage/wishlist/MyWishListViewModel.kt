@@ -24,6 +24,7 @@ import javax.inject.Inject
 
 data class MyWishUiState(
     val wishList: List<UiMyWishData> = emptyList(),
+    val filterOption: String = "최신순",
     val isEmpty: Boolean = false,
 )
 
@@ -50,8 +51,12 @@ class MyWishListViewModel @Inject constructor(
     val events: SharedFlow<MyWishEvent> = _events.asSharedFlow()
 
 
-    fun myWishList() {
-        getMyWishListUseCase().onEach { wish ->
+    fun myWishList(
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null,
+    ) {
+        getMyWishListUseCase(sort = sort).onEach { wish ->
             when (wish) {
                 is BaseState.Success -> {
                     wish.data.wishRestaurantItemsData?.let {
@@ -61,6 +66,7 @@ class MyWishListViewModel @Inject constructor(
                             }
                             state.copy(
                                 wishList = wishList,
+                                filterOption = if (sort == "TIME_ASC") "오래된순" else "최신순",
                                 isEmpty = wishList.isEmpty()
                             )
                         }

@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist
 
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -30,6 +31,7 @@ class WishRestaurantListFragment :
         binding.vm = viewModel
         binding.rvWishRestaurant.adapter = adapter
         binding.rvWishRestaurant.animation = null
+        setFilterMenu()
     }
 
     override fun initNetworkView() {
@@ -77,6 +79,24 @@ class WishRestaurantListFragment :
                 viewModel.deleteWishList(id)
             }
         )
+    }
+
+    private fun setFilterMenu() {
+
+        binding.tvFilter.setOnClickListener {
+            PopupMenu(requireContext(), binding.ivFilter).apply {
+                menuInflater.inflate(R.menu.my_page_filter_menu, menu)
+                setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.menu_new -> viewModel.myWishList(sort = "TIME_DESC")
+                        R.id.menu_old -> viewModel.myWishList(sort = "TIME_ASC")
+                    }
+                    true
+                }
+                show()
+            }
+        }
+
     }
 
 }
