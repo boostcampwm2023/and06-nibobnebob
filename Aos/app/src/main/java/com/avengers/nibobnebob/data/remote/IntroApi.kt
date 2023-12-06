@@ -27,6 +27,18 @@ interface IntroApi {
         @Part profileImage: MultipartBody.Part
     ): Response<Unit>
 
+    @Multipart
+    @POST("api/user")
+    suspend fun signupNoImage(
+        @Part("email") email: RequestBody,
+        @Part("password") password: RequestBody,
+        @Part("provider") provider: RequestBody,
+        @Part("nickName") nickName: RequestBody,
+        @Part("region") region: RequestBody,
+        @Part("birthdate") birthdate: RequestBody,
+        @Part("isMale") isMale: Boolean,
+    ): Response<Unit>
+
     @POST("api/auth/social-login")
     suspend fun loginNaver(
         @Header("Authorization") token: String

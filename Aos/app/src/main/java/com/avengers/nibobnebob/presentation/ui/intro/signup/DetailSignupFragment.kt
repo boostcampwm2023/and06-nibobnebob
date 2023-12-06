@@ -54,10 +54,12 @@ class DetailSignupFragment :
         }
     }
 
-    private fun initImageObserver(){
+    private fun initImageObserver() {
         repeatOnStarted {
-            parentViewModel.image.collect{
-                viewModel.setImage(it, it.toMultiPart(requireContext()))
+            parentViewModel.image.collect {
+                if (it.isNotBlank()) {
+                    viewModel.setImage(it, it.toMultiPart(requireContext(), "profileImage"))
+                }
             }
         }
     }

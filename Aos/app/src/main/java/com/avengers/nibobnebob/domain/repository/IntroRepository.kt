@@ -16,7 +16,7 @@ interface IntroRepository {
         region: RequestBody,
         birthdate: RequestBody,
         isMale: Boolean,
-        profileImage: MultipartBody.Part
+        profileImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>>
 
     fun loginNaver(
