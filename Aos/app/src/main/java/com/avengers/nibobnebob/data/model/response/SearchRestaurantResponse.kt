@@ -1,5 +1,8 @@
 package com.avengers.nibobnebob.data.model.response
 
+import com.avengers.nibobnebob.data.model.base.BaseDataModel
+import com.avengers.nibobnebob.data.model.mapper.DomainMapper
+import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.google.gson.annotations.SerializedName
 
 data class SearchRestaurantResponse(
@@ -11,4 +14,18 @@ data class SearchRestaurantResponse(
     @SerializedName("restaurant_reviewCnt") val reviewCnt: Int,
     @SerializedName("restaurant_category") val category: String,
     @SerializedName("isMy") val isMy: Boolean
-)
+) : BaseDataModel {
+    companion object : DomainMapper<SearchRestaurantResponse, SearchRestaurantData> {
+        override fun SearchRestaurantResponse.toDomainModel(): SearchRestaurantData =
+            SearchRestaurantData(
+                id = id,
+                name = name,
+                location = location,
+                address = address,
+                phoneNumber = phoneNumber,
+                reviewCnt = reviewCnt,
+                category = category,
+                isMy = isMy
+            )
+    }
+}
