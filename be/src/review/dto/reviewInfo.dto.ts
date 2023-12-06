@@ -26,7 +26,9 @@ export class ReviewInfoDto {
     example: "0",
     description: "transportation Accessibility for visiting",
   })
-  @Transform(({ value }) => parseInt(value))
+  @Transform(({ value }) => {
+    return !value ? null : parseInt(value, 10);
+  })
   @IsInt()
   @IsOptional()
   @Min(0)
@@ -37,7 +39,9 @@ export class ReviewInfoDto {
     example: "0",
     description: "condition of the restaurant's parking area",
   })
-  @Transform(({ value }) => parseInt(value))
+  @Transform(({ value }) => {
+    return !value ? null : parseInt(value, 10);
+  })
   @IsInt()
   @IsOptional()
   @Min(0)

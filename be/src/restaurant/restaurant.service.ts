@@ -45,6 +45,22 @@ export class RestaurantService implements OnModuleInit {
         })
         .getCount();
 
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
+
+
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
@@ -71,6 +87,7 @@ export class RestaurantService implements OnModuleInit {
         "review.restroomCleanliness",
         "review.overallExperience",
         "user.nickName as reviewer",
+        "user.profileImage",
         "review.createdAt",
         "review.reviewImage",
         "reviewLike.isLike as isLike"
@@ -84,6 +101,7 @@ export class RestaurantService implements OnModuleInit {
     const reviewList = reviews.slice(0, 3);
     reviewList.forEach((element) => {
       if (element.review_reviewImage) element.review_reviewImage = this.awsService.getImageURL(element.review_reviewImage);
+      if (element.user_profileImage) element.user_profileImage = this.awsService.getImageURL(element.user_profileImage);
     })
     restaurant.reviews = reviewList;
     return restaurant;
@@ -112,16 +130,33 @@ export class RestaurantService implements OnModuleInit {
         })
         .getCount();
 
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
+
+
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
     return restaurants;
   }
 
-  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo, limit: string) {
     const restaurants = await this.restaurantRepository.entireRestaurantList(
       locationDto,
-      tokenInfo
+      tokenInfo,
+      limit
     );
 
     for (const restaurant of restaurants) {
@@ -131,7 +166,20 @@ export class RestaurantService implements OnModuleInit {
           restaurantId: restaurant.restaurant_id,
         })
         .getCount();
-
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 

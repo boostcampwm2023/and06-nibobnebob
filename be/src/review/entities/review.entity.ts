@@ -39,7 +39,7 @@ export class ReviewInfoEntity {
   @Column({ type: "text" })
   overallExperience: string;
 
-  @Column({ type: "text", nullable: true })
+  @Column({ type: "text", nullable: true, default: null })
   reviewImage: string;
 
   @CreateDateColumn({ name: "created_at" })

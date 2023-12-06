@@ -3,12 +3,14 @@ import { ReviewRepository } from './review.repository';
 import { TokenInfo } from 'src/user/user.decorator';
 import { ReviewLikeRepository } from './review.like.repository';
 import { SortInfoDto } from 'src/utils/sortInfo.dto';
+import { AwsService } from 'src/aws/aws.service';
 
 @Injectable()
 export class ReviewService {
     constructor(
         private reviewRepository: ReviewRepository,
-        private reviewLikeRepository: ReviewLikeRepository
+        private reviewLikeRepository: ReviewLikeRepository,
+        private awsService: AwsService
     ) { }
 
     async getSortedReviews(tokenInfo: TokenInfo, restaurantId: number, getSortedReviewsDto: SortInfoDto) {
@@ -30,7 +32,7 @@ export class ReviewService {
                 .where("reviewLike.reviewId = :reviewId", { reviewId: review.review_id })
                 .groupBy("reviewLike.isLike")
                 .getRawMany();
-
+            if (review.user_profileImage) review.user_profileImage = this.awsService.getImageURL(review.user_profileImage);
             review.likeCount = Number(likeCounts.find(lc => lc.status === true)?.count) || 0;
             review.dislikeCount = Number(likeCounts.find(lc => lc.status === false)?.count) || 0;
         }
