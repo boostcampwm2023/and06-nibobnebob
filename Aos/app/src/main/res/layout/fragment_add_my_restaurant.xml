@@ -360,6 +360,7 @@
                     android:layout_marginTop="12dp"
                     android:onClick="@{() -> vm.openGallery()}"
                     android:src="@drawable/ic_add_review_photo"
+                    app:checkEmptyImgUri="@{vm.reviewImg}"
                     app:layout_constraintDimensionRatio="314:174"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

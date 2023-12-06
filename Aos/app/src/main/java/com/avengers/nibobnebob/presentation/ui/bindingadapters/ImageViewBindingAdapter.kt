@@ -57,8 +57,8 @@ fun bindLoadImage(view : ImageView, imageUrl : String?){
     }
 }
 
-@BindingAdapter("profileImgUri")
-fun bindProfileImgUri(iv: ImageView, uri: String){
+@BindingAdapter("checkEmptyImgUri")
+fun bindCheckEmptyIngUri(iv: ImageView, uri: String){
     if(uri.isNotBlank()){
         iv.setImageURI(uri.toUri())
     }
