@@ -173,8 +173,19 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         .getRawMany();
 
       if (result.length > 0) {
-        const recommendedRestaurant = result[Math.floor(Math.random() * result.length)];
-        return recommendedRestaurant;
+        let recommendedRestaurants = [];
+        let usedIndexes = new Set();
+
+        for (let i = 0; i < Math.min(3, result.length); i++) {
+          let randomIndex;
+          do {
+            randomIndex = Math.floor(Math.random() * result.length);
+          } while (usedIndexes.has(randomIndex));
+
+          usedIndexes.add(randomIndex);
+          recommendedRestaurants.push(result[randomIndex]);
+        }
+        return recommendedRestaurants;
       }
     }
   }
