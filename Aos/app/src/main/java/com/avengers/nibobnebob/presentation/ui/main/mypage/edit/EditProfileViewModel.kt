@@ -2,10 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
-import com.avengers.nibobnebob.data.repository.MyPageRepository
 import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.MyPageRepository
 import com.avengers.nibobnebob.domain.usecase.GetNickValidationUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
@@ -86,9 +84,9 @@ class EditProfileViewModel @Inject constructor(
         myPageRepository.getMyDefaultInfo().onEach {
 
             when (it) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
 
-                    it.data.body.toUiMyPageEditInfoData().apply {
+                    it.data.toUiMyPageEditInfoData().apply {
                         nickState.emit(nickName)
                         locationState.emit(location.indexOf(location))
                         locationTextState.emit(location)
@@ -224,19 +222,17 @@ class EditProfileViewModel @Inject constructor(
     fun doneEditProfile() {
 
         myPageRepository.editMyInfo(
-            EditMyInfoRequest(
-                nickName = nickState.value,
-                email = uiState.value.email,
-                provider = uiState.value.provider,
-                birthdate = birthState.value,
-                region = if (locationState.value == 0) originalLocation else locationList[locationState.value],
-                isMale = originalIsMale,
-                password = "1234",
-                profileImage = profileImageState.value
-            )
+            nickName = nickState.value,
+            email = uiState.value.email,
+            provider = uiState.value.provider,
+            birthdate = birthState.value,
+            region = if (locationState.value == 0) originalLocation else locationList[locationState.value],
+            isMale = originalIsMale,
+            password = "1234",
+            profileImage = profileImageState.value
         ).onEach {
             when (it) {
-                is OldBaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
+                is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
                 else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)

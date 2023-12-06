@@ -3,10 +3,9 @@ package com.avengers.nibobnebob.presentation.ui.intro.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.model.StatusDataCode
-import com.avengers.nibobnebob.data.model.request.BasicLoginRequest
-import com.avengers.nibobnebob.data.repository.IntroRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.model.base.StatusCode
+import com.avengers.nibobnebob.domain.repository.IntroRepository
 import com.avengers.nibobnebob.presentation.ui.intro.signup.InputState
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +30,7 @@ sealed class LoginEvent {
     data object NavigateToDetailSignup : LoginEvent()
     data object NavigateToDialog : LoginEvent()
     data class ShowSnackMessage(
-        val msg : String
+        val msg: String
     ) : LoginEvent()
 }
 
@@ -57,7 +56,7 @@ class LoginViewModel @Inject constructor(
         observePassword()
     }
 
-    private fun observeEmail(){
+    private fun observeEmail() {
         email.onEach {
             _uiState.update { state ->
                 state.copy(
@@ -81,20 +80,21 @@ class LoginViewModel @Inject constructor(
         autoLogin.value = newState
     }
 
-    fun loginCommon(){
+    fun loginCommon() {
         introRepository.loginBasic(
-            BasicLoginRequest(email.value, password.value)
+            email.value, password.value
         ).onEach { state ->
             when (state) {
-                is OldBaseState.Success -> {
+                is BaseState.Success -> {
                     loginSuccess(
-                        state.data.body.accessToken.toString(),
-                        state.data.body.refreshToken.toString()
+                        state.data.accessToken.toString(),
+                        state.data.refreshToken.toString()
                     )
                 }
-                is OldBaseState.Error -> {
-                    when(state.statusDataCode){
-                        StatusDataCode.EXCEPTION -> _events.emit(LoginEvent.ShowSnackMessage(state.message))
+
+                is BaseState.Error -> {
+                    when (state.statusCode) {
+                        StatusCode.EXCEPTION -> _events.emit(LoginEvent.ShowSnackMessage(state.message))
                         else -> {
                             _uiState.update { state ->
                                 state.copy(
@@ -108,19 +108,20 @@ class LoginViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun loginNaver(token : String){
+    fun loginNaver(token: String) {
         viewModelScope.launch {
             introRepository.loginNaver(token).onEach { state ->
-                when(state){
-                    is OldBaseState.Success -> {
+                when (state) {
+                    is BaseState.Success -> {
                         loginSuccess(
-                            state.data.body.accessToken.toString(),
-                            state.data.body.refreshToken.toString()
+                            state.data.accessToken.toString(),
+                            state.data.refreshToken.toString()
                         )
                     }
-                    is OldBaseState.Error -> {
-                        when(state.statusDataCode){
-                            StatusDataCode.ERROR_NONE -> _events.emit(LoginEvent.NavigateToDetailSignup)
+
+                    is BaseState.Error -> {
+                        when (state.statusCode) {
+                            StatusCode.ERROR_NONE -> _events.emit(LoginEvent.NavigateToDetailSignup)
                             else -> _events.emit(LoginEvent.ShowSnackMessage(ERROR_MSG))
                         }
                     }
@@ -129,7 +130,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun loginSuccess(access: String, refresh: String){
+    private fun loginSuccess(access: String, refresh: String) {
         viewModelScope.launch {
             dataStoreManager.putAutoLogin(true)
             dataStoreManager.putAccessToken(access)
@@ -138,7 +139,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun navigateToBasicSignup(){
+    fun navigateToBasicSignup() {
         viewModelScope.launch {
             _events.emit(LoginEvent.NavigateToBasicSignup)
         }
