@@ -72,7 +72,6 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:layout_marginTop="50dp"
-                    android:src="@drawable/ic_mypage"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_mypage_title"

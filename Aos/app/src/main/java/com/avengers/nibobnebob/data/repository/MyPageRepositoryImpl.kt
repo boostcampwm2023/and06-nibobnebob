@@ -91,7 +91,7 @@ class MyPageRepositoryImpl @Inject constructor(
     ): Flow<BaseState<Unit>> = flow {
         val result = runRemote {
             api.editMyInfoNoImage(
-                EditMyInfoNoImageRequest(nickName,email,provider,birthdate,region,isMale)
+                EditMyInfoNoImageRequest(nickName,email,provider,birthdate,region,isMale.toString())
             )
         }
         emit(result)

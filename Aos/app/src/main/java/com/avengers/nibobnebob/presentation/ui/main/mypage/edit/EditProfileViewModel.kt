@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
@@ -264,6 +265,7 @@ class EditProfileViewModel @Inject constructor(
                 }
             }.launchIn(viewModelScope)
         }else {
+            Log.d("test..",isMaleState.value.toString())
             myPageRepository.editMyInfo(
                 nickName = nickState.value.toRequestBody("text/plain".toMediaTypeOrNull()),
                 email = uiState.value.email.toRequestBody("text/plain".toMediaTypeOrNull()),
