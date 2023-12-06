@@ -37,7 +37,7 @@ export class User {
   @Column({ type: "varchar", length: 20, nullable: true })
   provider: string | null;
 
-  @Column({ type: "text", default : "profile/images/defaultprofile.png"})
+  @Column({ type: "text", default: "profile/images/defaultprofile.png" })
   profileImage: string;
 
   @CreateDateColumn({ type: "timestamp" })
