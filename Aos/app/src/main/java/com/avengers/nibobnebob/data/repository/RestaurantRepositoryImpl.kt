@@ -6,6 +6,7 @@ import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Comp
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantItems.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.ReviewSortResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
@@ -14,6 +15,7 @@ import com.avengers.nibobnebob.domain.model.RestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
 import com.avengers.nibobnebob.domain.model.RestaurantItemsData
+import com.avengers.nibobnebob.domain.model.ReviewSortData
 import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.base.BaseState
@@ -30,6 +32,23 @@ class RestaurantRepositoryImpl @Inject constructor(
     override fun restaurantDetail(restaurantId: Int): Flow<BaseState<RestaurantDetailData>> =
         flow {
             when (val result = runRemote { api.restaurantDetail(restaurantId) }) {
+                is BaseState.Success -> {
+                    result.data.body?.let { body ->
+                        emit(BaseState.Success(body.toDomainModel()))
+                    } ?: run {
+                        emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                    }
+                }
+
+                is BaseState.Error -> {
+                    emit(result)
+                }
+            }
+        }
+
+    override fun sortReview(restaurantId: Int, sort: String?): Flow<BaseState<ReviewSortData>> =
+        flow {
+            when (val result = runRemote { api.sortReview(restaurantId, sort) }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
                         emit(BaseState.Success(body.toDomainModel()))

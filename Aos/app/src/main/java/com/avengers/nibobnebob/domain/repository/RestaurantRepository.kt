@@ -4,6 +4,7 @@ import com.avengers.nibobnebob.domain.model.RestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
 import com.avengers.nibobnebob.domain.model.RestaurantItemsData
+import com.avengers.nibobnebob.domain.model.ReviewSortData
 import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.base.BaseState
@@ -14,6 +15,11 @@ interface RestaurantRepository {
     fun restaurantDetail(
         restaurantId: Int
     ): Flow<BaseState<RestaurantDetailData>>
+
+    fun sortReview(
+        restaurantId: Int,
+        sort: String?
+    ): Flow<BaseState<ReviewSortData>>
 
     fun addRestaurant(
         restaurantId: Int, isCarVisit: Boolean,
