@@ -35,7 +35,11 @@ class MyRestaurantListFragment :
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if (!rvMyRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage) {
+                val scrollBottom = !rvMyRestaurant.canScrollVertically(1)
+                val hasNextPage = viewModel.uiState.value.lastPage
+                val isNotLoading = !viewModel.uiState.value.isLoading
+
+                if (scrollBottom && hasNextPage && isNotLoading) {
                     viewModel.loadNextPage()
                 }
             }
