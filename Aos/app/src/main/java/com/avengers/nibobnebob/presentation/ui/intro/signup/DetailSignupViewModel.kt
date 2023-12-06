@@ -2,9 +2,8 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.OldBaseState
-import com.avengers.nibobnebob.data.repository.IntroRepository
 import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.IntroRepository
 import com.avengers.nibobnebob.domain.usecase.GetNickValidationUseCase
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.ValidationUtil
@@ -65,7 +64,13 @@ class DetailSignupViewModel @Inject constructor(
     private lateinit var profileFile: MultipartBody.Part
 
     val isDataReady =
-        combine(nick, birth, location, nickValidation, profileImg) { nick, birth, location, nickValidation, profileImg->
+        combine(
+            nick,
+            birth,
+            location,
+            nickValidation,
+            profileImg
+        ) { nick, birth, location, nickValidation, profileImg ->
             nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
                     nickValidation && profileImg.isNotBlank()
         }.stateIn(
@@ -151,8 +156,8 @@ class DetailSignupViewModel @Inject constructor(
             profileImage = profileFile
         ).onEach {
             when (it) {
-                is OldBaseState.Success -> navigateToLoginFragment()
-                is OldBaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
+                is BaseState.Success -> navigateToLoginFragment()
+                is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
@@ -187,13 +192,13 @@ class DetailSignupViewModel @Inject constructor(
         }
     }
 
-    fun openGallery(){
+    fun openGallery() {
         viewModelScope.launch {
             _events.emit(DetailSignupEvents.OpenGallery)
         }
     }
 
-    fun setImage(uri: String, file: MultipartBody.Part){
+    fun setImage(uri: String, file: MultipartBody.Part) {
         profileImg.value = uri
         profileFile = file
     }

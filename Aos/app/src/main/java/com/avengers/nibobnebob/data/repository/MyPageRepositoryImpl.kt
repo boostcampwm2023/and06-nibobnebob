@@ -1,13 +1,16 @@
 package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.OldBaseState
 import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
-import com.avengers.nibobnebob.data.model.response.OldBaseResponse
-import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse
-import com.avengers.nibobnebob.data.model.response.MyInfoResponse
-import com.avengers.nibobnebob.data.model.oldRunRemote
+import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.MyInfoResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.MyPageApi
+import com.avengers.nibobnebob.domain.model.MyDefaultInfoData
+import com.avengers.nibobnebob.domain.model.MyInfoData
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.model.base.StatusCode
+import com.avengers.nibobnebob.domain.repository.MyPageRepository
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.flow.Flow
@@ -19,32 +22,69 @@ class MyPageRepositoryImpl @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : MyPageRepository {
 
-    override fun getMyInfo(): Flow<OldBaseState<OldBaseResponse<MyInfoResponse>>> = flow {
-        val result = oldRunRemote { api.getMyInfo() }
+    override fun getMyInfo(): Flow<BaseState<MyInfoData>> = flow {
+        when (val result = runRemote { api.getMyInfo() }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.toDomainModel()))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
+
+    override fun getMyDefaultInfo(): Flow<BaseState<MyDefaultInfoData>> = flow {
+        when (val result = runRemote { api.getMyDefaultInfo() }) {
+            is BaseState.Success -> {
+                result.data.body?.let { body ->
+                    emit(BaseState.Success(body.toDomainModel()))
+                } ?: run {
+                    emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                }
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
+
+    override fun editMyInfo(
+        nickName: String,
+        email: String,
+        provider: String,
+        birthdate: String,
+        region: String,
+        isMale: Boolean,
+        password: String,
+        profileImage: String
+    ): Flow<BaseState<Unit>> = flow {
+        val result = runRemote {
+            api.editMyInfo(
+                EditMyInfoRequest(
+                    nickName, email, provider, birthdate, region, isMale, password, profileImage
+                )
+            )
+        }
         emit(result)
     }
 
-    override fun getMyDefaultInfo(): Flow<OldBaseState<OldBaseResponse<MyDefaultInfoResponse>>> = flow {
-        val result = oldRunRemote { api.getMyDefaultInfo() }
-        emit(result)
-    }
-
-    override fun editMyInfo(data: EditMyInfoRequest): Flow<OldBaseState<Unit>> = flow {
-        val result = oldRunRemote { api.editMyInfo(data) }
-        emit(result)
-    }
-
-    override fun logout(): Flow<OldBaseState<Unit>> = flow {
-        val result = oldRunRemote { api.logout() }
+    override fun logout(): Flow<BaseState<Unit>> = flow {
+        val result = runRemote { api.logout() }
         dataStoreManager.deleteAccessToken()
         dataStoreManager.deleteRefreshToken()
         emit(result)
 
     }
 
-    override fun withdraw(): Flow<OldBaseState<Unit>> = flow {
-        when (val result = oldRunRemote { api.withdraw() }) {
-            is OldBaseState.Success -> {
+    override fun withdraw(): Flow<BaseState<Unit>> = flow {
+        when (val result = runRemote { api.withdraw() }) {
+            is BaseState.Success -> {
                 dataStoreManager.deleteAccessToken()
                 dataStoreManager.deleteRefreshToken()
 
