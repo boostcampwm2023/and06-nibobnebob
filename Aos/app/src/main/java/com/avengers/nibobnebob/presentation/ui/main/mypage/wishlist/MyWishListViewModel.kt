@@ -27,6 +27,8 @@ import javax.inject.Inject
 data class MyWishUiState(
     val wishList: List<UiMyWishData> = emptyList(),
     val filterOption: String = "",
+    val listPage: Int = 1,
+    val lastPage: Boolean = false,
     val isEmpty: Boolean = false,
 )
 
@@ -58,7 +60,10 @@ class MyWishListViewModel @Inject constructor(
         page: Int? = null,
         sort: String? = null,
     ) {
-        getMyWishListUseCase(sort = sort).onEach { wish ->
+        getMyWishListUseCase(
+            limit = 3, page = 1, sort = sort
+                ?: uiState.value.filterOption
+        ).onEach { wish ->
             when (wish) {
                 is BaseState.Success -> {
                     wish.data.wishRestaurantItemsData?.let {
@@ -69,6 +74,8 @@ class MyWishListViewModel @Inject constructor(
                             state.copy(
                                 wishList = wishList,
                                 filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
+                                listPage = uiState.value.listPage + 1,
+                                lastPage = wish.data.hasNext,
                                 isEmpty = wishList.isEmpty()
                             )
                         }
@@ -99,7 +106,7 @@ class MyWishListViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))
-                    myWishList(sort = uiState.value.filterOption)
+                    myWishList(page = uiState.value.listPage, sort = uiState.value.filterOption)
                 }
 
                 is BaseState.Error -> {

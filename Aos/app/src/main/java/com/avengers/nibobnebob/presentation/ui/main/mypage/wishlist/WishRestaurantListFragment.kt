@@ -4,6 +4,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentWishRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -31,6 +32,14 @@ class WishRestaurantListFragment :
         binding.vm = viewModel
         binding.rvWishRestaurant.adapter = adapter
         binding.rvWishRestaurant.animation = null
+        binding.rvWishRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if(!binding.rvWishRestaurant.canScrollVertically(1) && viewModel.uiState.value.lastPage){
+                    viewModel.myWishList(sort = viewModel.uiState.value.filterOption)
+                }
+            }
+        })
         setFilterMenu()
     }
 
