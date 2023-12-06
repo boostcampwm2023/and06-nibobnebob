@@ -2,15 +2,15 @@ package com.avengers.nibobnebob.data.repository
 
 import android.util.Log
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
+import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
-import com.avengers.nibobnebob.data.model.response.RestaurantItems.Companion.toDomainModel
-import com.avengers.nibobnebob.data.model.response.RestaurantResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RestaurantApi
-import com.avengers.nibobnebob.domain.model.RestaurantData
+import com.avengers.nibobnebob.domain.model.MyRestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
 import com.avengers.nibobnebob.domain.model.RestaurantItemsData
@@ -89,9 +89,13 @@ class RestaurantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun myRestaurantList(): Flow<BaseState<RestaurantData>> =
+    override fun myRestaurantList(
+        limit : Int?,
+        page : Int?,
+        sort : String?
+    ): Flow<BaseState<MyRestaurantData>> =
         flow {
-            when (val result = runRemote { api.myRestaurantList() }) {
+            when (val result = runRemote { api.myRestaurantList(limit, page, sort) }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
                         emit(BaseState.Success(body.toDomainModel()))
