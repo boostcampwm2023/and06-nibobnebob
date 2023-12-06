@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
@@ -21,9 +20,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 data class EditProfileUiState(
@@ -33,7 +30,7 @@ data class EditProfileUiState(
     val birth: EditInputState = EditInputState(),
     val location: EditInputState = EditInputState(),
     val profileImage: EditInputState = EditInputState(),
-    val isMale : EditInputState = EditInputState()
+    val isMale: EditInputState = EditInputState()
 )
 
 
@@ -209,7 +206,7 @@ class EditProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun observeIsMale(){
+    private fun observeIsMale() {
         isMaleState.onEach { isMale ->
             _uiState.update { state ->
                 state.copy(
@@ -250,39 +247,22 @@ class EditProfileViewModel @Inject constructor(
     }
 
     fun doneEditProfile() {
-        if(originalProfileImage == profileImageState.value){
-            myPageRepository.editMyInfoNoImage(
-                nickName = nickState.value,
-                email = uiState.value.email,
-                provider = uiState.value.provider,
-                birthdate = birthState.value,
-                region = if (locationState.value == 0) originalLocation else locationList[locationState.value],
-                isMale = isMaleState.value,
-            ).onEach {
-                when (it) {
-                    is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
-                    else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
-                }
-            }.launchIn(viewModelScope)
-        }else {
-            Log.d("test..",isMaleState.value.toString())
-            myPageRepository.editMyInfo(
-                nickName = nickState.value.toRequestBody("text/plain".toMediaTypeOrNull()),
-                email = uiState.value.email.toRequestBody("text/plain".toMediaTypeOrNull()),
-                provider = uiState.value.provider.toRequestBody("text/plain".toMediaTypeOrNull()),
-                birthdate = birthState.value.toRequestBody("text/plain".toMediaTypeOrNull()),
-                region = if (locationState.value == 0) originalLocation.toRequestBody("text/plain".toMediaTypeOrNull())
-                else locationList[locationState.value].toRequestBody("text/plain".toMediaTypeOrNull()),
-                isMale = isMaleState.value,
-                profileImage = profileImageFile,
-                isImageChanged = true
-            ).onEach {
-                when (it) {
-                    is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
-                    else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
-                }
-            }.launchIn(viewModelScope)
-        }
+        myPageRepository.editMyInfo(
+            nickName = nickState.value,
+            email = uiState.value.email,
+            provider = uiState.value.provider,
+            birthdate = birthState.value,
+            region = if (locationState.value == 0) originalLocation
+            else locationList[locationState.value],
+            isMale = isMaleState.value,
+            isImageChanged = originalProfileImage != profileImageState.value,
+            profileImage = profileImageFile
+        ).onEach {
+            when (it) {
+                is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
+                else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
+            }
+        }.launchIn(viewModelScope)
     }
 
 

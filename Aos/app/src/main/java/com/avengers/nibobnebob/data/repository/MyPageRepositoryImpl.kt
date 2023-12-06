@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.request.EditMyInfoNoImageRequest
 import com.avengers.nibobnebob.data.model.response.MyDefaultInfoResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.MyInfoResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
@@ -16,7 +15,7 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class MyPageRepositoryImpl @Inject constructor(
@@ -57,45 +56,31 @@ class MyPageRepositoryImpl @Inject constructor(
     }
 
     override fun editMyInfo(
-        nickName: RequestBody,
-        email: RequestBody,
-        provider: RequestBody,
-        birthdate: RequestBody,
-        region: RequestBody,
-        isMale: Boolean,
-        profileImage: MultipartBody.Part?,
-        isImageChanged : Boolean
-    ): Flow<BaseState<Unit>> = flow {
-        val result = runRemote {
-            api.editMyInfo(
-                nickName = nickName,
-                email = email,
-                provider = provider,
-                birthdate = birthdate,
-                region = region,
-                isMale = isMale,
-                profileImage = profileImage,
-                isImageChanged = isImageChanged
-            )
-        }
-        emit(result)
-    }
-
-    override fun editMyInfoNoImage(
         nickName: String,
         email: String,
         provider: String,
         birthdate: String,
         region: String,
         isMale: Boolean,
+        isImageChanged: Boolean,
+        profileImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>> = flow {
         val result = runRemote {
-            api.editMyInfoNoImage(
-                EditMyInfoNoImageRequest(nickName,email,provider,birthdate,region,isMale.toString())
+            api.editInfo(
+                email = email.toRequestBody(),
+                provider = provider.toRequestBody(),
+                nickName = nickName.toRequestBody(),
+                region = region.toRequestBody(),
+                birthdate = birthdate.toRequestBody(),
+                isMale = isMale,
+                isImageChanged = isImageChanged,
+                profileImage = if (isImageChanged) profileImage else null,
+                profileImageString = if (isImageChanged) null else "".toRequestBody()
             )
         }
         emit(result)
     }
+
 
     override fun logout(): Flow<BaseState<Unit>> = flow {
         val result = runRemote { api.logout() }
