@@ -76,7 +76,6 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tv_edit_done"
                 style="@style/TextMediumBold"
-                app:setBtnEnable="@{vm.uiState}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -88,7 +87,8 @@
                 android:textColor="@color/selector_nick_check_text"
                 app:layout_constraintBottom_toBottomOf="@id/cl_edit_topbar"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/cl_edit_topbar" />
+                app:layout_constraintTop_toTopOf="@id/cl_edit_topbar"
+                app:setBtnEnable="@{vm.uiState}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -108,11 +108,12 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:layout_marginTop="50dp"
+                    android:onClick="@{() -> vm.openGallery()}"
                     android:src="@drawable/ic_mypage"
-                    app:profileImageUrl="@{vm.profileImageState}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:profileImageUrl="@{vm.profileImageState}" />
 
                 <ImageView
                     android:id="@+id/btn_edt_profile"
@@ -120,8 +121,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="15dp"
                     android:layout_marginBottom="15dp"
-                    android:src="@drawable/ic_edit"
                     android:background="@color/white"
+                    android:onClick="@{() -> vm.openGallery()}"
+                    android:src="@drawable/ic_edit"
                     app:layout_constraintBottom_toBottomOf="@id/iv_profile"
                     app:layout_constraintEnd_toEndOf="@id/iv_profile" />
 

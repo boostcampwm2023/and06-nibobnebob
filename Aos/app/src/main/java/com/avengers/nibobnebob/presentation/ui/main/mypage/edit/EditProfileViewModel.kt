@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 data class EditProfileUiState(
@@ -40,6 +43,7 @@ data class EditInputState(
 
 sealed class EditProfileUiEvent {
     data object EditProfileDone : EditProfileUiEvent()
+    data object OpenGallery : EditProfileUiEvent()
     data class ShowToastMessage(val msg: String) : EditProfileUiEvent()
     data class ShowSnackMessage(val msg: String) : EditProfileUiEvent()
 }
@@ -70,6 +74,8 @@ class EditProfileViewModel @Inject constructor(
     val locationTextState = MutableStateFlow("")
     val locationEditMode = MutableStateFlow(false)
     val profileImageState = MutableStateFlow("")
+    val passwordState = MutableStateFlow("")
+    private var profileImageFile: MultipartBody.Part? = null
 
 
     init {
@@ -214,28 +220,37 @@ class EditProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun updateProfileImage(imageUri: String) {
-        profileImageState.update { imageUri }
+    fun openGallery() {
+        viewModelScope.launch {
+            _events.emit(EditProfileUiEvent.OpenGallery)
+        }
     }
 
+    fun setImage(uri: String, file: MultipartBody.Part) {
+        profileImageState.value = uri
+        profileImageFile = file
+    }
 
     fun doneEditProfile() {
 
         myPageRepository.editMyInfo(
-            nickName = nickState.value,
-            email = uiState.value.email,
-            provider = uiState.value.provider,
-            birthdate = birthState.value,
-            region = if (locationState.value == 0) originalLocation else locationList[locationState.value],
+            nickName = nickState.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            email = uiState.value.email.toRequestBody("text/plain".toMediaTypeOrNull()),
+            provider = uiState.value.provider.toRequestBody("text/plain".toMediaTypeOrNull()),
+            birthdate = birthState.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            region = if (locationState.value == 0) originalLocation.toRequestBody("text/plain".toMediaTypeOrNull())
+            else locationList[locationState.value].toRequestBody("text/plain".toMediaTypeOrNull()),
             isMale = originalIsMale,
-            password = "1234",
-            profileImage = profileImageState.value
+            password = "1234".toRequestBody("text/plain".toMediaTypeOrNull()),
+            profileImage = profileImageFile
         ).onEach {
             when (it) {
                 is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
                 else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
+
+
     }
 
 
