@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
-import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyListData
+import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,9 +56,7 @@ class MyRestaurantListViewModel @Inject constructor(
                 is BaseState.Success -> {
                     my.data.restaurantItemsData?.let {
                         _uiState.update { state ->
-                            val list = it.map { restaurant ->
-                                restaurant.toMyListData()
-                            }
+                            val list = my.data.restaurantItemsData.map { it.toUiMyListData() }
                             state.copy(
                                 myList = list,
                                 isEmpty = list.isEmpty()

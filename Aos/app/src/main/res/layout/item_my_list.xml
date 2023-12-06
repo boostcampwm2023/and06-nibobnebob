@@ -68,7 +68,7 @@
             style="@style/CaptionRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2023.11.11 등록"
+            android:text="@{item.date}"
             android:textColor="@color/nn_primary5"
             app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintStart_toStartOf="@id/gl_start"
