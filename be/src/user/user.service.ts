@@ -128,6 +128,21 @@ export class UserService {
         })
         .getCount();
 
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
+
       restaurant.isMy = true;
       restaurant.restaurant_reviewCnt = reviewCount;
     }
