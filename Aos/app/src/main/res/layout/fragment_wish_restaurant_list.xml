@@ -73,53 +73,38 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <TextView
+            android:id="@+id/tv_filter"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="최신순"
+            app:layout_constraintEnd_toStartOf="@id/iv_filter"
+            app:layout_constraintTop_toBottomOf="@id/cl_wish_topbar"/>
+
+        <ImageView
+            android:id="@+id/iv_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ic_filter"
+            app:layout_constraintBottom_toBottomOf="@id/tv_filter"
+            app:layout_constraintEnd_toEndOf="@id/gl_end"
+            app:layout_constraintTop_toTopOf="@id/tv_filter" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_wish_restaurant"
+            list="@{vm.uiState.wishList}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="@id/gl_end"
             app:layout_constraintStart_toStartOf="@id/gl_start"
-            app:layout_constraintTop_toBottomOf="@id/cl_wish_topbar">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/tv_filter"
-                    style="@style/TextSmallRegular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="최신순"
-                    app:layout_constraintEnd_toStartOf="@id/iv_filter"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/ic_filter"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_filter"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_filter" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_wish_restaurant"
-                    list="@{vm.uiState.wishList}"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="vertical"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_filter"
-                    tools:listitem="@layout/item_wish_list" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.core.widget.NestedScrollView>
+            app:layout_constraintTop_toBottomOf="@id/tv_filter"
+            tools:listitem="@layout/item_wish_list" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
