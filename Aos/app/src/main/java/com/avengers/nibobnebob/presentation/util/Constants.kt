@@ -14,6 +14,10 @@ object Constants {
     const val AUTHORIZATION = "authorization"
     const val BEARER = "Bearer"
     const val MY_LIST = "마이 리스트"
-    
+
     const val ERROR_MSG = "네트워크 통신에 실패했습니다."
+
+    const val FILTER_NEW = "TIME_DESC"
+    const val FILTER_OLD = "TIME_ASC"
+
 }

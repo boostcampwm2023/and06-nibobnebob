@@ -8,6 +8,8 @@ import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyWishListUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyWishListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyWishData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +26,7 @@ import javax.inject.Inject
 
 data class MyWishUiState(
     val wishList: List<UiMyWishData> = emptyList(),
-    val filterOption: String = "최신순",
+    val filterOption: String = "",
     val isEmpty: Boolean = false,
 )
 
@@ -66,7 +68,7 @@ class MyWishListViewModel @Inject constructor(
                             }
                             state.copy(
                                 wishList = wishList,
-                                filterOption = if (sort == "TIME_ASC") "오래된순" else "최신순",
+                                filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
                                 isEmpty = wishList.isEmpty()
                             )
                         }
@@ -97,7 +99,7 @@ class MyWishListViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))
-                    myWishList()
+                    myWishList(sort = uiState.value.filterOption)
                 }
 
                 is BaseState.Error -> {

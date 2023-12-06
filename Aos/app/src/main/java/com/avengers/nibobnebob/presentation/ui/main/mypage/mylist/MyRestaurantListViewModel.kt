@@ -5,10 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
-import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyListData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 data class MyRestaurantUiState(
     val myList: List<UiMyListData> = emptyList(),
-    val filterOption : String = "최신순",
+    val filterOption: String = "",
     val isEmpty: Boolean = false,
 )
 
@@ -65,7 +66,7 @@ class MyRestaurantListViewModel @Inject constructor(
                             val list = my.data.restaurantItemsData.map { it.toUiMyListData() }
                             state.copy(
                                 myList = list,
-                                filterOption = if(sort == "TIME_ASC") "오래된순" else "최신순",
+                                filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
                                 isEmpty = list.isEmpty()
                             )
                         }
@@ -87,7 +88,7 @@ class MyRestaurantListViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyRestaurantEvent.ShowToastMessage("삭제 되었습니다."))
-                    myRestaurantList()
+                    myRestaurantList(sort = uiState.value.filterOption)
                 }
 
                 is BaseState.Error -> {
