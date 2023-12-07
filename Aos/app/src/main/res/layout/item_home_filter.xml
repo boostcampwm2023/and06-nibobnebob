@@ -13,16 +13,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp">
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp">
 
         <TextView
             android:id="@+id/tv_filter"
-            style="@style/TextMediumBold"
+            style="@style/TextMediumRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@{item.isSelected? @drawable/rect_primary6fill_nostroke_30radius : @drawable/rect_primary3fill_nostroke_30radius}"
             android:onClick="@{() -> item.onItemClicked.invoke(item.name)}"
-            android:paddingHorizontal="12dp"
+            android:paddingHorizontal="16dp"
             android:paddingVertical="4dp"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"

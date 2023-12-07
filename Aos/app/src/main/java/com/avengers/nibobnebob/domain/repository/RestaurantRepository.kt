@@ -1,6 +1,7 @@
 package com.avengers.nibobnebob.domain.repository
 
 import com.avengers.nibobnebob.domain.model.MyRestaurantData
+import com.avengers.nibobnebob.domain.model.RecommendRestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
 import com.avengers.nibobnebob.domain.model.RestaurantItemsData
@@ -20,7 +21,9 @@ interface RestaurantRepository {
 
     fun sortReview(
         restaurantId: Int,
-        sort: String?
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null
     ): Flow<BaseState<ReviewSortData>>
 
     fun addRestaurant(
@@ -81,7 +84,9 @@ interface RestaurantRepository {
         latitude: String,
     ): Flow<BaseState<List<RestaurantItemsData>>>
 
-    fun likeReview(reviewId : Int) : Flow<BaseState<Unit>>
+    fun likeReview(reviewId: Int): Flow<BaseState<Unit>>
 
-    fun unlikeReview(reviewId : Int) : Flow<BaseState<Unit>>
+    fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>>
+
+    fun recommendRestaurantList(): Flow<BaseState<List<RecommendRestaurantData>>>
 }

@@ -44,10 +44,5 @@
             android:name="password"
             android:defaultValue=""
             app:argType="string" />
-        <action
-            android:id="@+id/action_detailSignupFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/nav_graph_intro"
-            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
