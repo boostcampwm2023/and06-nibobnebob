@@ -7,13 +7,15 @@ import com.avengers.nibobnebob.domain.model.FollowListData
 data class FollowListResponse(
     val nickName: String,
     val region: String,
-    val isFollow: Boolean
+    val isFollow: Boolean,
+    val profileImage: String
 ) : BaseDataModel {
     companion object : DomainMapper<FollowListResponse, FollowListData> {
         override fun FollowListResponse.toDomainModel(): FollowListData = FollowListData(
             nickName = nickName,
             region = region,
-            isFollow = isFollow
+            isFollow = isFollow,
+            profileImage = profileImage
         )
     }
 }

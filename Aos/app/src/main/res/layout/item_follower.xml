@@ -25,7 +25,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:src="@drawable/ic_test"
+            app:profileImageUrl="@{item.profileImage}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

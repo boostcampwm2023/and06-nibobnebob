@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.DataStoreManager
@@ -18,7 +19,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,6 +41,8 @@ sealed class DetailSignupEvents {
     data object GoToMainActivity : DetailSignupEvents()
     data class ShowSnackMessage(val msg: String) : DetailSignupEvents()
     data object OpenGallery : DetailSignupEvents()
+    data object ShowLoading : DetailSignupEvents()
+    data object DismissLoading : DetailSignupEvents()
 }
 
 @HiltViewModel
@@ -153,7 +158,9 @@ class DetailSignupViewModel @Inject constructor(
             region = location.value.toRequestBody("text/plain".toMediaTypeOrNull()),
             isMale = isMale.value,
             profileImage = profileFile
-        ).onEach { state ->
+        ).onStart {
+            _events.emit(DetailSignupEvents.ShowLoading)
+        }.onEach { state ->
             when (state) {
                 is BaseState.Success -> {
                     goToMainActivity(
@@ -161,9 +168,10 @@ class DetailSignupViewModel @Inject constructor(
                         state.data.refreshToken.toString()
                     )
                 }
-
                 is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
+        }.onCompletion {
+            _events.emit(DetailSignupEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 

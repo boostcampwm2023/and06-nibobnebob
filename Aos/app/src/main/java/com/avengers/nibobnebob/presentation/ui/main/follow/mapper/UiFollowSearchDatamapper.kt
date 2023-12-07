@@ -8,5 +8,6 @@ internal fun FollowListData.toUiFollowSearchData(
 ) = UiFollowSearchData(
     nickName = nickName,
     region = region,
+    profileImage = profileImage,
     onRootClickListener = onRootClickListener
 )

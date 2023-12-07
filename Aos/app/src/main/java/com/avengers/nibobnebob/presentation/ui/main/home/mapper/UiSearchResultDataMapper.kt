@@ -12,6 +12,7 @@ fun SearchRestaurantData.toUiRestaurantData(): UiRestaurantData = UiRestaurantDa
     phoneNumber = phoneNumber.ifEmpty { "전화번호 없음" },
     reviewCount = "$reviewCnt 개",
     isInWishList = false,
-    isInMyList = false
+    isInMyList = false,
+    reviewImage = restaurantImage
 
 )

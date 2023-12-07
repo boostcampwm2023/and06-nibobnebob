@@ -61,6 +61,8 @@ data class Reviews(
     @SerializedName("review_taste") val taste: Int,
     @SerializedName("review_transportationAccessibility") val transportationAccessibility: Int,
     @SerializedName("reviewer") val reviewer: String,
+    @SerializedName("review_reviewImage") val reviewImage: String,
+    @SerializedName("user_profileImage") val userProfileImage: String,
     @SerializedName("islike") val isLike: Boolean?,
     @SerializedName("likeCount") val likeCount: Int,
     @SerializedName("dislikeCount") val dislikeCount: Int,
@@ -77,6 +79,8 @@ data class Reviews(
             taste = taste,
             transportationAccessibility = transportationAccessibility,
             reviewer = reviewer,
+            reviewImage = reviewImage,
+            userProfileImage = userProfileImage,
             isLike = isLike,
             likeCount = likeCount,
             dislikeCount = dislikeCount

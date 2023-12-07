@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -47,6 +49,8 @@ sealed class AddMyRestaurantEvents {
     data class ShowToastMessage(val msg: String) : AddMyRestaurantEvents()
     data class ShowSnackMessage(val msg: String) : AddMyRestaurantEvents()
     data object OpenGallery : AddMyRestaurantEvents()
+    data object ShowLoading : AddMyRestaurantEvents()
+    data object DismissLoading : AddMyRestaurantEvents()
 }
 
 @HiltViewModel
@@ -159,7 +163,9 @@ class AddMyRestaurantViewModel @Inject constructor(
             restroomCleanliness = _uiState.value.toilet,
             overallExperience = comment.value.toRequestBody("text/plain".toMediaTypeOrNull()),
             reviewImage = reviewImgFile
-        ).onEach { state ->
+        ).onStart {
+            _events.emit(AddMyRestaurantEvents.ShowLoading)
+        }.onEach { state ->
             when (state) {
                 is BaseState.Success -> {
                     _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
@@ -170,6 +176,8 @@ class AddMyRestaurantViewModel @Inject constructor(
                     AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
                 )
             }
+        }.onCompletion {
+            _events.emit(AddMyRestaurantEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 

@@ -9,6 +9,7 @@ import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentUserDetailBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.ImageDialog
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,6 +38,10 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
                     is UserDetailEvents.NavigateToBack -> findNavController().navigateUp()
                     is UserDetailEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is UserDetailEvents.ShowToastMessage -> showToastMessage(it.msg)
+                    is UserDetailEvents.ShowBiggerImageDialog -> ImageDialog(
+                        requireContext(),
+                        it.img
+                    ).show()
                 }
             }
         }

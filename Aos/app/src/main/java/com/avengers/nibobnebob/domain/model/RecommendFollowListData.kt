@@ -2,11 +2,9 @@ package com.avengers.nibobnebob.domain.model
 
 import com.avengers.nibobnebob.domain.model.base.BaseDomainModel
 
-data class UserDetailData(
+data class RecommendFollowListData(
     val nickName: String,
-    val birthdate: String,
     val region: String,
-    val isMale: Boolean,
     val isFollow: Boolean,
     val profileImage: String
 ): BaseDomainModel
