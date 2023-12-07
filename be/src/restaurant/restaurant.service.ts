@@ -92,10 +92,15 @@ export class RestaurantService implements OnModuleInit {
         "review.reviewImage",
         "reviewLike.isLike as isLike"
       ])
+      .addSelect("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "likeCount")
+      .addSelect("COUNT(CASE WHEN reviewLike.isLike = false THEN 1 ELSE NULL END)", "dislikeCount")
+      .groupBy("review.id, user.nickName, user.profileImage, review.isCarVisit, review.transportationAccessibility, review.parkingArea, review.taste, review.service, review.restroomCleanliness, review.overallExperience, review.createdAt, review.reviewImage, reviewLike.isLike")
       .where("review.restaurant_id = :restaurantId", {
         restaurantId: restaurant.restaurant_id,
       })
+      .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
       .getRawMany();
+
 
     restaurant.restaurant_reviewCnt = reviews.length;
     const reviewList = reviews.slice(0, 3);
