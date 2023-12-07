@@ -9,19 +9,16 @@ import { UserRepository } from "src/user/user.repository";
 import { ReviewRepository } from "src/review/review.repository";
 import { LocationDto } from "./dto/location.dto";
 import { AwsService } from "src/aws/aws.service";
+import { Cron } from "@nestjs/schedule";
 
 const key = process.env.API_KEY;
 
 @Injectable()
-export class RestaurantService implements OnModuleInit {
-  onModuleInit() {
+export class RestaurantService {
+
+  @Cron('0 0 2 * * *')
+  handleCron() {
     this.updateRestaurantsFromSeoulData();
-    setInterval(
-      () => {
-        this.updateRestaurantsFromSeoulData();
-      },
-      1000 * 60 * 60 * 24 * 3
-    );
   }
 
   constructor(
