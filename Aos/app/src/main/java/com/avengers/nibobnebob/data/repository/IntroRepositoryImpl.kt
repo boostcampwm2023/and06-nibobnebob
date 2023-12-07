@@ -28,9 +28,9 @@ class IntroRepositoryImpl @Inject constructor(
         birthdate: RequestBody,
         isMale: Boolean,
         profileImage: MultipartBody.Part?
-    ): Flow<BaseState<Unit>> = flow {
+    ): Flow<BaseState<LoginData>> = flow {
         profileImage?.let { image ->
-            val result = runRemote {
+            when (val result = runRemote {
                 api.signup(
                     email,
                     password,
@@ -41,10 +41,19 @@ class IntroRepositoryImpl @Inject constructor(
                     isMale,
                     image
                 )
+            }) {
+                is BaseState.Success -> {
+                    result.data.body?.let { body ->
+                        emit(BaseState.Success(body.toDomainModel()))
+                    } ?: run {
+                        emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                    }
+                }
+
+                is BaseState.Error -> emit(result)
             }
-            emit(result)
         } ?: run {
-            val result = runRemote {
+            when (val result = runRemote {
                 api.signupNoImage(
                     email,
                     password,
@@ -52,10 +61,19 @@ class IntroRepositoryImpl @Inject constructor(
                     nickName,
                     region,
                     birthdate,
-                    isMale,
+                    isMale
                 )
+            }) {
+                is BaseState.Success -> {
+                    result.data.body?.let { body ->
+                        emit(BaseState.Success(body.toDomainModel()))
+                    } ?: run {
+                        emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                    }
+                }
+
+                is BaseState.Error -> emit(result)
             }
-            emit(result)
         }
 
     }

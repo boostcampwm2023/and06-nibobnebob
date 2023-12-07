@@ -25,7 +25,7 @@ interface IntroApi {
         @Part("birthdate") birthdate: RequestBody,
         @Part("isMale") isMale: Boolean,
         @Part profileImage: MultipartBody.Part
-    ): Response<Unit>
+    ): Response<BaseResponse<LoginResponse>>
 
     @Multipart
     @POST("api/user")
@@ -37,7 +37,7 @@ interface IntroApi {
         @Part("region") region: RequestBody,
         @Part("birthdate") birthdate: RequestBody,
         @Part("isMale") isMale: Boolean,
-    ): Response<Unit>
+    ): Response<BaseResponse<LoginResponse>>
 
     @POST("api/auth/social-login")
     suspend fun loginNaver(
