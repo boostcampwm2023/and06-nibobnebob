@@ -94,8 +94,6 @@ class DetailSignupViewModel @Inject constructor(
                     nickState = InputState.Empty
                 )
             }
-        }.onEach {
-
         }.launchIn(viewModelScope)
     }
 
