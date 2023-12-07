@@ -96,6 +96,7 @@ export class UserService {
           tokenInfo.id
         );
       if (restaurantList) result["restaurants"] = restaurantList;
+      else  result["restaurants"] = [];
       result.profileImage = this.awsService.getImageURL(result.profileImage);
       return result;
     } catch (err) {
