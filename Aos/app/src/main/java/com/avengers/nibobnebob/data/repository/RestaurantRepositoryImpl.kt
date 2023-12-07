@@ -47,9 +47,14 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun sortReview(restaurantId: Int, sort: String?): Flow<BaseState<ReviewSortData>> =
+    override fun sortReview(
+        restaurantId: Int,
+        limit: Int?,
+        page: Int?,
+        sort: String?,
+    ): Flow<BaseState<ReviewSortData>> =
         flow {
-            when (val result = runRemote { api.sortReview(restaurantId, sort) }) {
+            when (val result = runRemote { api.sortReview(restaurantId, limit, page, sort) }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
                         emit(BaseState.Success(body.toDomainModel()))
@@ -295,7 +300,7 @@ class RestaurantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>> = flow{
+    override fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>> = flow {
         when (val result = runRemote { api.unlikeReview(reviewId) }) {
             is BaseState.Success -> {
                 emit(BaseState.Success(Unit))
