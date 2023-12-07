@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetSortedReviewUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.PostLikeReviewUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.PostUnlikeReviewUseCase
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantReviewDataInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
 import com.avengers.nibobnebob.presentation.util.Constants
@@ -41,7 +43,9 @@ data class RestaurantReviewsUiState(
 
 @HiltViewModel
 class RestaurantReviewsViewModel @Inject constructor(
-    private val getSortedReviewUseCase: GetSortedReviewUseCase
+    private val getSortedReviewUseCase: GetSortedReviewUseCase,
+    private val postLikeReviewUseCase: PostLikeReviewUseCase,
+    private val postUnlikeReviewUseCase: PostUnlikeReviewUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantReviewsUiState())
@@ -118,71 +122,95 @@ class RestaurantReviewsViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    //TODO : 추후 서버 좋아요 진행
     private fun onThumbsUpItemClicked(reviewId: Int) {
-        _uiState.update { state ->
-            val updatedReviewList = state.reviewList.map { existingReviewData ->
-                if (existingReviewData.reviewId == reviewId) {
-                    if (existingReviewData.isThumbsUp) {
-                        existingReviewData.copy(
-                            thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
-                            isThumbsUp = false
-                        )
-                    } else {
-                        if (existingReviewData.isThumbsDown) {
-                            existingReviewData.copy(
-                                thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
-                                isThumbsUp = true,
-                                thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
-                                isThumbsDown = false
-                            )
-                        } else {
-                            existingReviewData.copy(
-                                thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
-                                isThumbsUp = true
-                            )
+        postLikeReviewUseCase(reviewId).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        val updatedReviewList = state.reviewList.map { existingReviewData ->
+                            if (existingReviewData.reviewId == reviewId) {
+                                if (existingReviewData.isThumbsUp) {
+                                    existingReviewData.copy(
+                                        thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
+                                        isThumbsUp = false
+                                    )
+                                } else {
+                                    if (existingReviewData.isThumbsDown) {
+                                        existingReviewData.copy(
+                                            thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
+                                            isThumbsUp = true,
+                                            thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
+                                            isThumbsDown = false
+                                        )
+                                    } else {
+                                        existingReviewData.copy(
+                                            thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
+                                            isThumbsUp = true
+                                        )
+                                    }
+                                }
+                            } else {
+                                existingReviewData
+                            }
                         }
+                        state.copy(reviewList = updatedReviewList)
                     }
-                } else {
-                    existingReviewData
                 }
+
+                is BaseState.Error -> _events.emit(
+                    RestaurantReviewsEvents.ShowSnackMessage(
+                        ERROR_MSG
+                    )
+                )
             }
-            state.copy(reviewList = updatedReviewList)
-        }
+        }.launchIn(viewModelScope)
+
     }
 
 
-    //TODO : 추후 서버 싫어요 진행
     private fun onThumbsDownItemClicked(reviewId: Int) {
-        _uiState.update { state ->
-            val updatedReviewList = state.reviewList.map { existingReviewData ->
-                if (existingReviewData.reviewId == reviewId) {
-                    if (existingReviewData.isThumbsDown) {
-                        existingReviewData.copy(
-                            thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
-                            isThumbsDown = false
-                        )
-                    } else {
-                        if (existingReviewData.isThumbsUp) {
-                            existingReviewData.copy(
-                                thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
-                                isThumbsDown = true,
-                                thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
-                                isThumbsUp = false
-                            )
-                        } else {
-                            existingReviewData.copy(
-                                thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
-                                isThumbsDown = true
-                            )
+        postUnlikeReviewUseCase(reviewId).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        val updatedReviewList = state.reviewList.map { existingReviewData ->
+                            if (existingReviewData.reviewId == reviewId) {
+                                if (existingReviewData.isThumbsDown) {
+                                    existingReviewData.copy(
+                                        thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
+                                        isThumbsDown = false
+                                    )
+                                } else {
+                                    if (existingReviewData.isThumbsUp) {
+                                        existingReviewData.copy(
+                                            thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
+                                            isThumbsDown = true,
+                                            thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
+                                            isThumbsUp = false
+                                        )
+                                    } else {
+                                        existingReviewData.copy(
+                                            thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
+                                            isThumbsDown = true
+                                        )
+                                    }
+                                }
+                            } else {
+                                existingReviewData
+                            }
                         }
+                        state.copy(reviewList = updatedReviewList)
                     }
-                } else {
-                    existingReviewData
                 }
+
+                is BaseState.Error -> _events.emit(
+                    RestaurantReviewsEvents.ShowSnackMessage(
+                        ERROR_MSG
+                    )
+                )
             }
-            state.copy(reviewList = updatedReviewList)
-        }
+        }.launchIn(viewModelScope)
+
     }
 
     fun navigateToBack() {

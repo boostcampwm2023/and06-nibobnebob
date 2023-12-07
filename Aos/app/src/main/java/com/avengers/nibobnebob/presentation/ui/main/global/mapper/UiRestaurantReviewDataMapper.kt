@@ -19,4 +19,8 @@ internal fun ReviewsData.toUiRestaurantReviewDataInfo(
     transportationAccessibility = transportationAccessibility,
     onThumbsUpClick = onThumbsUpClick,
     onThumbsDownClick = onThumbsDownClick,
+    thumbsUpCnt = likeCount,
+    thumbsDownCnt = dislikeCount,
+    isThumbsUp = isLike == true,
+    isThumbsDown = isLike == false
 )

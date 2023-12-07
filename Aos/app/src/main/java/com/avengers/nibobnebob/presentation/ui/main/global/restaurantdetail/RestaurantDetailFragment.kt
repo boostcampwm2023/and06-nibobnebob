@@ -38,9 +38,6 @@ class RestaurantDetailFragment :
             viewModel.events.collect { event ->
                 when (event) {
                     is RestaurantDetailEvents.NavigateToBack -> findNavController().navigateUp()
-                    is RestaurantDetailEvents.NavigateToDetailReview -> {
-                        // 상세리뷰로 이동
-                    }
 
                     is RestaurantDetailEvents.NavigateToDeleteMyList -> {
                         TwoButtonTitleDialog(
