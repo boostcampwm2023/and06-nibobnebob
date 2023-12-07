@@ -33,6 +33,8 @@ export class ReviewService {
                 .groupBy("reviewLike.isLike")
                 .getRawMany();
             if (review.user_profileImage) review.user_profileImage = this.awsService.getImageURL(review.user_profileImage);
+            if (review.review_reviewImage && review.review_reviewImage != "review/images/defaultImage.png") review.review_reviewImage = this.awsService.getImageURL(review.review_reviewImage);
+            else { review.review_reviewImage = "" }
             review.likeCount = Number(likeCounts.find(lc => lc.status === true)?.count) || 0;
             review.dislikeCount = Number(likeCounts.find(lc => lc.status === false)?.count) || 0;
         }

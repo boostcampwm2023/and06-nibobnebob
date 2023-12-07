@@ -102,8 +102,10 @@ export class RestaurantService {
     restaurant.restaurant_reviewCnt = reviews.length;
     const reviewList = reviews.slice(0, 3);
     reviewList.forEach((element) => {
-      if (element.review_reviewImage) element.review_reviewImage = this.awsService.getImageURL(element.review_reviewImage);
+      if (element.review_reviewImage && element.review_reviewImage != "review/images/defaultImage.png") element.review_reviewImage = this.awsService.getImageURL(element.review_reviewImage);
+      else { element.review_reviewImage = "" }
       if (element.user_profileImage) element.user_profileImage = this.awsService.getImageURL(element.user_profileImage);
+
     })
     restaurant.reviews = reviewList;
     return restaurant;
