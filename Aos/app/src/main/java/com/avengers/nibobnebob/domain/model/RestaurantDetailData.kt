@@ -31,6 +31,10 @@ data class ReviewsData(
     val taste: Int,
     val transportationAccessibility: Int,
     val reviewer: String,
-    val isLike: Any?
+    val reviewImage: String,
+    val userProfileImage: String,
+    val isLike: Boolean?,
+    val likeCount: Int,
+    val dislikeCount: Int
 ) : BaseDomainModel
 

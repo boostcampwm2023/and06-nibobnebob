@@ -30,7 +30,8 @@ data class MyRestaurantItem(
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("restaurant_location") val location: Location,
     @SerializedName("restaurant_name") val name: String,
-    @SerializedName("restaurant_phoneNumber") val phoneNumber: String
+    @SerializedName("restaurant_phoneNumber") val phoneNumber: String,
+    @SerializedName("restaurant_reviewImage") val restaurantImage: String
 ) : BaseDataModel {
     companion object : DomainMapper<MyRestaurantItem, MyRestaurantItemData> {
         override fun MyRestaurantItem.toDomainModel(): MyRestaurantItemData = MyRestaurantItemData(
@@ -43,7 +44,8 @@ data class MyRestaurantItem(
             createdAt = createdAt,
             location = location.toDomainModel(),
             name = name,
-            phoneNumber = phoneNumber
+            phoneNumber = phoneNumber,
+            restaurantImage = restaurantImage
         )
     }
 }

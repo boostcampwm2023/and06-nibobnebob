@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchMapBinding
@@ -19,7 +20,6 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toHome
-import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
@@ -30,7 +30,6 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
@@ -64,9 +63,7 @@ class RestaurantSearchMapFragment :
         initClickEvent()
     }
 
-    override fun initNetworkView() {
-        //TODO : 네트워크
-    }
+    override fun initNetworkView() {}
 
     private fun initStateObserver() {
         repeatOnStarted {
@@ -198,6 +195,15 @@ class RestaurantSearchMapFragment :
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
+
+
+    private fun NavController.toRestaurantDetail(restaurantId: Int) {
+        val action =
+            RestaurantSearchMapFragmentDirections.actionRestaurantSearchMapFragmentToRestaurantDetailFragment(
+                restaurantId
+            )
+        navigate(action)
     }
 
 }

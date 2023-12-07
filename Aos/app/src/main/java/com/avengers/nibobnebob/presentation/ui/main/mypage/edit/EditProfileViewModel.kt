@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -45,6 +47,8 @@ sealed class EditProfileUiEvent {
     data object OpenGallery : EditProfileUiEvent()
     data class ShowToastMessage(val msg: String) : EditProfileUiEvent()
     data class ShowSnackMessage(val msg: String) : EditProfileUiEvent()
+    data object ShowLoading : EditProfileUiEvent()
+    data object DismissLoading : EditProfileUiEvent()
 }
 
 @HiltViewModel
@@ -153,7 +157,7 @@ class EditProfileViewModel @Inject constructor(
                             nickName = EditInputState(
                                 helperText = Validation.VALID_NICK,
                                 isValid = true,
-                                isChanged = (originalNickName != nickState.value)
+                                isChanged = (originalNickName != nickState.value) && locationState.value != 0
                             )
                         )
                     }
@@ -171,8 +175,7 @@ class EditProfileViewModel @Inject constructor(
                 state.copy(
                     location = EditInputState(
                         isValid = true,
-                        isChanged = if (position == 0 || originalLocation == locationList[locationState.value]) false
-                        else locationEditMode.value
+                        isChanged = if (position == 0) false else locationEditMode.value
                     )
                 )
             }
@@ -199,7 +202,7 @@ class EditProfileViewModel @Inject constructor(
                     birth = EditInputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = originalBirth != birth
+                        isChanged = originalBirth != birth && locationState.value != 0
                     )
                 )
             }
@@ -211,7 +214,7 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(
                     isMale = EditInputState(
-                        isChanged = originalIsMale != isMale
+                        isChanged = originalIsMale != isMale && locationState.value != 0
                     )
                 )
             }
@@ -228,7 +231,7 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(
                     profileImage = EditInputState(
-                        isChanged = (originalProfileImage != profileImageState.value)
+                        isChanged = (originalProfileImage != profileImageState.value) && locationState.value != 0
                     )
                 )
             }
@@ -257,11 +260,15 @@ class EditProfileViewModel @Inject constructor(
             isMale = isMaleState.value,
             isImageChanged = originalProfileImage != profileImageState.value,
             profileImage = profileImageFile
-        ).onEach {
+        ).onStart {
+            _events.emit(EditProfileUiEvent.ShowLoading)
+        }.onEach {
             when (it) {
                 is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
                 else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
+        }.onCompletion {
+            _events.emit(EditProfileUiEvent.DismissLoading)
         }.launchIn(viewModelScope)
     }
 

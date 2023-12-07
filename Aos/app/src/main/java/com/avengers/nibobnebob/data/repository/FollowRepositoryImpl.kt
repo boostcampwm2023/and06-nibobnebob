@@ -1,10 +1,12 @@
 package com.avengers.nibobnebob.data.repository
 
 import com.avengers.nibobnebob.data.model.response.FollowListResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.RecommendFollowListResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.UserDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.FollowApi
 import com.avengers.nibobnebob.domain.model.FollowListData
+import com.avengers.nibobnebob.domain.model.RecommendFollowListData
 import com.avengers.nibobnebob.domain.model.UserDetailData
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.model.base.StatusCode
@@ -51,7 +53,7 @@ class FollowRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getMyRecommendFollow(): Flow<BaseState<List<FollowListData>>> = flow {
+    override fun getMyRecommendFollow(): Flow<BaseState<List<RecommendFollowListData>>> = flow {
 
         when (val result = runRemote { api.getMyRecommendFollow() }) {
             is BaseState.Success -> {

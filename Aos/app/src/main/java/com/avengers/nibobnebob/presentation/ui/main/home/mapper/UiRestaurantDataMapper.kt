@@ -19,7 +19,8 @@ fun RestaurantItemsData.toUiRestaurantData(): UiRestaurantData {
         phoneNumber = formattedPhoneNumber,
         reviewCount = formattedReviewCnt,
         isInWishList = isWish,
-        isInMyList = isMy
+        isInMyList = isMy,
+        reviewImage = restaurantImage
     )
 }
 
@@ -36,6 +37,7 @@ fun MyRestaurantItemData.toUiRestaurantData(): UiRestaurantData {
         phoneNumber = formattedPhoneNumber,
         reviewCount = formattedReviewCnt,
         isInWishList = isWish,
-        isInMyList = isMy
+        isInMyList = isMy,
+        reviewImage = restaurantImage
     )
 }

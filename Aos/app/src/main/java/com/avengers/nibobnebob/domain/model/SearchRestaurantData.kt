@@ -12,5 +12,6 @@ data class SearchRestaurantData(
     val phoneNumber: String,
     val reviewCnt: Int,
     val category: String,
-    val isMy: Boolean
+    val isMy: Boolean,
+    val restaurantImage: String
 ) : BaseDomainModel

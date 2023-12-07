@@ -58,6 +58,8 @@ class AddMyRestaurantFragment :
                     is AddMyRestaurantEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is AddMyRestaurantEvents.ShowToastMessage -> showToastMessage(it.msg)
                     is AddMyRestaurantEvents.OpenGallery -> parentViewModel.openGallery()
+                    is AddMyRestaurantEvents.ShowLoading -> showLoading(requireContext())
+                    is AddMyRestaurantEvents.DismissLoading -> dismissLoading()
                 }
             }
         }
