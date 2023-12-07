@@ -138,7 +138,7 @@ class RestaurantDetailViewModel @Inject constructor(
     }
 
     fun onWishClicked() {
-        if (_uiState.value.isWish) {
+        if (uiState.value.isWish) {
             deleteMyWishRestaurantUseCase(restaurantId.value).onEach {
                 when (it) {
                     is BaseState.Success -> {
@@ -147,6 +147,7 @@ class RestaurantDetailViewModel @Inject constructor(
                                 isWish = false
                             )
                         }
+                        _events.emit(RestaurantDetailEvents.ShowToastMessage("나의 위시 리스트에서 삭제되었습니다."))
                     }
 
                     is BaseState.Error -> {
@@ -163,6 +164,7 @@ class RestaurantDetailViewModel @Inject constructor(
                                 isWish = true
                             )
                         }
+                        _events.emit(RestaurantDetailEvents.ShowToastMessage("나의 위시 리스트에 추가되었습니다."))
                     }
 
                     is BaseState.Error -> {
