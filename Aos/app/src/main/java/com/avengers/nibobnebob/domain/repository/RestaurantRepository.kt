@@ -21,7 +21,9 @@ interface RestaurantRepository {
 
     fun sortReview(
         restaurantId: Int,
-        sort: String?
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null
     ): Flow<BaseState<ReviewSortData>>
 
     fun addRestaurant(

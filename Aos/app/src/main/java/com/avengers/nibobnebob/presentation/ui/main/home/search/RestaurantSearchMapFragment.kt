@@ -63,9 +63,7 @@ class RestaurantSearchMapFragment :
         initClickEvent()
     }
 
-    override fun initNetworkView() {
-        //TODO : 네트워크
-    }
+    override fun initNetworkView() {}
 
     private fun initStateObserver() {
         repeatOnStarted {
