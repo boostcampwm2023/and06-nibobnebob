@@ -171,11 +171,12 @@ export class UserService {
     );
     const userIdValues = userIds.map((user) => user.followingUserId);
     const result = await this.usersRepository.find({
-      select: ["nickName", "region"],
+      select: ["nickName", "region", "profileImage"],
       where: { id: In(userIdValues) },
     });
     return result.map((user) => ({
       ...user,
+      profileImage: this.awsService.getImageURL(user.profileImage),
       isFollow: true,
     }));
   }
@@ -191,7 +192,7 @@ export class UserService {
       (user) => user.followingUserId
     );
     const result = await this.usersRepository.find({
-      select: ["id", "nickName", "region"],
+      select: ["id", "nickName", "region", "profileImage"],
       where: { id: In(followerUserIdValues) },
     });
 
@@ -199,6 +200,7 @@ export class UserService {
       const { id, ...userInfo } = user;
       return {
         ...userInfo,
+        profileImage: this.awsService.getImageURL(userInfo.profileImage),
         isFollow: followUserIdValues.includes(id) ? true : false,
       };
     });

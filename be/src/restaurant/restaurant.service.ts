@@ -54,9 +54,8 @@ export class RestaurantService {
         restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
       }
       else {
-        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+        restaurant.restaurant_reviewImage = "";
       }
-
 
       restaurant.restaurant_reviewCnt = reviewCount;
     }
