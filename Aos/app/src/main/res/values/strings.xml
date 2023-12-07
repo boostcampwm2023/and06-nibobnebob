@@ -115,6 +115,7 @@
     <string name="filter_new">최신순</string>
     <string name="filter_best">추천순</string>
     <string name="filter_worst">비추천순</string>
+    <string name="today_recommend_restaurant">오늘의 추천 음식점</string>
     <string name="toolbar_review">리뷰 전체보기</string>
     <string name="detail_review_all"><![CDATA[전체보기 >]]></string>
 
