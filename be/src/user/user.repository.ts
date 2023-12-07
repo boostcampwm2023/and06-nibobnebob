@@ -45,7 +45,7 @@ export class UserRepository extends Repository<User> {
   }
   async getUsersInfo(targetInfoIds: number[]) {
     const userInfo = await this.find({
-      select: ["nickName", "region"],
+      select: ["nickName", "region", "profileImage"],
       where: { id: In(targetInfoIds) },
     });
     return userInfo;
@@ -87,6 +87,7 @@ export class UserRepository extends Repository<User> {
       .select([
         "user.nickName",
         "user.region",
+        "user.profileImage",
         'SUM(CASE WHEN userRestaurant.restaurantId IN (:...myFavRestaurants) THEN 1 ELSE 0 END) AS "commonRestaurant"',
       ])
       .setParameter("myFavRestaurants", myFavRestaurants)

@@ -227,9 +227,9 @@ export class UserService {
 
     const randomIndexes = getRandomInts(0, result.length - 1, 2);
     const selectedUsers = randomIndexes.map(index => result[index]);
-
     return selectedUsers.map((user) => ({
       ...user,
+      user_profileImage: this.awsService.getImageURL(user.user_profileImage),
       isFollow: false,
     }));
   }
@@ -278,6 +278,7 @@ export class UserService {
           ))
             ? true
             : false;
+        result[i]["profileImage"] = this.awsService.getImageURL(result[i]["profileImage"]);
       }
       return result;
     }
