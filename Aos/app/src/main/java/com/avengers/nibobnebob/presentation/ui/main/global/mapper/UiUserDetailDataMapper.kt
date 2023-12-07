@@ -12,5 +12,6 @@ internal fun UserDetailData.toUiUserDetailData() = UiUserDetailData(
     nickName = nickName,
     region = region,
     age = birthdate.toAgeString(),
-    isFollow = isFollow
+    isFollow = isFollow,
+    profileImage = profileImage
 )
