@@ -99,7 +99,6 @@ class FollowViewModel @Inject constructor(
                 }
 
                 is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
-                else -> {}
             }
         }.launchIn(viewModelScope)
     }
@@ -126,7 +125,6 @@ class FollowViewModel @Inject constructor(
                 }
 
                 is BaseState.Error -> _events.emit(FollowEvents.ShowSnackMessage(ERROR_MSG))
-                else -> {}
             }
         }.launchIn(viewModelScope)
     }
