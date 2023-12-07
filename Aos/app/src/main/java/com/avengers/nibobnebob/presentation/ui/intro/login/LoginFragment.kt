@@ -33,6 +33,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
         binding.btnNaver.setOnClickListener {
             naverLogin()
         }
+        checkAutoLogin()
     }
 
     override fun initEventObserver() {
@@ -88,6 +89,12 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
         NaverIdLoginSDK.authenticate(requireContext(), oAuthLoginCallback)
     }
 
+    private fun checkAutoLogin() {
+        binding.cbAutoLogin.setOnCheckedChangeListener { buttonView, _ ->
+            viewModel.setAutoLogin(buttonView.isChecked)
+        }
+    }
+
     private fun NavController.toDetailSignup() {
         val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment(
             email = viewModel.naverEmail.value
@@ -95,7 +102,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
         this.navigate(action)
     }
 
-    private fun NavController.toBasicSignup(){
+    private fun NavController.toBasicSignup() {
         val action = LoginFragmentDirections.actionLoginFragmentToBasicSignupFragment()
         navigate(action)
     }
