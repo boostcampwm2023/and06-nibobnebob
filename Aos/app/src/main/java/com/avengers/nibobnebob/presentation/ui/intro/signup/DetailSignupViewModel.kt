@@ -70,11 +70,10 @@ class DetailSignupViewModel @Inject constructor(
             nick,
             birth,
             location,
-            nickValidation,
-            profileImg
-        ) { nick, birth, location, nickValidation, profileImg ->
+            nickValidation
+        ) { nick, birth, location, nickValidation ->
             nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
-                    nickValidation && profileImg.isNotBlank()
+                    nickValidation
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
