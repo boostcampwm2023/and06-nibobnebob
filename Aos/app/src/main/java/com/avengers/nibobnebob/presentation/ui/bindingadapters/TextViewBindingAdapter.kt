@@ -87,7 +87,7 @@ fun bindNickHelperText(tv: TextView, state: EditInputState?) = with(tv) {
 @BindingAdapter("loginType")
 fun bindLoginType(tv: TextView, type: String?) = with(tv) {
     type ?: return
-    text = if (type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else ""
+    text = if (type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else "일반 로그인"
 }
 
 @BindingAdapter("filterType")
