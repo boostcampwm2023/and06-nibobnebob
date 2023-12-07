@@ -33,6 +33,7 @@ sealed class UserDetailEvents {
     data class ShowSnackMessage(val msg: String) : UserDetailEvents()
     data class ShowToastMessage(val msg: String) : UserDetailEvents()
     data object NavigateToBack : UserDetailEvents()
+    data class ShowBiggerImageDialog(val img: String) : UserDetailEvents()
 }
 
 @HiltViewModel
@@ -112,6 +113,12 @@ class UserDetailViewModel @Inject constructor(
 
     fun setNick(data: String) {
         nickName = data
+    }
+
+    fun showBiggerImageDialog(){
+        viewModelScope.launch {
+            _events.emit(UserDetailEvents.ShowBiggerImageDialog(uiState.value.userDetail.profileImage))
+        }
     }
 
     fun navigateToBack() {
