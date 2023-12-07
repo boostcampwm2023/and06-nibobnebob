@@ -11,8 +11,9 @@ import com.avengers.nibobnebob.presentation.ui.intro.signup.InputState
 import com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd.CommentState
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import com.avengers.nibobnebob.presentation.ui.main.mypage.edit.EditInputState
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import com.avengers.nibobnebob.presentation.util.LoginType
-import com.google.android.material.textfield.TextInputLayout
 
 // signup
 @BindingAdapter("helperMessage")
@@ -84,5 +85,14 @@ fun bindNickHelperText(tv: TextView, state: EditInputState?) = with(tv) {
 fun bindLoginType(tv: TextView, type: String?) = with(tv) {
     type ?: return
     text = if (type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else ""
+}
+
+@BindingAdapter("filterType")
+fun bindFilterType(tv: TextView, type: String) = with(tv) {
+    text = when (type) {
+        FILTER_NEW -> "최신순"
+        FILTER_OLD -> "오래된순"
+        else -> ""
+    }
 }
 

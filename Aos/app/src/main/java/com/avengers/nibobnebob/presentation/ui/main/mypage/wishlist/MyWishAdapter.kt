@@ -56,11 +56,11 @@ class MyWishViewHolder(
         deleteMyWish: (Int) -> Unit,
         showDetail: (Int) -> Unit,
         addItem: (UiMyWishData) -> Unit
-    ) {
-        binding.item = item
-        binding.ivMore.setOnClickListener { listMenu(item, showDetail, addItem) }
-        binding.ivStar.setOnClickListener { deleteMyWish(item.id) }
-        binding.executePendingBindings()
+    ) = with(binding) {
+        this.item = item
+        ivMore.setOnClickListener { listMenu(item, showDetail, addItem) }
+        ivStar.setOnClickListener { deleteMyWish(item.id) }
+        executePendingBindings()
 
     }
 
@@ -69,15 +69,17 @@ class MyWishViewHolder(
         showDetail: (Int) -> Unit,
         addItem: (UiMyWishData) -> Unit
     ) {
-        val menu = PopupMenu(binding.root.context, binding.ivMore)
-        menu.menuInflater.inflate(R.menu.my_page_wish_list_menu, menu.menu)
-        menu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_detail -> showDetail(item.id)
-                R.id.menu_add -> addItem(item)
+        PopupMenu(binding.root.context, binding.ivMore).apply {
+            menuInflater.inflate(R.menu.my_page_wish_list_menu, menu)
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_detail -> showDetail(item.id)
+                    R.id.menu_add -> addItem(item)
+                }
+                true
             }
-            true
+            show()
         }
-        menu.show()
+
     }
 }
