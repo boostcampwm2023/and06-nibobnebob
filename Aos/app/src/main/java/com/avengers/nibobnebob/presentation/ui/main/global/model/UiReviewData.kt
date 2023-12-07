@@ -18,5 +18,7 @@ data class UiReviewData(
 //    val profileImage : String?,
     val onThumbsUpClick : (Int) -> Unit,
     val onThumbsDownClick : (Int) -> Unit,
+    val reviewImage: String,
+    val userProfileImage: String,
     val onReviewClick : (Int) -> Unit
 )

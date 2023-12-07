@@ -12,6 +12,7 @@ fun SearchRestaurantData.toUiRestaurantData(): UiRestaurantData = UiRestaurantDa
     phoneNumber = phoneNumber,
     reviewCount = reviewCnt.toString(),
     isInWishList = false,
-    isInMyList = false
+    isInMyList = false,
+    reviewImage = restaurantImage
 
 )

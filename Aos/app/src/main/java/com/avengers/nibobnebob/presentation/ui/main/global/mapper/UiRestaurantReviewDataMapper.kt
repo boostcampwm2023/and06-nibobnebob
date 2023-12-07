@@ -20,5 +20,7 @@ internal fun ReviewsData.toUiRestaurantReviewDataInfo(
     transportationAccessibility = transportationAccessibility,
     onThumbsUpClick = onThumbsUpClick,
     onThumbsDownClick = onThumbsDownClick,
+    reviewImage = reviewImage,
+    userProfileImage = userProfileImage,
     onReviewClick = onReviewClick
 )

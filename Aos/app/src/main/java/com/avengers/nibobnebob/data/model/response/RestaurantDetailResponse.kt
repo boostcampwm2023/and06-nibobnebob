@@ -77,6 +77,8 @@ data class Reviews(
             taste = taste,
             transportationAccessibility = transportationAccessibility,
             reviewer = reviewer,
+            reviewImage = reviewImage,
+            userProfileImage = userProfileImage,
             isLike = isLike
         )
     }
