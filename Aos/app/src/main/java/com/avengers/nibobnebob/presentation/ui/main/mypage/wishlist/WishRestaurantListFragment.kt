@@ -1,8 +1,10 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist
 
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentWishRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -25,11 +27,26 @@ class WishRestaurantListFragment :
             { item -> viewModel.addMyList(item) })
 
 
-    override fun initView() {
-        binding.svm = sharedViewModel
-        binding.vm = viewModel
-        binding.rvWishRestaurant.adapter = adapter
-        binding.rvWishRestaurant.animation = null
+    override fun initView() = with(binding) {
+        svm = sharedViewModel
+        vm = viewModel
+
+        rvWishRestaurant.adapter = adapter
+        rvWishRestaurant.animation = null
+        rvWishRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val scrollBottom = !rvWishRestaurant.canScrollVertically(1)
+                val hasNextPage = viewModel.uiState.value.lastPage
+                val isNotLoading = !viewModel.uiState.value.isLoading
+
+                if (scrollBottom && hasNextPage && isNotLoading) {
+                    viewModel.loadNextPage()
+                }
+            }
+        })
+        setFilterMenu()
     }
 
     override fun initNetworkView() {
@@ -77,6 +94,29 @@ class WishRestaurantListFragment :
                 viewModel.deleteWishList(id)
             }
         )
+    }
+
+    private fun setFilterMenu() {
+
+        binding.tvFilter.setOnClickListener {
+            PopupMenu(requireContext(), binding.ivFilter).apply {
+                menuInflater.inflate(R.menu.my_page_filter_menu, menu)
+                setOnMenuItemClickListener {
+                    adapter.submitList(emptyList())
+                    viewModel.myWishList(
+                        sort = when (it.itemId) {
+                            R.id.menu_new -> "TIME_DESC"
+                            R.id.menu_old -> "TIME_ASC"
+                            else -> null
+                        }
+                    )
+
+                    true
+                }
+                show()
+            }
+        }
+
     }
 
 }
