@@ -5,6 +5,7 @@ import com.avengers.nibobnebob.data.model.mapper.DomainMapper
 import com.avengers.nibobnebob.data.model.response.Location.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.Reviews.Companion.toDomainModel
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
+import com.avengers.nibobnebob.domain.model.ReviewSortData
 import com.avengers.nibobnebob.domain.model.ReviewsData
 import com.google.gson.annotations.SerializedName
 
@@ -37,6 +38,18 @@ data class RestaurantDetailResponse(
     }
 }
 
+data class ReviewSortResponse(
+    @SerializedName("hasNext") val hasNext: Boolean,
+    @SerializedName("items") val reviewItems: List<Reviews>
+) : BaseDataModel {
+    companion object : DomainMapper<ReviewSortResponse, ReviewSortData> {
+        override fun ReviewSortResponse.toDomainModel(): ReviewSortData = ReviewSortData(
+            hasNext = hasNext,
+            reviewItems = reviewItems.map { it.toDomainModel() }
+        )
+    }
+}
+
 data class Reviews(
     @SerializedName("review_id") val id: Int,
     @SerializedName("review_created_at") val createdAt: String,
@@ -48,6 +61,7 @@ data class Reviews(
     @SerializedName("review_taste") val taste: Int,
     @SerializedName("review_transportationAccessibility") val transportationAccessibility: Int,
     @SerializedName("reviewer") val reviewer: String,
+    @SerializedName("islike") val isLike: Any?
 ) : BaseDataModel {
     companion object : DomainMapper<Reviews, ReviewsData> {
         override fun Reviews.toDomainModel(): ReviewsData = ReviewsData(
@@ -60,7 +74,8 @@ data class Reviews(
             service = service,
             taste = taste,
             transportationAccessibility = transportationAccessibility,
-            reviewer = reviewer
+            reviewer = reviewer,
+            isLike = isLike
         )
     }
 }

@@ -1,19 +1,20 @@
 package com.avengers.nibobnebob.data.repository
 
 import android.util.Log
-import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
+import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
-import com.avengers.nibobnebob.data.model.response.RestaurantItems.Companion.toDomainModel
-import com.avengers.nibobnebob.data.model.response.RestaurantResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.ReviewSortResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RestaurantApi
-import com.avengers.nibobnebob.domain.model.RestaurantData
+import com.avengers.nibobnebob.domain.model.MyRestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
 import com.avengers.nibobnebob.domain.model.RestaurantItemsData
+import com.avengers.nibobnebob.domain.model.ReviewSortData
 import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.base.BaseState
@@ -21,6 +22,8 @@ import com.avengers.nibobnebob.domain.model.base.StatusCode
 import com.avengers.nibobnebob.domain.repository.RestaurantRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class RestaurantRepositoryImpl @Inject constructor(
@@ -44,6 +47,23 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
         }
 
+    override fun sortReview(restaurantId: Int, sort: String?): Flow<BaseState<ReviewSortData>> =
+        flow {
+            when (val result = runRemote { api.sortReview(restaurantId, sort) }) {
+                is BaseState.Success -> {
+                    result.data.body?.let { body ->
+                        emit(BaseState.Success(body.toDomainModel()))
+                    } ?: run {
+                        emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                    }
+                }
+
+                is BaseState.Error -> {
+                    emit(result)
+                }
+            }
+        }
+
     override fun addRestaurant(
         restaurantId: Int,
         isCarVisit: Boolean,
@@ -52,27 +72,51 @@ class RestaurantRepositoryImpl @Inject constructor(
         taste: Int,
         service: Int,
         restroomCleanliness: Int,
-        overallExperience: String
+        overallExperience: RequestBody,
+        reviewImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>> = flow {
-        when (val result = runRemote {
-            api.addRestaurant(
-                restaurantId, AddRestaurantRequest(
+        reviewImage?.let { image ->
+            when (val result = runRemote {
+                api.addRestaurant(
+                    restaurantId,
                     isCarVisit,
                     transportationAccessibility,
                     parkingArea,
                     taste,
                     service,
                     restroomCleanliness,
-                    overallExperience
+                    overallExperience,
+                    image
                 )
-            )
-        }) {
-            is BaseState.Success -> {
-                emit(BaseState.Success(Unit))
-            }
+            }) {
+                is BaseState.Success -> {
+                    emit(BaseState.Success(Unit))
+                }
 
-            is BaseState.Error -> {
-                emit(result)
+                is BaseState.Error -> {
+                    emit(result)
+                }
+            }
+        } ?: run {
+            when (val result = runRemote {
+                api.addRestaurantNoImage(
+                    restaurantId,
+                    isCarVisit,
+                    transportationAccessibility,
+                    parkingArea,
+                    taste,
+                    service,
+                    restroomCleanliness,
+                    overallExperience,
+                )
+            }) {
+                is BaseState.Success -> {
+                    emit(BaseState.Success(Unit))
+                }
+
+                is BaseState.Error -> {
+                    emit(result)
+                }
             }
         }
     }
@@ -89,9 +133,13 @@ class RestaurantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun myRestaurantList(): Flow<BaseState<RestaurantData>> =
+    override fun myRestaurantList(
+        limit: Int?,
+        page: Int?,
+        sort: String?
+    ): Flow<BaseState<MyRestaurantData>> =
         flow {
-            when (val result = runRemote { api.myRestaurantList() }) {
+            when (val result = runRemote { api.myRestaurantList(limit, page, sort) }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
                         emit(BaseState.Success(body.toDomainModel()))
@@ -106,9 +154,13 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun myWishList(): Flow<BaseState<WishRestaurantData>> =
+    override fun myWishList(
+        limit: Int?,
+        page: Int?,
+        sort: String?
+    ): Flow<BaseState<WishRestaurantData>> =
         flow {
-            when (val result = runRemote { api.myWishList() }) {
+            when (val result = runRemote { api.myWishList(limit, page, sort) }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
                         emit(BaseState.Success(body.toDomainModel()))
@@ -223,6 +275,30 @@ class RestaurantRepositoryImpl @Inject constructor(
                 } ?: run {
                     emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
                 }
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
+
+    override fun likeReview(reviewId: Int): Flow<BaseState<Unit>> = flow {
+        when (val result = runRemote { api.likeReview(reviewId) }) {
+            is BaseState.Success -> {
+                emit(BaseState.Success(Unit))
+            }
+
+            is BaseState.Error -> {
+                emit(result)
+            }
+        }
+    }
+
+    override fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>> = flow{
+        when (val result = runRemote { api.unlikeReview(reviewId) }) {
+            is BaseState.Success -> {
+                emit(BaseState.Success(Unit))
             }
 
             is BaseState.Error -> {

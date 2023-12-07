@@ -27,21 +27,37 @@ class IntroRepositoryImpl @Inject constructor(
         region: RequestBody,
         birthdate: RequestBody,
         isMale: Boolean,
-        profileImage: MultipartBody.Part
+        profileImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>> = flow {
-        val result = runRemote {
-            api.signup(
-                email,
-                password,
-                provider,
-                nickName,
-                region,
-                birthdate,
-                isMale,
-                profileImage
-            )
+        profileImage?.let { image ->
+            val result = runRemote {
+                api.signup(
+                    email,
+                    password,
+                    provider,
+                    nickName,
+                    region,
+                    birthdate,
+                    isMale,
+                    image
+                )
+            }
+            emit(result)
+        } ?: run {
+            val result = runRemote {
+                api.signupNoImage(
+                    email,
+                    password,
+                    provider,
+                    nickName,
+                    region,
+                    birthdate,
+                    isMale,
+                )
+            }
+            emit(result)
         }
-        emit(result)
+
     }
 
     override fun loginNaver(token: String): Flow<BaseState<LoginData>> = flow {

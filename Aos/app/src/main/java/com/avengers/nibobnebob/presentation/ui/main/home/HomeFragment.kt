@@ -73,7 +73,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         requireContext().requestLocationPermission(
                             locationPermissionList,
                             ::startPermissionLauncher,
-                            ::onTrackingChangeListener
+                            ::onTrackingChangeListener,
                         )
                     }
 
@@ -94,8 +94,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
             viewModel.events.collect { event ->
                 when (event) {
                     is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
-                    is HomeEvents.SetNewMarkers, is HomeEvents.NearMarkers -> {
-                        handleMarkersEvent(event)
+                    is HomeEvents.SetNewMarkers -> {
+                        handleMarkersEvent()
                     }
 
                     is HomeEvents.SetSingleMarker -> {
@@ -109,19 +109,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
-    private fun handleMarkersEvent(event: HomeEvents) {
+    private fun handleMarkersEvent() {
         removeAllMarker()
         viewModel.trackingOff()
-
         val lat = viewModel.uiState.value.cameraLatitude
         val lng = viewModel.uiState.value.cameraLongitude
-
-        if (event is HomeEvents.NearMarkers) {
-            //todo 줌 임시 처리 서버 논의 후 추후 수정 예정
-            viewModel.setCameraZoom(16.0)
-        }
-
         val zoom = viewModel.uiState.value.cameraZoom
+
         val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
         val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
             .apply { animate(CameraAnimation.Fly, 500) }

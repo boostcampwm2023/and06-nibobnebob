@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyPageBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.ImageDialog
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
@@ -71,7 +72,9 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                     }
-
+                    is MyEditPageEvent.ProfileClicked -> {
+                        ImageDialog(requireContext(),event.profileImage).show()
+                    }
                     is MyEditPageEvent.ShowSnackMessage -> showSnackBar(event.msg)
                     is MyEditPageEvent.ShowToastMessage -> showToastMessage(event.msg)
                 }

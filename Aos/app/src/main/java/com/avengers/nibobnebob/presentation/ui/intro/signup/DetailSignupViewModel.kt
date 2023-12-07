@@ -61,7 +61,7 @@ class DetailSignupViewModel @Inject constructor(
     val birth = MutableStateFlow("")
     val location = MutableStateFlow("")
     val profileImg = MutableStateFlow("")
-    private lateinit var profileFile: MultipartBody.Part
+    private var profileFile: MultipartBody.Part? = null
 
     val isDataReady =
         combine(

@@ -20,6 +20,20 @@
         android:paddingHorizontal="20dp"
         android:paddingVertical="30dp">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidline_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6" />
+
         <ImageButton
             android:id="@+id/btn_add_wish_restaurant"
             android:layout_width="wrap_content"
@@ -28,23 +42,30 @@
             app:layout_constraintTop_toTopOf="parent"
             app:wishStatus="@{item.inWishList}" />
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_review_img"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:src="@drawable/ic_test"
+            app:layout_constraintBottom_toTopOf="@id/btn_add_my_restaurant"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/guidline_center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_add_wish_restaurant"
+            app:shapeAppearanceOverlay="@style/All24RadiusImageView" />
+
         <TextView
             android:id="@+id/tv_name"
             style="@style/TextMediumBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:text="@{item.name}"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
             app:layout_constraintTop_toBottomOf="@id/btn_add_wish_restaurant"
             tools:text="포케집 안국역점" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
 
         <TextView
             android:id="@+id/tv_address_label"
@@ -54,14 +75,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/bottom_address"
             android:textColor="@color/nn_primary6"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
             app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
         <TextView
             android:id="@+id/tv_address"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{item.address}"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guidline"
             app:layout_constraintTop_toTopOf="@id/tv_address_label"
             tools:text="서울시 중구 안국동 15-1" />
@@ -71,17 +93,18 @@
             style="@style/TextSmallRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:text="@string/bottom_phone"
             android:textColor="@color/nn_primary6"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
             app:layout_constraintTop_toBottomOf="@id/tv_address_label" />
 
         <TextView
             android:id="@+id/tv_phone_number"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{item.phoneNumber}"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guidline"
             app:layout_constraintTop_toTopOf="@id/tv_phone_number_label"
             tools:text="01012345678" />
@@ -91,17 +114,18 @@
             style="@style/TextSmallRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:text="@string/bottom_review"
             android:textColor="@color/nn_primary6"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
             app:layout_constraintTop_toBottomOf="@id/tv_phone_number_label" />
 
         <TextView
             android:id="@+id/tv_review_count"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{String.valueOf(item.reviewCount)}"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guidline"
             app:layout_constraintTop_toTopOf="@id/tv_review_count_label"
             tools:text="99 개" />
@@ -119,8 +143,7 @@
             android:paddingVertical="4dp"
             android:text="@string/bottom_add_btn"
             android:visibility="@{item.inMyList ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/btn_go_review"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_review_count_label" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -128,14 +151,14 @@
             style="@style/TextSmallBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
             android:background="@drawable/rect_primary3fill_nostroke_radius10"
             android:minHeight="0dp"
             android:paddingHorizontal="8dp"
             android:paddingVertical="4dp"
             android:text="@string/bottom_review_btn"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_add_my_restaurant"
             app:layout_constraintTop_toTopOf="@id/btn_add_my_restaurant" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

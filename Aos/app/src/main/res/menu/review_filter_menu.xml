@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_new"
+        android:title="@string/filter_new" />
+    <item
+        android:id="@+id/menu_old"
+        android:title="@string/filter_old" />
+    <item
+        android:id="@+id/menu_best"
+        android:title="@string/filter_best" />
+    <item
+        android:id="@+id/menu_worst"
+        android:title="@string/filter_worst" />
+</menu>
