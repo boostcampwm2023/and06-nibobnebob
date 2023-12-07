@@ -10,6 +10,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentUserDetailBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.ui.main.global.userdetail.adapter.UserDetailRestaurantAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,6 +24,7 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
     override fun initView() {
         binding.vm = viewModel
         viewModel.setNick(nickName)
+        binding.rvRestaurant.adapter = UserDetailRestaurantAdapter()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -41,5 +43,4 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
             }
         }
     }
-
 }
