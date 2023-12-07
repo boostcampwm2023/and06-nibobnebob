@@ -9,6 +9,10 @@
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.home.HomeViewModel" />
 
+        <variable
+            name="constants"
+            type="com.avengers.nibobnebob.presentation.util.Constants" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,8 +99,9 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginBottom="20dp"
-            android:onClick="@{() -> vm.nearRestaurantList()}"
+            android:onClick="@{() -> vm.updateNearRestaurant()}"
             android:src="@drawable/ic_app_logo"
+            android:visibility="@{vm.uiState.curFilter.equals(`근처 음식점`) ? android.view.View.VISIBLE : android.view.View.GONE}"
             app:layout_constraintBottom_toTopOf="@id/btn_location"
             app:layout_constraintEnd_toEndOf="@id/btn_location" />
 
