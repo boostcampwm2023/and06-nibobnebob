@@ -67,36 +67,12 @@ export class UserRepository extends Repository<User> {
   }
 
   async getRecommendUserListInfo(idList: number[], id: number) {
-    const curUser = await this.findOne({
-      select: ["id", "region"],
-      where: { id: id },
-    });
-
-    const myRestaurants = await this.createQueryBuilder("user")
-      .leftJoinAndSelect("user.restaurant", "userRestaurant")
-      .where("user.id = :id", { id })
-      .select("userRestaurant.restaurantId")
-      .getRawMany();
-
-    const myFavRestaurants = myRestaurants.map(
-      (r) => r.userRestaurant_restaurant_id
-    );
-
     const userInfo = await this.createQueryBuilder("user")
-      .leftJoin("user.restaurant", "userRestaurant")
-      .select([
-        "user.nickName",
-        "user.region",
-        'SUM(CASE WHEN userRestaurant.restaurantId IN (:...myFavRestaurants) THEN 1 ELSE 0 END) AS "commonRestaurant"',
-      ])
-      .setParameter("myFavRestaurants", myFavRestaurants)
+      .select(["user.nickName", "user.region"])
       .where("user.id NOT IN (:...idList)", { idList })
-      .andWhere("user.region = :yourRegion", { yourRegion: curUser.region })
-      .groupBy("user.id")
-      .orderBy("\"commonRestaurant\"", "DESC")
-      .limit(10)
-      .getRawMany();
-
+      .orderBy("RANDOM()")
+      .limit(2)
+      .getMany();
     return userInfo;
   }
 
