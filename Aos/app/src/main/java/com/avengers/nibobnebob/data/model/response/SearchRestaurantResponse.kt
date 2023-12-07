@@ -13,7 +13,8 @@ data class SearchRestaurantResponse(
     @SerializedName("restaurant_phoneNumber") val phoneNumber: String,
     @SerializedName("restaurant_reviewCnt") val reviewCnt: Int,
     @SerializedName("restaurant_category") val category: String,
-    @SerializedName("isMy") val isMy: Boolean
+    @SerializedName("isMy") val isMy: Boolean,
+    @SerializedName("restaurant_reviewImage") val restaurantImage: String
 ) : BaseDataModel {
     companion object : DomainMapper<SearchRestaurantResponse, SearchRestaurantData> {
         override fun SearchRestaurantResponse.toDomainModel(): SearchRestaurantData =
@@ -25,7 +26,8 @@ data class SearchRestaurantResponse(
                 phoneNumber = phoneNumber,
                 reviewCnt = reviewCnt,
                 category = category,
-                isMy = isMy
+                isMy = isMy,
+                restaurantImage = restaurantImage
             )
     }
 }

@@ -16,5 +16,6 @@ data class RestaurantItemsData(
     val id: Int,
     val location: LocationData,
     val name: String,
-    val phoneNumber: String
+    val phoneNumber: String,
+    val restaurantImage: String
 ) : BaseDomainModel
