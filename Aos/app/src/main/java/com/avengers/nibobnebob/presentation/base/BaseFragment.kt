@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.base
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +15,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.presentation.customview.LoadingDialog
 import com.avengers.nibobnebob.presentation.customview.OneButtonTitleDialog
 import com.avengers.nibobnebob.presentation.customview.TwoButtonTitleDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 abstract class BaseFragment<B : ViewDataBinding>(
@@ -30,6 +33,9 @@ abstract class BaseFragment<B : ViewDataBinding>(
 
     private lateinit var twoButtonTitleDialog: TwoButtonTitleDialog
     private lateinit var oneButtonTitleDialog: OneButtonTitleDialog
+    private lateinit var loadingDialog: LoadingDialog
+    private var currentSnackbar: Snackbar? = null
+    private var loadingState = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,15 +50,19 @@ abstract class BaseFragment<B : ViewDataBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initView()
+        initEventObserver()
+
         repeatOnStarted {
-            parentViewModel.networkState.collect {
+            parentViewModel.networkState.collectLatest {
                 when (it) {
                     NetWorkState.NETWORK_DISCONNECTED -> {
                         showSnackBar(resources.getString(R.string.no_network_text), "재시도")
                     }
 
                     NetWorkState.NETWORK_CONNECTED -> {
-                        // todo initNetworkView 실행
+                        currentSnackbar?.dismiss()
+                        initNetworkView()
                     }
 
                     else -> {}
@@ -60,6 +70,12 @@ abstract class BaseFragment<B : ViewDataBinding>(
             }
         }
     }
+
+    abstract fun initView()
+
+    abstract fun initEventObserver()
+
+    abstract fun initNetworkView()
 
     fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -91,20 +107,41 @@ abstract class BaseFragment<B : ViewDataBinding>(
     }
 
     fun showSnackBar(text: String, action: String? = null) {
-        Snackbar.make(
+
+        currentSnackbar = Snackbar.make(
             binding.root,
             text,
-            Snackbar.LENGTH_INDEFINITE
+            Snackbar.LENGTH_LONG
         ).apply {
             action?.let {
-                setAction(it) {}
+                setAction(it) {
+                    dismiss()
+                }
             }
             show()
         }
     }
 
+    fun showLoading(context: Context) {
+        if (!loadingState) {
+            loadingDialog = LoadingDialog(context)
+            loadingDialog.show()
+            loadingState = true
+        }
+    }
+
+    fun dismissLoading() {
+        if (loadingState) {
+            loadingDialog.dismiss()
+            loadingState = false
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        if (loadingState) {
+            loadingDialog.dismiss()
+        }
         _binding = null
     }
 

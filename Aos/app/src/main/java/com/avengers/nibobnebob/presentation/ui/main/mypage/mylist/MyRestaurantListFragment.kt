@@ -1,10 +1,11 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.mylist
 
-import android.os.Bundle
-import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
@@ -12,7 +13,6 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import com.avengers.nibobnebob.presentation.ui.toMyPage
-import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,20 +25,33 @@ class MyRestaurantListFragment :
     private val adapter = MyRestaurantAdapter({ id -> viewModel.showDetail(id) },
         { id -> showDeleteCheckDialog(id) })
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun initView() = with(binding) {
+        svm = sharedViewModel
+        vm = viewModel
 
-        initView(view)
+        rvMyRestaurant.adapter = adapter
+        rvMyRestaurant.animation = null
+        rvMyRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val scrollBottom = !rvMyRestaurant.canScrollVertically(1)
+                val hasNextPage = viewModel.uiState.value.lastPage
+                val isNotLoading = !viewModel.uiState.value.isLoading
+
+                if (scrollBottom && hasNextPage && isNotLoading) {
+                    viewModel.loadNextPage()
+                }
+            }
+        })
+        setFilterMenu()
+    }
+
+    override fun initNetworkView() {
         viewModel.myRestaurantList()
     }
 
-    private fun initView(view: View) {
-        binding.svm = sharedViewModel
-        binding.vm = viewModel
-        binding.rvMyRestaurant.adapter = adapter
-        binding.rvMyRestaurant.animation = null
-
-
+    override fun initEventObserver() {
         repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
@@ -61,8 +74,8 @@ class MyRestaurantListFragment :
                 }
             }
         }
-
     }
+
 
     private fun showDeleteCheckDialog(id: Int) {
         showTwoButtonTitleDialog(
@@ -72,6 +85,36 @@ class MyRestaurantListFragment :
                 viewModel.deleteMyList(id)
             }
         )
+    }
+
+    private fun setFilterMenu() {
+
+        binding.tvFilter.setOnClickListener {
+            PopupMenu(requireContext(), binding.ivFilter).apply {
+                menuInflater.inflate(R.menu.my_page_filter_menu, menu)
+                setOnMenuItemClickListener {
+                    adapter.submitList(emptyList())
+                    viewModel.myRestaurantList(
+                        sort = when (it.itemId) {
+                            R.id.menu_new -> "TIME_DESC"
+                            R.id.menu_old -> "TIME_ASC"
+                            else -> null
+                        }
+                    )
+                    true
+                }
+                show()
+            }
+        }
+
+    }
+
+    private fun NavController.toRestaurantDetail(restaurantId: Int) {
+        val action =
+            MyRestaurantListFragmentDirections.actionMyRestaurantListFragmentToRestaurantDetailFragment(
+                restaurantId
+            )
+        navigate(action)
     }
 
 

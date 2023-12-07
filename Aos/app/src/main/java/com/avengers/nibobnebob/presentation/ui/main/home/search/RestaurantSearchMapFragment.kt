@@ -5,13 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.Bundle
 import android.provider.Settings
-import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchMapBinding
@@ -21,7 +20,6 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toHome
-import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
@@ -42,6 +40,7 @@ class RestaurantSearchMapFragment :
     private val viewModel: RestaurantSearchMapViewModel by viewModels()
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+    private var isWish = false
 
 
     private val locationPermissionList = arrayOf(
@@ -49,11 +48,49 @@ class RestaurantSearchMapFragment :
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
+    override fun initEventObserver() {
+        repeatOnStarted {
+            viewModel.events.collect {
+                when (it) {
+                    is SearchMapEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                }
+            }
+        }
+    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun initView() {
         initMapView()
         initClickEvent()
+    }
+
+    override fun initNetworkView() {}
+
+    private fun initStateObserver() {
+        repeatOnStarted {
+            parentViewModel.selectedItem.collectLatest {
+                if (it.id < 0) return@collectLatest
+
+                binding.tvSearchKeyword.text = it.name
+                isWish = it.isInWishList
+
+                viewModel.getRestaurantIsWish(it.id, it.isInWishList)
+                viewModel.wishChanged.collectLatest { changed ->
+                    if (changed == WishStatus.INIT) return@collectLatest
+
+                    val data = it.copy(isInWishList = !it.isInWishList)
+                    if (changed == WishStatus.CHANGED) isWish = !it.isInWishList
+                    setSearchResultMarker(if (changed == WishStatus.CHANGED) data else it)
+                    RestaurantBottomSheet(
+                        context = requireContext(),
+                        data = if (changed == WishStatus.CHANGED) data else it,
+                        onClickAddWishRestaurant = ::addWishTest,
+                        onClickAddMyRestaurant = ::addRestaurantTest,
+                        onClickGoReview = ::goReviewTest
+                    ).show()
+                }
+
+            }
+        }
     }
 
     private fun initMapView() {
@@ -65,26 +102,6 @@ class RestaurantSearchMapFragment :
 
         mapFragment.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-    }
-
-    private fun initStateObserver() {
-        repeatOnStarted {
-            parentViewModel.selectedItem.collectLatest {
-                if (it.id < 0) return@collectLatest
-
-                setSearchResultMarker(it)
-                binding.tvSearchKeyword.text = it.name
-
-                RestaurantBottomSheet(
-                    context = requireContext(),
-                    data = it,
-                    onClickAddWishRestaurant = ::addWishTest,
-                    onClickAddMyRestaurant = ::addRestaurantTest,
-                    onClickGoReview = ::goReviewTest
-                ).show()
-
-            }
-        }
     }
 
     private fun initClickEvent() = with(binding) {
@@ -108,15 +125,15 @@ class RestaurantSearchMapFragment :
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(data.latitude, data.longitude))
         naverMap.moveCamera(cameraUpdate)
 
+
         marker.setOnClickListener {
             RestaurantBottomSheet(
                 context = requireContext(),
-                data = data,
+                data = data.copy(isInWishList = isWish),
                 onClickAddWishRestaurant = ::addWishTest,
                 onClickAddMyRestaurant = ::addRestaurantTest,
                 onClickGoReview = ::goReviewTest
             ).show()
-
             true
         }
     }
@@ -134,6 +151,7 @@ class RestaurantSearchMapFragment :
 
     private suspend fun addWishTest(id: Int, curState: Boolean): Boolean {
         return lifecycleScope.async {
+            isWish = !curState
             viewModel.updateWish(id, curState)
         }.await()
     }
@@ -177,6 +195,15 @@ class RestaurantSearchMapFragment :
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
+
+
+    private fun NavController.toRestaurantDetail(restaurantId: Int) {
+        val action =
+            RestaurantSearchMapFragmentDirections.actionRestaurantSearchMapFragmentToRestaurantDetailFragment(
+                restaurantId
+            )
+        navigate(action)
     }
 
 }

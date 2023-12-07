@@ -4,8 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.repository.FollowRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.FollowRepository
+import com.avengers.nibobnebob.domain.usecase.FollowFriendUseCase
+import com.avengers.nibobnebob.domain.usecase.UnFollowFriendUseCase
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiUserDetailData
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiUserDetailData
 import com.avengers.nibobnebob.presentation.util.Constants
@@ -31,11 +33,14 @@ sealed class UserDetailEvents {
     data class ShowSnackMessage(val msg: String) : UserDetailEvents()
     data class ShowToastMessage(val msg: String) : UserDetailEvents()
     data object NavigateToBack : UserDetailEvents()
+    data class ShowBiggerImageDialog(val img: String) : UserDetailEvents()
 }
 
 @HiltViewModel
 class UserDetailViewModel @Inject constructor(
-    private val followRepository: FollowRepository
+    private val followRepository: FollowRepository,
+    private val followFriendUseCase: FollowFriendUseCase,
+    private val unFollowFriendUseCase: UnFollowFriendUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserDetailUiState())
@@ -54,7 +59,7 @@ class UserDetailViewModel @Inject constructor(
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
-                            userDetail = it.data.body.toUiUserDetailData()
+                            userDetail = it.data.toUiUserDetailData()
                         )
                     }
                 }
@@ -67,13 +72,13 @@ class UserDetailViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun tryFollowUnFollow(){
-        if(_uiState.value.userDetail.isFollow) unFollow()
+    fun tryFollowUnFollow() {
+        if (_uiState.value.userDetail.isFollow) unFollow()
         else follow()
     }
 
     private fun follow() {
-        followRepository.follow(nickName).onEach {
+        followFriendUseCase(nickName).onEach {
             when (it) {
                 is BaseState.Success -> {
                     _uiState.update { state ->
@@ -85,13 +90,12 @@ class UserDetailViewModel @Inject constructor(
                 }
 
                 is BaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
-                else -> {}
             }
         }.launchIn(viewModelScope)
     }
 
     private fun unFollow() {
-        followRepository.unFollow(nickName).onEach {
+        unFollowFriendUseCase(nickName).onEach {
             when (it) {
                 is BaseState.Success -> {
                     _uiState.update { state ->
@@ -103,13 +107,18 @@ class UserDetailViewModel @Inject constructor(
                 }
 
                 is BaseState.Error -> _events.emit(UserDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
-                else -> {}
             }
         }.launchIn(viewModelScope)
     }
 
     fun setNick(data: String) {
         nickName = data
+    }
+
+    fun showBiggerImageDialog(){
+        viewModelScope.launch {
+            _events.emit(UserDetailEvents.ShowBiggerImageDialog(uiState.value.userDetail.profileImage))
+        }
     }
 
     fun navigateToBack() {

@@ -7,4 +7,5 @@ data class UiMyPageEditInfoData(
     val birth: String,
     val location: String,
     val gender: Boolean,
+    val profileImage : String
 )

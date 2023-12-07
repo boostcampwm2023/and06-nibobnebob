@@ -3,8 +3,6 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -13,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentMyPageBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.ImageDialog
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
@@ -25,19 +24,33 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
     private val sharedViewModel: MyPageSharedViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun initView() {
+        binding.svm = sharedViewModel
+        binding.vm = viewModel
 
-        initView()
+
+
+        binding.tvWithdraw.setOnClickListener {
+            AlertDialog.Builder(context)
+                .setTitle("정말 탈퇴하시겠습니까?")
+                .setMessage("모든 정보가 삭제됩니다.")
+                .setPositiveButton(
+                    "확인"
+                ) { _, _ -> withDrawConfirm() }
+                .setNegativeButton(
+                    "취소"
+                ) { _, _ -> withDrawDismiss() }
+                .create()
+                .show()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun initView() {
-        binding.svm = sharedViewModel
-        binding.vm = viewModel
+    override fun initNetworkView() {
         viewModel.getUserInfo()
+    }
 
+    override fun initEventObserver() {
         repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
@@ -59,28 +72,16 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                     }
+                    is MyEditPageEvent.ProfileClicked -> {
+                        ImageDialog(requireContext(),event.profileImage).show()
+                    }
                     is MyEditPageEvent.ShowSnackMessage -> showSnackBar(event.msg)
                     is MyEditPageEvent.ShowToastMessage -> showToastMessage(event.msg)
                 }
             }
         }
-
-        binding.tvWithdraw.setOnClickListener {
-            AlertDialog.Builder(context)
-                .setTitle("정말 탈퇴하시겠습니까?")
-                .setMessage("모든 정보가 삭제됩니다.")
-                .setPositiveButton(
-                    "확인"
-                ) { _, _ -> withDrawConfirm() }
-                .setNegativeButton(
-                    "취소"
-                ) { _, _ -> withDrawDismiss() }
-                .create()
-                .show()
-        }
-
-
     }
+
 
     private fun withDrawConfirm() {
         viewModel.withdraw()
@@ -90,9 +91,6 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
 
     }
 
-    private fun initNetworkView() {
-        // todo 데이터 통신으로 그려지는 View 생성 로직
-    }
 
     private fun NavController.toEditProfile() {
         val action = MyPageFragmentDirections.globalToEditProfileFragment()

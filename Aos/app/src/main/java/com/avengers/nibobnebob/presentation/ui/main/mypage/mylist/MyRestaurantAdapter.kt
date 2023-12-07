@@ -50,27 +50,30 @@ class MyRestaurantAdapter(
 class MyRestaurantViewHolder(
     private val binding: ItemMyListBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiMyListData, showDetail: (Int) -> Unit, deleteItem: (Int) -> Unit) {
-        binding.item = item
-        binding.ivMore.setOnClickListener { listMenu(item, showDetail, deleteItem) }
-        binding.executePendingBindings()
+    fun bind(item: UiMyListData, showDetail: (Int) -> Unit, deleteItem: (Int) -> Unit) =
+        with(binding) {
+            this.item = item
+            ivMore.setOnClickListener { listMenu(item, showDetail, deleteItem) }
+            executePendingBindings()
 
-    }
+        }
 
     private fun listMenu(
         item: UiMyListData,
         showDetail: (Int) -> Unit,
         deleteItem: (Int) -> Unit
     ) {
-        val menu = PopupMenu(binding.root.context, binding.ivMore)
-        menu.menuInflater.inflate(R.menu.my_page_list_menu, menu.menu)
-        menu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_detail -> showDetail(item.id)
-                R.id.menu_delete -> deleteItem(item.id)
+        PopupMenu(binding.root.context, binding.ivMore).apply {
+            menuInflater.inflate(R.menu.my_page_list_menu, menu)
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_detail -> showDetail(item.id)
+                    R.id.menu_delete -> deleteItem(item.id)
+                }
+                true
             }
-            true
+            show()
         }
-        menu.show()
+
     }
 }

@@ -4,8 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.repository.MyPageRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.MyPageRepository
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageInfoData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,10 +27,12 @@ data class MyPageUiState(
     val age: String = "",
     val location: String = "",
     val gender: String = "",
+    val profileImage: String = ""
 )
 
 sealed class MyEditPageEvent {
     data object NavigateToIntro : MyEditPageEvent()
+    data class ProfileClicked(val profileImage : String) : MyEditPageEvent()
     data class ShowToastMessage(val msg: String) : MyEditPageEvent()
     data class ShowSnackMessage(val msg: String) : MyEditPageEvent()
 }
@@ -54,13 +56,14 @@ class MyPageViewModel @Inject constructor(
         myPageRepository.getMyInfo().onEach {
             when (it) {
                 is BaseState.Success -> {
-                    it.data.body.toUiMyPageInfoData().apply {
+                    it.data.toUiMyPageInfoData().apply {
                         _uiState.update { state ->
                             state.copy(
                                 nickName = nickName,
                                 age = age,
                                 location = location,
-                                gender = gender
+                                gender = gender,
+                                profileImage = profileImage
                             )
                         }
                     }
@@ -71,6 +74,12 @@ class MyPageViewModel @Inject constructor(
 
         }.launchIn(viewModelScope)
 
+    }
+
+    fun profileClicked() {
+        viewModelScope.launch {
+            _events.emit(MyEditPageEvent.ProfileClicked(uiState.value.profileImage))
+        }
     }
 
     fun logout() {

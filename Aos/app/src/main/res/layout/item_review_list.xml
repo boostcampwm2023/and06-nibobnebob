@@ -12,13 +12,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/iv_profile"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_mypage"
+            app:profileImageUrl="@{item.userProfileImage}"
             app:layout_constraintBottom_toBottomOf="@id/tv_when_visited"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_nickname" />
@@ -28,15 +29,16 @@
             style="@style/TextMediumBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
+            android:layout_marginStart="18dp"
             android:layout_marginTop="0dp"
             android:text="@{item.reviewer}"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_profile"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/nickname" />
 
         <TextView
             android:id="@+id/tv_when_visited_label"
+            style="@style/TextSmallRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/when_visited"
@@ -45,6 +47,7 @@
 
         <TextView
             android:id="@+id/tv_when_visited"
+            style="@style/TextSmallRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -61,11 +64,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:onClick="@{() -> item.onThumbsUpClick.invoke(item.reviewId)}"
-            android:src="@drawable/ic_thumbs_up_blank"
+            android:src="@{item.thumbsUp? @drawable/ic_thumbs_up_fill : @drawable/ic_thumbs_up_blank}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_up_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname"
-            app:thumbsUpStatus="@{item.thumbsUp}" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
 
 
         <TextView
@@ -78,6 +80,7 @@
             android:textColor="@color/nn_dark5"
             app:layout_constraintBottom_toBottomOf="@id/iv_thumbs_up"
             app:layout_constraintEnd_toStartOf="@id/iv_thumbs_down"
+            app:layout_constraintTop_toTopOf="@id/iv_thumbs_up"
             tools:text="315" />
 
         <ImageView
@@ -86,11 +89,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:onClick="@{() -> item.onThumbsDownClick.invoke(item.reviewId)}"
-            android:src="@drawable/ic_thumbs_down_blank"
+            android:src="@{item.thumbsDown? @drawable/ic_thumbs_down_fill : @drawable/ic_thumbs_down_blank}"
             app:layout_constraintBottom_toBottomOf="@id/tv_nickname"
             app:layout_constraintEnd_toStartOf="@id/tv_thumbs_down_count"
-            app:layout_constraintTop_toTopOf="@id/tv_nickname"
-            app:thumbsDownStatus="@{item.thumbsDown}" />
+            app:layout_constraintTop_toTopOf="@id/tv_nickname" />
 
 
         <TextView
@@ -103,6 +105,7 @@
             android:textColor="@color/nn_dark5"
             app:layout_constraintBottom_toBottomOf="@id/iv_thumbs_down"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_thumbs_down"
             tools:text="18" />
 
         <TextView
@@ -113,8 +116,11 @@
             android:layout_marginTop="20dp"
             android:text="@{item.isCarVisit ? @string/parking_convenience : @string/transportation_accessibility}"
             android:textColor="@color/nn_text_black"
+            app:layout_constraintEnd_toStartOf="@id/tv_taste_label"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_when_visited" />
+            app:layout_constraintTop_toBottomOf="@id/tv_when_visited"
+            tools:text="교통" />
 
         <ImageView
             android:id="@+id/iv_parking_convenience_rank"
@@ -135,6 +141,8 @@
             android:layout_marginStart="40dp"
             android:text="@string/taste"
             android:textColor="@color/nn_text_black"
+            app:layout_constraintEnd_toStartOf="@id/tv_service_label"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@id/tv_parking_convenience_label"
             app:layout_constraintTop_toTopOf="@+id/tv_parking_convenience_label" />
 
@@ -157,6 +165,8 @@
             android:layout_marginStart="40dp"
             android:text="@string/service"
             android:textColor="@color/nn_text_black"
+            app:layout_constraintEnd_toStartOf="@id/tv_cleanliness_label"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@id/tv_taste_label"
             app:layout_constraintTop_toTopOf="@+id/tv_taste_label" />
 
@@ -179,6 +189,8 @@
             android:layout_marginStart="40dp"
             android:text="@string/cleanliness"
             android:textColor="@color/nn_text_black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@id/tv_service_label"
             app:layout_constraintTop_toTopOf="@+id/tv_service_label" />
 
@@ -193,15 +205,30 @@
             app:layout_constraintStart_toStartOf="@id/tv_cleanliness_label"
             app:layout_constraintTop_toBottomOf="@id/tv_cleanliness_label" />
 
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_review_img"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            app:reviewImageUrl="@{item.reviewImage}"
+            app:layout_constraintDimensionRatio="3:2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_taste_rank"
+            app:shapeAppearanceOverlay="@style/All24RadiusImageView" />
+
         <TextView
             android:id="@+id/tv_review"
             style="@style/TextSmallRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
             android:layout_marginTop="20dp"
             android:text="@{item.overallExperience}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_cleanliness_rank"
+            app:layout_constraintTop_toBottomOf="@id/iv_review_img"
             tools:text="@string/test_review" />
 
         <com.google.android.material.divider.MaterialDivider
@@ -214,7 +241,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_review" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

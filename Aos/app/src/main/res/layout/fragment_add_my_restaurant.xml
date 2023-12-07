@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd.AddMyRestaurantViewModel" />
@@ -18,8 +20,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_toolbar"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingVertical="20dp"
+            android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
+            android:paddingVertical="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -39,11 +41,11 @@
 
             <TextView
                 android:id="@+id/tv_header"
-                style="@style/TextHeader"
+                style="@style/TextMediumBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="맛집 추가하기"
+                android:layout_marginStart="12dp"
+                android:text="@string/add_toolbar"
                 app:layout_constraintBottom_toTopOf="@id/tv_restaurant_name"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toEndOf="@id/btn_back"
@@ -51,6 +53,7 @@
 
             <TextView
                 android:id="@+id/tv_restaurant_name"
+                style="@style/TextSmallBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{vm.uiState.restaurantName}"
@@ -74,14 +77,15 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp">
 
                 <TextView
                     android:id="@+id/tv_visit_method"
                     style="@style/TextMediumBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="방문 수단"
+                    android:text="@string/add_visit_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -100,14 +104,14 @@
                         android:layout_marginTop="16dp"
                         android:checked="true"
                         android:minHeight="0dp"
-                        android:text="도보/대중교통" />
+                        android:text="@string/add_visit_type1" />
 
                     <RadioButton
                         android:id="@+id/rb_visit_car"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minHeight="0dp"
-                        android:text="자차" />
+                        android:text="@string/add_visit_type2" />
 
                 </RadioGroup>
 
@@ -117,10 +121,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="주차공간"
+                    android:text="@string/add_parking"
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rg_visit_method"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}" />
+                    app:layout_constraintTop_toBottomOf="@id/rg_visit_method" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/sd_parking_space"
@@ -130,10 +134,10 @@
                     android:stepSize="1"
                     android:valueFrom="0"
                     android:valueTo="4"
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_parking_space_label"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}"
                     app:thumbColor="@color/nn_primary6"
                     app:trackColorActive="@color/nn_primary6" />
 
@@ -142,22 +146,22 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="부족하다"
+                    android:text="@string/add_parking_no"
                     android:textColor="@color/nn_dark1"
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}" />
+                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space" />
 
                 <TextView
                     android:id="@+id/tv_parking_space_enough"
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="충분하다"
+                    android:text="@string/add_parking_yes"
                     android:textColor="@color/nn_dark1"
+                    android:visibility="@{vm.uiState.visitWithCar? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space"
-                    app:parkingSpaceViewState="@{vm.uiState.visitWithCar}" />
+                    app:layout_constraintTop_toBottomOf="@id/sd_parking_space" />
 
                 <TextView
                     android:id="@+id/tv_traffic_label"
@@ -165,10 +169,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="교통 편리 여부"
+                    android:text="@string/add_traffic_title"
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rg_visit_method"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    app:layout_constraintTop_toBottomOf="@id/rg_visit_method" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/sd_traffic"
@@ -178,34 +182,34 @@
                     android:stepSize="1"
                     android:valueFrom="0"
                     android:valueTo="4"
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_traffic_label"
                     app:thumbColor="@color/nn_primary6"
-                    app:trackColorActive="@color/nn_primary6"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    app:trackColorActive="@color/nn_primary6" />
 
                 <TextView
                     android:id="@+id/tv_traffic_not_enough"
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="편했다"
+                    android:text="@string/add_traffic_yes"
                     android:textColor="@color/nn_dark1"
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sd_traffic"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    app:layout_constraintTop_toBottomOf="@id/sd_traffic" />
 
                 <TextView
                     android:id="@+id/tv_traffic_enough"
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="힘들었다"
+                    android:text="@string/add_traffic_no"
                     android:textColor="@color/nn_dark1"
+                    android:visibility="@{vm.uiState.visitWithCar? View.INVISIBLE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sd_traffic"
-                    app:trafficViewState="@{vm.uiState.visitWithCar}" />
+                    app:layout_constraintTop_toBottomOf="@id/sd_traffic" />
 
                 <TextView
                     android:id="@+id/tv_taste_label"
@@ -213,7 +217,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="맛 평가"
+                    android:text="@string/add_taste_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_parking_space_not_enough" />
 
@@ -236,7 +240,7 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="맛없다"
+                    android:text="@string/add_taste_no"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_taste" />
@@ -246,7 +250,7 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="맛있다"
+                    android:text="@string/add_taste_yes"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_taste" />
@@ -257,7 +261,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="서비스 상태"
+                    android:text="@string/add_service_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_taste_not_enough" />
 
@@ -280,7 +284,7 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="불만족"
+                    android:text="@string/add_servie_no"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_service" />
@@ -290,7 +294,7 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="만족"
+                    android:text="@string/add_service_yes"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_service" />
@@ -301,7 +305,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="화장실 상태"
+                    android:text="@string/add_toilet_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_service_not_enough" />
 
@@ -324,7 +328,7 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="더럽다"
+                    android:text="@string/add_toilet_no"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_toilet" />
@@ -334,10 +338,33 @@
                     style="@style/TextSmallBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="깨끗하다"
+                    android:text="@string/add_toilet_yes"
                     android:textColor="@color/nn_dark1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sd_toilet" />
+
+                <TextView
+                    android:id="@+id/tv_photo_label"
+                    style="@style/TextMediumBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="(선택) 사진 등록"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_toilet_enough" />
+
+                <ImageView
+                    android:id="@+id/iv_add_photo"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="12dp"
+                    android:onClick="@{() -> vm.openGallery()}"
+                    android:src="@drawable/ic_add_review_photo"
+                    app:checkEmptyImgUri="@{vm.reviewImg}"
+                    app:layout_constraintDimensionRatio="314:174"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_photo_label" />
 
                 <TextView
                     android:id="@+id/tv_comment"
@@ -345,9 +372,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="총평"
+                    android:text="@string/add_total"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_toilet_enough" />
+                    app:layout_constraintTop_toBottomOf="@id/iv_add_photo" />
 
                 <TextView
                     android:id="@+id/tv_text_length"
@@ -369,7 +396,7 @@
                     app:commentHelperMessage="@{vm.uiState.commentState}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_text_length"
                     app:layout_constraintEnd_toStartOf="@id/tv_text_length"
-                    tools:text="20자 이상 작성하셔야 합니다!" />
+                    tools:text="20자 이상 작성해야 합니다." />
 
                 <EditText
                     android:id="@+id/et_comment"
@@ -379,7 +406,7 @@
                     android:layout_marginTop="12dp"
                     android:background="@drawable/rect_dark7fill_nostroke_10radius"
                     android:gravity="top"
-                    android:hint="20자 이상 작성해주세요"
+                    android:hint="@string/add_total_hint"
                     android:lineSpacingExtra="12dp"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="20dp"
@@ -401,7 +428,7 @@
             android:background="@drawable/selector_next_btn"
             android:enabled="@{vm.isDataReady()}"
             android:onClick="@{() -> vm.showConfirmDialog()}"
-            android:text="리뷰 남기기"
+            android:text="@string/add_btn"
             android:textColor="@color/selector_next_btn_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

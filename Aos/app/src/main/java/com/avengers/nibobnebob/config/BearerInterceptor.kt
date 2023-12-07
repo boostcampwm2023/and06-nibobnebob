@@ -4,12 +4,12 @@ package com.avengers.nibobnebob.config
 import android.content.Intent
 import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.app.DataStoreManager
-import com.avengers.nibobnebob.data.model.BaseState
 import com.avengers.nibobnebob.data.model.request.RefreshTokenRequest
+import com.avengers.nibobnebob.data.model.response.LoginResponse
 import com.avengers.nibobnebob.data.model.response.BaseResponse
-import com.avengers.nibobnebob.data.model.response.NaverLoginResponse
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RefreshApi
+import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import com.avengers.nibobnebob.presentation.util.Constants
 import kotlinx.coroutines.flow.first
@@ -42,7 +42,7 @@ class BearerInterceptor @Inject constructor(
                     when (val result = getNewAccessToken(token)) {
                         is BaseState.Success -> {
                             response.close()
-                            newAccessToken = result.data.body.accessToken
+                            newAccessToken = result.data.body?.accessToken
                             newAccessToken?.let {
                                 dataStoreManager.putAccessToken(newAccessToken!!)
                             }
@@ -71,7 +71,7 @@ class BearerInterceptor @Inject constructor(
     }
 
 
-    private suspend fun getNewAccessToken(refreshToken: String?): BaseState<BaseResponse<NaverLoginResponse>> {
+    private suspend fun getNewAccessToken(refreshToken: String?): BaseState<BaseResponse<LoginResponse>> {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
@@ -82,7 +82,7 @@ class BearerInterceptor @Inject constructor(
             .client(okHttpClient)
             .build()
         val api = retrofit.create(RefreshApi::class.java)
-        return runRemote { api.refreshToken(RefreshTokenRequest(refreshToken)) }
+        return runRemote { api.refreshAccessToken(RefreshTokenRequest(refreshToken)) }
     }
 
     companion object {

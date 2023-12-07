@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
-import android.os.Bundle
-import android.view.View
+import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -13,12 +12,15 @@ import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
+import com.avengers.nibobnebob.presentation.ui.main.MainActivity
+import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DetailSignupFragment :
     BaseFragment<FragmentDetailSignupBinding>(R.layout.fragment_detail_signup) {
+
 
     private val viewModel: DetailSignupViewModel by viewModels()
     override val parentViewModel: IntroViewModel by activityViewModels()
@@ -28,24 +30,44 @@ class DetailSignupFragment :
     private val password by lazy { args.password }
     private val provider by lazy { args.provider }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         viewModel.setDefaultData(email, password, provider)
-        initEventsObserver()
+        initImageObserver()
         setGenderRadioListener()
         setDateBtnListener()
         setLocationInputListener()
     }
 
-    private fun initEventsObserver() {
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
-                    is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
                     is DetailSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
+                    is DetailSignupEvents.OpenGallery -> parentViewModel.openGallery()
+                    is DetailSignupEvents.ShowLoading -> showLoading(requireContext())
+                    is DetailSignupEvents.DismissLoading -> dismissLoading()
+                    is DetailSignupEvents.GoToMainActivity -> {
+                        val intent = Intent(requireContext(),MainActivity::class.java)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initImageObserver() {
+        repeatOnStarted {
+            parentViewModel.image.collect {
+                if (it.isNotBlank()) {
+                    viewModel.setImage(it, it.toMultiPart(requireContext(), "profileImage"))
+                    parentViewModel.uriCollected()
                 }
             }
         }
@@ -62,7 +84,7 @@ class DetailSignupFragment :
 
     private fun setDateBtnListener() {
         binding.tilBirth.setEndIconOnClickListener {
-            CalendarDatePicker{
+            CalendarDatePicker {
                 viewModel.setBirth(it)
             }.show(parentFragmentManager)
         }
@@ -76,7 +98,7 @@ class DetailSignupFragment :
         }
     }
 
-    private fun NavController.toLoginFragment(){
+    private fun NavController.toLoginFragment() {
         val action = DetailSignupFragmentDirections.actionDetailSignupFragmentToLoginFragment()
         this.navigate(action)
     }

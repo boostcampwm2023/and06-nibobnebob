@@ -27,8 +27,8 @@ object NetworkModule {
     ): OkHttpClient {
 
         return OkHttpClient.Builder()
-            .readTimeout(3000, TimeUnit.MILLISECONDS)
-            .connectTimeout(3000, TimeUnit.MILLISECONDS)
+            .readTimeout(10000, TimeUnit.MILLISECONDS)
+            .connectTimeout(10000, TimeUnit.MILLISECONDS)
             .addInterceptor(httpLoggingInterceptor)
             .addNetworkInterceptor(accessTokenInterceptor)
             .addInterceptor(bearerInterceptor)

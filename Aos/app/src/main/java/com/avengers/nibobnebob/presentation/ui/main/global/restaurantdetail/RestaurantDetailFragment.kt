@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -25,24 +23,21 @@ class RestaurantDetailFragment :
     val args: RestaurantDetailFragmentArgs by navArgs()
     private val restaurantId by lazy { args.restaurantId }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         viewModel.setRestaurantId(restaurantId)
-        viewModel.restaurantDetail()
-        initEventObserver()
         binding.rvReview.adapter = RestaurantReviewAdapter()
     }
 
-    private fun initEventObserver() {
+    override fun initNetworkView() {
+        viewModel.restaurantDetail()
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect { event ->
                 when (event) {
                     is RestaurantDetailEvents.NavigateToBack -> findNavController().navigateUp()
-                    is RestaurantDetailEvents.NavigateToDetailReview -> {
-                        // 상세리뷰로 이동
-                    }
 
                     is RestaurantDetailEvents.NavigateToDeleteMyList -> {
                         TwoButtonTitleDialog(
@@ -54,11 +49,14 @@ class RestaurantDetailFragment :
                     }
 
                     is RestaurantDetailEvents.NavigateToAddMyList -> {
-                        // 여기는 글로벌과 다름 다른이유는 설명예정
                         findNavController().toAddRestaurantLocal(
                             viewModel.uiState.value.name,
                             viewModel.restaurantId.value
                         )
+                    }
+
+                    is RestaurantDetailEvents.NavigateToReviewPage -> {
+                        findNavController().toReviewPage(event.restaurantName, event.restaurantId)
                     }
 
                     is RestaurantDetailEvents.ShowSnackMessage -> showSnackBar(event.msg)
@@ -76,6 +74,15 @@ class RestaurantDetailFragment :
     private fun NavController.toAddRestaurantLocal(name: String, id: Int) {
         val action =
             RestaurantDetailFragmentDirections.actionRestaurantDetailFragmentToAddMyRestaurantFragment(
+                name,
+                id
+            )
+        navigate(action)
+    }
+
+    private fun NavController.toReviewPage(name: String, id: Int) {
+        val action =
+            RestaurantDetailFragmentDirections.actionRestaurantDetailFragmentToRestaurantReviewsFragment(
                 name,
                 id
             )

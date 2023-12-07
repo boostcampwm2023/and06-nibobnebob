@@ -31,10 +31,11 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_test"
+            android:onClick="@{() -> vm.showBiggerImageDialog()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_back"
+            app:profileImageUrl="@{vm.uiState.userDetail.profileImage}"
             app:shapeAppearanceOverlay="@style/All50RadiusImageView" />
 
         <TextView
@@ -60,7 +61,7 @@
             android:onClick="@{() -> vm.tryFollowUnFollow()}"
             android:paddingHorizontal="12dp"
             android:paddingVertical="2dp"
-            android:text="팔로우"
+            android:text="@string/follow_following"
             android:textColor="@color/white"
             app:followState="@{vm.uiState.userDetail.follow}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -80,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="연령대"
+            android:text="@string/my_main_age"
             android:textColor="@color/nn_dark4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_follow" />
@@ -102,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="활동지역"
+            android:text="@string/my_main_location"
             android:textColor="@color/nn_dark4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_age_label" />
@@ -117,6 +118,32 @@
             app:layout_constraintBottom_toBottomOf="@id/tv_region_label"
             app:layout_constraintStart_toEndOf="@id/guide"
             tools:text="용산구" />
+
+        <TextView
+            android:id="@+id/tv_restaurant_name"
+            style="@style/TextMediumBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="유저의 맛집 리스트 미리보기"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_region" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_restaurant"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingBottom="150dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_name"
+            app:list="@{vm.uiState.userDetail.restaurants}"
+            tools:listitem="@layout/item_user_detail_restaurant" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -2,7 +2,6 @@ package com.avengers.nibobnebob.presentation.ui
 
 import androidx.navigation.NavController
 import com.avengers.nibobnebob.NavGraphDirections
-import com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchFragmentDirections
 
 
 internal fun NavController.toRestaurantDetail(restaurantId: Int) {
@@ -15,8 +14,12 @@ internal fun NavController.toAddRestaurant(restaurantName: String, restaurantId:
     navigate(action)
 }
 
-internal fun NavController.toHome(){
-    val action = NavGraphDirections.globalToHomeFragment()
+internal fun NavController.toHome(restaurantId: Int? = 0) {
+    val action = if (restaurantId != null) {
+        NavGraphDirections.globalToHomeFragment(restaurantId)
+    } else {
+        NavGraphDirections.globalToHomeFragment()
+    }
     navigate(action)
 }
 

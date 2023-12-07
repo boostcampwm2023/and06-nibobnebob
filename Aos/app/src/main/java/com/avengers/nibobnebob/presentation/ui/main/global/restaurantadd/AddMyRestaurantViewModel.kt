@@ -1,10 +1,10 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
-import com.avengers.nibobnebob.data.repository.RestaurantRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.usecase.restaurant.AddRestaurantUseCase
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,9 +14,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 data class AddMyRestaurantUiState(
@@ -43,11 +48,14 @@ sealed class AddMyRestaurantEvents {
     data object ShowSuccessDialog : AddMyRestaurantEvents()
     data class ShowToastMessage(val msg: String) : AddMyRestaurantEvents()
     data class ShowSnackMessage(val msg: String) : AddMyRestaurantEvents()
+    data object OpenGallery : AddMyRestaurantEvents()
+    data object ShowLoading : AddMyRestaurantEvents()
+    data object DismissLoading : AddMyRestaurantEvents()
 }
 
 @HiltViewModel
 class AddMyRestaurantViewModel @Inject constructor(
-    private val restaurantRepository: RestaurantRepository
+    private val addRestaurantUseCase: AddRestaurantUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddMyRestaurantUiState())
@@ -59,6 +67,8 @@ class AddMyRestaurantViewModel @Inject constructor(
     val comment = MutableStateFlow("")
     val isDataReady = MutableStateFlow(false)
 
+    val reviewImg = MutableStateFlow("")
+    private var reviewImgFile: MultipartBody.Part? = null
     private var restaurantId = -1
 
     init {
@@ -142,30 +152,33 @@ class AddMyRestaurantViewModel @Inject constructor(
     }
 
     fun addReview() {
-        viewModelScope.launch {
-            restaurantRepository.addRestaurant(
-                restaurantId, AddRestaurantRequest(
-                    isCarVisit = _uiState.value.visitWithCar,
-                    transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
-                    parkingArea = if (_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
-                    taste = _uiState.value.taste,
-                    service = _uiState.value.taste,
-                    restroomCleanliness = _uiState.value.toilet,
-                    overallExperience = comment.value
-                )
-            ).onEach { state ->
-                when (state) {
-                    is BaseState.Success -> {
-                        _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
-                        _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
-                    }
-
-                    is BaseState.Error -> _events.emit(
-                        AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
-                    )
+        Log.d("debugging", reviewImgFile.toString())
+        addRestaurantUseCase(
+            restaurantId = restaurantId,
+            isCarVisit = _uiState.value.visitWithCar,
+            transportationAccessibility = if (_uiState.value.visitWithCar) null else _uiState.value.traffic,
+            parkingArea = if (_uiState.value.visitWithCar) _uiState.value.parkingSpace else null,
+            taste = _uiState.value.taste,
+            service = _uiState.value.taste,
+            restroomCleanliness = _uiState.value.toilet,
+            overallExperience = comment.value.toRequestBody("text/plain".toMediaTypeOrNull()),
+            reviewImage = reviewImgFile
+        ).onStart {
+            _events.emit(AddMyRestaurantEvents.ShowLoading)
+        }.onEach { state ->
+            when (state) {
+                is BaseState.Success -> {
+                    _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
+                    _events.emit(AddMyRestaurantEvents.ShowToastMessage("내 맛집 리스트에 추가되었습니다."))
                 }
-            }.launchIn(viewModelScope)
-        }
+
+                is BaseState.Error -> _events.emit(
+                    AddMyRestaurantEvents.ShowSnackMessage(ERROR_MSG)
+                )
+            }
+        }.onCompletion {
+            _events.emit(AddMyRestaurantEvents.DismissLoading)
+        }.launchIn(viewModelScope)
     }
 
 
@@ -179,10 +192,21 @@ class AddMyRestaurantViewModel @Inject constructor(
         restaurantId = id
     }
 
+    fun openGallery() {
+        viewModelScope.launch {
+            _events.emit(AddMyRestaurantEvents.OpenGallery)
+        }
+    }
+
     fun navigateToBack() {
         viewModelScope.launch {
             _events.emit(AddMyRestaurantEvents.NavigateToBack)
         }
+    }
+
+    fun setImage(uri: String, file: MultipartBody.Part) {
+        reviewImg.value = uri
+        reviewImgFile = file
     }
 }
 
