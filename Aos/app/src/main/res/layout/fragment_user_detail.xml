@@ -118,5 +118,28 @@
             app:layout_constraintStart_toEndOf="@id/guide"
             tools:text="용산구" />
 
+        <TextView
+            android:id="@+id/tv_restaurant_name"
+            style="@style/TextMediumBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="유저의 맛집 리스트 미리보기"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_region" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_restaurant"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_name"
+            tools:listitem="@layout/item_user_detail_restaurant" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

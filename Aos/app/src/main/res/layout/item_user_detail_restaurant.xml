@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidline_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_review_img"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_test"
+            app:layout_constraintBottom_toBottomOf="@id/tv_review_count_label"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/guidline_center"
+            app:layout_constraintEnd_toStartOf="@id/guidline_center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/All24RadiusImageView" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            style="@style/TextMediumBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/iv_review_img"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="포케집 안국역점" />
+
+        <TextView
+            android:id="@+id/tv_address_label"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/bottom_address"
+            android:textColor="@color/nn_primary6"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
+            app:layout_constraintTop_toBottomOf="@id/tv_name" />
+
+        <TextView
+            android:id="@+id/tv_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guidline"
+            app:layout_constraintTop_toTopOf="@id/tv_address_label"
+            tools:text="서울시 중구 안국동 15-1" />
+
+        <TextView
+            android:id="@+id/tv_phone_number_label"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/bottom_phone"
+            android:textColor="@color/nn_primary6"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
+            app:layout_constraintTop_toBottomOf="@id/tv_address_label" />
+
+        <TextView
+            android:id="@+id/tv_phone_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guidline"
+            app:layout_constraintTop_toTopOf="@id/tv_phone_number_label"
+            tools:text="01012345678" />
+
+        <TextView
+            android:id="@+id/tv_review_count_label"
+            style="@style/TextSmallRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/bottom_review"
+            android:textColor="@color/nn_primary6"
+            app:layout_constraintStart_toStartOf="@id/guidline_center"
+            app:layout_constraintTop_toBottomOf="@id/tv_phone_number_label" />
+
+        <TextView
+            android:id="@+id/tv_review_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guidline"
+            app:layout_constraintTop_toTopOf="@id/tv_review_count_label"
+            tools:text="99 개" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
