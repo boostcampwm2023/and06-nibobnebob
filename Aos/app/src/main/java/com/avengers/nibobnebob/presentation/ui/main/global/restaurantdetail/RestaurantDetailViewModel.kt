@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.usecase.restaurant.AddWishRestaurantUseCase
-import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteMyWishRestaurantUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetRestaurantDetailUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.GetSortedReviewUseCase
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantDetailInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantReviewDataInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,7 +46,8 @@ data class RestaurantDetailUiState(
     val isWish: Boolean = false,
     val isMy: Boolean = false,
     val reviewer: String = "",
-    val reviewList: List<UiReviewData> = emptyList()
+    val reviewList: List<UiReviewData> = emptyList(),
+    val reviewFilter: String = FILTER_OLD
 )
 
 
@@ -53,7 +56,8 @@ class RestaurantDetailViewModel @Inject constructor(
     private val getRestaurantDetailUseCase: GetRestaurantDetailUseCase,
     private val deleteRestaurantUseCase: DeleteRestaurantUseCase,
     private val deleteMyWishRestaurantUseCase: DeleteMyWishRestaurantUseCase,
-    private val addWishRestaurantUseCase: AddWishRestaurantUseCase
+    private val addWishRestaurantUseCase: AddWishRestaurantUseCase,
+    private val getSortedReviewUseCase: GetSortedReviewUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantDetailUiState())
@@ -106,6 +110,31 @@ class RestaurantDetailViewModel @Inject constructor(
                 is BaseState.Error -> {
                     _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                 }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun sortReview(
+        sort: String?
+    ) {
+        getSortedReviewUseCase(restaurantId.value, sort).onEach { review ->
+            when (review) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            reviewList = review.data.reviewItems.map {
+                                it.toUiRestaurantReviewDataInfo(
+                                    ::onThumbsUpItemClicked,
+                                    ::onThumbsDownItemClicked,
+                                    ::onReviewClicked
+                                )
+                            },
+                            reviewFilter = sort ?: FILTER_OLD
+                        )
+                    }
+                }
+
+                else -> _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }

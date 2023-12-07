@@ -52,11 +52,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch { selectedItem.emit(item) }
     }
 
-    fun keepSearchKeyword(keyword : String){
+    fun keepSearchKeyword(keyword: String) {
         viewModelScope.launch { searchKeyword.emit(keyword) }
     }
 
-    fun clearKeyword(){
+    fun clearKeyword() {
         viewModelScope.launch { searchKeyword.emit("") }
     }
 

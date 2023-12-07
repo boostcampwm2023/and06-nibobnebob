@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.bindingadapters
 
-import android.net.Uri
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
@@ -46,13 +45,11 @@ fun bindWishStatus(iv: ImageView, isWish: Boolean) {
 }
 
 @BindingAdapter("profileImageUrl")
-fun bindLoadImage(view : ImageView, imageUrl : String?){
+fun bindLoadImage(view: ImageView, imageUrl: String?) {
     imageUrl?.let {
         Glide.with(view.context)
             .load(imageUrl)
             .apply(RequestOptions.circleCropTransform())
-            .error(R.drawable.ic_mypage)
-            .placeholder(R.drawable.ic_mypage)
             .into(view)
     }
 }
