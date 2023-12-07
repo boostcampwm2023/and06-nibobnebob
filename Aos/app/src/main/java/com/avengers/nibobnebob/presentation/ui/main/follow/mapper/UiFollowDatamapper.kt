@@ -13,6 +13,7 @@ internal fun FollowListData.toUiFollowData(
     nickName = nickName,
     region = region,
     isFollowing = isFollow,
+    profileImage = profileImage,
     onFollowBtnClickListener = onFollowBtnClickListener,
     onUnFollowBtnClickListener = onUnFollowBtnClickListener,
     onRootClickListener = onRootClickListener
@@ -26,6 +27,7 @@ internal fun RecommendFollowListData.toUiFollowData(
     nickName = nickName,
     region = region,
     isFollowing = isFollow,
+    profileImage = profileImage,
     onFollowBtnClickListener = onFollowBtnClickListener,
     onUnFollowBtnClickListener = onUnFollowBtnClickListener,
     onRootClickListener = onRootClickListener
