@@ -115,6 +115,7 @@
     <string name="filter_new">최신순</string>
     <string name="filter_best">추천순</string>
     <string name="filter_worst">비추천순</string>
+    <string name="today_recommend_restaurant">오늘의 추천 음식점</string>
 
     <string-array name="location_list">
         <item>용산구</item>
