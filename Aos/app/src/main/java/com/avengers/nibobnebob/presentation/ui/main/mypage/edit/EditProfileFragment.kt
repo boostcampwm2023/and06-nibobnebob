@@ -49,6 +49,8 @@ class EditProfileFragment :
 
                     is EditProfileUiEvent.ShowToastMessage -> showToastMessage(event.msg)
                     is EditProfileUiEvent.ShowSnackMessage -> showSnackBar(event.msg)
+                    is EditProfileUiEvent.ShowLoading -> showLoading(requireContext())
+                    is EditProfileUiEvent.DismissLoading -> dismissLoading()
                 }
             }
         }

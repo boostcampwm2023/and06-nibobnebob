@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.bindingadapters
 
+import android.view.View
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
@@ -45,8 +46,8 @@ fun bindWishStatus(iv: ImageView, isWish: Boolean) {
 }
 
 @BindingAdapter("profileImageUrl")
-fun bindLoadImage(view: ImageView, imageUrl: String?) {
-    imageUrl?.let {
+fun bindLoadImage(view: ImageView, imageUrl: String) {
+    if (imageUrl.isNotBlank()) {
         Glide.with(view.context)
             .load(imageUrl)
             .apply(RequestOptions.circleCropTransform())
@@ -54,9 +55,21 @@ fun bindLoadImage(view: ImageView, imageUrl: String?) {
     }
 }
 
+@BindingAdapter("reviewImageUrl")
+fun bindReviewImageUrl(iv: ImageView, imageUrl: String) {
+    if (imageUrl.isNotBlank()) {
+        iv.visibility = View.VISIBLE
+        Glide.with(iv.context)
+            .load(imageUrl)
+            .into(iv)
+    } else {
+        iv.visibility = View.GONE
+    }
+}
+
 @BindingAdapter("checkEmptyImgUri")
-fun bindCheckEmptyIngUri(iv: ImageView, uri: String){
-    if(uri.isNotBlank()){
+fun bindCheckEmptyIngUri(iv: ImageView, uri: String) {
+    if (uri.isNotBlank()) {
         iv.setImageURI(uri.toUri())
     }
 }

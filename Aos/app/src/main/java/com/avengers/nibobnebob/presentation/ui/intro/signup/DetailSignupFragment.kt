@@ -50,6 +50,8 @@ class DetailSignupFragment :
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
                     is DetailSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is DetailSignupEvents.OpenGallery -> parentViewModel.openGallery()
+                    is DetailSignupEvents.ShowLoading -> showLoading(requireContext())
+                    is DetailSignupEvents.DismissLoading -> dismissLoading()
                     is DetailSignupEvents.GoToMainActivity -> {
                         val intent = Intent(requireContext(),MainActivity::class.java)
                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -94,6 +96,11 @@ class DetailSignupFragment :
             setDropDownBackgroundTint(ContextCompat.getColor(this.context, R.color.nn_primary0))
             setSimpleItems(resources.getStringArray(R.array.location_list))
         }
+    }
+
+    private fun NavController.toLoginFragment() {
+        val action = DetailSignupFragmentDirections.actionDetailSignupFragmentToLoginFragment()
+        this.navigate(action)
     }
 }
 

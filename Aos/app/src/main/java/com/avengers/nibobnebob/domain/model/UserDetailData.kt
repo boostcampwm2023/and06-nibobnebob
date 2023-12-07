@@ -10,6 +10,7 @@ data class UserDetailData(
     val region: String,
     val isMale: Boolean,
     val isFollow: Boolean,
+    val profileImage: String,
     val restaurants: List<UserDetailRestaurantData>
 ): BaseDomainModel
 

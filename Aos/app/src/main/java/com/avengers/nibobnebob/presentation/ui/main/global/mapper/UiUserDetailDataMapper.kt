@@ -15,6 +15,7 @@ internal fun UserDetailData.toUiUserDetailData() = UiUserDetailData(
     region = region,
     age = birthdate.toAgeString(),
     isFollow = isFollow,
+    profileImage = profileImage,
     restaurants = restaurants.map { it.toUiUserDetailRestaurantData() }
 )
 

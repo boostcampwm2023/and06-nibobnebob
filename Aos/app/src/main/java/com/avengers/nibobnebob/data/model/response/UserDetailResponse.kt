@@ -13,7 +13,8 @@ data class UserDetailResponse(
     val region: String,
     val isMale: Boolean,
     val isFollow: Boolean,
-    val restaurants: List<UserDetailRestaurantResponse>
+    val restaurants: List<UserDetailRestaurantResponse>,
+    val profileImage: String
 ) : BaseDataModel {
     companion object : DomainMapper<UserDetailResponse, UserDetailData> {
         override fun UserDetailResponse.toDomainModel(): UserDetailData = UserDetailData(
@@ -22,7 +23,8 @@ data class UserDetailResponse(
             region = region,
             isMale = isMale,
             isFollow = isFollow,
-            restaurants = restaurants.map { it.toDomainModel() }
+            restaurants = restaurants.map { it.toDomainModel() },
+            profileImage = profileImage
         )
     }
 }

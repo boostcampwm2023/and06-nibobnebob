@@ -9,5 +9,6 @@ data class UiRestaurantData(
     val phoneNumber: String = "",
     val reviewCount: String = "",
     val isInWishList: Boolean = false,
-    val isInMyList: Boolean = false
+    val isInMyList: Boolean = false,
+    val reviewImage: String = ""
 )
