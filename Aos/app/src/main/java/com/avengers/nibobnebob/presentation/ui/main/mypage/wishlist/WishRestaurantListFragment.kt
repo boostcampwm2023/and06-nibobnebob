@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
@@ -12,7 +13,6 @@ import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
-import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -117,6 +117,14 @@ class WishRestaurantListFragment :
             }
         }
 
+    }
+
+    private fun NavController.toRestaurantDetail(restaurantId: Int) {
+        val action =
+            WishRestaurantListFragmentDirections.actionWishRestaurantListFragmentToRestaurantDetailFragment(
+                restaurantId
+            )
+        navigate(action)
     }
 
 }

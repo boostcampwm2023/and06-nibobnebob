@@ -61,9 +61,11 @@ data class Reviews(
     @SerializedName("review_taste") val taste: Int,
     @SerializedName("review_transportationAccessibility") val transportationAccessibility: Int,
     @SerializedName("reviewer") val reviewer: String,
-    @SerializedName("islike") val isLike: Any?,
     @SerializedName("review_reviewImage") val reviewImage: String,
-    @SerializedName("user_profileImage") val userProfileImage: String
+    @SerializedName("user_profileImage") val userProfileImage: String,
+    @SerializedName("islike") val isLike: Boolean?,
+    @SerializedName("likeCount") val likeCount: Int,
+    @SerializedName("dislikeCount") val dislikeCount: Int,
 ) : BaseDataModel {
     companion object : DomainMapper<Reviews, ReviewsData> {
         override fun Reviews.toDomainModel(): ReviewsData = ReviewsData(
@@ -79,7 +81,9 @@ data class Reviews(
             reviewer = reviewer,
             reviewImage = reviewImage,
             userProfileImage = userProfileImage,
-            isLike = isLike
+            isLike = isLike,
+            likeCount = likeCount,
+            dislikeCount = dislikeCount
         )
     }
 }

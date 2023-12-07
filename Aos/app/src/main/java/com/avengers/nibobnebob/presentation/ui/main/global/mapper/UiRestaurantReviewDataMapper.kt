@@ -6,7 +6,6 @@ import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
 internal fun ReviewsData.toUiRestaurantReviewDataInfo(
     onThumbsUpClick: (Int) -> Unit,
     onThumbsDownClick: (Int) -> Unit,
-    onReviewClick: (Int) -> Unit
 ) = UiReviewData(
     reviewId = id,
     createdAt = createdAt,
@@ -22,5 +21,8 @@ internal fun ReviewsData.toUiRestaurantReviewDataInfo(
     onThumbsDownClick = onThumbsDownClick,
     reviewImage = reviewImage,
     userProfileImage = userProfileImage,
-    onReviewClick = onReviewClick
+    thumbsUpCnt = likeCount,
+    thumbsDownCnt = dislikeCount,
+    isThumbsUp = isLike == true,
+    isThumbsDown = isLike == false
 )

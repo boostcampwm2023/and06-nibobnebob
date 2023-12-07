@@ -169,7 +169,7 @@ class AddMyRestaurantViewModel @Inject constructor(
             when (state) {
                 is BaseState.Success -> {
                     _events.emit(AddMyRestaurantEvents.ShowSuccessDialog)
-                    _events.emit(AddMyRestaurantEvents.ShowToastMessage("맛집추가 / 리뷰 추가 진행 완료하였습니다."))
+                    _events.emit(AddMyRestaurantEvents.ShowToastMessage("내 맛집 리스트에 추가되었습니다."))
                 }
 
                 is BaseState.Error -> _events.emit(

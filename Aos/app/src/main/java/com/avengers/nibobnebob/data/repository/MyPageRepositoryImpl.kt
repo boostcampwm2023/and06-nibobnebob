@@ -86,6 +86,7 @@ class MyPageRepositoryImpl @Inject constructor(
         val result = runRemote { api.logout() }
         dataStoreManager.deleteAccessToken()
         dataStoreManager.deleteRefreshToken()
+        dataStoreManager.deleteAutoLogin()
         emit(result)
 
     }
@@ -95,6 +96,7 @@ class MyPageRepositoryImpl @Inject constructor(
             is BaseState.Success -> {
                 dataStoreManager.deleteAccessToken()
                 dataStoreManager.deleteRefreshToken()
+                dataStoreManager.deleteAutoLogin()
 
                 NidOAuthLogin().callDeleteTokenApi(object : OAuthLoginCallback {
                     override fun onError(errorCode: Int, message: String) {}

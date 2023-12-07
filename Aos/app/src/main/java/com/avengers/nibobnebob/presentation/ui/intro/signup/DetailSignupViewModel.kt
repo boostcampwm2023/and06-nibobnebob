@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.presentation.ui.intro.signup
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.repository.IntroRepository
 import com.avengers.nibobnebob.domain.usecase.GetNickValidationUseCase
@@ -37,7 +38,7 @@ data class DetailSignupUiState(
 
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
-    data object NavigateToLoginFragment : DetailSignupEvents()
+    data object GoToMainActivity : DetailSignupEvents()
     data class ShowSnackMessage(val msg: String) : DetailSignupEvents()
     data object OpenGallery : DetailSignupEvents()
     data object ShowLoading : DetailSignupEvents()
@@ -47,7 +48,8 @@ sealed class DetailSignupEvents {
 @HiltViewModel
 class DetailSignupViewModel @Inject constructor(
     private val introRepository: IntroRepository,
-    private val getNickValidationUseCase: GetNickValidationUseCase
+    private val getNickValidationUseCase: GetNickValidationUseCase,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailSignupUiState())
@@ -73,11 +75,10 @@ class DetailSignupViewModel @Inject constructor(
             nick,
             birth,
             location,
-            nickValidation,
-            profileImg
-        ) { nick, birth, location, nickValidation, profileImg ->
+            nickValidation
+        ) { nick, birth, location, nickValidation ->
             nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
-                    nickValidation && profileImg.isNotBlank()
+                    nickValidation
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
@@ -98,8 +99,6 @@ class DetailSignupViewModel @Inject constructor(
                     nickState = InputState.Empty
                 )
             }
-        }.onEach {
-
         }.launchIn(viewModelScope)
     }
 
@@ -150,7 +149,6 @@ class DetailSignupViewModel @Inject constructor(
 
     fun signup() {
         // todo MultiPart -> url API를 따로 만들기 or signup Request 자체를 MultiPart로 묶기
-        Log.d("debugging", "init")
         introRepository.signup(
             email = email.value.toRequestBody("text/plain".toMediaTypeOrNull()),
             provider = provider.value.toRequestBody("text/plain".toMediaTypeOrNull()),
@@ -164,7 +162,12 @@ class DetailSignupViewModel @Inject constructor(
             _events.emit(DetailSignupEvents.ShowLoading)
         }.onEach {
             when (it) {
-                is BaseState.Success -> navigateToLoginFragment()
+                is BaseState.Success -> {
+                    goToMainActivity(
+                        state.data.accessToken.toString(),
+                        state.data.refreshToken.toString()
+                    )
+                }
                 is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.onCompletion {
@@ -196,9 +199,12 @@ class DetailSignupViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToLoginFragment() {
+    private fun goToMainActivity(access: String, refresh: String) {
         viewModelScope.launch {
-            _events.emit(DetailSignupEvents.NavigateToLoginFragment)
+            dataStoreManager.putAutoLogin(true)
+            dataStoreManager.putAccessToken(access)
+            dataStoreManager.putRefreshToken(refresh)
+            _events.emit(DetailSignupEvents.GoToMainActivity)
         }
     }
 

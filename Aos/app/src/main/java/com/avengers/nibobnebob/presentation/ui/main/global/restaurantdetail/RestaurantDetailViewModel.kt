@@ -7,7 +7,8 @@ import com.avengers.nibobnebob.domain.usecase.restaurant.AddWishRestaurantUseCas
 import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteMyWishRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteRestaurantUseCase
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetRestaurantDetailUseCase
-import com.avengers.nibobnebob.domain.usecase.restaurant.GetSortedReviewUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.PostLikeReviewUseCase
+import com.avengers.nibobnebob.domain.usecase.restaurant.PostUnlikeReviewUseCase
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantDetailInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantReviewDataInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
@@ -29,9 +30,13 @@ import javax.inject.Inject
 
 sealed class RestaurantDetailEvents {
     data object NavigateToBack : RestaurantDetailEvents()
-    data class NavigateToDetailReview(val reviewId: Int) : RestaurantDetailEvents()
     data class NavigateToAddMyList(val restaurantId: Int) : RestaurantDetailEvents()
     data class NavigateToDeleteMyList(val restaurantId: Int) : RestaurantDetailEvents()
+    data class NavigateToReviewPage(
+        val restaurantName: String,
+        val restaurantId: Int
+    ) : RestaurantDetailEvents()
+
     data class ShowSnackMessage(val msg: String) : RestaurantDetailEvents()
     data class ShowToastMessage(val msg: String) : RestaurantDetailEvents()
 }
@@ -57,7 +62,8 @@ class RestaurantDetailViewModel @Inject constructor(
     private val deleteRestaurantUseCase: DeleteRestaurantUseCase,
     private val deleteMyWishRestaurantUseCase: DeleteMyWishRestaurantUseCase,
     private val addWishRestaurantUseCase: AddWishRestaurantUseCase,
-    private val getSortedReviewUseCase: GetSortedReviewUseCase
+    private val postLikeReviewUseCase: PostLikeReviewUseCase,
+    private val postUnlikeReviewUseCase: PostUnlikeReviewUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantDetailUiState())
@@ -70,7 +76,7 @@ class RestaurantDetailViewModel @Inject constructor(
     )
     val events: SharedFlow<RestaurantDetailEvents> = _events.asSharedFlow()
 
-    val restaurantId = MutableStateFlow<Int>(0)
+    val restaurantId = MutableStateFlow(0)
 
     fun restaurantDetail() {
         getRestaurantDetailUseCase(restaurantId = restaurantId.value).onEach {
@@ -92,16 +98,14 @@ class RestaurantDetailViewModel @Inject constructor(
                         }
                     }
                     it.data.reviews?.let { reviews ->
-                        val reviewList = reviews.map {
-                            it.toUiRestaurantReviewDataInfo(
-                                ::onThumbsUpItemClicked,
-                                ::onThumbsDownItemClicked,
-                                ::onReviewClicked
-                            )
-                        }
                         _uiState.update { state ->
                             state.copy(
-                                reviewList = reviewList
+                                reviewList = reviews.map { data ->
+                                    data.toUiRestaurantReviewDataInfo(
+                                        ::onThumbsUpItemClicked,
+                                        ::onThumbsDownItemClicked,
+                                    )
+                                }
                             )
                         }
                     }
@@ -110,31 +114,6 @@ class RestaurantDetailViewModel @Inject constructor(
                 is BaseState.Error -> {
                     _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
                 }
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    fun sortReview(
-        sort: String?
-    ) {
-        getSortedReviewUseCase(restaurantId.value, sort).onEach { review ->
-            when (review) {
-                is BaseState.Success -> {
-                    _uiState.update { state ->
-                        state.copy(
-                            reviewList = review.data.reviewItems.map {
-                                it.toUiRestaurantReviewDataInfo(
-                                    ::onThumbsUpItemClicked,
-                                    ::onThumbsDownItemClicked,
-                                    ::onReviewClicked
-                                )
-                            },
-                            reviewFilter = sort ?: FILTER_OLD
-                        )
-                    }
-                }
-
-                else -> _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
             }
         }.launchIn(viewModelScope)
     }
@@ -159,7 +138,7 @@ class RestaurantDetailViewModel @Inject constructor(
     }
 
     fun onWishClicked() {
-        if (_uiState.value.isWish) {
+        if (uiState.value.isWish) {
             deleteMyWishRestaurantUseCase(restaurantId.value).onEach {
                 when (it) {
                     is BaseState.Success -> {
@@ -168,6 +147,7 @@ class RestaurantDetailViewModel @Inject constructor(
                                 isWish = false
                             )
                         }
+                        _events.emit(RestaurantDetailEvents.ShowToastMessage("나의 위시 리스트에서 삭제되었습니다."))
                     }
 
                     is BaseState.Error -> {
@@ -184,6 +164,7 @@ class RestaurantDetailViewModel @Inject constructor(
                                 isWish = true
                             )
                         }
+                        _events.emit(RestaurantDetailEvents.ShowToastMessage("나의 위시 리스트에 추가되었습니다."))
                     }
 
                     is BaseState.Error -> {
@@ -194,77 +175,89 @@ class RestaurantDetailViewModel @Inject constructor(
         }
     }
 
-    //TODO : 추후 서버 좋아요 진행
     private fun onThumbsUpItemClicked(reviewId: Int) {
-        _uiState.update { state ->
-            val updatedReviewList = state.reviewList.map { existingReviewData ->
-                if (existingReviewData.reviewId == reviewId) {
-                    if (existingReviewData.isThumbsUp) {
-                        existingReviewData.copy(
-                            thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
-                            isThumbsUp = false
-                        )
-                    } else {
-                        if (existingReviewData.isThumbsDown) {
-                            existingReviewData.copy(
-                                thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
-                                isThumbsUp = true,
-                                thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
-                                isThumbsDown = false
-                            )
-                        } else {
-                            existingReviewData.copy(
-                                thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
-                                isThumbsUp = true
-                            )
+        postLikeReviewUseCase(reviewId).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        val updatedReviewList = state.reviewList.map { existingReviewData ->
+                            if (existingReviewData.reviewId == reviewId) {
+                                if (existingReviewData.isThumbsUp) {
+                                    existingReviewData.copy(
+                                        thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
+                                        isThumbsUp = false
+                                    )
+                                } else {
+                                    if (existingReviewData.isThumbsDown) {
+                                        existingReviewData.copy(
+                                            thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
+                                            isThumbsUp = true,
+                                            thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
+                                            isThumbsDown = false
+                                        )
+                                    } else {
+                                        existingReviewData.copy(
+                                            thumbsUpCnt = existingReviewData.thumbsUpCnt + 1,
+                                            isThumbsUp = true
+                                        )
+                                    }
+                                }
+                            } else {
+                                existingReviewData
+                            }
                         }
+                        state.copy(reviewList = updatedReviewList)
                     }
-                } else {
-                    existingReviewData
                 }
+
+                is BaseState.Error -> _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
             }
-            state.copy(reviewList = updatedReviewList)
-        }
+        }.launchIn(viewModelScope)
+
     }
 
 
-    //TODO : 추후 서버 싫어요 진행
     private fun onThumbsDownItemClicked(reviewId: Int) {
-        _uiState.update { state ->
-            val updatedReviewList = state.reviewList.map { existingReviewData ->
-                if (existingReviewData.reviewId == reviewId) {
-                    if (existingReviewData.isThumbsDown) {
-                        existingReviewData.copy(
-                            thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
-                            isThumbsDown = false
-                        )
-                    } else {
-                        if (existingReviewData.isThumbsUp) {
-                            existingReviewData.copy(
-                                thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
-                                isThumbsDown = true,
-                                thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
-                                isThumbsUp = false
-                            )
-                        } else {
-                            existingReviewData.copy(
-                                thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
-                                isThumbsDown = true
-                            )
+        postUnlikeReviewUseCase(reviewId).onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        val updatedReviewList = state.reviewList.map { existingReviewData ->
+                            if (existingReviewData.reviewId == reviewId) {
+                                if (existingReviewData.isThumbsDown) {
+                                    existingReviewData.copy(
+                                        thumbsDownCnt = existingReviewData.thumbsDownCnt - 1,
+                                        isThumbsDown = false
+                                    )
+                                } else {
+                                    if (existingReviewData.isThumbsUp) {
+                                        existingReviewData.copy(
+                                            thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
+                                            isThumbsDown = true,
+                                            thumbsUpCnt = existingReviewData.thumbsUpCnt - 1,
+                                            isThumbsUp = false
+                                        )
+                                    } else {
+                                        existingReviewData.copy(
+                                            thumbsDownCnt = existingReviewData.thumbsDownCnt + 1,
+                                            isThumbsDown = true
+                                        )
+                                    }
+                                }
+                            } else {
+                                existingReviewData
+                            }
                         }
+                        state.copy(reviewList = updatedReviewList)
                     }
-                } else {
-                    existingReviewData
                 }
+
+                is BaseState.Error -> _events.emit(RestaurantDetailEvents.ShowSnackMessage(ERROR_MSG))
             }
-            state.copy(reviewList = updatedReviewList)
-        }
+        }.launchIn(viewModelScope)
+
     }
 
-
-    private fun onReviewClicked(reviewId: Int) {
-        navigateToReviewDetail(reviewId = reviewId)
-    }
 
     fun onMyListClicked() {
         if (_uiState.value.isMy) {
@@ -297,9 +290,14 @@ class RestaurantDetailViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToReviewDetail(reviewId: Int) {
+    fun navigateToReviewPage() {
         viewModelScope.launch {
-            _events.emit(RestaurantDetailEvents.NavigateToDetailReview(reviewId = reviewId))
+            _events.emit(
+                RestaurantDetailEvents.NavigateToReviewPage(
+                    uiState.value.name,
+                    restaurantId.value
+                )
+            )
         }
     }
 }
