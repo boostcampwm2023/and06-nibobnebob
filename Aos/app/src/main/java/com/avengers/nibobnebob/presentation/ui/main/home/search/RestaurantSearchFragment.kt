@@ -73,39 +73,33 @@ class RestaurantSearchFragment :
         }
     }
 
-    private fun fetchCurrentLocation() {
+    private fun checkLocationPermission() : Boolean{
         val locationManager =
             requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED &&
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        )
+    }
 
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        } else {
-            if (ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                LocationServices.getFusedLocationProviderClient(activity as MainActivity).apply {
-                    lastLocation.addOnSuccessListener { location: Location? ->
-                        viewModel.setCurrentLocation(location?.latitude, location?.longitude)
-                    }
+    private fun fetchCurrentLocation() {
+
+        if(checkLocationPermission()){
+            LocationServices.getFusedLocationProviderClient(activity as MainActivity).apply {
+                lastLocation.addOnSuccessListener { location: Location? ->
+                    viewModel.setCurrentLocation(location?.latitude, location?.longitude)
                 }
-            } else {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ),
-                    1000
-                )
             }
+        } else {
+            showToastMessage("GPS나 위치 권한을 허용해주세요.")
         }
     }
 
