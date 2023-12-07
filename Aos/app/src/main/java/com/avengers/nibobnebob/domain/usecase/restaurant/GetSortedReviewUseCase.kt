@@ -9,6 +9,11 @@ import javax.inject.Inject
 class GetSortedReviewUseCase @Inject constructor(
     private val repository: RestaurantRepository
 ) {
-    operator fun invoke(id: Int, sort: String? = null): Flow<BaseState<ReviewSortData>> =
-        repository.sortReview(id, sort)
+    operator fun invoke(
+        id: Int,
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null
+    ): Flow<BaseState<ReviewSortData>> =
+        repository.sortReview(id, limit, page, sort)
 }

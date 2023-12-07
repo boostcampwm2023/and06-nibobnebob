@@ -9,8 +9,8 @@ fun SearchRestaurantData.toUiRestaurantData(): UiRestaurantData = UiRestaurantDa
     longitude = location.coordinates[0],
     name = name,
     address = address,
-    phoneNumber = phoneNumber,
-    reviewCount = reviewCnt.toString(),
+    phoneNumber = phoneNumber.ifEmpty { "전화번호 없음" },
+    reviewCount = "$reviewCnt 개",
     isInWishList = false,
     isInMyList = false
 

@@ -11,6 +11,7 @@ import com.avengers.nibobnebob.domain.usecase.restaurant.DeleteMyWishRestaurantU
 import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyRestaurantListUseCase
 import com.avengers.nibobnebob.presentation.ui.main.home.mapper.toUiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiFilterData
+import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRecommendRestaurantData
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.MY_LIST
@@ -40,11 +41,12 @@ data class HomeUiState(
     val locationTrackingState: TrackingState = TrackingState.TryOn,
     val filterList: List<UiFilterData> = emptyList(),
     val markerList: List<UiRestaurantData> = emptyList(),
+    val recommendList: List<UiRecommendRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
     val cameraLatitude: Double = 0.0,
     val cameraLongitude: Double = 0.0,
     val cameraZoom: Double = 0.0,
-    val cameraRadius : Double = 0.0,
+    val cameraRadius: Double = 0.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0,
     val curSelectedMarker: Marker? = null,
@@ -60,12 +62,12 @@ sealed class TrackingState {
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
     data object SetNewMarkers : HomeEvents()
-
-    //    data object NearMarkers : HomeEvents()
     data class SetSingleMarker(
         val marker: Marker?,
         val item: UiRestaurantData
     ) : HomeEvents()
+
+    data object ShowRecommendRestaurantDialog : HomeEvents()
 
     data object RemoveMarkers : HomeEvents()
     data class ShowSnackMessage(
@@ -140,6 +142,32 @@ class HomeViewModel @Inject constructor(
                 locationTrackingState = TrackingState.Off
             )
         }
+    }
+
+    fun recommendRestaurantList() {
+        restaurantRepository.recommendRestaurantList().onEach {
+            when (it) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            recommendList = it.data.map { recommend ->
+                                UiRecommendRestaurantData(
+                                    category = recommend.category,
+                                    id = recommend.id,
+                                    name = recommend.name,
+                                    reviewImage = recommend.reviewImage,
+                                )
+                            }
+                        )
+                    }
+                    _events.emit(HomeEvents.ShowRecommendRestaurantDialog)
+                }
+
+                is BaseState.Error -> {
+                    _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun getFilterList() {
@@ -462,12 +490,6 @@ class HomeViewModel @Inject constructor(
                     addRestaurantId = restaurantId
                 )
             }
-        }
-    }
-
-    fun setCameraZoom(zoom: Double) {
-        _uiState.update { state ->
-            state.copy(cameraZoom = zoom)
         }
     }
 

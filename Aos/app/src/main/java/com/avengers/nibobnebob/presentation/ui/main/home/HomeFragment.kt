@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.RecommendRestaurantDialog
 import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
@@ -19,6 +20,7 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
+import com.avengers.nibobnebob.presentation.util.Constants.NEAR_RESTAURANT
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -102,6 +104,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         setSingleMarker(event.marker, event.item)
                     }
 
+                    is HomeEvents.ShowRecommendRestaurantDialog -> {
+                        RecommendRestaurantDialog(
+                            requireContext(),
+                            viewModel.uiState.value.recommendList,
+                            ::goReviewTest
+                        ).show()
+                    }
+
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
                     is HomeEvents.ShowSnackMessage -> showSnackBar(event.msg)
                 }
@@ -123,7 +133,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.moveCamera(cameraUpdate)
 
         viewModel.uiState.value.markerList.forEach { data ->
-            setMarker(data)
+            val isNear = viewModel.uiState.value.curFilter == NEAR_RESTAURANT
+            setMarker(data, isNear)
         }
     }
 
@@ -176,6 +187,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
+
     private fun startPermissionLauncher() {
         requestPermissionLauncher.launch(locationPermissionList)
     }
@@ -193,11 +205,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         else viewModel.trackingOff()
     }
 
-    private fun setMarker(data: UiRestaurantData) {
+    private fun setMarker(data: UiRestaurantData, isNear: Boolean) {
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
-        marker.icon = OverlayImage.fromResource(R.drawable.ic_marker)
+
+        marker.icon = if (isNear)
+            OverlayImage.fromResource(R.drawable.ic_marker_near)
+        else
+            OverlayImage.fromResource(R.drawable.ic_marker)
         marker.map = naverMap
 
         marker.setOnClickListener {
@@ -256,7 +272,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private fun goReviewTest(restaurantId: Int) {
         findNavController().toRestaurantDetail(restaurantId)
     }
-
 
     private fun NavController.toSearchRestaurant() {
         val action = HomeFragmentDirections.actionHomeFragmentToRestaurantSearchFragment()
