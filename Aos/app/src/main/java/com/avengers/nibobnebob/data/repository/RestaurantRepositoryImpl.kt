@@ -5,10 +5,8 @@ import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
-import com.avengers.nibobnebob.data.model.response.RestaurantItems.Companion.toDomainModel
-import com.avengers.nibobnebob.data.model.response.RestaurantResponse.Companion.toDomainModel
-import com.avengers.nibobnebob.data.model.response.ReviewSortResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.ReviewSortResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.runRemote
