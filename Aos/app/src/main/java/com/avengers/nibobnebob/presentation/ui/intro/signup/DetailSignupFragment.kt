@@ -49,6 +49,8 @@ class DetailSignupFragment :
                     is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
                     is DetailSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is DetailSignupEvents.OpenGallery -> parentViewModel.openGallery()
+                    is DetailSignupEvents.ShowLoading -> showLoading(requireContext())
+                    is DetailSignupEvents.DismissLoading -> dismissLoading()
                 }
             }
         }

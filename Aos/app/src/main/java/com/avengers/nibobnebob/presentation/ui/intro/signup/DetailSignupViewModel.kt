@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.domain.model.base.BaseState
@@ -17,7 +18,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +40,8 @@ sealed class DetailSignupEvents {
     data object NavigateToLoginFragment : DetailSignupEvents()
     data class ShowSnackMessage(val msg: String) : DetailSignupEvents()
     data object OpenGallery : DetailSignupEvents()
+    data object ShowLoading : DetailSignupEvents()
+    data object DismissLoading : DetailSignupEvents()
 }
 
 @HiltViewModel
@@ -145,6 +150,7 @@ class DetailSignupViewModel @Inject constructor(
 
     fun signup() {
         // todo MultiPart -> url API를 따로 만들기 or signup Request 자체를 MultiPart로 묶기
+        Log.d("debugging", "init")
         introRepository.signup(
             email = email.value.toRequestBody("text/plain".toMediaTypeOrNull()),
             provider = provider.value.toRequestBody("text/plain".toMediaTypeOrNull()),
@@ -154,11 +160,15 @@ class DetailSignupViewModel @Inject constructor(
             region = location.value.toRequestBody("text/plain".toMediaTypeOrNull()),
             isMale = isMale.value,
             profileImage = profileFile
-        ).onEach {
+        ).onStart {
+            _events.emit(DetailSignupEvents.ShowLoading)
+        }.onEach {
             when (it) {
                 is BaseState.Success -> navigateToLoginFragment()
                 is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
+        }.onCompletion {
+            _events.emit(DetailSignupEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 
