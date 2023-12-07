@@ -76,6 +76,7 @@
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_logo_home"
+            android:onClick="@{() -> vm.recommendRestaurantList()}"
             app:layout_constraintBottom_toBottomOf="@id/v_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/v_search" />

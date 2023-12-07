@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.RecommendRestaurantDialog
 import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
@@ -103,6 +104,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         setSingleMarker(event.marker, event.item)
                     }
 
+                    is HomeEvents.ShowRecommendRestaurantDialog -> {
+                        RecommendRestaurantDialog(
+                            requireContext(),
+                            viewModel.uiState.value.recommendList,
+                            ::goReviewTest
+                        ).show()
+                    }
+
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
                     is HomeEvents.ShowSnackMessage -> showSnackBar(event.msg)
                 }
@@ -125,7 +134,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
         viewModel.uiState.value.markerList.forEach { data ->
             val isNear = viewModel.uiState.value.curFilter == NEAR_RESTAURANT
-            setMarker(data,isNear)
+            setMarker(data, isNear)
         }
     }
 
@@ -178,6 +187,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
+
     private fun startPermissionLauncher() {
         requestPermissionLauncher.launch(locationPermissionList)
     }
@@ -195,12 +205,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         else viewModel.trackingOff()
     }
 
-    private fun setMarker(data: UiRestaurantData, isNear : Boolean) {
+    private fun setMarker(data: UiRestaurantData, isNear: Boolean) {
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
 
-        marker.icon = if(isNear)
+        marker.icon = if (isNear)
             OverlayImage.fromResource(R.drawable.ic_marker_near)
         else
             OverlayImage.fromResource(R.drawable.ic_marker)
@@ -262,7 +272,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     private fun goReviewTest(restaurantId: Int) {
         findNavController().toRestaurantDetail(restaurantId)
     }
-
 
     private fun NavController.toSearchRestaurant() {
         val action = HomeFragmentDirections.actionHomeFragmentToRestaurantSearchFragment()
