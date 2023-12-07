@@ -160,8 +160,8 @@ class DetailSignupViewModel @Inject constructor(
             profileImage = profileFile
         ).onStart {
             _events.emit(DetailSignupEvents.ShowLoading)
-        }.onEach {
-            when (it) {
+        }.onEach { state ->
+            when (state) {
                 is BaseState.Success -> {
                     goToMainActivity(
                         state.data.accessToken.toString(),
