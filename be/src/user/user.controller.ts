@@ -245,7 +245,7 @@ export class UserController {
   @ApiResponse({ status: 401, description: "인증 실패" })
   @ApiResponse({ status: 400, description: "부적절한 요청" })
   async getMyFollowListInfo(@GetUser() tokenInfo: TokenInfo) {
-    return await this.userService.getMyFollowListInfo(tokenInfo);
+    return this.userService.getMyFollowListInfo(tokenInfo);
   }
 
   @ApiTags("Follow/Following")
@@ -268,7 +268,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: "추천 사용자 정보 요청 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   async getRecommendUserListInfo(@GetUser() tokenInfo: TokenInfo) {
-    return await this.userService.getRecommendUserListInfo(tokenInfo);
+    return this.userService.getRecommendUserListInfo(tokenInfo);
   }
 
   @ApiTags("Signup")
