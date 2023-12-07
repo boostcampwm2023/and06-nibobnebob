@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -13,6 +11,7 @@ import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
+import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,7 +27,8 @@ class EditProfileFragment :
         binding.vm = viewModel
         view?.let { navController = Navigation.findNavController(it) }
         setDateBtnListener()
-        setPhotoPicker()
+        initImageObserver()
+        setGenderRadioListener()
     }
 
     override fun initNetworkView() {
@@ -41,6 +41,10 @@ class EditProfileFragment :
                 when (event) {
                     is EditProfileUiEvent.EditProfileDone -> {
                         navController.navigate(EditProfileFragmentDirections.globalToMyPageFragment())
+                    }
+
+                    is EditProfileUiEvent.OpenGallery -> {
+                        parentViewModel.openGallery()
                     }
 
                     is EditProfileUiEvent.ShowToastMessage -> showToastMessage(event.msg)
@@ -71,19 +75,20 @@ class EditProfileFragment :
         }
     }
 
-    private fun setPhotoPicker() {
-        val pickMedia =
-            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                if (uri != null) {
-                    viewModel.updateProfileImage(uri.toString())
-                }
+    private fun initImageObserver() {
+        repeatOnStarted {
+            parentViewModel.image.collect {
+                viewModel.setImage(it, it.toMultiPart((requireContext())))
             }
-
-        binding.ivProfile.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
-        binding.btnEdtProfile.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun setGenderRadioListener() {
+        binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rb_gender_female -> viewModel.setIsMale(false)
+                R.id.rb_gender_male -> viewModel.setIsMale(true)
+            }
         }
     }
 
