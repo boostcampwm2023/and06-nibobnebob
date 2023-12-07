@@ -118,6 +118,8 @@
     <string name="today_recommend_restaurant">오늘의 추천 음식점</string>
     <string name="toolbar_review">리뷰 전체보기</string>
     <string name="detail_review_all"><![CDATA[전체보기 >]]></string>
+    <string name="user_detail_empty">아직 추가한 맛집이 없습니다.</string>
+    <string name="phone_number_empty">전화번호 없음</string>
 
     <string-array name="location_list">
         <item>용산구</item>

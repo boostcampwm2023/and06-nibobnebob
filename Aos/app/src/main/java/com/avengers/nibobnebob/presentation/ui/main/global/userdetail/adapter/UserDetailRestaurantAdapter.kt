@@ -32,6 +32,6 @@ class UserDetailRestaurantAdapter() :
 class UserDetailRestaurantViewHolder(private val binding: ItemUserDetailRestaurantBinding) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(item: UiUserDetailRestaurantData) {
-
+        binding.item = item
     }
 }
