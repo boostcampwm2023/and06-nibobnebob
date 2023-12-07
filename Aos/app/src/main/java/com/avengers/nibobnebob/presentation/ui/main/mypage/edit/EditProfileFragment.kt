@@ -81,7 +81,6 @@ class EditProfileFragment :
         repeatOnStarted {
             parentViewModel.image.collect {
                 viewModel.setImage(it, it.toMultiPart(requireContext(), "profileImage"))
-                parentViewModel.uriCollected()
             }
         }
     }
