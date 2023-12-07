@@ -16,6 +16,7 @@ import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_WORST
 import com.avengers.nibobnebob.presentation.util.LoginType
+import com.google.android.material.textfield.TextInputLayout
 
 // signup
 @BindingAdapter("helperMessage")
