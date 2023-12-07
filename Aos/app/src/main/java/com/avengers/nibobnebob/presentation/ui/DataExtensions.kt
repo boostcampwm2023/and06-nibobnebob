@@ -56,11 +56,11 @@ internal fun String.toAgeString(): String {
     }
 }
 
-internal fun String.toMultiPart(context: Context): MultipartBody.Part {
+internal fun String.toMultiPart(context: Context, fileName: String): MultipartBody.Part {
     val uri = this.toUri()
     val file = File(getRealPathFromUri(uri, context) ?: "")
     val requestFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
-    return MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
+    return MultipartBody.Part.createFormData(fileName, file.name, requestFile)
 }
 
 

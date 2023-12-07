@@ -19,6 +19,7 @@ internal fun Context.adjustKeyboard(view: View, show: Boolean) {
 
 }
 
+
 internal fun Context.requestLocationPermission(
     permissionList: Array<String>,
     onLauncherStart: () -> Unit,

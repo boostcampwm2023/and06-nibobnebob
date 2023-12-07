@@ -205,6 +205,20 @@
             app:layout_constraintStart_toStartOf="@id/tv_cleanliness_label"
             app:layout_constraintTop_toBottomOf="@id/tv_cleanliness_label" />
 
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_review_img"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_test"
+            app:layout_constraintDimensionRatio="3:2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_taste_rank"
+            app:shapeAppearanceOverlay="@style/All24RadiusImageView" />
+
         <TextView
             android:id="@+id/tv_review"
             style="@style/TextSmallRegular"
@@ -214,7 +228,7 @@
             android:layout_marginStart="18dp"
             android:text="@{item.overallExperience}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_cleanliness_rank"
+            app:layout_constraintTop_toBottomOf="@id/iv_review_img"
             tools:text="@string/test_review" />
 
         <com.google.android.material.divider.MaterialDivider
@@ -227,7 +241,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_review" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

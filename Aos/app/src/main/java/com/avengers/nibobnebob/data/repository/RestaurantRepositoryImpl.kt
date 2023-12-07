@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.data.repository
 
 import android.util.Log
-import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
@@ -23,6 +22,8 @@ import com.avengers.nibobnebob.domain.model.base.StatusCode
 import com.avengers.nibobnebob.domain.repository.RestaurantRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class RestaurantRepositoryImpl @Inject constructor(
@@ -71,27 +72,51 @@ class RestaurantRepositoryImpl @Inject constructor(
         taste: Int,
         service: Int,
         restroomCleanliness: Int,
-        overallExperience: String
+        overallExperience: RequestBody,
+        reviewImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>> = flow {
-        when (val result = runRemote {
-            api.addRestaurant(
-                restaurantId, AddRestaurantRequest(
+        reviewImage?.let { image ->
+            when (val result = runRemote {
+                api.addRestaurant(
+                    restaurantId,
                     isCarVisit,
                     transportationAccessibility,
                     parkingArea,
                     taste,
                     service,
                     restroomCleanliness,
-                    overallExperience
+                    overallExperience,
+                    image
                 )
-            )
-        }) {
-            is BaseState.Success -> {
-                emit(BaseState.Success(Unit))
-            }
+            }) {
+                is BaseState.Success -> {
+                    emit(BaseState.Success(Unit))
+                }
 
-            is BaseState.Error -> {
-                emit(result)
+                is BaseState.Error -> {
+                    emit(result)
+                }
+            }
+        } ?: run {
+            when (val result = runRemote {
+                api.addRestaurantNoImage(
+                    restaurantId,
+                    isCarVisit,
+                    transportationAccessibility,
+                    parkingArea,
+                    taste,
+                    service,
+                    restroomCleanliness,
+                    overallExperience,
+                )
+            }) {
+                is BaseState.Success -> {
+                    emit(BaseState.Success(Unit))
+                }
+
+                is BaseState.Error -> {
+                    emit(result)
+                }
             }
         }
     }

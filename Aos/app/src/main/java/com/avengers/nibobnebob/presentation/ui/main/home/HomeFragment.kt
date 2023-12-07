@@ -73,7 +73,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
                         requireContext().requestLocationPermission(
                             locationPermissionList,
                             ::startPermissionLauncher,
-                            ::onTrackingChangeListener
+                            ::onTrackingChangeListener,
                         )
                     }
 

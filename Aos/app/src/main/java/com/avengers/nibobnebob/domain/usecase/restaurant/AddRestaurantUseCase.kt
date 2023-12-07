@@ -3,6 +3,8 @@ package com.avengers.nibobnebob.domain.usecase.restaurant
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.repository.RestaurantRepository
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class AddRestaurantUseCase @Inject constructor(
@@ -15,7 +17,8 @@ class AddRestaurantUseCase @Inject constructor(
         taste: Int,
         service: Int,
         restroomCleanliness: Int,
-        overallExperience: String
+        overallExperience:RequestBody,
+        reviewImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>> =
         repository.addRestaurant(
             restaurantId,
@@ -25,6 +28,7 @@ class AddRestaurantUseCase @Inject constructor(
             taste,
             service,
             restroomCleanliness,
-            overallExperience
+            overallExperience,
+            reviewImage
         )
 }

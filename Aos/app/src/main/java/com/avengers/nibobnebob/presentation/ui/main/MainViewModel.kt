@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.presentation.ui.main
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.NetworkManager
 import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
+import com.avengers.nibobnebob.presentation.ui.intro.IntroEvents
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,10 +16,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-sealed class MainSharedUiEvent {
-    data object OpenGallery : MainSharedUiEvent()
+sealed class MainEvents{
+    data object OpenGallery: MainEvents()
 }
-
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -27,12 +27,26 @@ class MainViewModel @Inject constructor(
     val selectedItem = MutableStateFlow(UiRestaurantData())
     val searchKeyword = MutableStateFlow("")
 
-    private val _events = MutableSharedFlow<MainSharedUiEvent>()
-    val events: SharedFlow<MainSharedUiEvent> = _events.asSharedFlow()
+    private val _events = MutableSharedFlow<MainEvents>()
+    val events: SharedFlow<MainEvents> = _events.asSharedFlow()
 
     private val _image = MutableStateFlow("")
     val image: StateFlow<String> = _image.asStateFlow()
 
+
+    fun openGallery(){
+        viewModelScope.launch {
+            _events.emit(MainEvents.OpenGallery)
+        }
+    }
+
+    fun setUriString(uri : String){
+        _image.value = uri
+    }
+
+    fun uriCollected(){
+        _image.value = ""
+    }
 
     fun markSearchRestaurant(item: UiRestaurantData) {
         viewModelScope.launch { selectedItem.emit(item) }
@@ -46,13 +60,5 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch { searchKeyword.emit("") }
     }
 
-    fun openGallery() {
-        viewModelScope.launch {
-            _events.emit(MainSharedUiEvent.OpenGallery)
-        }
-    }
 
-    fun setUriString(uri: String) {
-        _image.value = uri
-    }
 }

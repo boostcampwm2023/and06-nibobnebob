@@ -1,8 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro
 
 
-import android.net.Uri
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.avengers.nibobnebob.app.NetworkManager
 import com.avengers.nibobnebob.presentation.base.BaseActivityViewModel
@@ -41,5 +39,9 @@ class IntroViewModel @Inject constructor(
 
     fun setUriString(uri : String){
         _image.value = uri
+    }
+
+    fun uriCollected(){
+        _image.value = ""
     }
 }

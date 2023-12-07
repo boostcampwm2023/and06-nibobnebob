@@ -1,6 +1,6 @@
 package com.avengers.nibobnebob.data.remote
 
-import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
+
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
@@ -9,11 +9,14 @@ import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse
 import com.avengers.nibobnebob.data.model.response.ReviewSortResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -30,10 +33,31 @@ interface RestaurantApi {
         @Query("sort") sort: String? = null
     ): Response<BaseResponse<ReviewSortResponse>>
 
+    @Multipart
     @POST("api/user/restaurant/{restaurantId}")
     suspend fun addRestaurant(
         @Path("restaurantId") restaurantId: Int,
-        @Body params: AddRestaurantRequest
+        @Part("isCarVisit") isCarVisit: Boolean,
+        @Part("transportationAccessibility") transportationAccessibility: Int?,
+        @Part("parkingArea") parkingArea: Int?,
+        @Part("taste") taste: Int,
+        @Part("service") service: Int,
+        @Part("restroomCleanliness") restroomCleanliness: Int,
+        @Part("overallExperience") overallExperience: RequestBody,
+        @Part reviewImage: MultipartBody.Part
+    ): Response<BaseResponse<Unit>>
+
+    @Multipart
+    @POST("api/user/restaurant/{restaurantId}")
+    suspend fun addRestaurantNoImage(
+        @Path("restaurantId") restaurantId: Int,
+        @Part("isCarVisit") isCarVisit: Boolean,
+        @Part("transportationAccessibility") transportationAccessibility: Int?,
+        @Part("parkingArea") parkingArea: Int?,
+        @Part("taste") taste: Int,
+        @Part("service") service: Int,
+        @Part("restroomCleanliness") restroomCleanliness: Int,
+        @Part("overallExperience") overallExperience: RequestBody,
     ): Response<BaseResponse<Unit>>
 
     @DELETE("api/user/restaurant/{restaurantid}")

@@ -17,6 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.ActivityMainBinding
 import com.avengers.nibobnebob.presentation.base.BaseActivity
+import com.avengers.nibobnebob.presentation.ui.intro.IntroActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,15 +34,25 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private lateinit var neededPermissionList: MutableList<String>
     private val storagePermissionList =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(
+            arrayOf(  // 안드로이드 13 이상 필요한 권한들
                 Manifest.permission.READ_MEDIA_IMAGES
             )
         } else {
-            arrayOf(
+            arrayOf(  // 안드로이드 13 미만 필요한 권한들
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         }
+
+    override fun initEventObserver() {
+        repeatOnStarted {
+            viewModel.events.collect{
+                when(it){
+                    is MainEvents.OpenGallery -> onCheckStoragePermissions()
+                }
+            }
+        }
+    }
 
     override fun initView() {
         navHostFragment =
@@ -56,16 +67,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     bnvNavBar.visibility = View.VISIBLE
                 } else {
                     bnvNavBar.visibility = View.GONE
-                }
-            }
-        }
-    }
-
-    override fun initEventObserver() {
-        repeatOnStarted {
-            viewModel.events.collect {
-                when (it) {
-                    is MainSharedUiEvent.OpenGallery -> onCheckStoragePermissions()
                 }
             }
         }
@@ -86,7 +87,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             ActivityCompat.requestPermissions(
                 this,
                 neededPermissionList.toTypedArray(),
-                STORAGE_PERMISSION
+                IntroActivity.STORAGE_PERMISSION
             )
         } else {
             openGallery()
@@ -99,13 +100,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == STORAGE_PERMISSION) {
+        if (requestCode == IntroActivity.STORAGE_PERMISSION) {
             neededPermissionList.forEach {
-                if (ContextCompat.checkSelfPermission(
-                        this,
-                        it
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) return
+                if (ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED) return
             }
             openGallery()
         }
@@ -127,6 +124,4 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 }
             }
         }
-
-
 }

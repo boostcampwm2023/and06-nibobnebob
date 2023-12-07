@@ -9,6 +9,8 @@ import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 interface RestaurantRepository {
 
@@ -28,7 +30,8 @@ interface RestaurantRepository {
         taste: Int,
         service: Int,
         restroomCleanliness: Int,
-        overallExperience: String
+        overallExperience: RequestBody,
+        reviewImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>>
 
     fun deleteRestaurant(
