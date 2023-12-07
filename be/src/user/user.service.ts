@@ -217,6 +217,12 @@ export class UserService {
     const result = await this.usersRepository.getRecommendUserListInfo(userIdValues, tokenInfo.id);
 
     function getRandomInts(min: number, max: number, count: number): number[] {
+      if(max === -1){
+        return [];
+      } else if(max === 0){
+        return [0];
+      }
+
       const ints = new Set<number>();
       while (ints.size < count) {
         const rand = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -226,6 +232,8 @@ export class UserService {
     }
 
     const randomIndexes = getRandomInts(0, result.length - 1, 2);
+    if(randomIndexes.length === 0) return [];
+    
     const selectedUsers = randomIndexes.map(index => result[index]);
     return selectedUsers.map((user) => ({
       ...user,
