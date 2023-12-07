@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.response.BaseResponse
 import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
+import com.avengers.nibobnebob.data.model.response.RecommendRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse
@@ -30,6 +31,8 @@ interface RestaurantApi {
     @GET("api/review/{restaurantId}")
     suspend fun sortReview(
         @Path("restaurantId") restaurantId: Int,
+        @Query("limit") limit: Int? = null,
+        @Query("page") page: Int? = null,
         @Query("sort") sort: String? = null
     ): Response<BaseResponse<ReviewSortResponse>>
 
@@ -130,4 +133,8 @@ interface RestaurantApi {
     suspend fun unlikeReview(
         @Path("reviewId") reviewId: Int
     ): Response<BaseResponse<Unit>>
+
+    @GET("api/user/recommend-food")
+    suspend fun recommendRestaurantList()
+            : Response<BaseResponse<List<RecommendRestaurantResponse>>>
 }

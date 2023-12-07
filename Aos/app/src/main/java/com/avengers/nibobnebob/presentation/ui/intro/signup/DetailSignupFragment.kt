@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
+import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -11,6 +12,7 @@ import com.avengers.nibobnebob.databinding.FragmentDetailSignupBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
 import com.avengers.nibobnebob.presentation.ui.intro.IntroViewModel
+import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,9 +48,13 @@ class DetailSignupFragment :
             viewModel.events.collect {
                 when (it) {
                     is DetailSignupEvents.NavigateToBack -> findNavController().navigateUp()
-                    is DetailSignupEvents.NavigateToLoginFragment -> findNavController().toLoginFragment()
                     is DetailSignupEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is DetailSignupEvents.OpenGallery -> parentViewModel.openGallery()
+                    is DetailSignupEvents.GoToMainActivity -> {
+                        val intent = Intent(requireContext(),MainActivity::class.java)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                    }
                 }
             }
         }
@@ -88,11 +94,6 @@ class DetailSignupFragment :
             setDropDownBackgroundTint(ContextCompat.getColor(this.context, R.color.nn_primary0))
             setSimpleItems(resources.getStringArray(R.array.location_list))
         }
-    }
-
-    private fun NavController.toLoginFragment() {
-        val action = DetailSignupFragmentDirections.actionDetailSignupFragmentToLoginFragment()
-        this.navigate(action)
     }
 }
 

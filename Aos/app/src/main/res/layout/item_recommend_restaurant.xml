@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.avengers.nibobnebob.presentation.ui.main.home.model.UiRecommendRestaurantData" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp">
+
+
+        <ImageView
+            android:id="@+id/iv_restaurant_image"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_app_logo" />
+
+        <TextView
+            android:id="@+id/tv_restaurant_name"
+            style="@style/TextMediumBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@{item.name}"
+            app:layout_constraintEnd_toEndOf="@id/iv_restaurant_image"
+            app:layout_constraintStart_toStartOf="@id/iv_restaurant_image"
+            app:layout_constraintTop_toBottomOf="@id/iv_restaurant_image"
+            tools:text="맥도날드 서초 뱅뱅역점" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
