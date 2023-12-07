@@ -8,6 +8,8 @@ import com.avengers.nibobnebob.domain.usecase.restaurant.GetMyWishListUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toMyWishListData
 import com.avengers.nibobnebob.presentation.ui.main.mypage.model.UiMyWishData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
+import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +26,11 @@ import javax.inject.Inject
 
 data class MyWishUiState(
     val wishList: List<UiMyWishData> = emptyList(),
+    val filterOption: String = "",
+    val listPage: Int = 1,
+    val lastPage: Boolean = false,
     val isEmpty: Boolean = false,
+    val isLoading: Boolean = false,
 )
 
 sealed class MyWishEvent {
@@ -50,8 +56,13 @@ class MyWishListViewModel @Inject constructor(
     val events: SharedFlow<MyWishEvent> = _events.asSharedFlow()
 
 
-    fun myWishList() {
-        getMyWishListUseCase().onEach { wish ->
+    fun myWishList(
+        sort: String? = null,
+    ) {
+        getMyWishListUseCase(
+            limit = ITEM_LIMIT, page = FIRST_PAGE, sort = sort
+                ?: uiState.value.filterOption
+        ).onEach { wish ->
             when (wish) {
                 is BaseState.Success -> {
                     wish.data.wishRestaurantItemsData?.let {
@@ -61,7 +72,40 @@ class MyWishListViewModel @Inject constructor(
                             }
                             state.copy(
                                 wishList = wishList,
+                                filterOption = if (sort == FILTER_OLD) FILTER_OLD else FILTER_NEW,
+                                listPage = 2,
+                                lastPage = wish.data.hasNext,
                                 isEmpty = wishList.isEmpty()
+                            )
+                        }
+                    }
+                }
+
+                else -> _events.emit(MyWishEvent.ShowSnackMessage(ERROR_MSG))
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun loadNextPage() {
+        _uiState.update { it.copy(isLoading = true) }
+        getMyWishListUseCase(
+            limit = ITEM_LIMIT, page = uiState.value.listPage, sort = uiState.value.filterOption
+        ).onEach { wish ->
+            when (wish) {
+                is BaseState.Success -> {
+                    wish.data.wishRestaurantItemsData?.let {
+
+                        _uiState.update { state ->
+                            val updateList = uiState.value.wishList.toMutableList().apply {
+                                addAll(it.map { restaurant ->
+                                    restaurant.toMyWishListData()
+                                })
+                            }
+                            state.copy(
+                                wishList = updateList,
+                                listPage = uiState.value.listPage + 1,
+                                lastPage = wish.data.hasNext,
+                                isLoading = false
                             )
                         }
                     }
@@ -91,7 +135,7 @@ class MyWishListViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
                     _events.emit(MyWishEvent.ShowToastMessage("삭제 되었습니다."))
-                    myWishList()
+                    updateList(id)
                 }
 
                 is BaseState.Error -> {
@@ -101,12 +145,17 @@ class MyWishListViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-//    private fun updateList(deleteId : Int){
-//        _uiState.update { state ->
-//            state.copy(
-//                myList = state.myList.filter { it.id != deleteId }.map { it }
-//            )
-//        }
-//    }
+    private fun updateList(deleteId: Int) {
+        _uiState.update { state ->
+            state.copy(
+                wishList = state.wishList.filter { it.id != deleteId }.map { it }
+            )
+        }
+    }
+
+    companion object {
+        const val FIRST_PAGE = 1
+        const val ITEM_LIMIT = 10
+    }
 
 }

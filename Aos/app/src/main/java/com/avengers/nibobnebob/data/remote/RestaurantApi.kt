@@ -2,10 +2,11 @@ package com.avengers.nibobnebob.data.remote
 
 import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.BaseResponse
+import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
-import com.avengers.nibobnebob.data.model.response.RestaurantItems
-import com.avengers.nibobnebob.data.model.response.RestaurantResponse
+import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse
+import com.avengers.nibobnebob.data.model.response.ReviewSortResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import retrofit2.Response
@@ -23,6 +24,12 @@ interface RestaurantApi {
         @Path("restaurantId") restaurantId: Int
     ): Response<BaseResponse<RestaurantDetailResponse>>
 
+    @GET("api/review/{restaurantId}")
+    suspend fun sortReview(
+        @Path("restaurantId") restaurantId: Int,
+        @Query("sort") sort: String? = null
+    ): Response<BaseResponse<ReviewSortResponse>>
+
     @POST("api/user/restaurant/{restaurantId}")
     suspend fun addRestaurant(
         @Path("restaurantId") restaurantId: Int,
@@ -36,11 +43,19 @@ interface RestaurantApi {
 
     // 내 맛집 리스트
     @GET("api/user/restaurant")
-    suspend fun myRestaurantList(): Response<BaseResponse<RestaurantResponse>>
+    suspend fun myRestaurantList(
+        @Query("limit") limit: Int? = null,
+        @Query("page") page: Int? = null,
+        @Query("sort") sort: String? = null,
+    ): Response<BaseResponse<MyRestaurantResponse>>
 
     // 내 위시 리스트
     @GET("api/user/wish-restaurant")
-    suspend fun myWishList(): Response<BaseResponse<WishRestaurantResponse>>
+    suspend fun myWishList(
+        @Query("limit") limit: Int? = null,
+        @Query("page") page: Int? = null,
+        @Query("sort") sort: String? = null,
+    ): Response<BaseResponse<WishRestaurantResponse>>
 
     @POST("api/user/wish-restaurant/{restaurantId}")
     suspend fun addWishRestaurant(
@@ -72,7 +87,7 @@ interface RestaurantApi {
         @Query("filter") filter: String,
         @Query("location") location: String,
         @Query("radius") radius: Int
-    ): Response<BaseResponse<List<RestaurantItems>>>
+    ): Response<BaseResponse<List<RestaurantItemResponse>>>
 
     //위치기반 맛집 리스트
     @GET("api/restaurant/all")
@@ -80,6 +95,15 @@ interface RestaurantApi {
         @Query("radius") radius: String,
         @Query("longitude") longitude: String,
         @Query("latitude") latitude: String
-    ): Response<BaseResponse<List<RestaurantItems>>>
+    ): Response<BaseResponse<List<RestaurantItemResponse>>>
 
+    @POST("api/review/{reviewId}/like")
+    suspend fun likeReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<BaseResponse<Unit>>
+
+    @POST("api/review/{reviewId}/unlike")
+    suspend fun unlikeReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<BaseResponse<Unit>>
 }

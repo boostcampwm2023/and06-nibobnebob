@@ -15,6 +15,11 @@ data class RestaurantDetailData(
     val reviews: List<ReviewsData>?
 ) : BaseDomainModel
 
+data class ReviewSortData(
+    val hasNext: Boolean,
+    val reviewItems: List<ReviewsData>
+) : BaseDomainModel
+
 data class ReviewsData(
     val id: Int,
     val createdAt: String,
@@ -26,5 +31,6 @@ data class ReviewsData(
     val taste: Int,
     val transportationAccessibility: Int,
     val reviewer: String,
-): BaseDomainModel
+    val isLike: Any?
+) : BaseDomainModel
 
