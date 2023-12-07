@@ -20,7 +20,9 @@ interface RestaurantRepository {
 
     fun sortReview(
         restaurantId: Int,
-        sort: String?
+        limit: Int? = null,
+        page: Int? = null,
+        sort: String? = null
     ): Flow<BaseState<ReviewSortData>>
 
     fun addRestaurant(
@@ -81,7 +83,7 @@ interface RestaurantRepository {
         latitude: String,
     ): Flow<BaseState<List<RestaurantItemsData>>>
 
-    fun likeReview(reviewId : Int) : Flow<BaseState<Unit>>
+    fun likeReview(reviewId: Int): Flow<BaseState<Unit>>
 
-    fun unlikeReview(reviewId : Int) : Flow<BaseState<Unit>>
+    fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>>
 }
