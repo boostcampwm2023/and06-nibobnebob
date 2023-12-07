@@ -60,8 +60,6 @@ sealed class TrackingState {
 sealed class HomeEvents {
     data object NavigateToSearchRestaurant : HomeEvents()
     data object SetNewMarkers : HomeEvents()
-
-    //    data object NearMarkers : HomeEvents()
     data class SetSingleMarker(
         val marker: Marker?,
         val item: UiRestaurantData
@@ -462,12 +460,6 @@ class HomeViewModel @Inject constructor(
                     addRestaurantId = restaurantId
                 )
             }
-        }
-    }
-
-    fun setCameraZoom(zoom: Double) {
-        _uiState.update { state ->
-            state.copy(cameraZoom = zoom)
         }
     }
 

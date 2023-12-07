@@ -19,6 +19,7 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
+import com.avengers.nibobnebob.presentation.util.Constants.NEAR_RESTAURANT
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -123,7 +124,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.moveCamera(cameraUpdate)
 
         viewModel.uiState.value.markerList.forEach { data ->
-            setMarker(data)
+            val isNear = viewModel.uiState.value.curFilter == NEAR_RESTAURANT
+            setMarker(data,isNear)
         }
     }
 
@@ -193,11 +195,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         else viewModel.trackingOff()
     }
 
-    private fun setMarker(data: UiRestaurantData) {
+    private fun setMarker(data: UiRestaurantData, isNear : Boolean) {
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
-        marker.icon = OverlayImage.fromResource(R.drawable.ic_marker)
+
+        marker.icon = if(isNear)
+            OverlayImage.fromResource(R.drawable.ic_marker_near)
+        else
+            OverlayImage.fromResource(R.drawable.ic_marker)
         marker.map = naverMap
 
         marker.setOnClickListener {
