@@ -7,5 +7,6 @@ data class UserDetailData(
     val birthdate: String,
     val region: String,
     val isMale: Boolean,
-    val isFollow: Boolean
+    val isFollow: Boolean,
+    val profileImage: String
 ): BaseDomainModel

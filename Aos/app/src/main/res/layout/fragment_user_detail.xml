@@ -31,10 +31,11 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_test"
+            android:onClick="@{() -> vm.showBiggerImageDialog()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_back"
+            app:profileImageUrl="@{vm.uiState.userDetail.profileImage}"
             app:shapeAppearanceOverlay="@style/All50RadiusImageView" />
 
         <TextView

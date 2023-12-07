@@ -1,7 +1,9 @@
 package com.avengers.nibobnebob.presentation.ui.intro.signup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import com.avengers.nibobnebob.domain.repository.IntroRepository
 import com.avengers.nibobnebob.domain.usecase.GetNickValidationUseCase
@@ -17,7 +19,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,15 +38,18 @@ data class DetailSignupUiState(
 
 sealed class DetailSignupEvents {
     data object NavigateToBack : DetailSignupEvents()
-    data object NavigateToLoginFragment : DetailSignupEvents()
+    data object GoToMainActivity : DetailSignupEvents()
     data class ShowSnackMessage(val msg: String) : DetailSignupEvents()
     data object OpenGallery : DetailSignupEvents()
+    data object ShowLoading : DetailSignupEvents()
+    data object DismissLoading : DetailSignupEvents()
 }
 
 @HiltViewModel
 class DetailSignupViewModel @Inject constructor(
     private val introRepository: IntroRepository,
-    private val getNickValidationUseCase: GetNickValidationUseCase
+    private val getNickValidationUseCase: GetNickValidationUseCase,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailSignupUiState())
@@ -68,11 +75,10 @@ class DetailSignupViewModel @Inject constructor(
             nick,
             birth,
             location,
-            nickValidation,
-            profileImg
-        ) { nick, birth, location, nickValidation, profileImg ->
+            nickValidation
+        ) { nick, birth, location, nickValidation ->
             nick.isNotBlank() && birth.isNotBlank() && location.isNotBlank() &&
-                    nickValidation && profileImg.isNotBlank()
+                    nickValidation
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
@@ -93,8 +99,6 @@ class DetailSignupViewModel @Inject constructor(
                     nickState = InputState.Empty
                 )
             }
-        }.onEach {
-
         }.launchIn(viewModelScope)
     }
 
@@ -154,11 +158,20 @@ class DetailSignupViewModel @Inject constructor(
             region = location.value.toRequestBody("text/plain".toMediaTypeOrNull()),
             isMale = isMale.value,
             profileImage = profileFile
-        ).onEach {
-            when (it) {
-                is BaseState.Success -> navigateToLoginFragment()
+        ).onStart {
+            _events.emit(DetailSignupEvents.ShowLoading)
+        }.onEach { state ->
+            when (state) {
+                is BaseState.Success -> {
+                    goToMainActivity(
+                        state.data.accessToken.toString(),
+                        state.data.refreshToken.toString()
+                    )
+                }
                 is BaseState.Error -> _events.emit(DetailSignupEvents.ShowSnackMessage(ERROR_MSG))
             }
+        }.onCompletion {
+            _events.emit(DetailSignupEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 
@@ -186,9 +199,12 @@ class DetailSignupViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToLoginFragment() {
+    private fun goToMainActivity(access: String, refresh: String) {
         viewModelScope.launch {
-            _events.emit(DetailSignupEvents.NavigateToLoginFragment)
+            dataStoreManager.putAutoLogin(true)
+            dataStoreManager.putAccessToken(access)
+            dataStoreManager.putRefreshToken(refresh)
+            _events.emit(DetailSignupEvents.GoToMainActivity)
         }
     }
 

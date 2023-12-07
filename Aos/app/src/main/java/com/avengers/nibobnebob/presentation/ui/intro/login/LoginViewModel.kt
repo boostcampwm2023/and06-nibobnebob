@@ -76,8 +76,8 @@ class LoginViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun setAutoLogin(newState: Boolean) {
-        autoLogin.value = newState
+    fun setAutoLogin(state: Boolean) {
+        autoLogin.value = state
     }
 
     fun loginCommon() {
@@ -87,6 +87,7 @@ class LoginViewModel @Inject constructor(
             when (state) {
                 is BaseState.Success -> {
                     loginSuccess(
+                        autoLogin.value,
                         state.data.accessToken.toString(),
                         state.data.refreshToken.toString()
                     )
@@ -114,6 +115,7 @@ class LoginViewModel @Inject constructor(
                 when (state) {
                     is BaseState.Success -> {
                         loginSuccess(
+                            true,
                             state.data.accessToken.toString(),
                             state.data.refreshToken.toString()
                         )
@@ -130,9 +132,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun loginSuccess(access: String, refresh: String) {
+    private fun loginSuccess(autoLogin: Boolean, access: String, refresh: String) {
         viewModelScope.launch {
-            dataStoreManager.putAutoLogin(true)
+            dataStoreManager.putAutoLogin(autoLogin)
             dataStoreManager.putAccessToken(access)
             dataStoreManager.putRefreshToken(refresh)
             _events.emit(LoginEvent.NavigateToMain)
