@@ -6,6 +6,7 @@ import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse
 import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse
+import com.avengers.nibobnebob.data.model.response.ReviewSortResponse
 import com.avengers.nibobnebob.data.model.response.SearchRestaurantResponse
 import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse
 import retrofit2.Response
@@ -22,6 +23,12 @@ interface RestaurantApi {
     suspend fun restaurantDetail(
         @Path("restaurantId") restaurantId: Int
     ): Response<BaseResponse<RestaurantDetailResponse>>
+
+    @GET("api/review/{restaurantId}")
+    suspend fun sortReview(
+        @Path("restaurantId") restaurantId: Int,
+        @Query("sort") sort: String? = null
+    ): Response<BaseResponse<ReviewSortResponse>>
 
     @POST("api/user/restaurant/{restaurantId}")
     suspend fun addRestaurant(
@@ -90,4 +97,13 @@ interface RestaurantApi {
         @Query("latitude") latitude: String
     ): Response<BaseResponse<List<RestaurantItemResponse>>>
 
+    @POST("api/review/{reviewId}/like")
+    suspend fun likeReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<BaseResponse<Unit>>
+
+    @POST("api/review/{reviewId}/unlike")
+    suspend fun unlikeReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<BaseResponse<Unit>>
 }

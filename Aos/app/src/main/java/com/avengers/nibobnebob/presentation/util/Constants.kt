@@ -20,5 +20,7 @@ object Constants {
 
     const val FILTER_NEW = "TIME_DESC"
     const val FILTER_OLD = "TIME_ASC"
+    const val FILTER_BEST = "REVIEW_DESC"
+    const val FILTER_WORST = "REVIEW_ASC"
 
 }
