@@ -7,6 +7,7 @@ import com.avengers.nibobnebob.domain.usecase.restaurant.GetSortedReviewUseCase
 import com.avengers.nibobnebob.presentation.ui.main.global.mapper.toUiRestaurantReviewDataInfo
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiReviewData
 import com.avengers.nibobnebob.presentation.util.Constants
+import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
@@ -19,9 +20,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class RestaurantReviewsEvents {
+    data object NavigateToBack : RestaurantReviewsEvents()
     data class ShowSnackMessage(val msg: String) : RestaurantReviewsEvents()
     data class ShowToastMessage(val msg: String) : RestaurantReviewsEvents()
 }
@@ -54,8 +57,8 @@ class RestaurantReviewsViewModel @Inject constructor(
     fun getAllReviews(id: Int, name: String, sort: String? = null) {
         getSortedReviewUseCase(
             id,
-            limit = 2,
-            page = 1,
+            limit = ITEM_LIMIT,
+            page = FIRST_PAGE,
             sort = sort ?: uiState.value.reviewFilter
         ).onEach { review ->
             when (review) {
@@ -65,6 +68,7 @@ class RestaurantReviewsViewModel @Inject constructor(
                             restaurantId = id,
                             name = name,
                             listPage = 2,
+                            lastPage = review.data.hasNext,
                             reviewFilter = sort ?: uiState.value.reviewFilter,
                             reviewList = review.data.reviewItems.map {
                                 it.toUiRestaurantReviewDataInfo(
@@ -81,28 +85,37 @@ class RestaurantReviewsViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun sortReview(
-        sort: String?
-    ) {
-//        getSortedReviewUseCase(restaurantId.value, sort).onEach { review ->
-//            when (review) {
-//                is BaseState.Success -> {
-//                    _uiState.update { state ->
-//                        state.copy(
-//                            reviewList = review.data.reviewItems.map {
-//                                it.toUiRestaurantReviewDataInfo(
-//                                    ::onThumbsUpItemClicked,
-//                                    ::onThumbsDownItemClicked,
-//                                )
-//                            },
-//                            reviewFilter = sort ?: Constants.FILTER_OLD
-//                        )
-//                    }
-//                }
-//
-//                else -> _events.emit(RestaurantDetailEvents.ShowSnackMessage(Constants.ERROR_MSG))
-//            }
-//        }.launchIn(viewModelScope)
+    fun loadNextPage() {
+        _uiState.update { it.copy(isLoading = true) }
+        getSortedReviewUseCase(
+            id = uiState.value.restaurantId,
+            limit = ITEM_LIMIT,
+            page = uiState.value.listPage,
+            sort = uiState.value.reviewFilter
+        ).onEach { review ->
+            when (review) {
+                is BaseState.Success -> {
+                    _uiState.update { state ->
+                        val updateList = uiState.value.reviewList.toMutableList().apply {
+                            addAll(review.data.reviewItems.map {
+                                it.toUiRestaurantReviewDataInfo(
+                                    ::onThumbsUpItemClicked,
+                                    ::onThumbsDownItemClicked,
+                                )
+                            })
+                        }
+                        state.copy(
+                            reviewList = updateList,
+                            listPage = uiState.value.listPage + 1,
+                            lastPage = review.data.hasNext,
+                            isLoading = false
+                        )
+                    }
+                }
+
+                else -> _events.emit(RestaurantReviewsEvents.ShowSnackMessage(ERROR_MSG))
+            }
+        }.launchIn(viewModelScope)
     }
 
     //TODO : 추후 서버 좋아요 진행
@@ -170,5 +183,14 @@ class RestaurantReviewsViewModel @Inject constructor(
             }
             state.copy(reviewList = updatedReviewList)
         }
+    }
+
+    fun navigateToBack() {
+        viewModelScope.launch { _events.emit(RestaurantReviewsEvents.NavigateToBack) }
+    }
+
+    companion object {
+        const val FIRST_PAGE = 1
+        const val ITEM_LIMIT = 3
     }
 }

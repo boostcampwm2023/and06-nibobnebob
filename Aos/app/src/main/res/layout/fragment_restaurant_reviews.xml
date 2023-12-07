@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.global.restaurantreview.RestaurantReviewsViewModel" />
@@ -31,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:background="@android:color/transparent"
+                android:onClick="@{() -> vm.navigateToBack()}"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_back"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -54,6 +57,7 @@
                 style="@style/TextSmallBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{vm.uiState.name}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tv_header"
                 app:layout_constraintTop_toBottomOf="@id/tv_header"
@@ -182,6 +186,17 @@
             app:layout_constraintTop_toBottomOf="@id/tv_worst_label"
             app:list="@{vm.uiState.reviewList}"
             tools:listitem="@layout/item_review_list" />
+
+        <ImageView
+            android:id="@+id/iv_loading"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_loading"
+            android:visibility="@{vm.uiState.isLoading? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
