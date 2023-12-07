@@ -1,7 +1,6 @@
 package com.avengers.nibobnebob.data.repository
 
 import android.util.Log
-import com.avengers.nibobnebob.data.model.request.AddRestaurantRequest
 import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel

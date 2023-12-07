@@ -78,7 +78,8 @@ class EditProfileFragment :
     private fun initImageObserver() {
         repeatOnStarted {
             parentViewModel.image.collect {
-                viewModel.setImage(it, it.toMultiPart((requireContext())))
+                viewModel.setImage(it, it.toMultiPart(requireContext(), "profileImage"))
+                parentViewModel.uriCollected()
             }
         }
     }
