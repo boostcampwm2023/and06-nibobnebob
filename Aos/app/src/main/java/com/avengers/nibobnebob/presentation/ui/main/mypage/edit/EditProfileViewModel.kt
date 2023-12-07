@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 data class EditProfileUiState(
@@ -28,7 +29,8 @@ data class EditProfileUiState(
     val provider: String = "",
     val birth: EditInputState = EditInputState(),
     val location: EditInputState = EditInputState(),
-    val profileImage: EditInputState = EditInputState()
+    val profileImage: EditInputState = EditInputState(),
+    val isMale: EditInputState = EditInputState()
 )
 
 
@@ -40,10 +42,10 @@ data class EditInputState(
 
 sealed class EditProfileUiEvent {
     data object EditProfileDone : EditProfileUiEvent()
+    data object OpenGallery : EditProfileUiEvent()
     data class ShowToastMessage(val msg: String) : EditProfileUiEvent()
     data class ShowSnackMessage(val msg: String) : EditProfileUiEvent()
 }
-
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
@@ -59,7 +61,7 @@ class EditProfileViewModel @Inject constructor(
     private var originalNickName: String = ""
     private var originalBirth: String = ""
     private var originalLocation: String = ""
-    private var originalIsMale: Boolean = true
+    private var originalIsMale: Boolean = false
     private var originalProfileImage: String = ""
 
     val locationList = LocationArray.LOCATION_ARRAY
@@ -70,7 +72,8 @@ class EditProfileViewModel @Inject constructor(
     val locationTextState = MutableStateFlow("")
     val locationEditMode = MutableStateFlow(false)
     val profileImageState = MutableStateFlow("")
-
+    val isMaleState = MutableStateFlow(false)
+    private var profileImageFile: MultipartBody.Part? = null
 
     init {
         getOriginalData()
@@ -78,6 +81,7 @@ class EditProfileViewModel @Inject constructor(
         observeLocation()
         observeBirth()
         observeProfileImage()
+        observeIsMale()
     }
 
     private fun getOriginalData() {
@@ -92,6 +96,7 @@ class EditProfileViewModel @Inject constructor(
                         locationTextState.emit(location)
                         birthState.emit(birth)
                         profileImageState.emit(profileImage)
+                        isMaleState.emit(gender)
 
                         originalNickName = nickName
                         originalLocation = location
@@ -201,6 +206,22 @@ class EditProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun observeIsMale() {
+        isMaleState.onEach { isMale ->
+            _uiState.update { state ->
+                state.copy(
+                    isMale = EditInputState(
+                        isChanged = originalIsMale != isMale
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun setIsMale(data: Boolean) {
+        isMaleState.value = data
+    }
+
     private fun observeProfileImage() {
         profileImageState.onEach { image ->
             if (originalProfileImage.isEmpty()) return@onEach
@@ -214,22 +235,28 @@ class EditProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun updateProfileImage(imageUri: String) {
-        profileImageState.update { imageUri }
+    fun openGallery() {
+        viewModelScope.launch {
+            _events.emit(EditProfileUiEvent.OpenGallery)
+        }
     }
 
+    fun setImage(uri: String, file: MultipartBody.Part) {
+        profileImageState.value = uri
+        profileImageFile = file
+    }
 
     fun doneEditProfile() {
-
         myPageRepository.editMyInfo(
             nickName = nickState.value,
             email = uiState.value.email,
             provider = uiState.value.provider,
             birthdate = birthState.value,
-            region = if (locationState.value == 0) originalLocation else locationList[locationState.value],
-            isMale = originalIsMale,
-            password = "1234",
-            profileImage = profileImageState.value
+            region = if (locationState.value == 0) originalLocation
+            else locationList[locationState.value],
+            isMale = isMaleState.value,
+            isImageChanged = originalProfileImage != profileImageState.value,
+            profileImage = profileImageFile
         ).onEach {
             when (it) {
                 is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)

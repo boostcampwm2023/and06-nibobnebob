@@ -4,6 +4,7 @@ import com.avengers.nibobnebob.domain.model.MyDefaultInfoData
 import com.avengers.nibobnebob.domain.model.MyInfoData
 import com.avengers.nibobnebob.domain.model.base.BaseState
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
 
 interface MyPageRepository {
     fun getMyInfo(): Flow<BaseState<MyInfoData>>
@@ -17,9 +18,10 @@ interface MyPageRepository {
         birthdate: String,
         region: String,
         isMale: Boolean,
-        password: String,
-        profileImage: String
+        isImageChanged: Boolean,
+        profileImage: MultipartBody.Part?
     ): Flow<BaseState<Unit>>
+
 
     fun logout(): Flow<BaseState<Unit>>
 
