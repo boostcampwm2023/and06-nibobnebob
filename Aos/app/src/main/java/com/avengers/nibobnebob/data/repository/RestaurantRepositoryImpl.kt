@@ -1,7 +1,7 @@
 package com.avengers.nibobnebob.data.repository
 
-import android.util.Log
 import com.avengers.nibobnebob.data.model.response.MyRestaurantResponse.Companion.toDomainModel
+import com.avengers.nibobnebob.data.model.response.RecommendRestaurantResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantDetailResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantIsWishResponse.Companion.toDomainModel
 import com.avengers.nibobnebob.data.model.response.RestaurantItemResponse.Companion.toDomainModel
@@ -18,6 +18,7 @@ import com.avengers.nibobnebob.domain.model.ReviewSortData
 import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.model.RecommendRestaurantData
 import com.avengers.nibobnebob.domain.model.base.StatusCode
 import com.avengers.nibobnebob.domain.repository.RestaurantRepository
 import kotlinx.coroutines.flow.Flow
@@ -247,16 +248,13 @@ class RestaurantRepositoryImpl @Inject constructor(
         when (val result = runRemote { api.filterRestaurantList(filter, location, radius) }) {
             is BaseState.Success -> {
                 result.data.body?.let { body ->
-                    Log.d("test", "success")
                     emit(BaseState.Success(body.map { it.toDomainModel() }))
                 } ?: run {
-                    Log.d("test", "fail")
                     emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
                 }
             }
 
             is BaseState.Error -> {
-                Log.d("test", "error")
                 emit(result)
             }
         }
@@ -295,7 +293,7 @@ class RestaurantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>> = flow{
+    override fun unlikeReview(reviewId: Int): Flow<BaseState<Unit>> = flow {
         when (val result = runRemote { api.unlikeReview(reviewId) }) {
             is BaseState.Success -> {
                 emit(BaseState.Success(Unit))
@@ -306,4 +304,21 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override fun recommendRestaurantList(): Flow<BaseState<List<RecommendRestaurantData>>> =
+        flow {
+            when (val result = runRemote { api.recommendRestaurantList() }) {
+                is BaseState.Success -> {
+                    result.data.body?.let { body ->
+                        emit(BaseState.Success(body.map { it.toDomainModel() }))
+                    } ?: run {
+                        emit(BaseState.Error(StatusCode.EMPTY, "null 수신"))
+                    }
+                }
+
+                is BaseState.Error -> {
+                    emit(result)
+                }
+            }
+        }
 }
