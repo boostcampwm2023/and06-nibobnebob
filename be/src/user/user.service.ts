@@ -234,7 +234,6 @@ export class UserService {
   async getRecommendFood(tokenInfo: TokenInfo) {
     const region = await this.usersRepository.findOne({ select: ["region"], where: { id: tokenInfo.id } });
     const restaurants = await this.userRestaurantListRepository.getMyFavoriteFoodCategory(tokenInfo.id, region);
-
     for (const restaurant of restaurants) {
       const reviewInfo = await this.reviewRepository
         .createQueryBuilder("review")
