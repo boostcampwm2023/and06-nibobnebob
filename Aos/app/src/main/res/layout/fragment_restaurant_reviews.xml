@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="com.avengers.nibobnebob.presentation.ui.main.global.restaurantreview.RestaurantReviewsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -151,10 +154,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            app:filterType="@{vm.uiState.reviewFilter}"
             app:layout_constraintEnd_toStartOf="@id/iv_filter"
             app:layout_constraintTop_toBottomOf="@id/layout_toolbar" />
         <!--        android:visibility="@{vm.uiState.reviewList.empty? View.GONE : View.VISIBLE}"-->
-        <!--        app:filterType="@{vm.uiState.reviewFilter}"-->
 
         <ImageView
             android:id="@+id/iv_filter"
@@ -177,6 +180,7 @@
             app:layout_constraintEnd_toEndOf="@id/gl_end"
             app:layout_constraintStart_toStartOf="@id/gl_start"
             app:layout_constraintTop_toBottomOf="@id/tv_worst_label"
+            app:list="@{vm.uiState.reviewList}"
             tools:listitem="@layout/item_review_list" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

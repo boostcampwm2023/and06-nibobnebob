@@ -30,6 +30,8 @@ interface RestaurantApi {
     @GET("api/review/{restaurantId}")
     suspend fun sortReview(
         @Path("restaurantId") restaurantId: Int,
+        @Query("limit") limit: Int? = null,
+        @Query("page") page: Int? = null,
         @Query("sort") sort: String? = null
     ): Response<BaseResponse<ReviewSortResponse>>
 

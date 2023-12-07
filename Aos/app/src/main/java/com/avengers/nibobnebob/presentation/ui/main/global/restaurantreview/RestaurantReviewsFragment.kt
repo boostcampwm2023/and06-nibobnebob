@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantreview
 
-import android.util.Log
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -9,8 +8,11 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantReviewsBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.adapter.RestaurantReviewAdapter
 import com.avengers.nibobnebob.presentation.util.Constants
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RestaurantReviewsFragment :
     BaseFragment<FragmentRestaurantReviewsBinding>(R.layout.fragment_restaurant_reviews) {
     override val parentViewModel: MainViewModel by activityViewModels()
@@ -21,8 +23,10 @@ class RestaurantReviewsFragment :
     private val restaurantName by lazy { args.restaurantName }
 
     override fun initView() {
+        binding.vm = viewModel
+        binding.rvReview.adapter = RestaurantReviewAdapter()
         setFilterMenu()
-        Log.d("TEST", "$restaurantId, $restaurantName")
+        viewModel.getAllReviews(restaurantId, restaurantName)
     }
 
     override fun initEventObserver() {
@@ -34,10 +38,12 @@ class RestaurantReviewsFragment :
     private fun setFilterMenu() {
 
         binding.tvFilter.setOnClickListener {
-            PopupMenu(requireContext(), binding.ivFilter).apply {
+            PopupMenu(requireContext(), binding.tvFilter).apply {
                 menuInflater.inflate(R.menu.review_filter_menu, menu)
                 setOnMenuItemClickListener {
-                    viewModel.sortReview(
+                    viewModel.getAllReviews(
+                        id = restaurantId,
+                        name = restaurantName,
                         sort =
                         when (it.itemId) {
                             R.id.menu_new -> Constants.FILTER_NEW
