@@ -299,6 +299,7 @@ export class UserController {
     const userInfoDto = plainToClass(UserInfoDto, body);
     const errors = await validate(userInfoDto);
     if (errors.length > 0) {
+      console.log(errors);
       throw new BadRequestException(errors);
     }
     return await this.userService.signup(file, userInfoDto);
