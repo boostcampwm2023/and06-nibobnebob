@@ -90,6 +90,27 @@ class BasicSignupViewModel @Inject constructor(
     }
 
     private fun observePasswordCheck(){
+
+        password.onEach {
+            if(it.isNotBlank()){
+                if(it == passwordCheck.value){
+                    passwordValidation.value = true
+                    _uiState.update { state ->
+                        state.copy(
+                            passwordCheckState = InputState.Success("비밀번호가 일치합니다.")
+                        )
+                    }
+                } else {
+                    passwordValidation.value = false
+                    _uiState.update { state ->
+                        state.copy(
+                            passwordCheckState = InputState.Error("비밀번호가 일치하지 않습니다.")
+                        )
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
+
         passwordCheck.onEach {
             if(it.isNotBlank()){
                 if(it == password.value){
