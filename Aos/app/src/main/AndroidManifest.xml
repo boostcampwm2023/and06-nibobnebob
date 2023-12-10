@@ -33,7 +33,8 @@
         </activity>
         <activity
             android:name=".presentation.ui.intro.IntroActivity"
-            android:exported="false">
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".presentation.ui.splash.SplashActivity"
