@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import * as AWS from "aws-sdk";
-import { awsConfig } from "objectStorage.config";
+import { awsConfig } from "../../objectStorage.config";
 import * as sharp from "sharp";
 
 @Injectable()

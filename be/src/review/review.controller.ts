@@ -2,8 +2,8 @@ import { Controller, Get, Param, Post, Query, UseGuards, UsePipes, ValidationPip
 import { ReviewService } from './review.service';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser, TokenInfo } from 'src/user/user.decorator';
-import { SortInfoDto } from 'src/utils/sortInfo.dto';
+import { GetUser, TokenInfo } from '../user/user.decorator';
+import { SortInfoDto } from '../utils/sortInfo.dto';
 
 @ApiTags("Review")
 @Controller('review')

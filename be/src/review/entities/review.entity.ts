@@ -8,9 +8,9 @@ import {
   OneToOne,
   OneToMany,
 } from "typeorm";
-import { User } from "src/user/entities/user.entity";
-import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
-import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
+import { User } from "../../user/entities/user.entity";
+import { RestaurantInfoEntity } from "../../restaurant/entities/restaurant.entity";
+import { UserRestaurantListEntity } from "../../user/entities/user.restaurantlist.entity";
 import { ReviewLikeEntity } from "./review.like.entity";
 
 @Entity("review")

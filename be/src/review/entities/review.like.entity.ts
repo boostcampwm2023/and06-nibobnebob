@@ -7,7 +7,7 @@ import {
     JoinColumn,
     DeleteDateColumn,
 } from "typeorm";
-import { User } from "src/user/entities/user.entity";
+import { User } from "../../user/entities/user.entity";
 import { ReviewInfoEntity } from "./review.entity";
 
 @Entity("reviewLike")

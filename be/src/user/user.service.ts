@@ -9,16 +9,15 @@ import { UserRestaurantListRepository } from "./user.restaurantList.repository";
 import { UserFollowListRepository } from "./user.followList.repository";
 import { Equal, In, Like, Not } from "typeorm";
 import { BadRequestException, ConflictException } from "@nestjs/common/exceptions";
-import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
-import { ReviewRepository } from "src/review/review.repository";
+import { ReviewInfoDto } from "../review/dto/reviewInfo.dto";
+import { ReviewRepository } from "../review/review.repository";
 import { UserWishRestaurantListRepository } from "./user.wishrestaurantList.repository";
-import { AwsService } from "src/aws/aws.service";
+import { AwsService } from "../aws/aws.service";
 import { v4 } from "uuid";
 import { User } from "./entities/user.entity";
-import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
-import { AuthService } from "src/auth/auth.service";
-import { SortInfoDto } from "src/utils/sortInfo.dto";
-import { JwtService } from "@nestjs/jwt";
+import { RestaurantInfoEntity } from "../restaurant/entities/restaurant.entity";
+import { AuthService } from "../auth/auth.service";
+import { SortInfoDto } from "../utils/sortInfo.dto";
 
 @Injectable()
 export class UserService {
@@ -96,7 +95,7 @@ export class UserService {
           tokenInfo.id
         );
       if (restaurantList) result["restaurants"] = restaurantList;
-      else  result["restaurants"] = [];
+      else result["restaurants"] = [];
       result.profileImage = this.awsService.getImageURL(result.profileImage);
       return result;
     } catch (err) {
@@ -218,9 +217,9 @@ export class UserService {
     const result = await this.usersRepository.getRecommendUserListInfo(userIdValues, tokenInfo.id);
 
     function getRandomInts(min: number, max: number, count: number): number[] {
-      if(max === -1){
+      if (max === -1) {
         return [];
-      } else if(max === 0){
+      } else if (max === 0) {
         return [0];
       }
 
@@ -233,8 +232,8 @@ export class UserService {
     }
 
     const randomIndexes = getRandomInts(0, result.length - 1, 2);
-    if(randomIndexes.length === 0) return [];
-    
+    if (randomIndexes.length === 0) return [];
+
     const selectedUsers = randomIndexes.map(index => result[index]);
     return selectedUsers.map((user) => ({
       ...user,

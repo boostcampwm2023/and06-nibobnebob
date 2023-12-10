@@ -10,7 +10,7 @@ import { UserRepository } from "../user/user.repository";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 import { LoginInfoDto } from "./dto/loginInfo.dto";
-import { comparePasswords } from "src/utils/encryption.utils";
+import { comparePasswords } from "../utils/encryption.utils";
 import { AuthRepository } from "./auth.repository";
 
 @Injectable()

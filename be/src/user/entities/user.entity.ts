@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { FollowEntity } from "./user.followList.entity";
 import { UserRestaurantListEntity } from "./user.restaurantlist.entity";
-import { ReviewInfoEntity } from "src/review/entities/review.entity";
+import { ReviewInfoEntity } from "../../review/entities/review.entity";
 
 @Entity()
 export class User {
