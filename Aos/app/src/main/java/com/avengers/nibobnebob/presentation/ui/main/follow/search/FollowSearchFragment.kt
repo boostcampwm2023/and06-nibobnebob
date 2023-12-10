@@ -8,6 +8,7 @@ import com.avengers.nibobnebob.databinding.FragmentFollowSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.SelectRegionDialog
 import com.avengers.nibobnebob.presentation.ui.adjustKeyboard
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.follow.adapter.FollowSearchAdapter
 import com.avengers.nibobnebob.presentation.ui.toUserDetail
@@ -25,6 +26,7 @@ class FollowSearchFragment :
         binding.rvFollowSearch.itemAnimator = null
         setEditText()
         viewModel.observeKeyword()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {

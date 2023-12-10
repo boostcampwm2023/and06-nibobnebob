@@ -3,6 +3,7 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -27,7 +28,7 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
     override fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
-
+        finishApp()
 
 
         binding.tvWithdraw.setOnClickListener {
@@ -89,6 +90,20 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(R.layout.fragment_my_
 
     private fun withDrawDismiss() {
 
+    }
+
+    private fun finishApp(){
+        var backPressTime = 0L
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(System.currentTimeMillis() - backPressTime <= 2000) {
+                    parentViewModel.finishApp()
+                } else{
+                    backPressTime = System.currentTimeMillis()
+                    showToastMessage("뒤로가기 버튼을 한 번 더 누르면 종료됩니다.")
+                }
+            }
+        })
     }
 
 

@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 sealed class MainEvents{
     data object OpenGallery: MainEvents()
+    data object FinishApp : MainEvents()
 }
 
 @HiltViewModel
@@ -37,6 +38,12 @@ class MainViewModel @Inject constructor(
     fun openGallery(){
         viewModelScope.launch {
             _events.emit(MainEvents.OpenGallery)
+        }
+    }
+
+    fun finishApp() {
+        viewModelScope.launch {
+            _events.emit(MainEvents.FinishApp)
         }
     }
 

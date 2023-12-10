@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
@@ -52,6 +53,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             viewModel.events.collect{
                 when(it){
                     is MainEvents.OpenGallery -> onCheckStoragePermissions()
+                    is MainEvents.FinishApp -> finish()
                 }
             }
         }

@@ -19,6 +19,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.adjustKeyboard
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeSearchAdapter
@@ -43,6 +44,7 @@ class RestaurantSearchFragment :
         fetchCurrentLocation()
         view?.let { clearFocus(it) }
         initStateObserver()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {

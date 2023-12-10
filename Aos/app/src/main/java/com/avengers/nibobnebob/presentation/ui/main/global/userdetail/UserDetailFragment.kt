@@ -10,6 +10,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentUserDetailBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.ImageDialog
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.global.userdetail.adapter.UserDetailRestaurantAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +27,7 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
         binding.vm = viewModel
         viewModel.setNick(nickName)
         binding.rvRestaurant.adapter = UserDetailRestaurantAdapter()
+        customBack(requireActivity(), findNavController())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
