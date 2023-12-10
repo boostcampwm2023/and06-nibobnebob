@@ -120,6 +120,7 @@
     <string name="detail_review_all"><![CDATA[전체보기 >]]></string>
     <string name="user_detail_empty">아직 추가한 맛집이 없습니다.</string>
     <string name="phone_number_empty">전화번호 없음</string>
+    <string name="no_recommend_restaurant">\n\n추천드릴 음식점이 존재하지 않습니다.\n\n</string>
 
     <string-array name="location_list">
         <item>강남구</item>
