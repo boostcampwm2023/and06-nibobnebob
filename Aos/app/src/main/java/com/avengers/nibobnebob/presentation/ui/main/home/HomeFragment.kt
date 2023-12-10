@@ -37,6 +37,7 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), OnMapReadyCallback {
@@ -45,6 +46,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     override val parentViewModel: MainViewModel by activityViewModels()
     private val args: HomeFragmentArgs by navArgs()
     private val restaurantId by lazy { args.addRestaurantId }
+    private val initCompletedNaverMap = Channel<Unit>()
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -68,7 +70,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
     }
 
     override fun initNetworkView() {
-        viewModel.getFilterList()
+        repeatOnStarted {
+            viewModel.getFilterList()
+            initCompletedNaverMap.receive()
+            viewModel.getMarkerList()
+        }
     }
 
     private fun initStateObserver() {
@@ -137,8 +143,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.moveCamera(cameraUpdate)
 
         viewModel.uiState.value.markerList.forEach { data ->
-            val isNear = viewModel.uiState.value.curFilter == NEAR_RESTAURANT
-            setMarker(data, isNear)
+            setMarker(data)
         }
     }
 
@@ -152,10 +157,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    // NaverMap 관련 Setting
     override fun onMapReady(nM: NaverMap) {
         this.naverMap = nM
-        // 맵 ui Settings
         with(naverMap.uiSettings) {
             isCompassEnabled = false
             isZoomControlEnabled = false
@@ -164,7 +167,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.locationSource = locationSource
         setMapListener()
         initStateObserver()
-        viewModel.getMarkerList()
+        repeatOnStarted {
+            initCompletedNaverMap.send(Unit)
+        }
     }
 
     private fun setMapListener() {
@@ -209,12 +214,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         else viewModel.trackingOff()
     }
 
-    private fun setMarker(data: UiRestaurantData, isNear: Boolean) {
+    private fun setMarker(data: UiRestaurantData) {
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
 
-        marker.icon = if (isNear)
+//        Log.d("marker test--", "${viewModel.uiState.value.curFilter}..${NEAR_RESTAURANT}.. ")
+
+        marker.icon = if (viewModel.uiState.value.curFilter == NEAR_RESTAURANT)
             OverlayImage.fromResource(R.drawable.ic_marker_near)
         else
             OverlayImage.fromResource(R.drawable.ic_marker)
