@@ -100,3 +100,8 @@ fun bindFilterType(tv: TextView, type: String) = with(tv) {
         else -> ""
     }
 }
+
+@BindingAdapter("adjustText")
+fun bindLongText(tv: TextView, value: String) {
+    tv.text = if (value.length > 27) "${value.substring(0, 27)}.." else value
+}
