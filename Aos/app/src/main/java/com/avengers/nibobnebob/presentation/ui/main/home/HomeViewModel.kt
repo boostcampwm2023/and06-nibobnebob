@@ -51,7 +51,7 @@ data class HomeUiState(
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0,
     val curSelectedMarker: Marker? = null,
-    val addRestaurantId: Int = -1
+    val addRestaurantId: Int = 0
 )
 
 sealed class TrackingState {
@@ -379,7 +379,7 @@ class HomeViewModel @Inject constructor(
 
     private fun moveCamera() {
         if (_uiState.value.markerList.isEmpty()) return
-        if (uiState.value.addRestaurantId != 0) {
+        if (uiState.value.addRestaurantId > 0) {
             val restaurantItem: UiRestaurantData =
                 uiState.value.markerList.first { it.id == uiState.value.addRestaurantId }
             _uiState.update { state ->
@@ -461,7 +461,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setAddRestaurantId(restaurantId: Int) {
-        if (restaurantId != -1) {
+        if (restaurantId <= 0) {
             _uiState.update { state ->
                 state.copy(
                     addRestaurantId = restaurantId
