@@ -86,7 +86,7 @@ class BearerInterceptor @Inject constructor(
     }
 
     companion object {
-        const val TOKEN_ERROR = 403
+        const val TOKEN_ERROR = 401
         const val AUTHORIZATION = "Authorization"
         const val BEARER = "Bearer"
     }
