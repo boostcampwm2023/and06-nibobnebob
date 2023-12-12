@@ -1,8 +1,8 @@
 import { DataSource, IsNull, Repository, Not } from "typeorm";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { ReviewInfoEntity } from "./entities/review.entity";
-import { TokenInfo } from "src/user/user.decorator";
-import { SortInfoDto } from "src/utils/sortInfo.dto";
+import { TokenInfo } from "../user/user.decorator";
+import { SortInfoDto } from "../utils/sortInfo.dto";
 
 @Injectable()
 export class ReviewRepository extends Repository<ReviewInfoEntity> {
@@ -33,7 +33,7 @@ export class ReviewRepository extends Repository<ReviewInfoEntity> {
     }
   }
   async getSortedReviews(getSortedReviewsDto: SortInfoDto, restaurantId: number, id: TokenInfo["id"], sortedReviewIds: number[]) {
-    const pageNumber = parseInt(getSortedReviewsDto.page as unknown as string)|| 1;
+    const pageNumber = parseInt(getSortedReviewsDto.page as unknown as string) || 1;
     const limitNumber = parseInt(getSortedReviewsDto.limit as unknown as string) || 10;
     const skipNumber = (pageNumber - 1) * limitNumber;
     if (getSortedReviewsDto && getSortedReviewsDto.sort === "TIME_DESC") {

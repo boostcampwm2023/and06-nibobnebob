@@ -4,11 +4,11 @@ import { SearchInfoDto } from "./dto/seachInfo.dto";
 import * as proj4 from "proj4";
 import axios from "axios";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
-import { TokenInfo } from "src/user/user.decorator";
-import { UserRepository } from "src/user/user.repository";
-import { ReviewRepository } from "src/review/review.repository";
+import { TokenInfo } from "../user/user.decorator";
+import { UserRepository } from "../user/user.repository";
+import { ReviewRepository } from "../review/review.repository";
 import { LocationDto } from "./dto/location.dto";
-import { AwsService } from "src/aws/aws.service";
+import { AwsService } from "../aws/aws.service";
 import { Cron } from "@nestjs/schedule";
 
 const key = process.env.API_KEY;

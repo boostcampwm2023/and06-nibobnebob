@@ -2,10 +2,10 @@ import { DataSource, IsNull, Repository, Not } from "typeorm";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
 import { TokenInfo } from "./user.decorator";
-import { SearchInfoDto } from "src/restaurant/dto/seachInfo.dto";
-import { ReviewInfoEntity } from "src/review/entities/review.entity";
+import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
+import { ReviewInfoEntity } from "../review/entities/review.entity";
 import { UserWishRestaurantListEntity } from "./entities/user.wishrestaurantlist.entity";
-import { SortInfoDto } from "src/utils/sortInfo.dto";
+import { SortInfoDto } from "../utils/sortInfo.dto";
 
 @Injectable()
 export class UserRestaurantListRepository extends Repository<UserRestaurantListEntity> {

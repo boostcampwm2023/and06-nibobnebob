@@ -29,14 +29,14 @@ import { UserService } from "./user.service";
 import { GetUser, TokenInfo } from "./user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
-import { LocationDto } from "src/restaurant/dto/location.dto";
-import { ReviewInfoDto } from "src/review/dto/reviewInfo.dto";
+import { LocationDto } from "../restaurant/dto/location.dto";
+import { ReviewInfoDto } from "../review/dto/reviewInfo.dto";
 import { ParseArrayPipe } from "../utils/parsearraypipe";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { memoryStorage } from 'multer';
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
-import { SortInfoDto } from "src/utils/sortInfo.dto";
+import { SortInfoDto } from "../utils/sortInfo.dto";
 
 const multerOptions = {
   storage: memoryStorage(),

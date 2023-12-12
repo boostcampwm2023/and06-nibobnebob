@@ -5,12 +5,13 @@ import {
   HttpStatus,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
 } from "@nestjs/common";
 import { UserRepository } from "../user/user.repository";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 import { LoginInfoDto } from "./dto/loginInfo.dto";
-import { comparePasswords } from "src/utils/encryption.utils";
+import { comparePasswords } from "../utils/encryption.utils";
 import { AuthRepository } from "./auth.repository";
 
 @Injectable()
@@ -25,7 +26,7 @@ export class AuthService {
     try {
       const result = await comparePasswords(loginInfoDto.password, data["password"]);
       if (result) return this.signin(loginInfoDto);
-      else throw new UnauthorizedException();
+      else throw new HttpException("LOGIN FAILED", HttpStatus.FORBIDDEN);
     } catch (err) {
       throw new UnauthorizedException();
     }

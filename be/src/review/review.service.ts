@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
-import { TokenInfo } from 'src/user/user.decorator';
+import { TokenInfo } from '../user/user.decorator';
 import { ReviewLikeRepository } from './review.like.repository';
-import { SortInfoDto } from 'src/utils/sortInfo.dto';
-import { AwsService } from 'src/aws/aws.service';
+import { SortInfoDto } from '../utils/sortInfo.dto';
+import { AwsService } from '../aws/aws.service';
 
 @Injectable()
 export class ReviewService {
