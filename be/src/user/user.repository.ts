@@ -12,15 +12,8 @@ export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-  async createUser(userentity: User): Promise<User> {
-    try {
-      await this.save(userentity);
-    } catch (err) {
-      if (err.code === "23505") {
-        throw new ConflictException("Duplicated Value");
-      }
-    }
-    return;
+  async createUser(userentity: User) {
+    return await this.save(userentity);
   }
   async getNickNameAvailability(nickName: UserInfoDto["nickName"]) {
     const user = await this.findOne({
@@ -52,7 +45,7 @@ export class UserRepository extends Repository<User> {
   }
   async getUsersInfo(targetInfoIds: number[]) {
     const userInfo = await this.find({
-      select: ["nickName", "region"],
+      select: ["nickName", "region", "profileImage"],
       where: { id: In(targetInfoIds) },
     });
     return userInfo;
@@ -72,15 +65,42 @@ export class UserRepository extends Repository<User> {
     });
     return { userInfo: userInfo };
   }
-  async getRecommendUserListInfo(idList: number[]) {
+
+  async getRecommendUserListInfo(idList: number[], id: number) {
+    const curUser = await this.findOne({
+      select: ["id", "region"],
+      where: { id: id },
+    });
+
+    const myRestaurants = await this.createQueryBuilder("user")
+      .leftJoinAndSelect("user.restaurant", "userRestaurant")
+      .where("user.id = :id", { id })
+      .select("userRestaurant.restaurantId")
+      .getRawMany();
+
+    const myFavRestaurants = myRestaurants.map(
+      (r) => r.userRestaurant_restaurant_id
+    );
+
     const userInfo = await this.createQueryBuilder("user")
-      .select(["user.nickName", "user.region"])
+      .leftJoin("user.restaurant", "userRestaurant")
+      .select([
+        "user.nickName",
+        "user.region",
+        "user.profileImage",
+        'SUM(CASE WHEN userRestaurant.restaurantId IN (:...myFavRestaurants) THEN 1 ELSE 0 END) AS "commonRestaurant"',
+      ])
+      .setParameter("myFavRestaurants", myFavRestaurants)
       .where("user.id NOT IN (:...idList)", { idList })
-      .orderBy("RANDOM()")
-      .limit(2)
-      .getMany();
+      .andWhere("user.region = :yourRegion", { yourRegion: curUser.region })
+      .groupBy("user.id")
+      .orderBy("\"commonRestaurant\"", "DESC")
+      .limit(10)
+      .getRawMany();
+
     return userInfo;
   }
+
   async logout(id: number) {
     return {};
   }
@@ -115,11 +135,11 @@ export class UserRepository extends Repository<User> {
       region: userEntity["region"],
       provider: userEntity["provider"],
       password: userEntity["password"],
-      profileImage : userEntity["profileImage"]
+      profileImage: userEntity["profileImage"],
     };
 
     if (!isEmailDuplicate) {
-      updateObject["email"] =userEntity["email"];
+      updateObject["email"] = userEntity["email"];
     }
     if (!isNickNameDuplicate) {
       updateObject["nickName"] = userEntity["nickName"];

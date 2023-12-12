@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as AWS from "aws-sdk";
-import { awsConfig } from "objectStorage.config";
-import { v4 } from "uuid";
+import { awsConfig } from "../../objectStorage.config";
+import * as sharp from "sharp";
 
 @Injectable()
 export class AwsService {
@@ -18,12 +18,21 @@ export class AwsService {
     });
   }
 
-  async uploadToS3(path: string, data: Buffer){
-    await this.s3.putObject({
-      Bucket: awsConfig.bucket,
-      Key: path,
-      Body: data,
-    }).promise();
+  async uploadToS3(path: string, data: Buffer) {
+
+    try {
+      const resizedBuffer = await sharp(data)
+        .resize(256, 256)
+        .toBuffer();
+
+      await this.s3.putObject({
+        Bucket: awsConfig.bucket,
+        Key: path,
+        Body: resizedBuffer,
+      }).promise();
+    } catch (error) {
+      throw error;
+    }
   }
 
   getImageURL(path: string) {

@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { FollowEntity } from "./user.followList.entity";
 import { UserRestaurantListEntity } from "./user.restaurantlist.entity";
-import { ReviewInfoEntity } from "src/review/entities/review.entity";
+import { ReviewInfoEntity } from "../../review/entities/review.entity";
 
 @Entity()
 export class User {
@@ -37,7 +37,7 @@ export class User {
   @Column({ type: "varchar", length: 20, nullable: true })
   provider: string | null;
 
-  @Column({ type: "text", default : "profile/images/defaultprofile.png"})
+  @Column({ type: "text", default: "profile/images/defaultprofile.png" })
   profileImage: string;
 
   @CreateDateColumn({ type: "timestamp" })
@@ -55,7 +55,7 @@ export class User {
   @OneToMany(() => FollowEntity, (follow) => follow.followedUserId)
   follower: FollowEntity[];
 
-  @OneToMany(() => UserRestaurantListEntity, (list) => list.userId)
+  @OneToMany(() => UserRestaurantListEntity, (list) => list.user)
   restaurant: UserRestaurantListEntity[];
 
   @OneToMany(() => ReviewInfoEntity, (review) => review.user)
