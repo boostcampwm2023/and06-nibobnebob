@@ -2,10 +2,9 @@ package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avengers.nibobnebob.data.model.BaseState
-import com.avengers.nibobnebob.data.model.request.EditMyInfoRequest
-import com.avengers.nibobnebob.data.repository.MyPageRepository
-import com.avengers.nibobnebob.data.repository.ValidationRepository
+import com.avengers.nibobnebob.domain.model.base.BaseState
+import com.avengers.nibobnebob.domain.repository.MyPageRepository
+import com.avengers.nibobnebob.domain.usecase.GetNickValidationUseCase
 import com.avengers.nibobnebob.presentation.ui.main.mypage.Validation
 import com.avengers.nibobnebob.presentation.ui.main.mypage.mapper.toUiMyPageEditInfoData
 import com.avengers.nibobnebob.presentation.util.Constants.ERROR_MSG
@@ -18,21 +17,26 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 data class EditProfileUiState(
-    val nickName: InputState = InputState(),
+    val nickName: EditInputState = EditInputState(),
     val email: String = "",
     val provider: String = "",
-    val birth: InputState = InputState(),
-    val location: InputState = InputState()
+    val birth: EditInputState = EditInputState(),
+    val location: EditInputState = EditInputState(),
+    val profileImage: EditInputState = EditInputState(),
+    val isMale: EditInputState = EditInputState()
 )
 
 
-data class InputState(
+data class EditInputState(
     val helperText: Validation = Validation.NONE,
     val isValid: Boolean = true,
     val isChanged: Boolean = false,
@@ -40,15 +44,17 @@ data class InputState(
 
 sealed class EditProfileUiEvent {
     data object EditProfileDone : EditProfileUiEvent()
+    data object OpenGallery : EditProfileUiEvent()
     data class ShowToastMessage(val msg: String) : EditProfileUiEvent()
     data class ShowSnackMessage(val msg: String) : EditProfileUiEvent()
+    data object ShowLoading : EditProfileUiEvent()
+    data object DismissLoading : EditProfileUiEvent()
 }
-
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository,
-    private val validationRepository: ValidationRepository
+    private val getNickValidationUseCase: GetNickValidationUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
@@ -59,7 +65,8 @@ class EditProfileViewModel @Inject constructor(
     private var originalNickName: String = ""
     private var originalBirth: String = ""
     private var originalLocation: String = ""
-    private var originalIsMale: Boolean = true
+    private var originalIsMale: Boolean = false
+    private var originalProfileImage: String = ""
 
     val locationList = LocationArray.LOCATION_ARRAY
 
@@ -68,13 +75,17 @@ class EditProfileViewModel @Inject constructor(
     val locationState = MutableStateFlow(0)
     val locationTextState = MutableStateFlow("")
     val locationEditMode = MutableStateFlow(false)
-
+    val profileImageState = MutableStateFlow("")
+    val isMaleState = MutableStateFlow(false)
+    private var profileImageFile: MultipartBody.Part? = null
 
     init {
         getOriginalData()
         observeNickName()
         observeLocation()
         observeBirth()
+        observeProfileImage()
+        observeIsMale()
     }
 
     private fun getOriginalData() {
@@ -83,16 +94,19 @@ class EditProfileViewModel @Inject constructor(
             when (it) {
                 is BaseState.Success -> {
 
-                    it.data.body.toUiMyPageEditInfoData().apply {
+                    it.data.toUiMyPageEditInfoData().apply {
                         nickState.emit(nickName)
                         locationState.emit(location.indexOf(location))
                         locationTextState.emit(location)
                         birthState.emit(birth)
+                        profileImageState.emit(profileImage)
+                        isMaleState.emit(gender)
 
                         originalNickName = nickName
                         originalLocation = location
                         originalBirth = birth
                         originalIsMale = gender
+                        originalProfileImage = profileImage
 
                         _uiState.update { state ->
                             state.copy(
@@ -114,7 +128,7 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { state ->
 
                 state.copy(
-                    nickName = InputState(
+                    nickName = EditInputState(
                         helperText = Validation.NONE,
                         isValid = (originalNickName == nick && state.nickName.helperText == Validation.NONE),
                         isChanged = originalNickName != nick
@@ -126,13 +140,13 @@ class EditProfileViewModel @Inject constructor(
     }
 
     fun checkNickValidation() {
-        validationRepository.nickValidation(nickState.value).onEach {
+        getNickValidationUseCase(nickState.value).onEach {
             when (it) {
                 is BaseState.Success -> {
-                    if (it.data.body.isExist) {
+                    if (it.data.isExist) {
 
                         _uiState.value = uiState.value.copy(
-                            nickName = InputState(
+                            nickName = EditInputState(
                                 helperText = Validation.INVALID_NICK,
                                 isValid = false,
                                 isChanged = false
@@ -140,10 +154,10 @@ class EditProfileViewModel @Inject constructor(
                         )
                     } else {
                         _uiState.value = uiState.value.copy(
-                            nickName = InputState(
+                            nickName = EditInputState(
                                 helperText = Validation.VALID_NICK,
                                 isValid = true,
-                                isChanged = originalNickName != nickState.value
+                                isChanged = (originalNickName != nickState.value)
                             )
                         )
                     }
@@ -159,9 +173,9 @@ class EditProfileViewModel @Inject constructor(
         locationState.onEach { position ->
             _uiState.update { state ->
                 state.copy(
-                    location = InputState(
-                        isValid = (position != 0 || !locationEditMode.value),
-                        isChanged = (locationList.indexOf(originalLocation) != position && locationEditMode.value)
+                    location = EditInputState(
+                        isValid = true,
+                        isChanged = if (position == 0) false else locationEditMode.value
                     )
                 )
             }
@@ -185,7 +199,7 @@ class EditProfileViewModel @Inject constructor(
             val validData = birth.matches(BIRTH_REGEX)
             _uiState.update { state ->
                 state.copy(
-                    birth = InputState(
+                    birth = EditInputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
                         isChanged = originalBirth != birth
@@ -195,26 +209,69 @@ class EditProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun observeIsMale() {
+        isMaleState.onEach { isMale ->
+            _uiState.update { state ->
+                state.copy(
+                    isMale = EditInputState(
+                        isChanged = originalIsMale != isMale
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun setIsMale(data: Boolean) {
+        isMaleState.value = data
+    }
+
+    private fun observeProfileImage() {
+        profileImageState.onEach { image ->
+            if (originalProfileImage.isEmpty()) return@onEach
+            _uiState.update { state ->
+                state.copy(
+                    profileImage = EditInputState(
+                        isChanged = (originalProfileImage != profileImageState.value)
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun openGallery() {
+        viewModelScope.launch {
+            _events.emit(EditProfileUiEvent.OpenGallery)
+        }
+    }
+
+    fun setImage(uri: String, file: MultipartBody.Part) {
+        profileImageState.value = uri
+        profileImageFile = file
+    }
 
     fun doneEditProfile() {
-
         myPageRepository.editMyInfo(
-            EditMyInfoRequest(
-                nickName = nickState.value,
-                email = uiState.value.email,
-                provider = uiState.value.provider,
-                birthdate = birthState.value,
-                region = locationList[locationState.value],
-                isMale = originalIsMale,
-                password = "1234"
-            )
-        ).onEach {
+            nickName = nickState.value,
+            email = uiState.value.email,
+            provider = uiState.value.provider,
+            birthdate = birthState.value,
+            region = if (locationState.value == 0) originalLocation
+            else locationList[locationState.value],
+            isMale = isMaleState.value,
+            isImageChanged = originalProfileImage != profileImageState.value,
+            profileImage = profileImageFile
+        ).onStart {
+            _events.emit(EditProfileUiEvent.ShowLoading)
+        }.onEach {
             when (it) {
                 is BaseState.Success -> _events.emit(EditProfileUiEvent.EditProfileDone)
                 else -> _events.emit(EditProfileUiEvent.ShowSnackMessage(ERROR_MSG))
             }
+        }.onCompletion {
+            _events.emit(EditProfileUiEvent.DismissLoading)
         }.launchIn(viewModelScope)
     }
+
 
     companion object {
         val BIRTH_REGEX = Regex("""^\d{4}/\d{2}/\d{2}${'$'}""")

@@ -9,7 +9,7 @@ import {
   IsOptional,
   IsInstance,
 } from "class-validator";
-import { isArrayBuffer } from "util/types";
+import { Transform } from 'class-transformer';
 
 export class UserInfoDto {
   @ApiProperty({
@@ -21,7 +21,7 @@ export class UserInfoDto {
   @MaxLength(50)
   email: string;
 
-  @ApiProperty({ example: "1234", description: "The password of the user" })
+  @ApiProperty({ example: "1234", description: "The password of the user", required: false })
   @IsString()
   @IsOptional()
   @MaxLength(50)
@@ -55,16 +55,8 @@ export class UserInfoDto {
     example: true,
     description: "The gender of the user. true is male, false is female",
   })
+  @Transform(({ value }) => value === 'true')
   @IsBoolean()
   @IsNotEmpty()
   isMale: boolean;
-
-  @ApiProperty({
-    example: "<Buffer 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52 00 00 02 d0 00 00 01 95 08 02 00 00 00 58 48 51 89 00 00 00 01 73 52 47 42 00 ae ce 1c e9 00 00 00 78 ... 134080 more bytes>",
-    description: "The profile image of the user",
-    type: 'string', 
-    format: 'binary' 
-  })
-  @IsOptional()
-  profileImage?: Buffer;
 }

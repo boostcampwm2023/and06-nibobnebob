@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="72dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/rect_wishlistcolorfill_12radius">
 
         <androidx.constraintlayout.widget.Guideline
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{item.name}"
+            app:adjustText="@{item.name}"
             app:layout_constraintStart_toEndOf="@id/iv_star"
             app:layout_constraintTop_toTopOf="@id/gl_top" />
 
@@ -69,8 +69,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{item.address}"
             android:textColor="@color/nn_primary5"
+            app:adjustText="@{item.address}"
             app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintStart_toEndOf="@id/iv_star" />
 

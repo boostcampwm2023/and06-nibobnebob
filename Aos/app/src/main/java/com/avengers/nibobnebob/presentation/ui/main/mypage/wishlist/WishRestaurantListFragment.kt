@@ -1,18 +1,19 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist
 
-import android.os.Bundle
-import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentWishRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
-import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,19 +27,35 @@ class WishRestaurantListFragment :
         MyWishAdapter({ id -> showDeleteCheckDialog(id) }, { id -> viewModel.showDetail(id) },
             { item -> viewModel.addMyList(item) })
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        initView()
+    override fun initView() = with(binding) {
+        svm = sharedViewModel
+        vm = viewModel
+
+        rvWishRestaurant.adapter = adapter
+        rvWishRestaurant.animation = null
+        rvWishRestaurant.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val scrollBottom = !rvWishRestaurant.canScrollVertically(1)
+                val hasNextPage = viewModel.uiState.value.lastPage
+                val isNotLoading = !viewModel.uiState.value.isLoading
+
+                if (scrollBottom && hasNextPage && isNotLoading) {
+                    viewModel.loadNextPage()
+                }
+            }
+        })
+        setFilterMenu()
+        customBack(requireActivity(), findNavController())
+    }
+
+    override fun initNetworkView() {
         viewModel.myWishList()
     }
 
-    private fun initView() {
-        binding.svm = sharedViewModel
-        binding.vm = viewModel
-        binding.rvWishRestaurant.adapter = adapter
-        binding.rvWishRestaurant.animation = null
-
+    override fun initEventObserver() {
         repeatOnStarted {
             sharedViewModel.uiEvent.collect { event ->
                 when (event) {
@@ -68,8 +85,8 @@ class WishRestaurantListFragment :
                 }
             }
         }
-
     }
+
 
     private fun showDeleteCheckDialog(id: Int) {
         showTwoButtonTitleDialog(
@@ -79,6 +96,37 @@ class WishRestaurantListFragment :
                 viewModel.deleteWishList(id)
             }
         )
+    }
+
+    private fun setFilterMenu() {
+
+        binding.tvFilter.setOnClickListener {
+            PopupMenu(requireContext(), binding.ivFilter).apply {
+                menuInflater.inflate(R.menu.my_page_filter_menu, menu)
+                setOnMenuItemClickListener {
+                    adapter.submitList(emptyList())
+                    viewModel.myWishList(
+                        sort = when (it.itemId) {
+                            R.id.menu_new -> "TIME_DESC"
+                            R.id.menu_old -> "TIME_ASC"
+                            else -> null
+                        }
+                    )
+
+                    true
+                }
+                show()
+            }
+        }
+
+    }
+
+    private fun NavController.toRestaurantDetail(restaurantId: Int) {
+        val action =
+            WishRestaurantListFragmentDirections.actionWishRestaurantListFragmentToRestaurantDetailFragment(
+                restaurantId
+            )
+        navigate(action)
     }
 
 }

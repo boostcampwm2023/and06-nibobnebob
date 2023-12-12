@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/rect_dark7fill_nostroke_10radius"
-                android:hint="닉네임/ 이름으로 검색하세요"
+                android:hint="@string/follow_search_hint"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="10dp"
                 android:text="@={vm.keyword}"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:onClick="@{() -> vm.showFilterDialog()}"
-                android:text="지역  "
+                android:text="@string/follow_search_location"
                 app:drawableEndCompat="@drawable/ic_filter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_search" />
@@ -79,7 +79,7 @@
                 app:curFilterChips="@{vm.uiState.curRegionFilter}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_filter"></com.google.android.material.chip.ChipGroup>
+                app:layout_constraintTop_toBottomOf="@id/tv_filter"/>
 
             <TextView
                 android:id="@+id/tv_search_count"

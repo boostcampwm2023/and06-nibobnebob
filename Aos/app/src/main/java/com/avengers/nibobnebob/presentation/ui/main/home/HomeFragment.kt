@@ -1,19 +1,20 @@
 package com.avengers.nibobnebob.presentation.ui.main.home
 
 import android.Manifest
-import android.os.Bundle
-import android.view.View
-import android.widget.ImageButton
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.databinding.BindingAdapter
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
+import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.customview.RecommendRestaurantDialog
 import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
 import com.avengers.nibobnebob.presentation.ui.checkLocationIsOn
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
@@ -22,6 +23,7 @@ import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.requestLocationPermission
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import com.avengers.nibobnebob.presentation.ui.toRestaurantDetail
+import com.avengers.nibobnebob.presentation.util.Constants.NEAR_RESTAURANT
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -35,12 +37,16 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), OnMapReadyCallback {
 
     private val viewModel: HomeViewModel by viewModels()
     override val parentViewModel: MainViewModel by activityViewModels()
+    private val args: HomeFragmentArgs by navArgs()
+    private val restaurantId by lazy { args.addRestaurantId }
+    private val initCompletedNaverMap = Channel<Unit>()
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -55,14 +61,90 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         initMapView()
-        initEventObserver()
         binding.rvHomeFilter.adapter = HomeFilterAdapter()
-        viewModel.getFilterList()
+        viewModel.setAddRestaurantId(restaurantId)
+        finishApp()
+    }
+
+    override fun initNetworkView() {
+        repeatOnStarted {
+            viewModel.getFilterList()
+            initCompletedNaverMap.receive()
+            viewModel.getMarkerList()
+        }
+    }
+
+    private fun initStateObserver() {
+        repeatOnStarted {
+            viewModel.uiState.collect {
+                when (it.locationTrackingState) {
+                    is TrackingState.TryOn -> {
+                        requireContext().requestLocationPermission(
+                            locationPermissionList,
+                            ::startPermissionLauncher,
+                            ::onTrackingChangeListener,
+                        )
+                    }
+
+                    is TrackingState.On -> {
+                        naverMap.locationTrackingMode =
+                            LocationTrackingMode.Follow
+                    }
+
+                    is TrackingState.Off -> naverMap.locationTrackingMode =
+                        LocationTrackingMode.None
+                }
+            }
+        }
+    }
+
+    override fun initEventObserver() {
+        repeatOnStarted {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
+                    is HomeEvents.SetNewMarkers -> {
+                        handleMarkersEvent()
+                    }
+
+                    is HomeEvents.SetSingleMarker -> {
+                        setSingleMarker(event.marker, event.item)
+                    }
+
+                    is HomeEvents.ShowRecommendRestaurantDialog -> {
+                        RecommendRestaurantDialog(
+                            requireContext(),
+                            viewModel.uiState.value.recommendList,
+                            ::goReviewTest
+                        ).show()
+                    }
+
+                    is HomeEvents.RemoveMarkers -> removeAllMarker()
+                    is HomeEvents.ShowSnackMessage -> showSnackBar(event.msg)
+                }
+            }
+        }
+    }
+
+    private fun handleMarkersEvent() {
+        removeAllMarker()
+        viewModel.trackingOff()
+        val lat = viewModel.uiState.value.cameraLatitude
+        val lng = viewModel.uiState.value.cameraLongitude
+        val zoom = viewModel.uiState.value.cameraZoom
+
+        val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
+        val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
+            .apply { animate(CameraAnimation.Fly, 500) }
+
+        naverMap.moveCamera(cameraUpdate)
+
+        viewModel.uiState.value.markerList.forEach { data ->
+            setMarker(data)
+        }
     }
 
     private fun initMapView() {
@@ -75,10 +157,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    // NaverMap 관련 Setting
     override fun onMapReady(nM: NaverMap) {
         this.naverMap = nM
-        // 맵 ui Settings
         with(naverMap.uiSettings) {
             isCompassEnabled = false
             isZoomControlEnabled = false
@@ -87,13 +167,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         naverMap.locationSource = locationSource
         setMapListener()
         initStateObserver()
-        viewModel.getMarkerList()
+        repeatOnStarted {
+            initCompletedNaverMap.send(Unit)
+        }
     }
 
     private fun setMapListener() {
 
         // todo 화면 이동시 리스너
-        naverMap.addOnCameraChangeListener { reason, animated ->
+        naverMap.addOnCameraChangeListener { _, _ ->
 
         }
 
@@ -114,61 +196,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         }
     }
 
-    private fun initEventObserver() {
-        repeatOnStarted {
-            viewModel.events.collect {
-                when (it) {
-                    is HomeEvents.NavigateToSearchRestaurant -> findNavController().toSearchRestaurant()
-                    is HomeEvents.SetNewMarkers -> {
-                        viewModel.trackingOff()
-                        val lat = viewModel.uiState.value.cameraLatitude
-                        val lng = viewModel.uiState.value.cameraLongitude
-                        val zoom = viewModel.uiState.value.cameraZoom
-                        val cameraPosition = CameraPosition(LatLng(lat, lng), zoom)
-                        val cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition)
-                            .apply { animate(CameraAnimation.Linear, 500) }
-
-                        naverMap.moveCamera(cameraUpdate)
-                        viewModel.uiState.value.markerList.forEach { data ->
-                            setMarker(data)
-                        }
-                    }
-
-                    is HomeEvents.SetSingleMarker -> {
-                        setSingleMarker(it.marker, it.item)
-                    }
-
-                    is HomeEvents.RemoveMarkers -> removeAllMarker()
-                    is HomeEvents.ShowSnackMessage -> showSnackBar(it.msg)
-                }
-            }
-        }
-    }
-
-
-    private fun initStateObserver() {
-        repeatOnStarted {
-            viewModel.uiState.collect {
-                when (it.locationTrackingState) {
-                    is TrackingState.TryOn -> {
-                        requireContext().requestLocationPermission(
-                            locationPermissionList,
-                            ::startPermissionLauncher,
-                            ::onTrackingChangeListener
-                        )
-                    }
-
-                    is TrackingState.On -> {
-                        naverMap.locationTrackingMode =
-                            LocationTrackingMode.Follow
-                    }
-
-                    is TrackingState.Off -> naverMap.locationTrackingMode =
-                        LocationTrackingMode.None
-                }
-            }
-        }
-    }
 
     private fun startPermissionLauncher() {
         requestPermissionLauncher.launch(locationPermissionList)
@@ -191,7 +218,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         val marker = Marker()
 
         marker.position = LatLng(data.latitude, data.longitude)
-        marker.icon = OverlayImage.fromResource(R.drawable.ic_marker)
+
+//        Log.d("marker test--", "${viewModel.uiState.value.curFilter}..${NEAR_RESTAURANT}.. ")
+
+        marker.icon = if (viewModel.uiState.value.curFilter == NEAR_RESTAURANT)
+            OverlayImage.fromResource(R.drawable.ic_marker_near)
+        else
+            OverlayImage.fromResource(R.drawable.ic_marker)
         marker.map = naverMap
 
         marker.setOnClickListener {
@@ -236,6 +269,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         markerList.clear()
     }
 
+    private fun finishApp(){
+        var backPressTime = 0L
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(System.currentTimeMillis() - backPressTime <= 2000) {
+                    parentViewModel.finishApp()
+                } else{
+                    backPressTime = System.currentTimeMillis()
+                    showToastMessage("뒤로가기 버튼을 한 번 더 누르면 종료됩니다.")
+                }
+            }
+        })
+    }
+
 
     private suspend fun addWishTest(id: Int, curState: Boolean): Boolean {
         return lifecycleScope.async {
@@ -251,7 +298,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         findNavController().toRestaurantDetail(restaurantId)
     }
 
-
     private fun NavController.toSearchRestaurant() {
         val action = HomeFragmentDirections.actionHomeFragmentToRestaurantSearchFragment()
         navigate(action)
@@ -259,12 +305,4 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 }
 
 
-@BindingAdapter("trackingBtnDrawable")
-fun bindTrackingBtnDrawable(btn: ImageButton, state: TrackingState) {
-    when (state) {
-        is TrackingState.On -> btn.setImageResource(R.drawable.ic_location_on)
-        is TrackingState.Off -> btn.setImageResource(R.drawable.ic_location_off)
-        else -> {}
-    }
-}
 

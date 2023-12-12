@@ -1,20 +1,21 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
-import android.os.Bundle
-import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentEditProfileBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
+import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class EditProfileFragment :
@@ -24,39 +25,36 @@ class EditProfileFragment :
     override val parentViewModel: MainViewModel by activityViewModels()
     private lateinit var navController: NavController
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        initView(view)
-        initEventObserver()
-        setDateBtnListener()
-    }
-
-    private fun initView(view: View) {
+    override fun initView() {
         binding.svm = sharedViewModel
         binding.vm = viewModel
-
-        navController = Navigation.findNavController(view)
-
-
-        repeatOnStarted {
-            viewModel.uiState.collectLatest { state ->
-                binding.uiState = state
-            }
-        }
-
-
+        view?.let { navController = Navigation.findNavController(it) }
+        setDateBtnListener()
+        initImageObserver()
+        setGenderRadioListener()
+        customBack(requireActivity(), findNavController())
     }
 
-    private fun initEventObserver() {
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.event.collect { event ->
                 when (event) {
                     is EditProfileUiEvent.EditProfileDone -> {
                         navController.navigate(EditProfileFragmentDirections.globalToMyPageFragment())
                     }
+
+                    is EditProfileUiEvent.OpenGallery -> {
+                        parentViewModel.openGallery()
+                    }
+
                     is EditProfileUiEvent.ShowToastMessage -> showToastMessage(event.msg)
                     is EditProfileUiEvent.ShowSnackMessage -> showSnackBar(event.msg)
+                    is EditProfileUiEvent.ShowLoading -> showLoading(requireContext())
+                    is EditProfileUiEvent.DismissLoading -> dismissLoading()
                 }
             }
         }
@@ -77,9 +75,26 @@ class EditProfileFragment :
 
     private fun setDateBtnListener() {
         binding.tilBirth.setEndIconOnClickListener {
-            CalendarDatePicker{
+            CalendarDatePicker {
                 viewModel.setBirth(it)
             }.show(parentFragmentManager)
+        }
+    }
+
+    private fun initImageObserver() {
+        repeatOnStarted {
+            parentViewModel.image.collect {
+                viewModel.setImage(it, it.toMultiPart(requireContext(), "profileImage"))
+            }
+        }
+    }
+
+    private fun setGenderRadioListener() {
+        binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rb_gender_female -> viewModel.setIsMale(false)
+                R.id.rb_gender_male -> viewModel.setIsMale(true)
+            }
         }
     }
 

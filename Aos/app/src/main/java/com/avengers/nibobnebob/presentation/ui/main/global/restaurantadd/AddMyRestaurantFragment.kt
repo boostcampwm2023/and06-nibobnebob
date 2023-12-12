@@ -1,7 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantadd
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -9,7 +7,10 @@ import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentAddMyRestaurantBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
+import com.avengers.nibobnebob.presentation.ui.toHome
+import com.avengers.nibobnebob.presentation.ui.toMultiPart
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,17 +24,20 @@ class AddMyRestaurantFragment :
     private val restaurantName by lazy { args.restaurantName }
     private val restaurantId by lazy { args.restaurantId }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun initView() {
         binding.vm = viewModel
         viewModel.setDefaultValue(restaurantName, restaurantId)
-        initEventObserver()
         setSliderListener()
         setVisitMethodRadioListener()
+        initImageObserver()
+        customBack(requireActivity(), findNavController())
     }
 
-    private fun initEventObserver() {
+    override fun initNetworkView() {
+        //TODO : 네트워크
+    }
+
+    override fun initEventObserver() {
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {
@@ -49,12 +53,15 @@ class AddMyRestaurantFragment :
 
                     is AddMyRestaurantEvents.ShowSuccessDialog -> {
                         showOneButtonTitleDialog("리뷰 등록을 완료했습니다!") {
-                            findNavController().navigateUp()
+                            findNavController().toHome(restaurantId)
                         }
                     }
 
                     is AddMyRestaurantEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is AddMyRestaurantEvents.ShowToastMessage -> showToastMessage(it.msg)
+                    is AddMyRestaurantEvents.OpenGallery -> parentViewModel.openGallery()
+                    is AddMyRestaurantEvents.ShowLoading -> showLoading(requireContext())
+                    is AddMyRestaurantEvents.DismissLoading -> dismissLoading()
                 }
             }
         }
@@ -92,6 +99,16 @@ class AddMyRestaurantFragment :
                 R.id.rb_visit_car -> viewModel.setIsVisitWithCar(true)
             }
         }
+    }
 
+    private fun initImageObserver(){
+        repeatOnStarted {
+            parentViewModel.image.collect{
+                if(it.isNotBlank()){
+                    viewModel.setImage(it, it.toMultiPart(requireContext(),"reviewImage"))
+                    parentViewModel.uriCollected()
+                }
+            }
+        }
     }
 }

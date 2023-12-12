@@ -3,9 +3,12 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { TransformInterceptor } from "./response.interceptor";
 import { HttpExceptionFilter } from "./error.filter";
+import * as fs from 'fs';
 
 async function bootstrap() {
+
   const app = await NestFactory.create(AppModule);
+
   app.setGlobalPrefix("api");
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());

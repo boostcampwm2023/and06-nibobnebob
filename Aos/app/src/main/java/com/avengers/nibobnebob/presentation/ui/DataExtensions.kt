@@ -1,7 +1,20 @@
 package com.avengers.nibobnebob.presentation.ui
 
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -11,6 +24,14 @@ internal fun Long.toDateString(): String {
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")
     val date = Date(this)
     return dateFormat.format(date)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+internal fun String.toCreateDateString(): String {
+    val instant = Instant.parse(this)
+    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val format = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    return "${localDateTime.format(format)} 등록"
 }
 
 @RequiresApi(android.os.Build.VERSION_CODES.O)
@@ -33,4 +54,27 @@ internal fun String.toAgeString(): String {
     } else {
         "60세 이상"
     }
+}
+
+internal fun String.toMultiPart(context: Context, fileName: String): MultipartBody.Part {
+    val uri = this.toUri()
+    val file = File(getRealPathFromUri(uri, context) ?: "")
+    val requestFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
+    return MultipartBody.Part.createFormData(fileName, file.name, requestFile)
+}
+
+
+// 절대경로 변환
+private fun getRealPathFromUri(uri: Uri, context: Context): String? {
+    var filePath: String? = null
+    val projection = arrayOf(MediaStore.Images.Media.DATA)
+    val cursor = context.contentResolver.query(uri, projection, null, null, null)
+    cursor?.let {
+        if (it.moveToFirst()) {
+            val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            filePath = it.getString(columnIndex)
+        }
+        it.close()
+    }
+    return filePath
 }

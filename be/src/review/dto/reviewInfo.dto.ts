@@ -10,12 +10,14 @@ import {
   Max,
   Min,
 } from "class-validator";
+import { Transform } from 'class-transformer';
 
 export class ReviewInfoDto {
   @ApiProperty({
     example: "true",
     description: "The transportation for visiting",
   })
+  @Transform(({ value }) => value === 'true')
   @IsBoolean()
   @IsNotEmpty()
   isCarVisit: boolean;
@@ -24,8 +26,11 @@ export class ReviewInfoDto {
     example: "0",
     description: "transportation Accessibility for visiting",
   })
-  @IsInt()
   @IsOptional()
+  @Transform(({ value }) => {
+    return !value ? null : parseInt(value);
+  })
+  @IsInt()
   @Min(0)
   @Max(4)
   transportationAccessibility: number | null;
@@ -34,13 +39,17 @@ export class ReviewInfoDto {
     example: "0",
     description: "condition of the restaurant's parking area",
   })
-  @IsInt()
   @IsOptional()
+  @Transform(({ value }) => {
+    return !value ? null : parseInt(value);
+  })
+  @IsInt()
   @Min(0)
   @Max(4)
   parkingArea: number | null;
 
   @ApiProperty({ example: "0", description: "The taste of the food" })
+  @Transform(({ value }) => parseInt(value))
   @IsInt()
   @IsNotEmpty()
   @Min(0)
@@ -48,6 +57,7 @@ export class ReviewInfoDto {
   taste: number;
 
   @ApiProperty({ example: "0", description: "The service of the restaurant" })
+  @Transform(({ value }) => parseInt(value))
   @IsInt()
   @IsNotEmpty()
   @Min(0)
@@ -58,6 +68,7 @@ export class ReviewInfoDto {
     example: "0",
     description: "The condition of the restaurant's restroom",
   })
+  @Transform(({ value }) => parseInt(value))
   @IsInt()
   @IsNotEmpty()
   @Min(0)

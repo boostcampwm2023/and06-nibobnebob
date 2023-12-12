@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="88dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/rect_primarylight3fill_12radius">
 
         <androidx.constraintlayout.widget.Guideline
@@ -48,7 +48,7 @@
             style="@style/TextSmallBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.name}"
+            app:adjustText="@{item.name}"
             app:layout_constraintStart_toStartOf="@id/gl_start"
             app:layout_constraintTop_toTopOf="@id/gl_top" />
 
@@ -57,8 +57,8 @@
             style="@style/CaptionRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.address}"
             android:textColor="@color/nn_primary5"
+            app:adjustText="@{item.address}"
             app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintStart_toStartOf="@id/gl_start"
             app:layout_constraintTop_toTopOf="@id/gl_top" />
@@ -68,7 +68,7 @@
             style="@style/CaptionRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2023.11.11 등록"
+            android:text="@{item.date}"
             android:textColor="@color/nn_primary5"
             app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintStart_toStartOf="@id/gl_start"

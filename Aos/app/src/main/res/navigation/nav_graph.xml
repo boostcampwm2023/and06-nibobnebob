@@ -13,6 +13,13 @@
         <action
             android:id="@+id/action_homeFragment_to_restaurantSearchFragment"
             app:destination="@id/restaurantSearchFragment" />
+        <argument
+            android:name="addRestaurantId"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_homeFragment_to_restaurantDetailFragment"
+            app:destination="@id/restaurantDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/followFragment"
@@ -80,7 +87,8 @@
         android:id="@+id/global_to_homeFragment"
         app:destination="@id/homeFragment"
         app:popUpTo="@id/homeFragment"
-        app:popUpToInclusive="true"/>
+        app:popUpToInclusive="true">
+    </action>
     <action
         android:id="@+id/global_to_userDetailFragment"
         app:destination="@id/userDetailFragment"/>
@@ -92,11 +100,19 @@
     <fragment
         android:id="@+id/myRestaurantListFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.mylist.MyRestaurantListFragment"
-        android:label="MyRestaurantListFragment" />
+        android:label="MyRestaurantListFragment" >
+        <action
+            android:id="@+id/action_myRestaurantListFragment_to_restaurantDetailFragment"
+            app:destination="@id/restaurantDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/wishRestaurantListFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.mypage.wishlist.WishRestaurantListFragment"
-        android:label="WishRestaurantListFragment" />
+        android:label="WishRestaurantListFragment" >
+        <action
+            android:id="@+id/action_wishRestaurantListFragment_to_restaurantDetailFragment"
+            app:destination="@id/restaurantDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/restaurantSearchFragment"
         android:name="com.avengers.nibobnebob.presentation.ui.main.home.search.RestaurantSearchFragment"
@@ -140,6 +156,9 @@
         <action
             android:id="@+id/action_restaurantDetailFragment_to_addMyRestaurantFragment"
             app:destination="@id/addMyRestaurantFragment" />
+        <action
+            android:id="@+id/action_restaurantDetailFragment_to_restaurantReviewsFragment"
+            app:destination="@id/restaurantReviewsFragment" />
     </fragment>
     <fragment
         android:id="@+id/restaurantSearchMapFragment"
@@ -151,5 +170,23 @@
             app:popUpToInclusive="true"
             app:popUpTo="@layout/fragment_restaurant_search_map">
         </action>
+        <action
+            android:id="@+id/action_restaurantSearchMapFragment_to_restaurantDetailFragment"
+            app:destination="@id/restaurantDetailFragment"
+            app:popUpTo="@layout/fragment_restaurant_search_map"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/restaurantReviewsFragment"
+        android:name="com.avengers.nibobnebob.presentation.ui.main.global.restaurantreview.RestaurantReviewsFragment"
+        android:label="RestaurantReviewsFragment">
+        <argument
+            android:name="restaurantName"
+            android:defaultValue="matzip"
+            app:argType="string" />
+        <argument
+            android:name="restaurantId"
+            android:defaultValue="1"
+            app:argType="integer" />
     </fragment>
 </navigation>

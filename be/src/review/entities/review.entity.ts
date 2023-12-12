@@ -6,10 +6,12 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  OneToMany,
 } from "typeorm";
-import { User } from "src/user/entities/user.entity";
-import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
-import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
+import { User } from "../../user/entities/user.entity";
+import { RestaurantInfoEntity } from "../../restaurant/entities/restaurant.entity";
+import { UserRestaurantListEntity } from "../../user/entities/user.restaurantlist.entity";
+import { ReviewLikeEntity } from "./review.like.entity";
 
 @Entity("review")
 export class ReviewInfoEntity {
@@ -37,8 +39,14 @@ export class ReviewInfoEntity {
   @Column({ type: "text" })
   overallExperience: string;
 
+  @Column({ type: "text", nullable: true, default: null })
+  reviewImage: string;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
+
+  @OneToMany(() => ReviewLikeEntity, reviewLike => reviewLike.review)
+  reviewLikes: ReviewLikeEntity[];
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "user_id" })

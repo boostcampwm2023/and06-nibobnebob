@@ -2,12 +2,12 @@ import { DataSource, Repository, Like } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { RestaurantInfoEntity } from "./entities/restaurant.entity";
 import { SearchInfoDto } from "./dto/seachInfo.dto";
-import { TokenInfo } from "src/user/user.decorator";
-import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
+import { TokenInfo } from "../user/user.decorator";
+import { UserRestaurantListEntity } from "../user/entities/user.restaurantlist.entity";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
-import { User } from "src/user/entities/user.entity";
+import { User } from "../user/entities/user.entity";
 import { LocationDto } from "./dto/location.dto";
-import { UserWishRestaurantListEntity } from "src/user/entities/user.wishrestaurantlist.entity";
+import { UserWishRestaurantListEntity } from "../user/entities/user.wishrestaurantlist.entity";
 
 @Injectable()
 export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
@@ -178,7 +178,9 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
     }
   }
 
-  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo, limit: string = "40") {
+    const limitNum = parseInt(limit);
+
     return this.createQueryBuilder("restaurant")
       .leftJoin(
         UserRestaurantListEntity,
@@ -208,6 +210,7 @@ export class RestaurantRepository extends Repository<RestaurantInfoEntity> {
         location, 
         ST_GeomFromText('POINT(${locationDto.longitude} ${locationDto.latitude})', 4326)) < ${locationDto.radius}`
       )
+      .limit(limitNum)
       .getRawMany();
   }
 
