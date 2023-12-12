@@ -28,7 +28,7 @@ export class AuthService {
       if (result) return this.signin(loginInfoDto);
       else throw new HttpException("LOGIN FAILED", HttpStatus.FORBIDDEN);
     } catch (err) {
-      throw new UnauthorizedException();
+      throw new HttpException("LOGIN FAILED", HttpStatus.FORBIDDEN);
     }
   }
 
