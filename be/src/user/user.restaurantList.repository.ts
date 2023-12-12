@@ -2,9 +2,10 @@ import { DataSource, IsNull, Repository, Not } from "typeorm";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
 import { TokenInfo } from "./user.decorator";
-import { SearchInfoDto } from "src/restaurant/dto/seachInfo.dto";
-import { ReviewInfoEntity } from "src/review/entities/review.entity";
+import { SearchInfoDto } from "../restaurant/dto/seachInfo.dto";
+import { ReviewInfoEntity } from "../review/entities/review.entity";
 import { UserWishRestaurantListEntity } from "./entities/user.wishrestaurantlist.entity";
+import { SortInfoDto } from "../utils/sortInfo.dto";
 
 @Injectable()
 export class UserRestaurantListRepository extends Repository<UserRestaurantListEntity> {
@@ -74,10 +75,11 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
 
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
+    sortInfoDto: SortInfoDto,
     id: TokenInfo["id"]
   ) {
     if (searchInfoDto.latitude && searchInfoDto.longitude) {
-      return await this.createQueryBuilder("user_restaurant_lists")
+      const items = await this.createQueryBuilder("user_restaurant_lists")
         .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
         .leftJoin(
           UserWishRestaurantListEntity,
@@ -103,8 +105,10 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
           { userId: id }
         )
         .getRawMany();
+
+      return items
     } else {
-      return await this.createQueryBuilder("user_restaurant_lists")
+      let query = this.createQueryBuilder("user_restaurant_lists")
         .leftJoinAndSelect("user_restaurant_lists.restaurant", "restaurant")
         .leftJoin(
           UserWishRestaurantListEntity,
@@ -120,14 +124,109 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
           "restaurant.category",
           "restaurant.phoneNumber",
           "restaurant.reviewCnt",
-          "user_restaurant_list.created_at",
+          "user_restaurant_lists.created_at",
           `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
         ])
         .where(
-          "user_restaurant_lists.user_id = :userId  and user_restaurant_lists.deleted_at IS NULL",
+          "user_restaurant_lists.user_id = :userId and user_restaurant_lists.deleted_at IS NULL",
           { userId: id }
-        )
-        .getRawMany();
+        );
+
+      if (sortInfoDto.sort === 'TIME_ASC') {
+        query = query.orderBy("user_restaurant_lists.created_at", "ASC");
+      } else {
+        query = query.orderBy("user_restaurant_lists.created_at", "DESC");
+      }
+      sortInfoDto.page = parseInt(sortInfoDto.page as unknown as string) || 1;
+      sortInfoDto.limit = parseInt(sortInfoDto.limit as unknown as string) || 10;
+
+      const offset = (sortInfoDto.page - 1) * sortInfoDto.limit;
+      query = query.offset(offset).limit(sortInfoDto.limit + 1);
+
+      const items = await query.getRawMany();
+
+      const hasNext = items.length > sortInfoDto.limit;
+      const resultItems = hasNext ? items.slice(0, -1) : items;
+
+      return {
+        hasNext,
+        items: resultItems,
+      }
+
     }
+  }
+  async getMyFavoriteFoodCategory(id: TokenInfo['id'], region) {
+    const categoryCounts = await this.createQueryBuilder("userRestaurantList")
+      .select("restaurant.category", "category")
+      .addSelect("COUNT(restaurant.category)", "count")
+      .innerJoin("userRestaurantList.restaurant", "restaurant")
+      .where("userRestaurantList.userId = :id", { id })
+      .groupBy("restaurant.category")
+      .getRawMany();
+
+
+    if (categoryCounts.length) {
+      const favoriteCategory = categoryCounts.reduce((a, b) => a.count > b.count ? a : b).category;
+
+      const subQuery = await this.createQueryBuilder()
+        .select("DISTINCT(userRestaurantListSub.restaurantId)", "restaurantId")
+        .from(UserRestaurantListEntity, "userRestaurantListSub")
+        .where("userRestaurantListSub.userId = :id", { id })
+        .getRawMany();
+
+      const restaurantIds = subQuery.map(item => item.restaurantId);
+
+      const result = await this
+        .createQueryBuilder("userRestaurantList")
+        .leftJoinAndSelect("userRestaurantList.restaurant", "restaurant")
+        .select(["restaurant.id", "restaurant.name", "restaurant.category"])
+        .where("restaurant.category = :category", { category: favoriteCategory })
+        .andWhere("restaurant.address LIKE :region", { region: `%${region.region}%` })
+        .andWhere("userRestaurantList.restaurantId NOT IN (:...restaurantIds)", { restaurantIds: restaurantIds })
+        .groupBy("restaurant.id")
+        .getRawMany();
+
+      if (result.length > 0) {
+        let recommendedRestaurants = [];
+        let usedIndexes = new Set();
+
+        for (let i = 0; i < Math.min(3, result.length); i++) {
+          let randomIndex;
+          do {
+            randomIndex = Math.floor(Math.random() * result.length);
+          } while (usedIndexes.has(randomIndex));
+
+          usedIndexes.add(randomIndex);
+          recommendedRestaurants.push(result[randomIndex]);
+        }
+        return recommendedRestaurants;
+      }
+    }
+    else {
+      const result = await this
+        .createQueryBuilder("userRestaurantList")
+        .leftJoinAndSelect("userRestaurantList.restaurant", "restaurant")
+        .select(["restaurant.id", "restaurant.name", "restaurant.category"])
+        .andWhere("restaurant.address LIKE :region", { region: `%${region.region}%` })
+        .groupBy("restaurant.id")
+        .getRawMany();
+
+      if (result.length > 0) {
+        let recommendedRestaurants = [];
+        let usedIndexes = new Set();
+
+        for (let i = 0; i < Math.min(3, result.length); i++) {
+          let randomIndex;
+          do {
+            randomIndex = Math.floor(Math.random() * result.length);
+          } while (usedIndexes.has(randomIndex));
+
+          usedIndexes.add(randomIndex);
+          recommendedRestaurants.push(result[randomIndex]);
+        }
+        return recommendedRestaurants;
+      }
+    }
+    return [];
   }
 }

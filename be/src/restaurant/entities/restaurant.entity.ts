@@ -8,9 +8,8 @@ import {
   OneToMany,
 } from "typeorm";
 import { Point } from "geojson";
-import { ReviewInfoEntity } from "src/review/entities/review.entity";
-import { User } from "src/user/entities/user.entity";
-import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
+import { ReviewInfoEntity } from "../../review/entities/review.entity";
+import { UserRestaurantListEntity } from "../../user/entities/user.restaurantlist.entity";
 
 @Unique("unique_name_location", ["name", "location"])
 @Entity("restaurant")

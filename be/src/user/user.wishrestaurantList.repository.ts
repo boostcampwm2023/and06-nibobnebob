@@ -4,6 +4,7 @@ import { UserWishRestaurantListEntity } from "./entities/user.wishrestaurantlist
 import { TokenInfo } from "./user.decorator";
 import { RestaurantInfoEntity } from "src/restaurant/entities/restaurant.entity";
 import { UserRestaurantListEntity } from "./entities/user.restaurantlist.entity";
+import { SortInfoDto } from "src/utils/sortInfo.dto";
 @Injectable()
 export class UserWishRestaurantListRepository extends Repository<UserWishRestaurantListEntity> {
   constructor(private dataSource: DataSource) {
@@ -32,8 +33,8 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
     );
     return null;
   }
-  async getMyWishRestaurantListInfo(id: TokenInfo["id"]) {
-    return await this.createQueryBuilder("user_wishrestaurant_lists")
+  async getMyWishRestaurantListInfo(id: TokenInfo["id"], sortInfoDto: SortInfoDto) {
+    let query = this.createQueryBuilder("user_wishrestaurant_lists")
       .leftJoinAndSelect("user_wishrestaurant_lists.restaurant", "restaurant")
       .leftJoin(
         UserRestaurantListEntity,
@@ -48,6 +49,7 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
         "restaurant.address",
         "restaurant.category",
         "restaurant.phoneNumber",
+        "user_wishrestaurant_lists.created_at",
         'CASE WHEN current_url.user_id IS NOT NULL THEN true ELSE false END AS "isMy"',
         'CASE WHEN user_wishrestaurant_lists.user_id IS NOT NULL THEN true ELSE false END AS "isWish"',
       ])
@@ -55,6 +57,27 @@ export class UserWishRestaurantListRepository extends Repository<UserWishRestaur
         `user_wishrestaurant_lists.user_id = :userId and user_wishrestaurant_lists.deleted_at IS NULL`,
         { userId: id }
       )
-      .getRawMany();
+
+    if (sortInfoDto.sort === 'TIME_ASC') {
+      query = query.orderBy("user_wishrestaurant_lists.created_at", "ASC");
+    } else {
+      query = query.orderBy("user_wishrestaurant_lists.created_at", "DESC");
+    }
+
+    sortInfoDto.page = parseInt(sortInfoDto.page as unknown as string) || 1;
+    sortInfoDto.limit = parseInt(sortInfoDto.limit as unknown as string) || 10;
+
+    const offset = (sortInfoDto.page - 1) * sortInfoDto.limit;
+    query = query.offset(offset).limit(sortInfoDto.limit + 1);
+  
+    const items = await query.getRawMany();
+  
+    const hasNext = items.length > sortInfoDto.limit;
+    const resultItems = hasNext ? items.slice(0, -1) : items;
+  
+    return {
+      hasNext,
+      items : resultItems,
+    }
   }
 }

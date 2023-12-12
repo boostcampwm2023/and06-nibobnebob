@@ -4,29 +4,28 @@ import { SearchInfoDto } from "./dto/seachInfo.dto";
 import * as proj4 from "proj4";
 import axios from "axios";
 import { FilterInfoDto } from "./dto/filterInfo.dto";
-import { TokenInfo } from "src/user/user.decorator";
-import { UserRepository } from "src/user/user.repository";
-import { ReviewRepository } from "src/review/review.repository";
+import { TokenInfo } from "../user/user.decorator";
+import { UserRepository } from "../user/user.repository";
+import { ReviewRepository } from "../review/review.repository";
 import { LocationDto } from "./dto/location.dto";
+import { AwsService } from "../aws/aws.service";
+import { Cron } from "@nestjs/schedule";
 
-const key = "api키 입력하세요";
+const key = process.env.API_KEY;
 
 @Injectable()
-export class RestaurantService implements OnModuleInit {
-  onModuleInit() {
-    //this.updateRestaurantsFromSeoulData();
-    setInterval(
-      () => {
-        this.updateRestaurantsFromSeoulData();
-      },
-      1000 * 60 * 60 * 24 * 3
-    );
+export class RestaurantService {
+
+  @Cron('0 0 2 * * *')
+  handleCron() {
+    this.updateRestaurantsFromSeoulData();
   }
 
   constructor(
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
-    private reviewRepository: ReviewRepository
+    private reviewRepository: ReviewRepository,
+    private awsService: AwsService
   ) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
@@ -43,6 +42,22 @@ export class RestaurantService implements OnModuleInit {
         })
         .getCount();
 
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
+
+
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
@@ -58,6 +73,7 @@ export class RestaurantService implements OnModuleInit {
     const reviews = await this.reviewRepository
       .createQueryBuilder("review")
       .leftJoinAndSelect("review.user", "user")
+      .leftJoin("review.reviewLikes", "reviewLike", "reviewLike.userId = :userId", { userId: tokenInfo.id })
       .select([
         "review.id",
         "review.isCarVisit",
@@ -68,17 +84,30 @@ export class RestaurantService implements OnModuleInit {
         "review.restroomCleanliness",
         "review.overallExperience",
         "user.nickName as reviewer",
-        "review.createdAt"
+        "user.profileImage",
+        "review.createdAt",
+        "review.reviewImage",
+        "reviewLike.isLike as isLike"
       ])
+      .addSelect("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "likeCount")
+      .addSelect("COUNT(CASE WHEN reviewLike.isLike = false THEN 1 ELSE NULL END)", "dislikeCount")
+      .groupBy("review.id, user.nickName, user.profileImage, review.isCarVisit, review.transportationAccessibility, review.parkingArea, review.taste, review.service, review.restroomCleanliness, review.overallExperience, review.createdAt, review.reviewImage, reviewLike.isLike")
       .where("review.restaurant_id = :restaurantId", {
         restaurantId: restaurant.restaurant_id,
       })
+      .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
       .getRawMany();
 
+
     restaurant.restaurant_reviewCnt = reviews.length;
-    restaurant.reviews = reviews.slice(0, 3);
+    const reviewList = reviews.slice(0, 3);
+    reviewList.forEach((element) => {
+      if (element.review_reviewImage && element.review_reviewImage != "review/images/defaultImage.png") element.review_reviewImage = this.awsService.getImageURL(element.review_reviewImage);
+      else { element.review_reviewImage = "" }
+      if (element.user_profileImage) element.user_profileImage = this.awsService.getImageURL(element.user_profileImage);
 
-
+    })
+    restaurant.reviews = reviewList;
     return restaurant;
   }
 
@@ -105,16 +134,33 @@ export class RestaurantService implements OnModuleInit {
         })
         .getCount();
 
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
+
+
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
     return restaurants;
   }
 
-  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo) {
+  async entireRestaurantList(locationDto: LocationDto, tokenInfo: TokenInfo, limit: string) {
     const restaurants = await this.restaurantRepository.entireRestaurantList(
       locationDto,
-      tokenInfo
+      tokenInfo,
+      limit
     );
 
     for (const restaurant of restaurants) {
@@ -124,7 +170,20 @@ export class RestaurantService implements OnModuleInit {
           restaurantId: restaurant.restaurant_id,
         })
         .getCount();
-
+      const reviewInfo = await this.reviewRepository
+        .createQueryBuilder("review")
+        .leftJoin("review.reviewLikes", "reviewLike")
+        .select(["review.id", "review.reviewImage"],)
+        .groupBy("review.id")
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+        .getRawOne();
+      if (reviewInfo) {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+      }
+      else {
+        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+      }
       restaurant.restaurant_reviewCnt = reviewCount;
     }
 
