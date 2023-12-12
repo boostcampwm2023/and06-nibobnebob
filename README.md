@@ -18,7 +18,7 @@
 <br><br>
 
 
-## 🤔 개발 과정과 고민 
+## 🤔 주요 개발 과정과 고민 
 
 |주제|설명|
 |--|--|
@@ -40,14 +40,14 @@
 ### 로그인 / 회원가입
 일반 회원가입|네이버 회원가입|
 |------|---|
-<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/ec04d729-eae4-4135-a6c4-b0868dce0e4e" width="580" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/55210733-f31d-44a4-a5fe-6127ec49b63a" width="600" heigth="1200">
+<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/ec04d729-eae4-4135-a6c4-b0868dce0e4e" width="390" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/55210733-f31d-44a4-a5fe-6127ec49b63a" width="400" heigth="1200">
 
 <br>
 
 ### 홈화면
 홈 지도|위치 트래킹|홈 검색|
 |------|---|---|
-|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/eba76f0a-6746-4076-9e8a-5c9a7b1020ca" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/e2106336-33da-4fe0-af90-b1ac9b2dbc71" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/f8559be6-3f5d-41ea-82c0-379c00d4ec60" width="600" heigth="1200">|
+|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/eba76f0a-6746-4076-9e8a-5c9a7b1020ca" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/e2106336-33da-4fe0-af90-b1ac9b2dbc71" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/f8559be6-3f5d-41ea-82c0-379c00d4ec60" width="300" heigth="1200">|
 
 <br>
 
@@ -55,7 +55,7 @@
 
 유저 추천 및 팔로우|지역으로 유저 검색|유저 검색 및 유저상세|
 |------|---|---|
-|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/c621d20c-a16e-4bdb-b476-815f59f549c3" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/5090676a-d248-4260-a2c9-891f5d892a7b" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/2eba3ddb-b718-417e-9699-55f4298034a6" width="600" heigth="1200">|
+|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/c621d20c-a16e-4bdb-b476-815f59f549c3" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/5090676a-d248-4260-a2c9-891f5d892a7b" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/2eba3ddb-b718-417e-9699-55f4298034a6" width="300" heigth="1200">|
 
 <br>
 
@@ -63,14 +63,14 @@
 
 맛집 등록하기|맛집 상세보기|위시리스트 추가하기|
 |------|---|---|
-|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/21c15f01-b7d1-4183-ad28-07ec79bacf45" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/a161a1d6-2a53-47a3-b1a2-c6b9d3e9b722" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/bcf0a4ec-eb0b-4abf-be24-ba836f8886a2" width="600" heigth="1200">|
+|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/21c15f01-b7d1-4183-ad28-07ec79bacf45" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/a161a1d6-2a53-47a3-b1a2-c6b9d3e9b722" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/bcf0a4ec-eb0b-4abf-be24-ba836f8886a2" width="300" heigth="1200">|
 
 <br>
 
 ### 마이페이지
 프로필 수정|나의 위시리스트|내 맛집 리스트
 |------|---|---|
-|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/0086ff34-34db-483c-86bd-77a6a098e311" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/614b9d5e-0e1f-4252-abea-d1393bd2db00" width="600" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/ecbe43e7-8e49-4eb7-96cf-ba1b119022d3" width="520" heigth="1200">|
+|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/0086ff34-34db-483c-86bd-77a6a098e311" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/614b9d5e-0e1f-4252-abea-d1393bd2db00" width="300" heigth="1200">|<img src="https://github.com/boostcampwm2023/and06-nibobnebob/assets/82799840/ecbe43e7-8e49-4eb7-96cf-ba1b119022d3" width="260" heigth="1200">|
 
 <br><br>
 
