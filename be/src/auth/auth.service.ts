@@ -5,6 +5,7 @@ import {
   HttpStatus,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
 } from "@nestjs/common";
 import { UserRepository } from "../user/user.repository";
 import { JwtService } from "@nestjs/jwt";
@@ -25,7 +26,7 @@ export class AuthService {
     try {
       const result = await comparePasswords(loginInfoDto.password, data["password"]);
       if (result) return this.signin(loginInfoDto);
-      else throw new UnauthorizedException();
+      else throw new HttpException("LOGIN FAILED", HttpStatus.FORBIDDEN);
     } catch (err) {
       throw new UnauthorizedException();
     }
