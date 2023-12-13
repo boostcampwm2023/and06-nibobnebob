@@ -27,20 +27,21 @@ data class BasicSignupUiState(
     val isEmailNotEmpty: Boolean = true
 )
 
-sealed class BasicSignupEvents{
+sealed class BasicSignupEvents {
     data object NavigateToBack : BasicSignupEvents()
     data class NavigateToDetailSignup(
         val provider: String,
         val email: String,
         val password: String,
     ) : BasicSignupEvents()
-    data class ShowSnackMessage(val msg: String): BasicSignupEvents()
+
+    data class ShowSnackMessage(val msg: String) : BasicSignupEvents()
 }
 
 @HiltViewModel
 class BasicSignupViewModel @Inject constructor(
     private val getEmailValidationUseCase: GetEmailValidationUseCase
-) : ViewModel(){
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BasicSignupUiState())
     val uiState: StateFlow<BasicSignupUiState> = _uiState.asStateFlow()
@@ -54,27 +55,36 @@ class BasicSignupViewModel @Inject constructor(
     private val emailValidation = MutableStateFlow(false)
     private val passwordValidation = MutableStateFlow(false)
 
-    val isDataReady = combine(emailValidation, passwordValidation){ emailValidation, passwordValidation ->
-        emailValidation && passwordValidation
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        false
-    )
+    val isDataReady =
+        combine(emailValidation, passwordValidation) { emailValidation, passwordValidation ->
+            emailValidation && passwordValidation
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            false
+        )
 
-    init{
+    init {
         observeEmail()
         observePasswordCheck()
     }
 
-    private fun observeEmail(){
+    private fun observeEmail() {
         email.onEach {
-            if(ValidationUtil.checkEmail(it)){
+            if (ValidationUtil.checkEmail(it)) {
                 _uiState.update { state ->
                     emailValidation.value = false
                     state.copy(
                         isEmailNotEmpty = it.isNotBlank(),
                         emailState = InputState.Empty
+                    )
+                }
+            } else if (it.isEmpty()) {
+                _uiState.update { state ->
+                    emailValidation.value = false
+                    state.copy(
+                        isEmailNotEmpty = false,
+                        emailState = InputState.Error("이메일을 입력해주세요.")
                     )
                 }
             } else {
@@ -89,11 +99,11 @@ class BasicSignupViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun observePasswordCheck(){
+    private fun observePasswordCheck() {
 
         password.onEach {
-            if(it.isNotBlank()){
-                if(it == passwordCheck.value){
+            if (it.isNotBlank()) {
+                if (it == passwordCheck.value) {
                     passwordValidation.value = true
                     _uiState.update { state ->
                         state.copy(
@@ -112,8 +122,8 @@ class BasicSignupViewModel @Inject constructor(
         }.launchIn(viewModelScope)
 
         passwordCheck.onEach {
-            if(it.isNotBlank()){
-                if(it == password.value){
+            if (it.isNotBlank()) {
+                if (it == password.value) {
                     passwordValidation.value = true
                     _uiState.update { state ->
                         state.copy(
@@ -132,11 +142,11 @@ class BasicSignupViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun checkEmail(){
+    fun checkEmail() {
         getEmailValidationUseCase(email.value).onEach {
-            when(it){
+            when (it) {
                 is BaseState.Success -> {
-                    if(it.data.isExist){
+                    if (it.data.isExist) {
                         emailValidation.value = false
                         _uiState.update { state ->
                             state.copy(
@@ -152,6 +162,7 @@ class BasicSignupViewModel @Inject constructor(
                         }
                     }
                 }
+
                 is BaseState.Error -> {
                     emailValidation.value = false
                     _events.emit(BasicSignupEvents.ShowSnackMessage(it.message))
@@ -160,19 +171,21 @@ class BasicSignupViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun navigateToBack(){
+    fun navigateToBack() {
         viewModelScope.launch {
             _events.emit(BasicSignupEvents.NavigateToBack)
         }
     }
 
-    fun navigateToDetailSignup(){
+    fun navigateToDetailSignup() {
         viewModelScope.launch {
-            _events.emit(BasicSignupEvents.NavigateToDetailSignup(
-                provider = "site",
-                email = email.value,
-                password = password.value,
-            ))
+            _events.emit(
+                BasicSignupEvents.NavigateToDetailSignup(
+                    provider = "site",
+                    email = email.value,
+                    password = password.value,
+                )
+            )
         }
     }
 }

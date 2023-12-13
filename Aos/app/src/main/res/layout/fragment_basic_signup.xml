@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="기본 정보 입력"
+                android:text="@string/input_basic_information"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_back"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="이메일"
+            android:text="@string/email"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_toolbar" />
 
@@ -76,7 +76,7 @@
                 style="@style/TextSmallRegular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="이메일"
+                android:hint="@string/email"
                 android:text="@={vm.email}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -95,16 +95,15 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_email_duplication_check"
-            style="@style/TextSmallBold"
+            style="@style/TextMediumBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:enabled="@{vm.uiState.isEmailNotEmpty}"
             android:minHeight="0dp"
             android:onClick="@{() -> vm.checkEmail()}"
-            android:text="이메일 중복확인"
-            android:textColor="@color/selector_nick_check_text"
-            app:layout_constraintBottom_toBottomOf="@id/tv_email_helper_text"
+            android:text="@string/check_email_duplicate"
+            app:emailValidation="@{vm.uiState.emailState}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_email_helper_text" />
 
@@ -114,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="비밀번호"
+            android:text="@string/password"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_email_helper_text" />
 
@@ -133,7 +132,7 @@
                 style="@style/TextSmallRegular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="비밀번호"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:text="@={vm.password}" />
 
@@ -155,7 +154,7 @@
                 style="@style/TextSmallRegular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="비밀번호 확인"
+                android:hint="@string/check_password"
                 android:inputType="textPassword"
                 android:text="@={vm.passwordCheck}" />
 
@@ -183,7 +182,7 @@
             android:background="@drawable/selector_next_btn"
             android:enabled="@{vm.isDataReady()}"
             android:onClick="@{() -> vm.navigateToDetailSignup()}"
-            android:text="다음"
+            android:text="@string/next"
             android:textColor="@color/selector_next_btn_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
