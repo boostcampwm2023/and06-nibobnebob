@@ -46,6 +46,9 @@
             android:name="nickName"
             app:argType="string"
             android:defaultValue=""/>
+        <action
+            android:id="@+id/action_userDetailFragment_to_restaurantDetailFragment"
+            app:destination="@id/restaurantDetailFragment" />
     </fragment>
 
     <fragment
