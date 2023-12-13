@@ -22,7 +22,7 @@ export class AwsService {
 
     try {
       const resizedBuffer = await sharp(data)
-        .resize(256, 256)
+        .resize(512, 512)
         .toBuffer();
 
       await this.s3.putObject({
