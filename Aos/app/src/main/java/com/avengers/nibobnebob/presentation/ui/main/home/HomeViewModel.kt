@@ -224,7 +224,9 @@ class HomeViewModel @Inject constructor(
         restaurantRepository.nearRestaurantList(
             radius = uiState.value.cameraRadius.toString(),
             longitude = uiState.value.cameraLongitude.toString(),
-            latitude = uiState.value.cameraLatitude.toString()
+            latitude = uiState.value.cameraLatitude.toString(),
+            limit = if(uiState.value.cameraRadius < 500) 100 else 40
+        //이게 null일때 갯수제한이여야하는데.. 반대로 되어있어 200개 임시로 적음
         ).onStart {
             _events.emit(HomeEvents.ShowLoading)
         }.onEach {

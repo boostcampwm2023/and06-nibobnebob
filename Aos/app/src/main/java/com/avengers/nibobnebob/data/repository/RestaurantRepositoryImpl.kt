@@ -11,6 +11,7 @@ import com.avengers.nibobnebob.data.model.response.WishRestaurantResponse.Compan
 import com.avengers.nibobnebob.data.model.runRemote
 import com.avengers.nibobnebob.data.remote.RestaurantApi
 import com.avengers.nibobnebob.domain.model.MyRestaurantData
+import com.avengers.nibobnebob.domain.model.RecommendRestaurantData
 import com.avengers.nibobnebob.domain.model.RestaurantDetailData
 import com.avengers.nibobnebob.domain.model.RestaurantIsWishData
 import com.avengers.nibobnebob.domain.model.RestaurantItemsData
@@ -18,7 +19,6 @@ import com.avengers.nibobnebob.domain.model.ReviewSortData
 import com.avengers.nibobnebob.domain.model.SearchRestaurantData
 import com.avengers.nibobnebob.domain.model.WishRestaurantData
 import com.avengers.nibobnebob.domain.model.base.BaseState
-import com.avengers.nibobnebob.domain.model.RecommendRestaurantData
 import com.avengers.nibobnebob.domain.model.base.StatusCode
 import com.avengers.nibobnebob.domain.repository.RestaurantRepository
 import kotlinx.coroutines.flow.Flow
@@ -268,10 +268,11 @@ class RestaurantRepositoryImpl @Inject constructor(
     override fun nearRestaurantList(
         radius: String,
         longitude: String,
-        latitude: String
+        latitude: String,
+        limit: Int?
     ): Flow<BaseState<List<RestaurantItemsData>>> = flow {
-
-        when (val result = runRemote { api.nearRestaurantList(radius, longitude, latitude) }) {
+        when (val result =
+            runRemote { api.nearRestaurantList(limit, radius, longitude, latitude) }) {
             is BaseState.Success -> {
                 result.data.body?.let { body ->
                     emit(BaseState.Success(body.map { it.toDomainModel() }))
