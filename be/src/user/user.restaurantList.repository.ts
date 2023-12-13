@@ -156,53 +156,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
     }
   }
   async getMyFavoriteFoodCategory(id: TokenInfo['id'], region) {
-    const categoryCounts = await this.createQueryBuilder("userRestaurantList")
-      .select("restaurant.category", "category")
-      .addSelect("COUNT(restaurant.category)", "count")
-      .innerJoin("userRestaurantList.restaurant", "restaurant")
-      .where("userRestaurantList.userId = :id", { id })
-      .groupBy("restaurant.category")
-      .getRawMany();
-
-
-    if (categoryCounts.length) {
-      const favoriteCategory = categoryCounts.reduce((a, b) => a.count > b.count ? a : b).category;
-
-      const subQuery = await this.createQueryBuilder()
-        .select("DISTINCT(userRestaurantListSub.restaurantId)", "restaurantId")
-        .from(UserRestaurantListEntity, "userRestaurantListSub")
-        .where("userRestaurantListSub.userId = :id", { id })
-        .getRawMany();
-
-      const restaurantIds = subQuery.map(item => item.restaurantId);
-
-      const result = await this
-        .createQueryBuilder("userRestaurantList")
-        .leftJoinAndSelect("userRestaurantList.restaurant", "restaurant")
-        .select(["restaurant.id", "restaurant.name", "restaurant.category"])
-        .where("restaurant.category = :category", { category: favoriteCategory })
-        .andWhere("restaurant.address LIKE :region", { region: `%${region.region}%` })
-        .andWhere("userRestaurantList.restaurantId NOT IN (:...restaurantIds)", { restaurantIds: restaurantIds })
-        .groupBy("restaurant.id")
-        .getRawMany();
-
-      if (result.length > 0) {
-        let recommendedRestaurants = [];
-        let usedIndexes = new Set();
-
-        for (let i = 0; i < Math.min(3, result.length); i++) {
-          let randomIndex;
-          do {
-            randomIndex = Math.floor(Math.random() * result.length);
-          } while (usedIndexes.has(randomIndex));
-
-          usedIndexes.add(randomIndex);
-          recommendedRestaurants.push(result[randomIndex]);
-        }
-        return recommendedRestaurants;
-      }
-    }
-    else {
+    
       const result = await this
         .createQueryBuilder("userRestaurantList")
         .leftJoinAndSelect("userRestaurantList.restaurant", "restaurant")
@@ -226,7 +180,7 @@ export class UserRestaurantListRepository extends Repository<UserRestaurantListE
         }
         return recommendedRestaurants;
       }
-    }
+    
     return [];
   }
 }
