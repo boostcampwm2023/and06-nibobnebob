@@ -115,6 +115,9 @@
         <action
             android:id="@+id/action_wishRestaurantListFragment_to_restaurantDetailFragment"
             app:destination="@id/restaurantDetailFragment" />
+        <action
+            android:id="@+id/action_wishRestaurantListFragment_to_addMyRestaurantFragment2"
+            app:destination="@id/addMyRestaurantFragment" />
     </fragment>
     <fragment
         android:id="@+id/restaurantSearchFragment"
