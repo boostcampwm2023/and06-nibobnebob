@@ -24,14 +24,16 @@
 |--|--|
 |[**앱 flow**](https://github.com/boostcampwm2023/and06-nibobnebob/wiki/%E3%80%B0%EF%B8%8F-App-%ED%99%94%EB%A9%B4-flow)|각 페이지별 깊은 depth 로 인해 발생하는 소통 문제 해결을 위해 flow 작성.|
 |[**권한 허용 여부에 따른 메인화면 flow**](https://github.com/boostcampwm2023/and06-nibobnebob/wiki/%F0%9F%93%8D-%EC%9C%84%EC%B9%98-%EA%B6%8C%ED%95%9C-%ED%97%88%EC%9A%A9%EC%97%90-%EB%94%B0%EB%A5%B8-%EB%A9%94%EC%9D%B8-%ED%99%94%EB%A9%B4-flow)|지도가 핵심 기능인 만큼, 위치 권한과 GPS ON 여부에 따라 메인 화면의 flow 가 달라진다.|
-|**왜 공공 API를 선택했나?**|근처의 모든 음식점을 가져올 때, 네이버/카카오 api 가 아닌 공공 api 를 선택한 이유?|
 |[**사용자 경험을 고려한 지도 필터간 전환**](https://github.com/boostcampwm2023/and06-nibobnebob/wiki/%5BK011%5D-%EB%85%B8%EA%B7%A0%EC%9A%B1#%EB%84%A4%EC%9D%B4%EB%B2%84%EC%A7%80%EB%8F%84-%EC%82%AC%EC%9A%A9%EC%9E%90-%EA%B2%BD%ED%97%98-%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0)|필터에 따라 다르게 보여지는 지도와 맛집 마커를 전환하는 과정에서 사용자 경험을 고려했다.|
+|[**왜 공공 API를 선택했나?**](https://github.com/boostcampwm2023/and06-nibobnebob/wiki/%E2%9C%92-%5BBE%5D-%EA%B0%9C%EB%B0%9C%EC%9D%BC%EC%A7%80#%EA%B3%B5%EA%B3%B5-api-%EC%84%A0%ED%83%9D-%EC%9D%B4%EC%9C%A0)|근처의 모든 음식점을 가져올 때, 네이버/카카오 api 가 아닌 공공 api 를 선택한 이유?|
+|[**왜 이미지를 리사이징 하나?**](https://github.com/boostcampwm2023/and06-nibobnebob/wiki/%E2%9C%92-%5BBE%5D-%EA%B0%9C%EB%B0%9C%EC%9D%BC%EC%A7%80#%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95)|Object Storage에 이미지를 업로드 할 때, 리사이징 하는 이유?|
+|[**어플리케이션 통신 과정**](https://github.com/boostcampwm2023/and06-nibobnebob/wiki/%E2%9C%92-%5BBE%5D-%EA%B0%9C%EB%B0%9C%EC%9D%BC%EC%A7%80#%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98-%ED%86%B5%EC%8B%A0-%EA%B3%BC%EC%A0%95)|사용자의 요청부터 서버의 응답까지 어플리케이션 통신 과정 설계 이유|
 
 <br>
 
 📍 AOS 기술 선택 이유 바로가기 
 
-📍 BE 기술 선택 이유 바로가기
+📍 [BE 기술 선택 이유 바로가기](https://github.com/boostcampwm2023/and06-nibobnebob/wiki/%E2%9C%92-%5BBE%5D-%EA%B0%9C%EB%B0%9C%EC%9D%BC%EC%A7%80#%EA%B8%B0%EC%88%A0%EC%A0%81-%EB%8F%84%EC%A0%84)
 
 <br><br>
 
@@ -77,6 +79,18 @@
 ## 📚 기술 스택
 - Android
 - Backend
+
+| 분류 | 사용 기술|
+|-- | --|
+|서버 프레임워크 | NestJS|
+|프로그래밍 언어 | TypeScript|
+|테스트 | Jest, Docker, Apache Jmeter|
+|로깅 | Winston|
+|DB | PostgreSQL, TypeORM|
+|웹 서버 | NginX|
+|클라우드 컴퓨팅 | Naver Cloud Platform|
+|이미지 저장 | Object Storage, multer, sharp|
+|CI/CD | GitHub Action, Docker|
 
 
 <br><br>
