@@ -14,7 +14,7 @@ data class MyRestaurantItemData(
     val address: String,
     val category: String,
     val id: Int,
-    val createdAt : String,
+    val createdAt: String?,
     val location: LocationData,
     val name: String,
     val phoneNumber: String,

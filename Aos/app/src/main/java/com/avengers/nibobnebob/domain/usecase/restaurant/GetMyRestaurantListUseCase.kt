@@ -12,8 +12,11 @@ class GetMyRestaurantListUseCase @Inject constructor(
     private val repository: RestaurantRepository
 ) {
     operator fun invoke(
+        longitude: String? = null,
+        latitude: String? = null,
         limit: Int? = null,
         page: Int? = null,
         sort: String? = null,
-    ): Flow<BaseState<MyRestaurantData>> = repository.myRestaurantList(limit, page, sort)
+    ): Flow<BaseState<MyRestaurantData>> =
+        repository.myRestaurantList(longitude, latitude, limit, page, sort)
 }
