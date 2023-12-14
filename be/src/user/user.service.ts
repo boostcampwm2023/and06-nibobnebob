@@ -51,7 +51,7 @@ export class UserService {
       const newUser = this.usersRepository.create(user);
       const result = await this.usersRepository.createUser(newUser);
       if (file) {
-        await this.awsService.uploadToS3(profileImage, file.buffer);
+        await this.awsService.uploadToS3(profileImage, file.buffer, 512);
       }
       return this.authService.createTokens(result.id);
     } catch (error) {
@@ -363,7 +363,7 @@ export class UserService {
         restaurantId,
         reviewEntity
       );
-      if (file) await this.awsService.uploadToS3(reviewImage, file.buffer);
+      if (file) await this.awsService.uploadToS3(reviewImage, file.buffer, 1024);
     } catch (err) {
       throw new BadRequestException();
     }
@@ -432,7 +432,7 @@ export class UserService {
     const newUser = this.usersRepository.create(user);
     const updatedUser = await this.usersRepository.updateMypageUserInfo(tokenInfo.id, newUser);
     if (file && isChanged) {
-      this.awsService.uploadToS3(profileImage, file.buffer);
+      this.awsService.uploadToS3(profileImage, file.buffer, 512);
     }
     return updatedUser;
   }

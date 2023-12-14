@@ -18,11 +18,11 @@ export class AwsService {
     });
   }
 
-  async uploadToS3(path: string, data: Buffer) {
+  async uploadToS3(path: string, data: Buffer, size: number) {
 
     try {
       const resizedBuffer = await sharp(data)
-        .resize(512, 512)
+        .resize(size, size)
         .toBuffer();
 
       await this.s3.putObject({
