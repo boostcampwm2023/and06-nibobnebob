@@ -3,7 +3,6 @@ package com.avengers.nibobnebob.presentation.ui.main.home
 import android.Manifest
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -11,7 +10,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
-import com.avengers.nibobnebob.app.App
 import com.avengers.nibobnebob.databinding.FragmentHomeBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.RecommendRestaurantDialog
@@ -124,6 +122,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
 
                     is HomeEvents.RemoveMarkers -> removeAllMarker()
                     is HomeEvents.ShowSnackMessage -> showSnackBar(event.msg)
+
+                    is HomeEvents.ShowLoading -> showLoading(requireContext())
+                    is HomeEvents.DismissLoading -> dismissLoading()
                 }
             }
         }
@@ -269,13 +270,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home), 
         markerList.clear()
     }
 
-    private fun finishApp(){
+    private fun finishApp() {
         var backPressTime = 0L
         requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(System.currentTimeMillis() - backPressTime <= 2000) {
+                if (System.currentTimeMillis() - backPressTime <= 2000) {
                     parentViewModel.finishApp()
-                } else{
+                } else {
                     backPressTime = System.currentTimeMillis()
                     showToastMessage("뒤로가기 버튼을 한 번 더 누르면 종료됩니다.")
                 }

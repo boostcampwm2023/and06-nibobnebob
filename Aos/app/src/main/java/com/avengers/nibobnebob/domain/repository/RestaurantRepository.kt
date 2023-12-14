@@ -84,6 +84,7 @@ interface RestaurantRepository {
         radius: String,
         longitude: String,
         latitude: String,
+        limit: Int?
     ): Flow<BaseState<List<RestaurantItemsData>>>
 
     fun likeReview(reviewId: Int): Flow<BaseState<Unit>>

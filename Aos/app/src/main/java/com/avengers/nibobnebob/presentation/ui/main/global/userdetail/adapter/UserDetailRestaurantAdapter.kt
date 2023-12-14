@@ -8,7 +8,9 @@ import com.avengers.nibobnebob.databinding.ItemUserDetailRestaurantBinding
 import com.avengers.nibobnebob.presentation.ui.main.global.model.UiUserDetailRestaurantData
 import com.avengers.nibobnebob.presentation.util.DefaultDiffUtil
 
-class UserDetailRestaurantAdapter() :
+class UserDetailRestaurantAdapter(
+    private val restaurantClick: (Int) -> Unit
+) :
     ListAdapter<UiUserDetailRestaurantData, UserDetailRestaurantViewHolder>(DefaultDiffUtil<UiUserDetailRestaurantData>()) {
 
     override fun onCreateViewHolder(
@@ -24,14 +26,18 @@ class UserDetailRestaurantAdapter() :
     }
 
     override fun onBindViewHolder(holder: UserDetailRestaurantViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), restaurantClick)
     }
 
 }
 
 class UserDetailRestaurantViewHolder(private val binding: ItemUserDetailRestaurantBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: UiUserDetailRestaurantData) {
+    fun bind(
+        item: UiUserDetailRestaurantData,
+        restaurantClick: (Int) -> Unit
+    ) {
         binding.item = item
+        binding.root.setOnClickListener { restaurantClick(item.id) }
     }
 }

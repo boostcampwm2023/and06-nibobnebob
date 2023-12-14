@@ -271,10 +271,11 @@ class RestaurantRepositoryImpl @Inject constructor(
     override fun nearRestaurantList(
         radius: String,
         longitude: String,
-        latitude: String
+        latitude: String,
+        limit: Int?
     ): Flow<BaseState<List<RestaurantItemsData>>> = flow {
-
-        when (val result = runRemote { api.nearRestaurantList(radius, longitude, latitude) }) {
+        when (val result =
+            runRemote { api.nearRestaurantList(limit, radius, longitude, latitude) }) {
             is BaseState.Success -> {
                 result.data.body?.let { body ->
                     emit(BaseState.Success(body.map { it.toDomainModel() }))

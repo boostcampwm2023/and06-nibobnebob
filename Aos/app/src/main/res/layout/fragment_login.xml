@@ -14,6 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
+
         <ImageView
             android:id="@+id/iv_logo"
             android:layout_width="82dp"
@@ -144,15 +151,18 @@
             android:layout_marginTop="50dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/rect_naverfill_nostroke_12radius"
-            android:drawableStart="@drawable/ic_naver"
-            android:paddingStart="110dp"
             android:text="@string/start_naver_text"
-            android:textAlignment="textStart"
+            android:textAlignment="center"
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:drawableStart="@drawable/ic_naver"
+            android:paddingStart="80dp"
+            android:paddingEnd="115dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_do_signup" />
+            app:layout_constraintTop_toBottomOf="@id/tv_do_signup"
+            tools:ignore="RtlSymmetry" />
+
 
         <CheckBox
             android:id="@+id/cb_autoLogin"
@@ -162,5 +172,6 @@
             android:text="@string/auto_login"
             app:layout_constraintBottom_toTopOf="@id/btn_login"
             app:layout_constraintEnd_toEndOf="@id/btn_login" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

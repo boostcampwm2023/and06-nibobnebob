@@ -16,7 +16,6 @@ import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_WORST
 import com.avengers.nibobnebob.presentation.util.LoginType
-import com.google.android.material.textfield.TextInputLayout
 
 // signup
 @BindingAdapter("helperMessage")
@@ -34,6 +33,24 @@ fun bindHelpMessage(tv: TextView, inputState: InputState) = with(tv) {
 
         else -> {
             text = ""
+        }
+    }
+}
+
+//signup
+@BindingAdapter("emailValidation")
+fun bindEmailValidationr(tv: TextView, inputState: InputState) = with(tv) {
+    when (inputState) {
+        is InputState.Success -> {
+            setTextColor(ContextCompat.getColor(context, R.color.nn_dark6))
+        }
+
+        is InputState.Error -> {
+            setTextColor(ContextCompat.getColor(context, R.color.nn_dark6))
+        }
+
+        is InputState.Empty -> {
+            setTextColor(ContextCompat.getColor(context, R.color.nn_dark2))
         }
     }
 }
