@@ -70,8 +70,13 @@ export class UserService {
   }
   async getMypageUserInfo(tokenInfo: TokenInfo) {
     const result = await this.usersRepository.getMypageUserInfo(tokenInfo.id);
-    result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
-    return result;
+    try {
+      result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
+      return result;
+    } catch (err){
+      throw new BadRequestException();
+    }
+
   }
   async getMypageTargetUserInfo(tokenInfo: TokenInfo, nickName: string) {
     const targetInfo = await this.usersRepository.findOne({
@@ -104,8 +109,12 @@ export class UserService {
   }
   async getMypageUserDetailInfo(tokenInfo: TokenInfo) {
     const result = await this.usersRepository.getMypageUserDetailInfo(tokenInfo.id);
-    result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
-    return result;
+    try {
+      result.userInfo.profileImage = this.awsService.getImageURL(result.userInfo.profileImage);
+      return result;
+    } catch (err){
+      throw new BadRequestException();
+    }
   }
   async getMyRestaurantListInfo(
     searchInfoDto: SearchInfoDto,
