@@ -71,6 +71,8 @@ interface RestaurantApi {
     // 내 맛집 리스트
     @GET("api/user/restaurant")
     suspend fun myRestaurantList(
+        @Query("longitude") longitude: String? = null,
+        @Query("latitude") latitude: String? = null,
         @Query("limit") limit: Int? = null,
         @Query("page") page: Int? = null,
         @Query("sort") sort: String? = null,

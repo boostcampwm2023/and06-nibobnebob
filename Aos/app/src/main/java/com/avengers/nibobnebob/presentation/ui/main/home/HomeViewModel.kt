@@ -245,7 +245,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun myRestaurantList() {
-        myRestaurantListUseCase().onEach {
+        myRestaurantListUseCase(longitude = DEFAULT_LONGITUDE, latitude = DEFAULT_LATITUDE).onEach {
             _events.emit(HomeEvents.RemoveMarkers)
             when (it) {
                 is BaseState.Success -> {
@@ -468,6 +468,11 @@ class HomeViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    companion object {
+        const val DEFAULT_LATITUDE = "37.55"
+        const val DEFAULT_LONGITUDE = "126.9"
     }
 
 }

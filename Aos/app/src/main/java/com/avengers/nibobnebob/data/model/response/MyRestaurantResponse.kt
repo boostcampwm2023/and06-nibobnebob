@@ -27,7 +27,7 @@ data class MyRestaurantItem(
     @SerializedName("restaurant_address") val address: String,
     @SerializedName("restaurant_category") val category: String,
     @SerializedName("restaurant_id") val id: Int,
-    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("created_at") val createdAt: String?,
     @SerializedName("restaurant_location") val location: Location,
     @SerializedName("restaurant_name") val name: String,
     @SerializedName("restaurant_phoneNumber") val phoneNumber: String,
