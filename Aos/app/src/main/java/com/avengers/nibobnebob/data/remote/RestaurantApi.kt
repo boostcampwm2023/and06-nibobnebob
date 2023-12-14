@@ -119,6 +119,7 @@ interface RestaurantApi {
     //위치기반 맛집 리스트
     @GET("api/restaurant/all")
     suspend fun nearRestaurantList(
+        @Query("limit") limit : Int?,
         @Query("radius") radius: String,
         @Query("longitude") longitude: String,
         @Query("latitude") latitude: String

@@ -28,7 +28,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Math.pow
@@ -74,6 +76,9 @@ sealed class HomeEvents {
     data class ShowSnackMessage(
         val msg: String
     ) : HomeEvents()
+
+    data object ShowLoading : HomeEvents()
+    data object DismissLoading : HomeEvents()
 }
 
 @HiltViewModel
@@ -219,8 +224,12 @@ class HomeViewModel @Inject constructor(
         restaurantRepository.nearRestaurantList(
             radius = uiState.value.cameraRadius.toString(),
             longitude = uiState.value.cameraLongitude.toString(),
-            latitude = uiState.value.cameraLatitude.toString()
-        ).onEach {
+            latitude = uiState.value.cameraLatitude.toString(),
+            limit = if(uiState.value.cameraRadius < 500) 100 else 40
+        //이게 null일때 갯수제한이여야하는데.. 반대로 되어있어 200개 임시로 적음
+        ).onStart {
+            _events.emit(HomeEvents.ShowLoading)
+        }.onEach {
             _events.emit(HomeEvents.RemoveMarkers)
             when (it) {
                 is BaseState.Success -> {
@@ -240,12 +249,18 @@ class HomeViewModel @Inject constructor(
                 }
             }
             _events.emit(HomeEvents.SetNewMarkers)
+        }.onCompletion {
+            _events.emit(HomeEvents.DismissLoading)
         }.launchIn(viewModelScope)
 
     }
 
     private fun myRestaurantList() {
-        myRestaurantListUseCase().onEach {
+        myRestaurantListUseCase(
+            limit = 500
+        ).onStart {
+            _events.emit(HomeEvents.ShowLoading)
+        }.onEach {
             _events.emit(HomeEvents.RemoveMarkers)
             when (it) {
                 is BaseState.Success -> {
@@ -266,15 +281,19 @@ class HomeViewModel @Inject constructor(
                 is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
             }
             _events.emit(HomeEvents.SetNewMarkers)
+        }.onCompletion {
+            _events.emit(HomeEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 
     private fun userRestaurantList() {
         restaurantRepository.filterRestaurantList(
-            _uiState.value.curFilter,
-            "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
-            50000
-        ).onEach {
+            filter = _uiState.value.curFilter,
+            location = "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
+            radius = 50000
+        ).onStart {
+            _events.emit(HomeEvents.ShowLoading)
+        }.onEach {
             _events.emit(HomeEvents.RemoveMarkers)
             when (it) {
                 is BaseState.Success -> {
@@ -291,6 +310,8 @@ class HomeViewModel @Inject constructor(
                 is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
             }
             _events.emit(HomeEvents.SetNewMarkers)
+        }.onCompletion {
+            _events.emit(HomeEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 

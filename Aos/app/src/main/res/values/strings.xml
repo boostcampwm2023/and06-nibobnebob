@@ -121,6 +121,11 @@
     <string name="user_detail_empty">아직 추가한 맛집이 없습니다.</string>
     <string name="phone_number_empty">전화번호 없음</string>
     <string name="no_recommend_restaurant">\n\n추천드릴 음식점이 존재하지 않습니다.\n\n</string>
+    <string name="add_photo_option">(선택) 사진 등록</string>
+    <string name="check_email_duplicate">이메일 중복확인</string>
+    <string name="next">다음</string>
+    <string name="input_basic_information">기본 정보 입력</string>
+    <string name="check_password">비밀번호 확인</string>
 
     <string-array name="location_list">
         <item>강남구</item>
