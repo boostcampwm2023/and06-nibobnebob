@@ -140,12 +140,15 @@ class RestaurantRepositoryImpl @Inject constructor(
     }
 
     override fun myRestaurantList(
+        longitude: String?,
+        latitude: String?,
         limit: Int?,
         page: Int?,
         sort: String?
     ): Flow<BaseState<MyRestaurantData>> =
         flow {
-            when (val result = runRemote { api.myRestaurantList(limit, page, sort) }) {
+            when (val result =
+                runRemote { api.myRestaurantList(longitude, latitude, limit, page, sort) }) {
                 is BaseState.Success -> {
                     result.data.body?.let { body ->
                         emit(BaseState.Success(body.toDomainModel()))

@@ -257,7 +257,8 @@ class HomeViewModel @Inject constructor(
 
     private fun myRestaurantList() {
         myRestaurantListUseCase(
-            limit = 500
+            longitude = DEFAULT_LONGITUDE,
+            latitude = DEFAULT_LATITUDE
         ).onStart {
             _events.emit(HomeEvents.ShowLoading)
         }.onEach {
@@ -489,6 +490,11 @@ class HomeViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    companion object {
+        const val DEFAULT_LATITUDE = "37.55"
+        const val DEFAULT_LONGITUDE = "126.9"
     }
 
 }
