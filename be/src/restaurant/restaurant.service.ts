@@ -10,6 +10,7 @@ import { ReviewRepository } from "../review/review.repository";
 import { LocationDto } from "./dto/location.dto";
 import { AwsService } from "../aws/aws.service";
 import { Cron } from "@nestjs/schedule";
+import { ElasticsearchService } from "./elasticSearch.service";
 
 const key = process.env.API_KEY;
 
@@ -25,41 +26,44 @@ export class RestaurantService {
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
     private reviewRepository: ReviewRepository,
-    private awsService: AwsService
+    private awsService: AwsService,
+    private elasticSearchService: ElasticsearchService
   ) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    const restaurants = await this.restaurantRepository.searchRestarant(
-      searchInfoDto,
-      tokenInfo
-    );
+    // const restaurants = await this.restaurantRepository.searchRestarant(
+    //   searchInfoDto,
+    //   tokenInfo
+    // );
 
-    for (const restaurant of restaurants) {
-      const reviewCount = await this.reviewRepository
-        .createQueryBuilder("review")
-        .where("review.restaurant_id = :restaurantId", {
-          restaurantId: restaurant.restaurant_id,
-        })
-        .getCount();
+    const restaurants = await this.elasticSearchService.getSuggestions(searchInfoDto);
 
-      const reviewInfo = await this.reviewRepository
-        .createQueryBuilder("review")
-        .leftJoin("review.reviewLikes", "reviewLike")
-        .select(["review.id", "review.reviewImage"],)
-        .groupBy("review.id")
-        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
-        .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
-        .getRawOne();
-      if (reviewInfo) {
-        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
-      }
-      else {
-        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
-      }
+    // for (const restaurant of restaurants) {
+    //   const reviewCount = await this.reviewRepository
+    //     .createQueryBuilder("review")
+    //     .where("review.restaurant_id = :restaurantId", {
+    //       restaurantId: restaurant.restaurant_id,
+    //     })
+    //     .getCount();
+
+    //   const reviewInfo = await this.reviewRepository
+    //     .createQueryBuilder("review")
+    //     .leftJoin("review.reviewLikes", "reviewLike")
+    //     .select(["review.id", "review.reviewImage"],)
+    //     .groupBy("review.id")
+    //     .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+    //     .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
+    //     .getRawOne();
+    //   if (reviewInfo) {
+    //     restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+    //   }
+    //   else {
+    //     restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+    //   }
 
 
-      restaurant.restaurant_reviewCnt = reviewCount;
-    }
+    //   restaurant.restaurant_reviewCnt = reviewCount;
+    // }
 
     return restaurants;
   }

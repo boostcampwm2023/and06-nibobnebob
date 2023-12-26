@@ -3,15 +3,17 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { TransformInterceptor } from "./response.interceptor";
 import { HttpExceptionFilter } from "./error.filter";
+const EventEmitter = require('events');
 import * as fs from 'fs';
 
 async function bootstrap() {
-
+  // EventEmitter.defaultMaxListeners = 0;
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix("api");
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
+  
 
   const config = new DocumentBuilder()
     .setTitle("Example API")
