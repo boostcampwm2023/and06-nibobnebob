@@ -16,8 +16,8 @@ export class ElasticsearchService implements OnModuleInit {
       index: "restaurants",
     });
     // await this.client.indices.delete({ index: 'restaurants' });
-    await this.createRestaurantIndex();
-    await this.indexRestaurantData();
+    // await this.createRestaurantIndex();
+    // await this.indexRestaurantData();
   }
 
   async search(query: any) {
@@ -34,26 +34,26 @@ export class ElasticsearchService implements OnModuleInit {
               ngram_analyzer: {
                 type: "custom",
                 tokenizer: "ngram",
-                filter: ["lowercase", "edge_ngram"]
-              }
+                filter: ["lowercase", "edge_ngram"],
+              },
             },
             filter: {
               edge_ngram: {
                 type: "edge_ngram",
                 min_gram: 1,
-                max_gram: 20
-              }
-            }
-          }
+                max_gram: 20,
+              },
+            },
+          },
         },
         mappings: {
           properties: {
             restaurant_name: {
               type: "text",
               analyzer: "ngram_analyzer",
-              search_analyzer: "standard"
+              search_analyzer: "standard",
             },
-            location: {type: "geo_point"},
+            restaurant_location: { type: "geo_point" },
           },
         },
       },
@@ -62,7 +62,7 @@ export class ElasticsearchService implements OnModuleInit {
 
   async indexRestaurantData() {
     const restaurants = await this.restaurantRepository.find();
-    const batchSize = 500;
+    const batchSize = 3000;
     const totalBatches = Math.ceil(restaurants.length / batchSize);
     for (let i = 0; i < totalBatches; i++) {
       console.log(i * batchSize);
@@ -75,10 +75,7 @@ export class ElasticsearchService implements OnModuleInit {
         {
           restaurant_id: restaurant.id,
           restaurant_name: restaurant.name,
-          location: {
-            lat: restaurant.location.coordinates[1],
-            lon: restaurant.location.coordinates[0]
-          },
+          restaurant_location: restaurant.location,
           restaurant_phoneNumber: restaurant.phoneNumber,
           restaurant_address: restaurant.address,
           restaurant_category: restaurant.category,
@@ -89,47 +86,108 @@ export class ElasticsearchService implements OnModuleInit {
   }
 
   async getSuggestions(searchInfoDto: SearchInfoDto) {
-    const response = await this.client.search({
-      index: 'restaurants',
-      body: {
-        query: {
-          match: {
-            restaurant_name: {
-              query: searchInfoDto.partialName
-            }
-          }
+    if (searchInfoDto.latitude && searchInfoDto.longitude) {
+      const response = await this.client.search({
+        index: "restaurants",
+        body: {
+          query: {
+            bool: {
+              must: {
+                match: {
+                  restaurant_name: {
+                    query: searchInfoDto.partialName,
+                  },
+                },
+              },
+              filter: {
+                geo_distance: {
+                  distance: `${searchInfoDto.radius / 1000}km`,
+                  restaurant_location: {
+                    lat: searchInfoDto.latitude,
+                    lon: searchInfoDto.longitude,
+                  },
+                  distance_type: "arc", // 평면거리로 계산
+                },
+              },
+            },
+          },
+          _source: [
+            "restaurant_id",
+            "restaurant_name",
+            "restaurant_address",
+            "restaurant_location",
+            "restaurant_phoneNumber",
+            "restaurant_category",
+          ],
+          size: 15,
+          sort: [
+            {
+              _geo_distance: {
+                restaurant_location: {
+                  lat: searchInfoDto.latitude,
+                  lon: searchInfoDto.longitude,
+                }, // 사용자 위치
+                order: "asc", // 가까운 순으로 정렬
+                unit: "km", // 거리 단위
+                distance_type: "arc",
+              },
+            },
+          ],
+          script_fields: {
+            distance: {
+              script: {
+                source:
+                  "doc['restaurant_location'].arcDistance(params.lat,params.lon)", // 거리 계산 스크립트
+                params: {
+                  lat: searchInfoDto.latitude,
+                  lon: searchInfoDto.longitude,
+                },
+              },
+            },
+          },
         },
-        _source: ["restaurant_name", "restaurant_address", "restaurant_phoneNumber", "restaurant_category"],
-        size:15,
-        sort: [
-          {
-            _geo_distance: {
-              location: { lat: searchInfoDto.latitude, lon: searchInfoDto.longitude }, // 사용자 위치
-              order: 'asc', // 가까운 순으로 정렬
-              unit: 'km' // 거리 단위
-            }
-          }
-        ],
-        script_fields: {
-          distance: {
-            script: {
-              source: "doc['location'].arcDistance(params.lat,params.lon)", // 거리 계산 스크립트
-              params: {
-                lat: searchInfoDto.latitude,
-                lon: searchInfoDto.longitude
-              }
-            }
-          }
-        },
-      }
-    });
+      });
 
-    console.log(JSON.stringify(response,null,2))
-    // console.log(JSON.stringify(response.suggest.restaurantSuggestions[0].options,null,2));
-    // const options = response.suggest.restaurantSuggestions[0].options;
-    // const result = Array.isArray(options)
-    //   ? options.map((item) => item["_source"])
-    //   : [];
-    // return result;
+      const options = response.hits.hits;
+      const result = Array.isArray(options)
+        ? options.map((item) => ({
+            ...(item["_source"] as any),
+            distance: item.fields.distance[0],
+          }))
+        : [];
+      return result;
+    } else {
+      const response = await this.client.search({
+        index: "restaurants",
+        body: {
+          query: {
+            bool: {
+              must: {
+                match: {
+                  restaurant_name: {
+                    query: searchInfoDto.partialName,
+                  },
+                },
+              }
+            },
+          },
+          _source: [
+            "restaurant_id",
+            "restaurant_name",
+            "restaurant_address",
+            "restaurant_location",
+            "restaurant_phoneNumber",
+            "restaurant_category",
+          ],
+          size: 15,
+        },
+      });
+
+      const options = response.hits.hits;
+      const result = Array.isArray(options)
+        ? options.map((item) => item["_source"])
+        : [];
+      return result;
+    }
   }
 }
