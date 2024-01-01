@@ -10,6 +10,9 @@ import { ReviewRepository } from "../review/review.repository";
 import { LocationDto } from "./dto/location.dto";
 import { AwsService } from "../aws/aws.service";
 import { Cron } from "@nestjs/schedule";
+import { ElasticsearchService } from "./elasticSearch.service";
+import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
+import { UserWishRestaurantListEntity } from "src/user/entities/user.wishrestaurantlist.entity";
 
 const key = process.env.API_KEY;
 
@@ -25,20 +28,39 @@ export class RestaurantService {
     private restaurantRepository: RestaurantRepository,
     private userRepository: UserRepository,
     private reviewRepository: ReviewRepository,
-    private awsService: AwsService
+    private awsService: AwsService,
+    private elasticSearchService: ElasticsearchService
   ) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    const restaurants = await this.restaurantRepository.searchRestarant(
-      searchInfoDto,
-      tokenInfo
-    );
+    const restaurants = await this.elasticSearchService.getSuggestions(searchInfoDto);
 
     for (const restaurant of restaurants) {
+      const info = await this.restaurantRepository
+        .createQueryBuilder("restaurant")
+        .leftJoin(
+          UserRestaurantListEntity,
+          "user_restaurant_list",
+          "user_restaurant_list.restaurantId = restaurant.id AND user_restaurant_list.userId = :userId",
+          { userId: tokenInfo.id }
+        )
+        .leftJoin(
+          UserWishRestaurantListEntity,
+          "user_wish_list",
+          "user_wish_list.restaurantId = restaurant.id AND user_wish_list.userId = :userId",
+          { userId: tokenInfo.id }
+        )
+        .select([
+          `CASE WHEN user_restaurant_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isMy"`,
+          `CASE WHEN user_wish_list.userId IS NOT NULL THEN TRUE ELSE FALSE END AS "isWish"`,
+        ])
+        .where(`restaurant.id = ${restaurant.restaurant_id}`)
+        .getRawOne();
+
       const reviewCount = await this.reviewRepository
         .createQueryBuilder("review")
         .where("review.restaurant_id = :restaurantId", {
-          restaurantId: restaurant.restaurant_id,
+          restaurantId: restaurant['restaurant_id'],
         })
         .getCount();
 
@@ -47,18 +69,20 @@ export class RestaurantService {
         .leftJoin("review.reviewLikes", "reviewLike")
         .select(["review.id", "review.reviewImage"],)
         .groupBy("review.id")
-        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant.restaurant_id })
+        .where("review.restaurant_id = :restaurantId and review.reviewImage is NOT NULL", { restaurantId: restaurant['restaurant_id'] })
         .orderBy("COUNT(CASE WHEN reviewLike.isLike = true THEN 1 ELSE NULL END)", "DESC")
         .getRawOne();
       if (reviewInfo) {
-        restaurant.restaurant_reviewImage = this.awsService.getImageURL(reviewInfo.review_reviewImage);
+        restaurant['restaurant_reviewImage'] = this.awsService.getImageURL(reviewInfo.review_reviewImage);
       }
       else {
-        restaurant.restaurant_reviewImage = this.awsService.getImageURL("review/images/defaultImage.png");
+        restaurant['restaurant_reviewImage'] = this.awsService.getImageURL("review/images/defaultImage.png");
       }
 
 
-      restaurant.restaurant_reviewCnt = reviewCount;
+      restaurant['restaurant_reviewCnt'] = reviewCount;
+      restaurant['isMy'] = info.isMy;
+      restaurant['isWish'] = info.isWish;
     }
 
     return restaurants;
