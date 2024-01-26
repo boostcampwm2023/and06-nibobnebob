@@ -97,6 +97,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(R.layout.fragment_login
 
     private fun NavController.toDetailSignup() {
         val action = LoginFragmentDirections.actionLoginFragmentToDetailSignupFragment(
+            provider = "naver",
             email = viewModel.naverEmail.value
         )
         this.navigate(action)

@@ -4,12 +4,14 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentUserDetailBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.ImageDialog
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.global.userdetail.adapter.UserDetailRestaurantAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,11 +23,13 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
     private val viewModel: UserDetailViewModel by viewModels()
     private val args: UserDetailFragmentArgs by navArgs()
     private val nickName by lazy { args.nickName }
+    private val adapter = UserDetailRestaurantAdapter { id -> viewModel.restaurantDetail(id) }
 
-    override fun initView() {
-        binding.vm = viewModel
+    override fun initView() = with(binding) {
+        vm = viewModel
         viewModel.setNick(nickName)
-        binding.rvRestaurant.adapter = UserDetailRestaurantAdapter()
+        rvRestaurant.adapter = adapter
+        customBack(requireActivity(), findNavController())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -37,6 +41,11 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
         repeatOnStarted {
             viewModel.events.collect {
                 when (it) {
+                    is UserDetailEvents.NavigateToRestaurantDetail ->
+                        findNavController().toRestaurantDetail(
+                            it.id
+                        )
+
                     is UserDetailEvents.NavigateToBack -> findNavController().navigateUp()
                     is UserDetailEvents.ShowSnackMessage -> showSnackBar(it.msg)
                     is UserDetailEvents.ShowToastMessage -> showToastMessage(it.msg)
@@ -47,5 +56,12 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>(R.layout.frag
                 }
             }
         }
+    }
+
+
+    private fun NavController.toRestaurantDetail(id: Int) {
+        val action =
+            UserDetailFragmentDirections.actionUserDetailFragmentToRestaurantDetailFragment(id)
+        navigate(action)
     }
 }

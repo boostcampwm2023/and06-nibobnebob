@@ -21,6 +21,7 @@ internal fun UserDetailData.toUiUserDetailData() = UiUserDetailData(
 
 
 internal fun UserDetailRestaurantData.toUiUserDetailRestaurantData() = UiUserDetailRestaurantData(
+    id = id,
     name = name,
     address = address,
     phoneNumber = phoneNumber

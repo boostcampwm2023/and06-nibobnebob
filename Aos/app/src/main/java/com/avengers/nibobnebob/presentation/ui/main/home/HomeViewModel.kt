@@ -20,6 +20,7 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.overlay.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -27,7 +28,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Math.pow
@@ -43,14 +46,14 @@ data class HomeUiState(
     val markerList: List<UiRestaurantData> = emptyList(),
     val recommendList: List<UiRecommendRestaurantData> = emptyList(),
     val curFilter: String = MY_LIST,
-    val cameraLatitude: Double = 0.0,
-    val cameraLongitude: Double = 0.0,
-    val cameraZoom: Double = 0.0,
+    val cameraLatitude: Double = 37.553836,
+    val cameraLongitude: Double = 126.969652,
+    val cameraZoom: Double = 12.0,
     val cameraRadius: Double = 0.0,
     val curLatitude: Double = 0.0,
     val curLongitude: Double = 0.0,
     val curSelectedMarker: Marker? = null,
-    val addRestaurantId: Int = -1
+    val addRestaurantId: Int = 0
 )
 
 sealed class TrackingState {
@@ -73,6 +76,9 @@ sealed class HomeEvents {
     data class ShowSnackMessage(
         val msg: String
     ) : HomeEvents()
+
+    data object ShowLoading : HomeEvents()
+    data object DismissLoading : HomeEvents()
 }
 
 @HiltViewModel
@@ -87,16 +93,12 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    private val _events = MutableSharedFlow<HomeEvents>()
+    private val _events = MutableSharedFlow<HomeEvents>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     val events: SharedFlow<HomeEvents> = _events.asSharedFlow()
-
-    init {
-        _uiState.update { state ->
-            state.copy(
-                filterList = listOf(UiFilterData(MY_LIST, true, ::onFilterItemClicked))
-            )
-        }
-    }
 
     fun updateLocation(latitude: Double, longitude: Double) {
         _uiState.update { state ->
@@ -173,13 +175,13 @@ class HomeViewModel @Inject constructor(
     fun getFilterList() {
         followRepository.getMyFollowing().onEach { it ->
             val initialFilterList = listOf(
-                UiFilterData(MY_LIST, true, ::onFilterItemClicked),
-                UiFilterData(NEAR_RESTAURANT, false, ::onFilterItemClicked)
+                UiFilterData(MY_LIST, isChecked(MY_LIST), ::onFilterItemClicked),
+                UiFilterData(NEAR_RESTAURANT, isChecked(NEAR_RESTAURANT), ::onFilterItemClicked)
             )
             when (it) {
                 is BaseState.Success -> {
                     val filterList = initialFilterList + it.data.map {
-                        UiFilterData(it.nickName, false, ::onFilterItemClicked)
+                        UiFilterData(it.nickName, isChecked(it.nickName), ::onFilterItemClicked)
                     }
                     _uiState.update { state ->
                         state.copy(
@@ -202,42 +204,19 @@ class HomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun updateNearRestaurant() {
-        val nearRestaurantFilter = uiState.value.filterList.find { it.name == NEAR_RESTAURANT }
-        if (uiState.value.curFilter == NEAR_RESTAURANT && nearRestaurantFilter?.isSelected == true) {
-            nearRestaurantList()
-        } else {
-            onFilterItemClicked(NEAR_RESTAURANT)
-        }
+    private fun isChecked(filterName: String): Boolean {
+        return filterName == uiState.value.curFilter
     }
 
-    private fun resetMarkerList() {
-        viewModelScope.launch {
-            _uiState.update { state ->
-                state.copy(markerList = emptyList())
-            }
-            _events.emit(HomeEvents.SetNewMarkers)
-        }
+    fun updateNearRestaurant() {
+        onFilterItemClicked(NEAR_RESTAURANT)
     }
 
     fun getMarkerList() {
-        if (uiState.value.filterList.all { !it.isSelected }) {
-            resetMarkerList()
-            return
-        }
-
-        when (_uiState.value.curFilter) {
-            NEAR_RESTAURANT -> {
-                nearRestaurantList()
-            }
-
-            MY_LIST -> {
-                myRestaurantList()
-            }
-
-            else -> {
-                userRestaurantList()
-            }
+        when (uiState.value.curFilter) {
+            NEAR_RESTAURANT -> nearRestaurantList()
+            MY_LIST -> myRestaurantList()
+            else -> userRestaurantList()
         }
     }
 
@@ -245,12 +224,18 @@ class HomeViewModel @Inject constructor(
         restaurantRepository.nearRestaurantList(
             radius = uiState.value.cameraRadius.toString(),
             longitude = uiState.value.cameraLongitude.toString(),
-            latitude = uiState.value.cameraLatitude.toString()
-        ).onEach {
+            latitude = uiState.value.cameraLatitude.toString(),
+            limit = if(uiState.value.cameraRadius < 500) 100 else 40
+        //이게 null일때 갯수제한이여야하는데.. 반대로 되어있어 200개 임시로 적음
+        ).onStart {
+            _events.emit(HomeEvents.ShowLoading)
+        }.onEach {
+            _events.emit(HomeEvents.RemoveMarkers)
             when (it) {
                 is BaseState.Success -> {
                     _uiState.update { state ->
                         state.copy(
+                            curFilter = NEAR_RESTAURANT,
                             markerList = it.data.map { restaurants ->
                                 restaurants.toUiRestaurantData()
                             }
@@ -264,12 +249,19 @@ class HomeViewModel @Inject constructor(
                 }
             }
             _events.emit(HomeEvents.SetNewMarkers)
+        }.onCompletion {
+            _events.emit(HomeEvents.DismissLoading)
         }.launchIn(viewModelScope)
 
     }
 
     private fun myRestaurantList() {
-        myRestaurantListUseCase().onEach {
+        myRestaurantListUseCase(
+            longitude = DEFAULT_LONGITUDE,
+            latitude = DEFAULT_LATITUDE
+        ).onStart {
+            _events.emit(HomeEvents.ShowLoading)
+        }.onEach {
             _events.emit(HomeEvents.RemoveMarkers)
             when (it) {
                 is BaseState.Success -> {
@@ -279,6 +271,7 @@ class HomeViewModel @Inject constructor(
                         }
                         _uiState.update { state ->
                             state.copy(
+                                curFilter = MY_LIST,
                                 markerList = restaurantsList
                             )
                         }
@@ -289,15 +282,19 @@ class HomeViewModel @Inject constructor(
                 is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
             }
             _events.emit(HomeEvents.SetNewMarkers)
+        }.onCompletion {
+            _events.emit(HomeEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 
     private fun userRestaurantList() {
         restaurantRepository.filterRestaurantList(
-            _uiState.value.curFilter,
-            "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
-            50000
-        ).onEach {
+            filter = _uiState.value.curFilter,
+            location = "${_uiState.value.curLatitude} ${_uiState.value.curLongitude}",
+            radius = 50000
+        ).onStart {
+            _events.emit(HomeEvents.ShowLoading)
+        }.onEach {
             _events.emit(HomeEvents.RemoveMarkers)
             when (it) {
                 is BaseState.Success -> {
@@ -314,6 +311,8 @@ class HomeViewModel @Inject constructor(
                 is BaseState.Error -> _events.emit(HomeEvents.ShowSnackMessage(ERROR_MSG))
             }
             _events.emit(HomeEvents.SetNewMarkers)
+        }.onCompletion {
+            _events.emit(HomeEvents.DismissLoading)
         }.launchIn(viewModelScope)
     }
 
@@ -402,7 +401,7 @@ class HomeViewModel @Inject constructor(
 
     private fun moveCamera() {
         if (_uiState.value.markerList.isEmpty()) return
-        if (uiState.value.addRestaurantId != 0) {
+        if (uiState.value.addRestaurantId > 0) {
             val restaurantItem: UiRestaurantData =
                 uiState.value.markerList.first { it.id == uiState.value.addRestaurantId }
             _uiState.update { state ->
@@ -484,13 +483,18 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setAddRestaurantId(restaurantId: Int) {
-        if (restaurantId != -1) {
+        if (restaurantId <= 0) {
             _uiState.update { state ->
                 state.copy(
                     addRestaurantId = restaurantId
                 )
             }
         }
+    }
+
+    companion object {
+        const val DEFAULT_LATITUDE = "37.55"
+        const val DEFAULT_LONGITUDE = "126.9"
     }
 
 }

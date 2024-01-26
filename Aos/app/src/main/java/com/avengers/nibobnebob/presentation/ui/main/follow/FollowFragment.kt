@@ -1,5 +1,6 @@
 package com.avengers.nibobnebob.presentation.ui.main.follow
 
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -24,6 +25,7 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
         binding.rvFollowList.adapter = FollowAdapter()
         binding.rvRecommendFriend.adapter = FollowAdapter()
         setTabSelectedListener()
+        finishApp()
     }
 
     override fun initNetworkView() {
@@ -55,6 +57,20 @@ class FollowFragment : BaseFragment<FragmentFollowBinding>(R.layout.fragment_fol
 
             override fun onTabReselected(tab: TabLayout.Tab?) {}
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
+        })
+    }
+
+    private fun finishApp(){
+        var backPressTime = 0L
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(System.currentTimeMillis() - backPressTime <= 2000) {
+                    parentViewModel.finishApp()
+                } else{
+                    backPressTime = System.currentTimeMillis()
+                    showToastMessage("뒤로가기 버튼을 한 번 더 누르면 종료됩니다.")
+                }
+            }
         })
     }
 

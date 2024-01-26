@@ -11,6 +11,7 @@ data class UiUserDetailData(
 
 
 data class UiUserDetailRestaurantData(
+    val id : Int,
     val name: String,
     val address: String,
     val phoneNumber: String

@@ -16,7 +16,6 @@ import com.avengers.nibobnebob.presentation.util.Constants.FILTER_NEW
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_OLD
 import com.avengers.nibobnebob.presentation.util.Constants.FILTER_WORST
 import com.avengers.nibobnebob.presentation.util.LoginType
-import com.google.android.material.textfield.TextInputLayout
 
 // signup
 @BindingAdapter("helperMessage")
@@ -34,6 +33,24 @@ fun bindHelpMessage(tv: TextView, inputState: InputState) = with(tv) {
 
         else -> {
             text = ""
+        }
+    }
+}
+
+//signup
+@BindingAdapter("emailValidation")
+fun bindEmailValidationr(tv: TextView, inputState: InputState) = with(tv) {
+    when (inputState) {
+        is InputState.Success -> {
+            setTextColor(ContextCompat.getColor(context, R.color.nn_dark6))
+        }
+
+        is InputState.Error -> {
+            setTextColor(ContextCompat.getColor(context, R.color.nn_dark6))
+        }
+
+        is InputState.Empty -> {
+            setTextColor(ContextCompat.getColor(context, R.color.nn_dark2))
         }
     }
 }
@@ -87,7 +104,7 @@ fun bindNickHelperText(tv: TextView, state: EditInputState?) = with(tv) {
 @BindingAdapter("loginType")
 fun bindLoginType(tv: TextView, type: String?) = with(tv) {
     type ?: return
-    text = if (type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else ""
+    text = if (type == LoginType.NAVER_LOGIN) "네이버 소셜로그인" else "일반 로그인"
 }
 
 @BindingAdapter("filterType")
@@ -99,4 +116,9 @@ fun bindFilterType(tv: TextView, type: String) = with(tv) {
         FILTER_WORST -> "비추천순"
         else -> ""
     }
+}
+
+@BindingAdapter("adjustText")
+fun bindLongText(tv: TextView, value: String) {
+    tv.text = if (value.length > 27) "${value.substring(0, 27)}.." else value
 }

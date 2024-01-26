@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
@@ -53,7 +52,7 @@ class DetailSignupFragment :
                     is DetailSignupEvents.ShowLoading -> showLoading(requireContext())
                     is DetailSignupEvents.DismissLoading -> dismissLoading()
                     is DetailSignupEvents.GoToMainActivity -> {
-                        val intent = Intent(requireContext(),MainActivity::class.java)
+                        val intent = Intent(requireContext(), MainActivity::class.java)
                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(intent)
                     }
@@ -96,11 +95,6 @@ class DetailSignupFragment :
             setDropDownBackgroundTint(ContextCompat.getColor(this.context, R.color.nn_primary0))
             setSimpleItems(resources.getStringArray(R.array.location_list))
         }
-    }
-
-    private fun NavController.toLoginFragment() {
-        val action = DetailSignupFragmentDirections.actionDetailSignupFragmentToLoginFragment()
-        this.navigate(action)
     }
 }
 

@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.avengers.nibobnebob.presentation.ui.main.global.userdetail.UserDetailViewModel" />
@@ -129,6 +131,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_region" />
+
+        <TextView
+            android:id="@+id/tv_empty"
+            style="@style/TextMediumRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/user_detail_empty"
+            android:textColor="@color/nn_dark5"
+            android:visibility="@{vm.uiState.userDetail.restaurants.empty? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_name" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_restaurant"

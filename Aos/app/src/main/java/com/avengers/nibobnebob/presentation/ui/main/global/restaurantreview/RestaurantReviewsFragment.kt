@@ -1,6 +1,5 @@
 package com.avengers.nibobnebob.presentation.ui.main.global.restaurantreview
 
-import android.util.Log
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -10,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantReviewsBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.adapter.RestaurantReviewAdapter
 import com.avengers.nibobnebob.presentation.util.Constants
@@ -43,11 +43,11 @@ class RestaurantReviewsFragment :
                 val isNotLoading = !viewModel.uiState.value.isLoading
 
                 if (scrollBottom && hasNextPage && isNotLoading) {
-                    Log.d("TEST", "end")
                     viewModel.loadNextPage()
                 }
             }
         })
+        customBack(requireActivity(), findNavController())
 
     }
 

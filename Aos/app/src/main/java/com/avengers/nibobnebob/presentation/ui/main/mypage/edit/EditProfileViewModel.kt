@@ -157,7 +157,7 @@ class EditProfileViewModel @Inject constructor(
                             nickName = EditInputState(
                                 helperText = Validation.VALID_NICK,
                                 isValid = true,
-                                isChanged = (originalNickName != nickState.value) && locationState.value != 0
+                                isChanged = (originalNickName != nickState.value)
                             )
                         )
                     }
@@ -202,7 +202,7 @@ class EditProfileViewModel @Inject constructor(
                     birth = EditInputState(
                         helperText = if (!validData && birth.isNotEmpty()) Validation.INVALID_DATE else Validation.VALID_DATE,
                         isValid = validData,
-                        isChanged = originalBirth != birth && locationState.value != 0
+                        isChanged = originalBirth != birth
                     )
                 )
             }
@@ -214,7 +214,7 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(
                     isMale = EditInputState(
-                        isChanged = originalIsMale != isMale && locationState.value != 0
+                        isChanged = originalIsMale != isMale
                     )
                 )
             }
@@ -231,7 +231,7 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(
                     profileImage = EditInputState(
-                        isChanged = (originalProfileImage != profileImageState.value) && locationState.value != 0
+                        isChanged = (originalProfileImage != profileImageState.value)
                     )
                 )
             }

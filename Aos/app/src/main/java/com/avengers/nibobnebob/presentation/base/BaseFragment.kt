@@ -84,7 +84,7 @@ abstract class BaseFragment<B : ViewDataBinding>(
     }
 
     fun showToastMessage(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     fun showTwoButtonTitleDialog(

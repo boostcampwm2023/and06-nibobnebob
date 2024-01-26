@@ -19,6 +19,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.ui.adjustKeyboard
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainActivity
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.adapter.HomeSearchAdapter
@@ -43,6 +44,7 @@ class RestaurantSearchFragment :
         fetchCurrentLocation()
         view?.let { clearFocus(it) }
         initStateObserver()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {
@@ -73,39 +75,33 @@ class RestaurantSearchFragment :
         }
     }
 
-    private fun fetchCurrentLocation() {
+    private fun checkLocationPermission() : Boolean{
         val locationManager =
             requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED &&
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        )
+    }
 
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        } else {
-            if (ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                LocationServices.getFusedLocationProviderClient(activity as MainActivity).apply {
-                    lastLocation.addOnSuccessListener { location: Location? ->
-                        viewModel.setCurrentLocation(location?.latitude, location?.longitude)
-                    }
+    private fun fetchCurrentLocation() {
+
+        if(checkLocationPermission()){
+            LocationServices.getFusedLocationProviderClient(activity as MainActivity).apply {
+                lastLocation.addOnSuccessListener { location: Location? ->
+                    viewModel.setCurrentLocation(location?.latitude, location?.longitude)
                 }
-            } else {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ),
-                    1000
-                )
             }
+        } else {
+            showToastMessage("GPS나 위치 권한을 허용해주세요.")
         }
     }
 

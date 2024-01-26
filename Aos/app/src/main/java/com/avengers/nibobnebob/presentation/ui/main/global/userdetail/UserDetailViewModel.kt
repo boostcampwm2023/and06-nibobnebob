@@ -34,6 +34,7 @@ sealed class UserDetailEvents {
     data class ShowToastMessage(val msg: String) : UserDetailEvents()
     data object NavigateToBack : UserDetailEvents()
     data class ShowBiggerImageDialog(val img: String) : UserDetailEvents()
+    data class NavigateToRestaurantDetail(val id: Int) : UserDetailEvents()
 }
 
 @HiltViewModel
@@ -124,6 +125,12 @@ class UserDetailViewModel @Inject constructor(
     fun navigateToBack() {
         viewModelScope.launch {
             _events.emit(UserDetailEvents.NavigateToBack)
+        }
+    }
+
+    fun restaurantDetail(id : Int) {
+        viewModelScope.launch {
+            _events.emit(UserDetailEvents.NavigateToRestaurantDetail(id))
         }
     }
 }

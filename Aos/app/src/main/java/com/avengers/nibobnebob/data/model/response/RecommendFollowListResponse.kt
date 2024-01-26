@@ -12,15 +12,16 @@ data class RecommendFollowListResponse(
     val region: String,
     @SerializedName("isFollow")
     val isFollow: Boolean,
-    @SerializedName("profileImage")
+    @SerializedName("user_profileImage")
     val profileImage: String
-): BaseDataModel {
+) : BaseDataModel {
     companion object : DomainMapper<RecommendFollowListResponse, RecommendFollowListData> {
-        override fun RecommendFollowListResponse.toDomainModel(): RecommendFollowListData = RecommendFollowListData(
-            nickName = nickName,
-            region = region,
-            isFollow = isFollow,
-            profileImage = profileImage
-        )
+        override fun RecommendFollowListResponse.toDomainModel(): RecommendFollowListData =
+            RecommendFollowListData(
+                nickName = nickName,
+                region = region,
+                isFollow = isFollow,
+                profileImage = profileImage
+            )
     }
 }

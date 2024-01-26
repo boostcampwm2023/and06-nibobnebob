@@ -7,6 +7,7 @@ import androidx.navigation.fragment.navArgs
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentAddMyRestaurantBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.toHome
 import com.avengers.nibobnebob.presentation.ui.toMultiPart
@@ -29,6 +30,7 @@ class AddMyRestaurantFragment :
         setSliderListener()
         setVisitMethodRadioListener()
         initImageObserver()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {

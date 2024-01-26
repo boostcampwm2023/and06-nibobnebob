@@ -16,6 +16,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantSearchMapBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.RestaurantBottomSheet
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.home.model.UiRestaurantData
 import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
@@ -61,6 +62,7 @@ class RestaurantSearchMapFragment :
     override fun initView() {
         initMapView()
         initClickEvent()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {}

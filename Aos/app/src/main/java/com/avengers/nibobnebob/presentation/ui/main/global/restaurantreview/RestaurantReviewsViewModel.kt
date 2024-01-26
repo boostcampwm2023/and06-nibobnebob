@@ -219,6 +219,6 @@ class RestaurantReviewsViewModel @Inject constructor(
 
     companion object {
         const val FIRST_PAGE = 1
-        const val ITEM_LIMIT = 3
+        const val ITEM_LIMIT = 5
     }
 }

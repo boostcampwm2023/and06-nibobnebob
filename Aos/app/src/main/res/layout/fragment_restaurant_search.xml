@@ -58,6 +58,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiet_input_search"
             style="@style/TextMediumRegular"
+            android:textSize="16sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@null"
@@ -65,7 +66,7 @@
             android:inputType="text"
             android:maxLines="1"
             android:onTextChanged="@{(word, a, b, c) -> vm.searchRestaurant(word)}"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="12dp"
             app:layout_constraintBottom_toBottomOf="@id/v_search"
             app:layout_constraintEnd_toStartOf="@id/iv_search"
             app:layout_constraintStart_toStartOf="@id/v_search"

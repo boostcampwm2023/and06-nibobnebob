@@ -94,6 +94,7 @@ class DetailSignupViewModel @Inject constructor(
 
         nick.onEach {
             _uiState.update { state ->
+                nickValidation.value = false
                 state.copy(
                     isNickNotEmpty = it.isNotBlank(),
                     nickState = InputState.Empty

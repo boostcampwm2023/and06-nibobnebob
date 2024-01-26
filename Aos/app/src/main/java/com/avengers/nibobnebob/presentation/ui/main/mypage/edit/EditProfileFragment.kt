@@ -1,13 +1,16 @@
 package com.avengers.nibobnebob.presentation.ui.main.mypage.edit
 
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentEditProfileBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.CalendarDatePicker
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
@@ -29,6 +32,7 @@ class EditProfileFragment :
         setDateBtnListener()
         initImageObserver()
         setGenderRadioListener()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {
@@ -81,7 +85,6 @@ class EditProfileFragment :
         repeatOnStarted {
             parentViewModel.image.collect {
                 viewModel.setImage(it, it.toMultiPart(requireContext(), "profileImage"))
-                parentViewModel.uriCollected()
             }
         }
     }

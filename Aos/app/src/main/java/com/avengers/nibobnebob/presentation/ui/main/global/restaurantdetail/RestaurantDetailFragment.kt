@@ -9,6 +9,7 @@ import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentRestaurantDetailBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
 import com.avengers.nibobnebob.presentation.customview.TwoButtonTitleDialog
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.global.restaurantdetail.adapter.RestaurantReviewAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +28,7 @@ class RestaurantDetailFragment :
         binding.vm = viewModel
         viewModel.setRestaurantId(restaurantId)
         binding.rvReview.adapter = RestaurantReviewAdapter()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {

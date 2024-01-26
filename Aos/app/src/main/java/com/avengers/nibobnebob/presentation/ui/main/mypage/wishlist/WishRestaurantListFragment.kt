@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.avengers.nibobnebob.R
 import com.avengers.nibobnebob.databinding.FragmentWishRestaurantListBinding
 import com.avengers.nibobnebob.presentation.base.BaseFragment
+import com.avengers.nibobnebob.presentation.ui.customBack
 import com.avengers.nibobnebob.presentation.ui.main.MainViewModel
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedUiEvent
 import com.avengers.nibobnebob.presentation.ui.main.mypage.share.MyPageSharedViewModel
-import com.avengers.nibobnebob.presentation.ui.toAddRestaurant
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -47,6 +47,7 @@ class WishRestaurantListFragment :
             }
         })
         setFilterMenu()
+        customBack(requireActivity(), findNavController())
     }
 
     override fun initNetworkView() {
@@ -122,6 +123,15 @@ class WishRestaurantListFragment :
     private fun NavController.toRestaurantDetail(restaurantId: Int) {
         val action =
             WishRestaurantListFragmentDirections.actionWishRestaurantListFragmentToRestaurantDetailFragment(
+                restaurantId
+            )
+        navigate(action)
+    }
+
+    private fun NavController.toAddRestaurant(restaurantName: String, restaurantId: Int) {
+        val action =
+            WishRestaurantListFragmentDirections.actionWishRestaurantListFragmentToAddMyRestaurantFragment2(
+                restaurantName,
                 restaurantId
             )
         navigate(action)

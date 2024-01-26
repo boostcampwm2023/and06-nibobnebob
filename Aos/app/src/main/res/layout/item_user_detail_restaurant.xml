@@ -4,6 +4,9 @@
 
     <data>
 
+        <variable
+            name="item"
+            type="com.avengers.nibobnebob.presentation.ui.main.global.model.UiUserDetailRestaurantData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,6 +48,7 @@
             style="@style/TextSmallBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{item.name}"
             app:layout_constraintStart_toStartOf="@id/gl_start"
             app:layout_constraintTop_toTopOf="@id/gl_top" />
 
@@ -53,6 +57,7 @@
             style="@style/CaptionRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{item.address}"
             android:textColor="@color/nn_primary5"
             app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintStart_toStartOf="@id/gl_start"
@@ -63,6 +68,7 @@
             style="@style/CaptionRegular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{item.phoneNumber.empty? @string/phone_number_empty : item.phoneNumber}"
             android:textColor="@color/nn_primary5"
             app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
             app:layout_constraintStart_toStartOf="@id/gl_start"
