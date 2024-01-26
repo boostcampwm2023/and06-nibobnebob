@@ -1,7 +1,7 @@
 package com.avengers.nibobnebob.app.di
 
+import com.avengers.data.config.DataStoreManager
 import com.avengers.nibobnebob.BuildConfig
-import com.avengers.nibobnebob.app.DataStoreManager
 import com.avengers.nibobnebob.config.AccessTokenInterceptor
 import com.avengers.nibobnebob.config.BearerInterceptor
 import com.avengers.nibobnebob.presentation.util.Constants.BASE_URL
