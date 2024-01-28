@@ -54,18 +54,15 @@ jobs:
     needs: push_to_registry
     runs-on: ubuntu-latest
     steps:
+      - name: Set up SSH
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
+    
       - name: connect ssh to Nginx server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.NGINX_HOST }}
-          username: ${{ secrets.NGINX_USERNAME }}
-          password: ${{ secrets.NGINX_PASSWORD }}
-          port: ${{ secrets.NGINX_PORT }}
-          script: |
-            ssh ${{ secrets.DEV_USERNAME }}@${{ secrets.DEV_HOST }} <<- 'EOSSH'
-              docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
-              docker stop $(docker ps -a -q)
-              docker rm $(docker ps -a -q)
-              docker run -d -p 8000:8000 -e API_KEY=${{ secrets.DEV_APIKEY }} -e NODE_ENV="DEV" ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
-              docker image prune -f
-            EOSSH
+        run: |
+          ssh -i ssh_key.pem ${{ secrets.DEV_USERNAME }}@${{ secrets.DEV_HOST }} 
+            docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
+            docker stop my_was_container
+            docker rm my_was_container
+            docker run -d -p 8000:8000 -e API_KEY=${{ secrets.DEV_APIKEY }} --name my_was_container --network mynetwork ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
+            docker image prune -f
