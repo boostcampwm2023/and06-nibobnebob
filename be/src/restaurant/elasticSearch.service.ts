@@ -1,3 +1,4 @@
+/* 
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { Client } from "@elastic/elasticsearch";
 import { RestaurantRepository } from "./restaurant.repository";
@@ -191,3 +192,4 @@ export class ElasticsearchService implements OnModuleInit {
     }
   }
 }
+*/
