@@ -54,15 +54,14 @@ jobs:
     needs: push_to_registry
     runs-on: ubuntu-latest
     steps:
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa.pem
-          chmod 600 ~/.ssh/id_rsa.pem
-  
-      - name: SSH Connection to EC2 Instance
-        run: |
-          ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_rsa.pem ubuntu@${{ secrets.DEV_HOST }} 'echo "Connected to EC2 Instance"'
+      - name: connect ssh to WAS server
+        uses: appleboy/ssh-action@master
+        with: 
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USERNAME }}
+          port: 22
+          script : | 
             docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker stop my_was_container
             docker rm my_was_container
