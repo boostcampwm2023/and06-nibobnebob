@@ -60,9 +60,11 @@ jobs:
     
       - name: connect ssh to Nginx server
         run: |
-          ssh -T -i ssh_key.pem ${{ secrets.DEV_USERNAME }}@${{ secrets.DEV_HOST }} 
+          ssh -i ssh_key.pem ${{ secrets.DEV_USERNAME }}@${{ secrets.DEV_HOST }} <<- 'EOSSH'
             docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker stop my_was_container
             docker rm my_was_container
             docker run -d -p 8000:8000 -e API_KEY=${{ secrets.DEV_APIKEY }} --name my_was_container --network mynetwork ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker image prune -f
+          EOSSH
+
