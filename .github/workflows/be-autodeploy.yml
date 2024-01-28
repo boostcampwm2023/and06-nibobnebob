@@ -62,7 +62,7 @@ jobs:
   
       - name: SSH Connection to EC2 Instance
         run: |
-          ssh -vvv -i ~/.ssh/id_rsa.pem ubuntu@${{ secrets.DEV_HOST }} 'echo "Connected to EC2 Instance"'
+          ssh -vvv -i ~/.ssh/id_rsa.pem ubuntu@${{ secrets.DEV_HOST }} -o ConnectTimeout=10 'echo "Connected to EC2 Instance"'
             docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker stop my_was_container
             docker rm my_was_container
