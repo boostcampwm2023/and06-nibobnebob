@@ -10,7 +10,7 @@ import { ReviewRepository } from "../review/review.repository";
 import { LocationDto } from "./dto/location.dto";
 import { AwsService } from "../aws/aws.service";
 import { Cron } from "@nestjs/schedule";
-import { ElasticsearchService } from "./elasticSearch.service";
+//import { ElasticsearchService } from "./elasticSearch.service";
 import { UserRestaurantListEntity } from "src/user/entities/user.restaurantlist.entity";
 import { UserWishRestaurantListEntity } from "src/user/entities/user.wishrestaurantlist.entity";
 
@@ -29,7 +29,7 @@ export class RestaurantService {
     private userRepository: UserRepository,
     private reviewRepository: ReviewRepository,
     private awsService: AwsService,
-    private elasticSearchService: ElasticsearchService
+    //private elasticSearchService: ElasticsearchService
   ) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
