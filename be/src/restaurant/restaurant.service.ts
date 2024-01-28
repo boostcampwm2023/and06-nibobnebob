@@ -33,7 +33,11 @@ export class RestaurantService {
   ) { }
 
   async searchRestaurant(searchInfoDto: SearchInfoDto, tokenInfo: TokenInfo) {
-    const restaurants = await this.elasticSearchService.getSuggestions(searchInfoDto);
+    //const restaurants = await this.elasticSearchService.getSuggestions(searchInfoDto);
+    const restaurants = await this.restaurantRepository.searchRestarant(
+      searchInfoDto,
+      tokenInfo
+    );
 
     for (const restaurant of restaurants) {
       const info = await this.restaurantRepository
