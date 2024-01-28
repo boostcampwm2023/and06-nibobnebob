@@ -59,8 +59,13 @@ jobs:
           ls -la ~
           mkdir -v -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "SSH key write status: $?"
           chmod 600 ~/.ssh/id_rsa
+          echo "chmod status: $?"
+          ls -la ~/.ssh
           ssh-keyscan -H ${{ secrets.DEV_HOST }} >> ~/.ssh/known_hosts
+          echo "ssh-keyscan status: $?"
+          ls -la ~/.ssh
     
       - name: SSH Connection to EC2 Instance
         run: |
