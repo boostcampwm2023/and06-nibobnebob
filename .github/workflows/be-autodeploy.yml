@@ -62,8 +62,8 @@ jobs:
           username: ${{ secrets.DEV_USERNAME }}
           port: 22
           script : | 
-            docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker stop my_was_container
             docker rm my_was_container
+            docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker run -d -p 8000:8000 -e API_KEY=${{ secrets.DEV_APIKEY }} --name my_was_container --network mynetwork ${{ secrets.NCP_CONTAINER_REGISTRY }}/nibobnebob
             docker image prune -f
