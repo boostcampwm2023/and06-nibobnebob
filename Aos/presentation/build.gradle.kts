@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -64,5 +65,10 @@ dependencies {
 
     // naver Login
     api ("com.navercorp.nid:oauth:5.8.0")
+
+    // hilt
+    val hiltVersion = "2.48"
+    implementation("com.google.dagger:hilt-android:${hiltVersion}")
+    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
 
 }

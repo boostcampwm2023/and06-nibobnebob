@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -71,10 +72,10 @@ dependencies {
 //    androidTestImplementation("androidx.test.ext:junit:1.1.5")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-//    // hilt
-//    val hiltVersion = "2.48"
-//    implementation("com.google.dagger:hilt-android:${hiltVersion}")
-//    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
+    // hilt
+    val hiltVersion = "2.48"
+    implementation("com.google.dagger:hilt-android:${hiltVersion}")
+    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
 //
 //    // retrofit
 //    val retrofitVersion = "2.9.0"
