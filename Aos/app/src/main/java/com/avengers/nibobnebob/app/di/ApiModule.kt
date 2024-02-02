@@ -1,11 +1,11 @@
 package com.avengers.nibobnebob.app.di
 
-import com.avengers.nibobnebob.data.remote.FollowApi
-import com.avengers.nibobnebob.data.remote.IntroApi
-import com.avengers.nibobnebob.data.remote.MyPageApi
-import com.avengers.nibobnebob.data.remote.RefreshApi
-import com.avengers.nibobnebob.data.remote.RestaurantApi
-import com.avengers.nibobnebob.data.remote.ValidationApi
+import com.avengers.data.remote.FollowApi
+import com.avengers.data.remote.IntroApi
+import com.avengers.data.remote.MyPageApi
+import com.avengers.data.remote.RefreshApi
+import com.avengers.data.remote.RestaurantApi
+import com.avengers.data.remote.ValidationApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

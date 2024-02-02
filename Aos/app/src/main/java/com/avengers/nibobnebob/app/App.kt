@@ -24,7 +24,7 @@ class App : Application(){
 
     companion object{
         lateinit var instance : App
-        val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = APP_NAME)
+        val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name =APP_NAME)
         fun getContext(): Context = instance.applicationContext
     }
 

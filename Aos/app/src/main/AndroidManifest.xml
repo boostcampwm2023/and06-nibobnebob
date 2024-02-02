@@ -37,7 +37,7 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
-            android:name=".presentation.ui.splash.SplashActivity"
+            android:name="com.avengers.presentation.ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
