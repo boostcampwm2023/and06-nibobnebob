@@ -41,7 +41,7 @@ dependencies {
 
     // hilt
     val hiltVersion = "2.48"
-    api("com.google.dagger:hilt-android:${hiltVersion}")
+    implementation("com.google.dagger:hilt-android:${hiltVersion}")
     kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
 
     // retrofit

@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.avengers.nibobnebob.BuildConfig
+import com.avengers.nibobnebob.presentation.util.Constants.APP_NAME
 import com.navercorp.nid.NaverIdLoginSDK
 import dagger.hilt.android.HiltAndroidApp
 
@@ -23,7 +24,7 @@ class App : Application(){
 
     companion object{
         lateinit var instance : App
-        val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "NibobNebob")
+        val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name =APP_NAME)
         fun getContext(): Context = instance.applicationContext
     }
 
@@ -32,7 +33,7 @@ class App : Application(){
             applicationContext,
             BuildConfig.NAVER_LOGIN_CLIENT_ID,
             BuildConfig.NAVER_LOGIN_CLIENT_SECRET,
-            "NibobNebob")
+            APP_NAME)
         NaverIdLoginSDK.showDevelopersLog(true)
     }
 }
